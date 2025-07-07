@@ -31,6 +31,7 @@ const chose_roll = () => {
         </View>
 
         <TouchableOpacity
+          onPress={() => router.push("/auth/login")}
           style={tw`bg-white w-full rounded-3xl mt-4 p-2 flex-row justify-between items-center`}
         >
           <View style={tw`flex-row items-center gap-5`}>
@@ -39,9 +40,7 @@ const chose_roll = () => {
             >
               <SvgXml xml={IconUser} />
             </View>
-            <Text style={tw`font-medium text-xl text-black`}>
-              Service provider
-            </Text>
+            <Text style={tw`font-medium text-xl text-black`}>Service User</Text>
           </View>
           <View style={tw`pr-4`}>
             <SvgXml xml={IconRightCornerArrow} />

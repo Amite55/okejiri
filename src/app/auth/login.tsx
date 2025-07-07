@@ -149,8 +149,8 @@ const LoginIndex = () => {
             <TouchableOpacity
               style={tw`bg-primary rounded-full`}
               onPress={() => {
-                handleSubmit();
-                // router.replace("/choose_r_s");
+                // handleSubmit();
+                router.replace("/company");
               }}
             >
               {isLoading ? (
