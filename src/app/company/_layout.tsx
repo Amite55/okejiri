@@ -14,6 +14,7 @@ import {
 import { Tabs } from "expo-router";
 import React from "react";
 import { Keyboard, Text, TouchableOpacity, View } from "react-native";
+
 import { SvgXml } from "react-native-svg";
 
 // Props type for MyTabBar
@@ -24,7 +25,6 @@ type MyTabBarProps = {
 };
 
 function MyTabBar({ state, descriptors, navigation }: MyTabBarProps) {
-  console.log(state.routes, "this is state ------------------------->");
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
 
   React.useEffect(() => {
@@ -54,9 +54,7 @@ function MyTabBar({ state, descriptors, navigation }: MyTabBarProps) {
           >
             {state.routes.map((route, index) => {
               const { options } = descriptors[route.key];
-
               const isFocused = state.index === index;
-              // console.log(state);
 
               const onPress = () => {
                 const event = navigation.emit({
