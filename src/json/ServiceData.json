@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "Cleaning",
+    "image": "https://i.ibb.co/7dstvmQq/30d57bd3299e299477ea52407439f9910678d73b.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Barbing",
+    "image": "https://i.ibb.co/tTSZJH5k/f62040fbfb99f38be7f764f80c53e02c7a6f69d5.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Plumbing",
+    "image": "https://i.ibb.co/wZstr0qd/f69f0c4b24dc1ba15cbe3466e25cb0202a272afe.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Spa",
+    "image": "https://i.ibb.co/SwfLxQz0/d5528054d6eec41f61b68b9db914481509c00fc5.jpg"
+  }
+]

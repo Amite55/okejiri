@@ -14,6 +14,11 @@ import {
 import { Tabs } from "expo-router";
 import React from "react";
 import { Keyboard, Text, TouchableOpacity, View } from "react-native";
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+} from "react-native-reanimated";
 
 import { SvgXml } from "react-native-svg";
 
@@ -40,6 +45,9 @@ function MyTabBar({ state, descriptors, navigation }: MyTabBarProps) {
       hideSubscription.remove();
     };
   }, []);
+
+  const AnimatedTouchableOpacity =
+    Animated.createAnimatedComponent(TouchableOpacity);
 
   return (
     <>
@@ -103,7 +111,8 @@ function MyTabBar({ state, descriptors, navigation }: MyTabBarProps) {
                   ? options.title
                   : route.name;
               return (
-                <TouchableOpacity
+                <AnimatedTouchableOpacity
+                  layout={LinearTransition.springify().mass(0.1)}
                   key={route.key}
                   accessibilityRole="button"
                   accessibilityState={isFocused ? { selected: true } : {}}
@@ -111,14 +120,16 @@ function MyTabBar({ state, descriptors, navigation }: MyTabBarProps) {
                   testID={options.tabBarTestID}
                   onPress={onPress}
                   onLongPress={onLongPress}
-                  style={tw`flex-1 w-full  items-center justify-between`}
+                  style={tw`flex-1 w-full p-2  items-center justify-between`}
                 >
                   <View
                     style={[
                       tw`items-center justify-center px-4 py-3 rounded-full `,
                     ]}
                   >
-                    <View
+                    <Animated.View
+                      entering={FadeIn.duration(300)}
+                      exiting={FadeOut.duration(300)}
                       style={[
                         tw` ${
                           isFocused
@@ -133,8 +144,7 @@ function MyTabBar({ state, descriptors, navigation }: MyTabBarProps) {
                         height={26}
                         style={[tw`mb-1`]}
                       />
-                    </View>
-
+                    </Animated.View>
                     <View>
                       <Text
                         style={[
@@ -148,7 +158,7 @@ function MyTabBar({ state, descriptors, navigation }: MyTabBarProps) {
                       </Text>
                     </View>
                   </View>
-                </TouchableOpacity>
+                </AnimatedTouchableOpacity>
               );
             })}
           </View>
