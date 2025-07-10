@@ -49,8 +49,8 @@ export default function Index() {
     AppLoader();
 
     setTimeout(() => {
-      // router.push("/auth/forgot_pass");
-      router.push("/chose_roll");
+      router.push("/company/profile");
+      // router.push("/chose_roll");
     }, 10);
   }, []);
 

@@ -59,7 +59,7 @@ module.exports = {
         skipButtonBG: "#F0F0F0",
         darkViolet: "#5802D0",
         orange: "#D08802",
-        darkGreen: "#9B53FF",
+        blue100: "#9B53FF",
         redDeep: "#FF5151",
         redWhite: "#FF8585",
 

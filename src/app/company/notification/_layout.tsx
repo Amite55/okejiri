@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import React from "react";
 
-const _layout = () => {
+const NotificationLayout = () => {
   return (
     <Stack
       screenOptions={{
@@ -9,10 +9,9 @@ const _layout = () => {
         // tabBarHideOnKeyboard: true,
       }}
     >
-      <Stack.Screen name="(Tabs)" />
-      <Stack.Screen name="notification" />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };
 
-export default _layout;
+export default NotificationLayout;
