@@ -58,10 +58,12 @@ module.exports = {
         darkWhite: "#999999",
         skipButtonBG: "#F0F0F0",
         darkViolet: "#5802D0",
+        violet: "#4F52FF",
         orange: "#D08802",
         blue100: "#9B53FF",
         redDeep: "#FF5151",
         redWhite: "#FF8585",
+        redWhite100: "#FFF4ED",
 
         deepBlue50: "#E8EAED",
         deepBlue75: "#A0A8B6",

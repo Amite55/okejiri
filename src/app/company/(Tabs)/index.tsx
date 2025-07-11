@@ -8,7 +8,7 @@ import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo"
 import CleaningData from "@/src/json/CleaningData.json";
 import ServicesData from "@/src/json/ServiceData.json";
 import tw from "@/src/lib/tailwind";
-import { BlurView } from "@react-native-community/blur";
+import { router } from "expo-router";
 import React from "react";
 import {
   FlatList,
@@ -37,12 +37,12 @@ const Company_Home_Index = () => {
           style={tw`absolute bottom-2 justify-center items-center w-38 h-10 rounded-xl border border-white60 overflow-hidden`}
         >
           {/* Background Blur */}
-          <BlurView
+          {/* <BlurView
             style={tw`absolute inset-0`}
             blurType="dark"
             blurAmount={5}
             reducedTransparencyFallbackColor="white"
-          />
+          /> */}
 
           {/* Foreground content (Text) */}
           <TouchableOpacity
@@ -95,6 +95,7 @@ const Company_Home_Index = () => {
             Service
           </Text>
           <TouchableOpacity
+            onPress={() => router.push("/company/(Tabs)/services")}
             style={tw`border border-primary rounded-full w-28 h-11 flex-row justify-between items-center px-4`}
           >
             <Text
@@ -125,6 +126,7 @@ const Company_Home_Index = () => {
             Services nearby you
           </Text>
           <TouchableOpacity
+            onPress={() => router.push("/company/serviceNearbyHistory")}
             style={tw`border border-primary rounded-full w-28 h-11 flex-row justify-between items-center px-4`}
           >
             <Text
@@ -146,6 +148,7 @@ const Company_Home_Index = () => {
           ) : (
             CleaningData.slice(0, 3).map((item) => (
               <Pressable
+                onPress={() => router.push("/company/serviceDetails")}
                 style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
                 key={item?.Id}
               >
@@ -169,6 +172,7 @@ const Company_Home_Index = () => {
                     {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
                   </View>
                   <StarRating
+                    color="#FF6600"
                     starSize={24}
                     rating={item?.rating || 0}
                     onChange={() => {}}
@@ -183,7 +187,7 @@ const Company_Home_Index = () => {
                   <View
                     style={[
                       tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
-                      { borderTopRightRadius: 10, borderBottomLeftRadius: 10 },
+                      { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
                     ]}
                   >
                     <Text
@@ -207,6 +211,7 @@ const Company_Home_Index = () => {
             Order history
           </Text>
           <TouchableOpacity
+            onPress={() => router.push("/company/bookingsHistory")}
             style={tw`border border-primary rounded-full w-28 h-11 flex-row justify-between items-center px-4`}
           >
             <Text
@@ -228,6 +233,7 @@ const Company_Home_Index = () => {
           ) : (
             CleaningData.slice(0, 2).map((item) => (
               <Pressable
+                onPress={() => router.push("/company/serviceDetails")}
                 style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
                 key={item?.Id}
               >
@@ -251,6 +257,7 @@ const Company_Home_Index = () => {
                     {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
                   </View>
                   <StarRating
+                    color="#FF6600"
                     starSize={24}
                     rating={item?.rating || 0}
                     onChange={() => {}}
@@ -265,7 +272,7 @@ const Company_Home_Index = () => {
                   <View
                     style={[
                       tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
-                      { borderTopRightRadius: 10, borderBottomLeftRadius: 10 },
+                      { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
                     ]}
                   >
                     <Text

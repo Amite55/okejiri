@@ -121,6 +121,7 @@ const bookings = () => {
                     {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
                   </View>
                   <StarRating
+                    color="#FF6600"
                     starSize={24}
                     rating={item?.rating || 0}
                     onChange={() => {}}
@@ -135,7 +136,7 @@ const bookings = () => {
                   <View
                     style={[
                       tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
-                      { borderTopRightRadius: 10, borderBottomLeftRadius: 10 },
+                      { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
                     ]}
                   >
                     <Text

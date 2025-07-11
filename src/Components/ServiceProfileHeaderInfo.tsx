@@ -8,7 +8,9 @@ import tw from "../lib/tailwind";
 
 const ServiceProfileHeaderInfo = () => {
   return (
-    <View style={tw`py-3 flex-row items-center justify-between `}>
+    <View
+      style={tw`py-3 flex-1 bg-base_color flex-row items-center justify-between `}
+    >
       <Pressable
         onPress={() => router.push("/company/profile")}
         style={tw`flex-row justify-start items-center  gap-4`}
