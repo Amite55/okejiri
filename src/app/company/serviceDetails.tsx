@@ -85,11 +85,11 @@ const ServiceDetails = () => {
   };
 
   return (
-    <View style={tw`flex-1 bg-base_color px-5 `}>
+    <View style={tw`flex-1 bg-base_color `}>
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
-        style={tw`flex-1 `}
+        style={tw`flex-1 px-5 `}
         contentContainerStyle={tw`pb-10`}
       >
         <View style={tw`relative`}>
@@ -480,29 +480,46 @@ const ServiceDetails = () => {
 
       <View
         style={[
-          tw`bg-white`,
+          tw`bg-white border shadow-xl`,
           {
-            borderTopRightRadius: 10,
+            borderTopRightRadius: 20,
+            borderTopLeftRadius: 20,
           },
         ]}
       >
-        <View style={tw`flex-row `}>
-          <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}>
-            ₦ 49.00
-          </Text>
-          <Text
-            style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
-          >
-            1 service
-          </Text>
-          <View style={tw`flex-row items-center gap-1`}>
-            <View style={tw`w-1 h-1 rounded-full bg-regularText`} />
+        <View style={tw`flex-row justify-between items-center h-28 px-5`}>
+          <View style={tw`flex-1`}>
             <Text
-              style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+              style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}
             >
-              Est. 30 mins
+              ₦ 49.00
             </Text>
+            <View style={tw`flex-row items-center gap-3`}>
+              <Text
+                style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+              >
+                1 service
+              </Text>
+              <View style={tw`flex-row items-center gap-2`}>
+                <View style={tw`w-2 h-2 rounded-full bg-regularText`} />
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+                >
+                  Est. 30 mins
+                </Text>
+              </View>
+            </View>
           </View>
+          <TouchableOpacity
+            style={tw`w-28 h-12 justify-center items-center bg-primary rounded-lg`}
+          >
+            <Text
+              style={tw`font-DegularDisplayDemoMedium text-base text-white`}
+            >
+              {" "}
+              Book now
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
