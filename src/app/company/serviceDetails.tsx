@@ -90,7 +90,7 @@ const ServiceDetails = () => {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         style={tw`flex-1 px-5 `}
-        contentContainerStyle={tw`pb-10`}
+        contentContainerStyle={tw`pb-28`}
       >
         <View style={tw`relative`}>
           <Image
@@ -480,10 +480,16 @@ const ServiceDetails = () => {
 
       <View
         style={[
-          tw`bg-white border shadow-xl`,
+          tw`absolute bottom-0 left-0 right-0 bg-white px-5`,
           {
-            borderTopRightRadius: 20,
             borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: -4 },
+            shadowOpacity: 0.1,
+            shadowRadius: 16,
+            elevation: 10, // For Android
+            overflow: "visible", // Important for iOS shadow visibility
           },
         ]}
       >

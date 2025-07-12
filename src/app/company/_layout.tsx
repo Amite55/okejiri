@@ -14,6 +14,7 @@ const _layout = () => {
       <Stack.Screen name="serviceNearbyHistory" />
       <Stack.Screen name="bookingsHistory" />
       <Stack.Screen name="serviceDetails" />
+      <Stack.Screen name="serviceBooking" />
     </Stack>
   );
 };
