@@ -49,8 +49,8 @@ export default function Index() {
     AppLoader();
 
     setTimeout(() => {
-      router.push("/company/serviceDetails");
-      // router.push("/chose_roll");
+      // router.push("/company/serviceDetails");
+      router.push("/chose_roll");
     }, 10);
   }, []);
 

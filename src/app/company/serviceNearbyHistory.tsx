@@ -1,8 +1,9 @@
 import { IconProfileBadge } from "@/assets/icons";
-import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 
 import CleaningData from "@/src/json/CleaningData.json";
+import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { router } from "expo-router";
 import React from "react";
 import { FlatList, Image, Pressable, Text, View } from "react-native";
 import StarRating from "react-native-star-rating-widget";
@@ -64,7 +65,12 @@ const serviceNearbyHistory = () => {
     <FlatList
       data={CleaningData}
       renderItem={serviceItemRender}
-      ListHeaderComponent={() => <ServiceProfileHeaderInfo />}
+      ListHeaderComponent={() => (
+        <BackTitleButton
+          pageName={"Services nearby"}
+          onPress={() => router.back()}
+        />
+      )}
       keyExtractor={(item) => item.Id.toString()}
       contentContainerStyle={tw`mt-4  bg-base_color px-5 gap-3 pb-10`}
       showsVerticalScrollIndicator={false}

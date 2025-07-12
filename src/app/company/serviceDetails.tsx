@@ -6,13 +6,16 @@ import {
   IconLocation,
   IconPlus,
   IconProfileBadge,
+  IconRightArrowCornerPrimaryColor,
   IconTick,
+  IconWhishListSelected,
 } from "@/assets/icons";
 import {
   ImgCleaning,
   ImgProfileImg,
   ImgServiceProviderRoll,
 } from "@/assets/images/image";
+import CleaningData from "@/src/json/CleaningData.json";
 import tw from "@/src/lib/tailwind";
 import { _HEIGHT } from "@/utils/utils";
 import { router } from "expo-router";
@@ -32,225 +35,478 @@ import { SvgXml } from "react-native-svg";
 const ServiceDetails = () => {
   const [tickmark, setTickMark] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [addWishlist, setAddWishList] = useState<boolean>(false);
+  const [staticModalVisible, setStaticModalVisible] = useState<boolean>(true);
 
+  //  ranking profile item render  -------------------------------
   const RenderRankingItem = () => {
     return (
-      <View style={tw`bg-white w-80 h-72 rounded-lg`}>
+      <View style={tw`bg-white w-80 h-72 rounded-lg p-6`}>
         <View style={tw`flex-row items-center gap-3`}>
           <Image style={tw`w-16 h-16 rounded-full `} source={ImgProfileImg} />
           <View>
-            <Text>Profile name</Text>
-            <Text>Company CEO</Text>
+            <Text
+              style={tw`font-DegularDisplayDemoSemibold text-xl text-black`}
+            >
+              Profile name
+            </Text>
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-sm text-regularText`}
+            >
+              Company CEO
+            </Text>
           </View>
+        </View>
+
+        <View style={tw`mt-4 gap-2`}>
+          <StarRating
+            style={tw`-ml-2`}
+            starSize={20}
+            rating={4}
+            onChange={() => {}}
+          />
+          <Text style={tw`font-DegularDisplayDemoRegular text-base text-black`}>
+            I've been consistently impressed with the quality of service
+            provided by this website. They have exceeded my expectations and
+            delivered exceptional results. Highly recommended!
+          </Text>
         </View>
       </View>
     );
   };
 
+  //  ----------- portfolio item render ----------------------------------
+  const RenderPortfolioRenderItem = () => {
+    return (
+      <View>
+        <Image style={tw`w-80 h-40 rounded-xl`} source={ImgCleaning} />
+      </View>
+    );
+  };
+
   return (
-    <ScrollView
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-      style={tw`flex-1 bg-base_color px-5 `}
-      contentContainerStyle={tw`pb-28`}
-    >
-      <View style={tw`relative`}>
-        <Image
-          resizeMode="contain"
-          style={tw`w-full h-60 `}
-          source={ImgServiceProviderRoll}
+    <View style={tw`flex-1 bg-base_color px-5 `}>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        style={tw`flex-1 `}
+        contentContainerStyle={tw`pb-10`}
+      >
+        <View style={tw`relative`}>
+          <Image
+            resizeMode="contain"
+            style={tw`w-full h-60 `}
+            source={ImgServiceProviderRoll}
+          />
+
+          {/* ============ back button =-================ */}
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={tw`absolute top-2 left-2 w-14 h-14 bg-white rounded-full justify-center items-center`}
+          >
+            <SvgXml xml={IconBackLeftArrow} />
+          </TouchableOpacity>
+
+          {/*  ================= add wish list fvt icon =========================== */}
+          <Pressable
+            onPress={() => setAddWishList(!addWishlist)}
+            style={tw`absolute bottom-4 right-2 w-14 h-14 bg-black bg-opacity-60 rounded-full justify-center items-center`}
+          >
+            <SvgXml
+              xml={addWishlist ? IconWhishListSelected : IconFavouriteWhite}
+            />
+          </Pressable>
+        </View>
+
+        <Text
+          style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}
+        >
+          Chats
+        </Text>
+
+        <View style={tw`gap-3`}>
+          <Pressable
+            style={tw`flex-row justify-between items-center  px-4 py-3 rounded-3xl bg-white`}
+          >
+            <View>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
+              >
+                Room cleaning
+              </Text>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
+              >
+                ₦ 49.00
+              </Text>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
+              >
+                Est. time : 30 mins
+              </Text>
+            </View>
+
+            <View style={tw`flex-row items-center gap-4`}>
+              <TouchableOpacity
+                onPress={() => setModalVisible(true)}
+                style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
+              >
+                <Text style={tw``}>See details</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setTickMark(!tickmark)}
+                style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
+              >
+                <SvgXml xml={tickmark ? IconTick : IconPlus} />
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+
+          <Pressable
+            style={tw`flex-row justify-between items-center px-4 py-3 rounded-3xl bg-white`}
+          >
+            <View>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
+              >
+                Room cleaning
+              </Text>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
+              >
+                ₦ 49.00
+              </Text>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
+              >
+                Est. time : 30 mins
+              </Text>
+            </View>
+
+            <View style={tw`flex-row items-center gap-4`}>
+              <TouchableOpacity
+                onPress={() => setModalVisible(true)}
+                style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
+              >
+                <Text style={tw``}>See details</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setTickMark(!tickmark)}
+                style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
+              >
+                <SvgXml xml={tickmark ? IconTick : IconPlus} />
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+
+          <Pressable
+            style={tw`flex-row justify-between items-center px-4 py-3 rounded-3xl bg-white`}
+          >
+            <View>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
+              >
+                Room cleaning
+              </Text>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
+              >
+                ₦ 49.00
+              </Text>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
+              >
+                Est. time : 30 mins
+              </Text>
+            </View>
+
+            <View style={tw`flex-row items-center gap-4`}>
+              <TouchableOpacity
+                onPress={() => setModalVisible(true)}
+                style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
+              >
+                <Text style={tw``}>See details</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setTickMark(!tickmark)}
+                style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
+              >
+                <SvgXml xml={tickmark ? IconTick : IconPlus} />
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </View>
+
+        <View
+          style={tw`border border-gray-400 rounded-full flex-row justify-center h-14 items-center gap-3 my-6`}
+        >
+          <SvgXml xml={IconLocation} />
+          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+            2 km away
+          </Text>
+        </View>
+
+        <View style={tw`flex-row`}>
+          <TouchableOpacity style={tw`flex-1 flex-row items-center gap-3`}>
+            <Image style={tw`w-11 h-11 rounded-full`} source={ImgProfileImg} />
+            <View>
+              <View style={tw`flex-row gap-2 items-center`}>
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                >
+                  Profile name
+                </Text>
+                <SvgXml xml={IconProfileBadge} />
+              </View>
+              <View style={tw`flex-row items-center`}>
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-primary text-xl`}
+                >
+                  5.0
+                </Text>
+                <StarRating
+                  starSize={20}
+                  rating={4}
+                  color="#FF6600"
+                  onChange={() => {}}
+                />
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
+                >
+                  (500)
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={tw`border border-gray-300 flex-row items-center rounded-2xl gap-2 p-2`}
+          >
+            <SvgXml xml={IconChatsYellow} />
+            <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
+              Message
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {/* ============================== review profile j================================= */}
+        <FlatList
+          data={[1, 2, 3, 4, 5]}
+          renderItem={RenderRankingItem}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={tw`mt-4 pl-4 gap-3 `}
+          horizontal={true}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
         />
 
-        {/* ============ back button =-================ */}
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={tw`absolute top-2 left-2 w-14 h-14 bg-white rounded-full justify-center items-center`}
-        >
-          <SvgXml xml={IconBackLeftArrow} />
-        </TouchableOpacity>
+        {/* ============== portfolio section ================ */}
 
-        {/*  ================= add wish list fvt icon =========================== */}
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={tw`absolute bottom-4 right-2 w-14 h-14 bg-black opacity-60 rounded-full justify-center items-center`}
-        >
-          <SvgXml xml={IconFavouriteWhite} />
-        </TouchableOpacity>
-      </View>
-
-      <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>
-        Chats
-      </Text>
-
-      <View style={tw`gap-3`}>
-        <Pressable
-          style={tw`flex-row justify-between items-center  px-4 py-3 rounded-3xl bg-white`}
-        >
-          <View>
-            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-              Room cleaning
-            </Text>
-            <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
-              ₦ 49.00
-            </Text>
+        <View style={tw`flex-row justify-between items-center mt-6 `}>
+          <Text style={tw`font-DegularDisplayDemoRegular text-2xl text-black`}>
+            Service
+          </Text>
+          <TouchableOpacity
+            onPress={() => router.push("/company/bookingsHistory")}
+            style={tw`border border-primary rounded-full w-28 h-11 flex-row justify-between items-center px-4`}
+          >
             <Text
-              style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
+              style={tw`font-DegularDisplayDemoRegular text-xl text-primary`}
             >
-              Est. time : 30 mins
+              See all
             </Text>
-          </View>
+            <SvgXml xml={IconRightArrowCornerPrimaryColor} />
+          </TouchableOpacity>
+        </View>
 
-          <View style={tw`flex-row items-center gap-4`}>
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
-            >
-              <Text style={tw``}>See details</Text>
-            </TouchableOpacity>
+        <FlatList
+          data={[1, 2, 3, 4, 5]}
+          renderItem={RenderPortfolioRenderItem}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={tw`mt-4 pl-4 gap-3 `}
+          horizontal={true}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        />
 
-            <TouchableOpacity
-              onPress={() => setTickMark(!tickmark)}
-              style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
-            >
-              <SvgXml xml={tickmark ? IconTick : IconPlus} />
-            </TouchableOpacity>
-          </View>
-        </Pressable>
+        {/* ---------------- More services from this provider =-=---------- */}
 
-        <Pressable
-          style={tw`flex-row justify-between items-center px-4 py-3 rounded-3xl bg-white`}
+        <Text
+          style={tw`font-DegularDisplayDemoMedium text-2xl text-black mt-6 `}
         >
-          <View>
-            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-              Room cleaning
-            </Text>
-            <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
-              ₦ 49.00
-            </Text>
+          More services from this provider
+        </Text>
+
+        <View style={tw`gap-3 mt-4`}>
+          {CleaningData?.length === 0 ? (
             <Text
-              style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
+              style={tw`font-DegularDisplayDemoMedium text-xl text-deepBlue100 text-center`}
             >
-              Est. time : 30 mins
+              Your ServiCe No Data
             </Text>
-          </View>
+          ) : (
+            CleaningData.slice(0, 2).map((item) => (
+              <Pressable
+                onPress={() => router.push("/company/serviceDetails")}
+                style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
+                key={item?.Id}
+              >
+                <Image
+                  style={tw`w-20 h-20 rounded-2xl`}
+                  source={{ uri: item?.image }}
+                />
+                <View>
+                  <Text
+                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                  >
+                    {item?.title}
+                  </Text>
+                  <View style={tw`flex-row items-center gap-2`}>
+                    <Text
+                      style={tw`font-DegularDisplayDemoRegular text-xl text-darkWhite`}
+                    >
+                      {item?.profile_name}
+                    </Text>
 
-          <View style={tw`flex-row items-center gap-4`}>
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
-            >
-              <Text style={tw``}>See details</Text>
-            </TouchableOpacity>
+                    {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
+                  </View>
+                  <StarRating
+                    color="#FF6600"
+                    starSize={24}
+                    rating={item?.rating || 0}
+                    onChange={() => {}}
+                  />
+                </View>
+                <View style={tw`justify-between gap-3`}>
+                  <Text
+                    style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
+                  >
+                    ₦{item?.price}
+                  </Text>
+                  <View
+                    style={[
+                      tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
+                      { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
+                    ]}
+                  >
+                    <Text
+                      style={tw`font-DegularDisplayDemoMedium text-base text-white`}
+                    >
+                      {item?.type}
+                    </Text>
+                  </View>
+                </View>
+              </Pressable>
+            ))
+          )}
+        </View>
 
-            <TouchableOpacity
-              onPress={() => setTickMark(!tickmark)}
-              style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
-            >
-              <SvgXml xml={tickmark ? IconTick : IconPlus} />
-            </TouchableOpacity>
-          </View>
-        </Pressable>
+        {/* ---------------- You might also like ---------- */}
 
-        <Pressable
-          style={tw`flex-row justify-between items-center px-4 py-3 rounded-3xl bg-white`}
+        <Text
+          style={tw`font-DegularDisplayDemoMedium text-2xl text-black mt-6 `}
         >
-          <View>
-            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-              Room cleaning
-            </Text>
-            <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
-              ₦ 49.00
-            </Text>
+          You might also like
+        </Text>
+
+        <View style={tw`gap-3 mt-4`}>
+          {CleaningData?.length === 0 ? (
             <Text
-              style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
+              style={tw`font-DegularDisplayDemoMedium text-xl text-deepBlue100 text-center`}
             >
-              Est. time : 30 mins
+              Your ServiCe No Data
             </Text>
-          </View>
+          ) : (
+            CleaningData.slice(0, 2).map((item) => (
+              <Pressable
+                onPress={() => router.push("/company/serviceDetails")}
+                style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
+                key={item?.Id}
+              >
+                <Image
+                  style={tw`w-20 h-20 rounded-2xl`}
+                  source={{ uri: item?.image }}
+                />
+                <View>
+                  <Text
+                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                  >
+                    {item?.title}
+                  </Text>
+                  <View style={tw`flex-row items-center gap-2`}>
+                    <Text
+                      style={tw`font-DegularDisplayDemoRegular text-xl text-darkWhite`}
+                    >
+                      {item?.profile_name}
+                    </Text>
 
-          <View style={tw`flex-row items-center gap-4`}>
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
-            >
-              <Text style={tw``}>See details</Text>
-            </TouchableOpacity>
+                    {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
+                  </View>
+                  <StarRating
+                    color="#FF6600"
+                    starSize={24}
+                    rating={item?.rating || 0}
+                    onChange={() => {}}
+                  />
+                </View>
+                <View style={tw`justify-between gap-3`}>
+                  <Text
+                    style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
+                  >
+                    ₦{item?.price}
+                  </Text>
+                  <View
+                    style={[
+                      tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
+                      { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
+                    ]}
+                  >
+                    <Text
+                      style={tw`font-DegularDisplayDemoMedium text-base text-white`}
+                    >
+                      {item?.type}
+                    </Text>
+                  </View>
+                </View>
+              </Pressable>
+            ))
+          )}
+        </View>
+      </ScrollView>
 
-            <TouchableOpacity
-              onPress={() => setTickMark(!tickmark)}
-              style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
-            >
-              <SvgXml xml={tickmark ? IconTick : IconPlus} />
-            </TouchableOpacity>
-          </View>
-        </Pressable>
-      </View>
+      {/*  ================= Static bottom tab =================== */}
 
       <View
-        style={tw`border border-gray-400 rounded-full flex-row justify-center h-14 items-center gap-3 my-6`}
+        style={[
+          tw`bg-white`,
+          {
+            borderTopRightRadius: 10,
+          },
+        ]}
       >
-        <SvgXml xml={IconLocation} />
-        <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-          2 km away
-        </Text>
-      </View>
-
-      <View style={tw`flex-row`}>
-        <TouchableOpacity style={tw`flex-1 flex-row items-center gap-3`}>
-          <Image style={tw`w-11 h-11 rounded-full`} source={ImgProfileImg} />
-          <View>
-            <View style={tw`flex-row gap-2 items-center`}>
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-              >
-                Profile name
-              </Text>
-              <SvgXml xml={IconProfileBadge} />
-            </View>
-            <View style={tw`flex-row items-center`}>
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-primary text-xl`}
-              >
-                5.0
-              </Text>
-              <StarRating
-                starSize={20}
-                rating={4}
-                color="#FF6600"
-                onChange={() => {}}
-              />
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
-              >
-                (500)
-              </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={tw`border border-gray-300 flex-row items-center rounded-2xl gap-2 p-2`}
-        >
-          <SvgXml xml={IconChatsYellow} />
-          <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
-            Message
+        <View style={tw`flex-row `}>
+          <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}>
+            ₦ 49.00
           </Text>
-        </TouchableOpacity>
+          <Text
+            style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+          >
+            1 service
+          </Text>
+          <View style={tw`flex-row items-center gap-1`}>
+            <View style={tw`w-1 h-1 rounded-full bg-regularText`} />
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+            >
+              Est. 30 mins
+            </Text>
+          </View>
+        </View>
       </View>
-
-      <FlatList
-        data={[1, 2, 3, 4, 5]}
-        renderItem={RenderRankingItem}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={tw`mt-4 pl-4 gap-3 `}
-        horizontal={true}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-      />
 
       {/* =================== see service details modal ===================== */}
-
-      {/* ============= booking modal ====================== */}
       <Modal
         animationType="slide"
         transparent
@@ -383,7 +639,7 @@ const ServiceDetails = () => {
           </Pressable>
         </Pressable>
       </Modal>
-    </ScrollView>
+    </View>
   );
 };
 
