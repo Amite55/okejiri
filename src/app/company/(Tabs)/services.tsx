@@ -9,7 +9,7 @@ const services = () => {
   const serviceItemRender = ({ item }) => {
     return (
       <View
-        style={tw`relative justify-center items-center mx-2`}
+        style={tw`relative justify-center items-center px-2`}
         key={item?.id}
       >
         <Image
@@ -68,7 +68,7 @@ const services = () => {
       numColumns={2}
       keyExtractor={(item) => item.id.toString()}
       ListHeaderComponentStyle={tw`w-full`}
-      contentContainerStyle={tw` flex-1 items-center px-5 gap-3 `}
+      contentContainerStyle={tw` flex-1 items-center bg-base_color px-5 gap-3 `}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
     />

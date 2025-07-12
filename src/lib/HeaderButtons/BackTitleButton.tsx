@@ -6,7 +6,7 @@ import tw from "../tailwind";
 
 const BackTitleButton = ({ onPress, pageName }): JSX.Element => {
   return (
-    <View style={tw`flex-row justify-between items-center my-2`}>
+    <View style={tw`flex-row justify-between items-center py-2`}>
       <TouchableOpacity
         onPress={onPress}
         style={tw`w-14 h-14 bg-white rounded-full justify-center items-center`}

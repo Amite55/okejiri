@@ -517,6 +517,9 @@ const ServiceDetails = () => {
             </View>
           </View>
           <TouchableOpacity
+            onPress={() =>
+              router.push("/company/serviceBookings/serviceBooking")
+            }
             style={tw`w-28 h-12 justify-center items-center bg-primary rounded-lg`}
           >
             <Text
