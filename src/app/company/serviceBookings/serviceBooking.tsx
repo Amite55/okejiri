@@ -6,9 +6,29 @@ import React, { useState } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
+const bookingTimeData = [
+  {
+    id: 1,
+    time: "10:00 AM - 12:00 AM",
+  },
+  {
+    id: 2,
+    time: "12:00 AM - 02:00 PM",
+  },
+  {
+    id: 3,
+    time: "02:00 PM - 04:00 PM",
+  },
+  {
+    id: 4,
+    time: "04:00 PM - 06:00 PM",
+  },
+];
+
 const ServiceBooking = () => {
   const [isBookingSchedule, setIsBookingSchedule] = useState<boolean>(false);
   const [isGroup, setIsGroup] = useState<boolean>(false);
+
   return (
     <View style={tw`flex-1 px-5 bg-base_color`}>
       <BackTitleButton pageName={"Booking"} onPress={() => router.back()} />
@@ -115,15 +135,31 @@ const ServiceBooking = () => {
 
       {/* *********************************************************** */}
       {isBookingSchedule ? (
-        <Pressable
-          style={tw`flex-row justify-between items-center bg-white h-14 rounded-2xl px-5 mt-7`}
-        >
-          Select date
-          <Text style={tw`font-DegularDisplayDemoMedium  text-2xl text-black`}>
-            Cost:
+        <View>
+          <Pressable
+            style={tw`flex-row justify-between items-center bg-white h-14 rounded-2xl px-5 mt-7 `}
+          >
+            <Text
+              style={tw`font-DegularDisplayDemoMedium  text-2xl text-black`}
+            >
+              Select date
+            </Text>
+            <SvgXml xml={IconCalender} />
+          </Pressable>
+
+          <Text
+            style={tw`font-DegularDisplayDemoMedium text-xl text-black mt-5 mb-2`}
+          >
+            Select time slot
           </Text>
-          <SvgXml xml={IconCalender} />
-        </Pressable>
+          <View>
+            {bookingTimeData.map((item) => (
+              <TouchableOpacity key={item?.id}>
+                <Text>{item?.time}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
       ) : null}
     </View>
   );
