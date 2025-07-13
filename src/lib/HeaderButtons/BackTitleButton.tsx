@@ -4,7 +4,12 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../tailwind";
 
-const BackTitleButton = ({ onPress, pageName }): JSX.Element => {
+interface IProps {
+  onPress?: () => void;
+  pageName?: string;
+}
+
+const BackTitleButton = ({ onPress, pageName }: IProps): JSX.Element => {
   return (
     <View style={tw`flex-row justify-between items-center py-2`}>
       <TouchableOpacity

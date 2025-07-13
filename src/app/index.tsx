@@ -49,7 +49,7 @@ export default function Index() {
     AppLoader();
 
     setTimeout(() => {
-      router.push("/company/serviceBookings/serviceBooking");
+      router.push("/company/serviceBookings/booking_confirmation");
       // router.push("/chose_roll");
     }, 10);
   }, []);

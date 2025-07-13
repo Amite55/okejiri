@@ -10,6 +10,8 @@ const ServiceLayout = () => {
       }}
     >
       <Stack.Screen name="serviceBooking" />
+      <Stack.Screen name="billing_details" />
+      <Stack.Screen name="booking_confirmation" />
     </Stack>
   );
 };

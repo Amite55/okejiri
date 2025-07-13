@@ -74,6 +74,8 @@ module.exports = {
         brand400: "#405658",
 
         success600: "#5BB659",
+        darkGreen: "#116300",
+        green50: "#DCFCE7",
 
         Warning500: "#EAD852",
         base: "#FFF",
