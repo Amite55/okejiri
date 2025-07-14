@@ -2,7 +2,7 @@ import tw from "@/src/lib/tailwind";
 import * as Font from "expo-font";
 import { router } from "expo-router";
 import React from "react";
-import { ActivityIndicator, Image, View } from "react-native";
+import { ActivityIndicator, Image, SafeAreaView, View } from "react-native";
 
 export default function Index() {
   React.useEffect(() => {
@@ -55,14 +55,16 @@ export default function Index() {
   }, []);
 
   return (
-    <View style={tw`flex-1 bg-base_color`}>
-      <View style={tw`flex-1 justify-center items-center gap-4`}>
-        <Image
-          resizeMode="contain"
-          source={require("@/assets/images/splashScreen.png")}
-        />
-        <ActivityIndicator size={"large"} color={tw.color("yellow-500")} />
+    <SafeAreaView style={tw`flex-1 bg-white`}>
+      <View style={tw`flex-1 bg-base_color`}>
+        <View style={tw`flex-1 justify-center items-center gap-4`}>
+          <Image
+            resizeMode="contain"
+            source={require("@/assets/images/splashScreen.png")}
+          />
+          <ActivityIndicator size={"large"} color={tw.color("yellow-500")} />
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

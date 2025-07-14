@@ -36,7 +36,6 @@ const ServiceDetails = () => {
   const [tickmark, setTickMark] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [addWishlist, setAddWishList] = useState<boolean>(false);
-  const [staticModalVisible, setStaticModalVisible] = useState<boolean>(true);
 
   //  ranking profile item render  -------------------------------
   const RenderRankingItem = () => {
