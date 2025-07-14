@@ -11,6 +11,7 @@ const bookingsHistory = () => {
   const serviceItemRender = ({ item }: any) => {
     return (
       <Pressable
+        onPress={() => router.push("/company/booking_service_details")}
         style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
         key={item?.Id}
       >

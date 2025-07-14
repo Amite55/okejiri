@@ -12,6 +12,7 @@ import {
   IconSwitch,
 } from "@/assets/icons";
 import tw from "@/src/lib/tailwind";
+import { router } from "expo-router";
 import React from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
@@ -92,6 +93,7 @@ const profile = () => {
         </Pressable>
 
         <Pressable
+          onPress={() => router.push("/company/bookingsHistory")}
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>
