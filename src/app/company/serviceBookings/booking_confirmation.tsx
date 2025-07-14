@@ -4,6 +4,7 @@ import {
   IconLocation,
   IconMailYellow,
   IconPhoneYellow,
+  IconPlusYellow,
   IconRightArrow,
 } from "@/assets/icons";
 import { ImgProfileImg } from "@/assets/images/image";
@@ -30,17 +31,18 @@ const Booking_Confirmation = () => {
       style={tw`flex-1 px-5 bg-base_color `}
       contentContainerStyle={tw`pb-8 justify-between flex-grow`}
     >
-      <View>
+      <View style={tw``}>
         <BackTitleButton
           pageName={"Booking confirmation"}
           onPress={() => router.back()}
+          titleTextStyle={tw`text-2xl`}
         />
 
         {/*  ---------- single item  ------------  */}
 
         <Pressable
           //   onPress={() => router.push("/company/serviceDetails")}
-          style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
+          style={tw`flex-row justify-between items-center rounded-xl bg-white mt-2 p-1.5`}
         >
           <View style={tw`flex-row gap-3 items-center`}>
             <Image style={tw`w-20 h-20 rounded-2xl`} source={ImgProfileImg} />
@@ -187,10 +189,19 @@ const Booking_Confirmation = () => {
             </View>
           </View>
         </View>
+
+        <TouchableOpacity
+          style={tw`flex-row justify-end items-center gap-2 mt-6`}
+        >
+          <SvgXml xml={IconPlusYellow} />
+          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-primary`}>
+            Add more service
+          </Text>
+        </TouchableOpacity>
       </View>
       {/*  ------------- next button -------------------- */}
       <PrimaryButton
-        // onPress={() => router.push("/company/serviceBookings/billing_details")}
+        onPress={() => router.push("/company/serviceBookings/make_payment")}
         titleProps="Next  3/4"
         IconProps={IconRightArrow}
         contentStyle={tw`mt-4`}

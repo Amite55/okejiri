@@ -14,6 +14,7 @@ const BillingDetails = () => {
         <BackTitleButton
           pageName={"Billing details"}
           onPress={() => router.back()}
+          titleTextStyle={tw`text-2xl`}
         />
         {/* [=================== user info form =================] */}
         <View style={tw`gap-4 mt-4`}>
@@ -84,7 +85,9 @@ const BillingDetails = () => {
 
       {/* ------------------------ next button ------------------ */}
       <PrimaryButton
-        // onPress={() => router.push("/company/serviceBookings/billing_details")}
+        onPress={() =>
+          router.push("/company/serviceBookings/booking_confirmation")
+        }
         titleProps="Next  2/4"
         IconProps={IconRightArrow}
         contentStyle={tw`mt-4`}

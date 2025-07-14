@@ -51,7 +51,11 @@ const ServiceBooking = () => {
       contentContainerStyle={tw`pb-8 justify-between flex-grow`}
     >
       <View>
-        <BackTitleButton pageName={"Booking"} onPress={() => router.back()} />
+        <BackTitleButton
+          pageName={"Booking"}
+          onPress={() => router.back()}
+          titleTextStyle={tw`text-2xl`}
+        />
 
         <View style={tw`flex-row justify-between items-center gap-4 my-5`}>
           <TouchableOpacity

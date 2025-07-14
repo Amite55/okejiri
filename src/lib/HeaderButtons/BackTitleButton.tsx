@@ -7,9 +7,14 @@ import tw from "../tailwind";
 interface IProps {
   onPress?: () => void;
   pageName?: string;
+  titleTextStyle?: any;
 }
 
-const BackTitleButton = ({ onPress, pageName }: IProps): JSX.Element => {
+const BackTitleButton = ({
+  onPress,
+  pageName,
+  titleTextStyle = "",
+}: IProps): JSX.Element => {
   return (
     <View style={tw`flex-row justify-between items-center py-2`}>
       <TouchableOpacity
@@ -18,7 +23,9 @@ const BackTitleButton = ({ onPress, pageName }: IProps): JSX.Element => {
       >
         <SvgXml xml={IconBackLeftArrow} />
       </TouchableOpacity>
-      <Text style={tw`font-medium text-base text-black`}>{pageName}</Text>
+      <Text style={[tw`font-medium text-base text-black`, titleTextStyle]}>
+        {pageName}
+      </Text>
       <Text style={tw`pl-6`}> </Text>
     </View>
   );

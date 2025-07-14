@@ -6,3 +6,4 @@ export const ImgSuccessGIF = require("@/assets/images/success.gif");
 export const ImgProfileImg = require("@/assets/images/profile_img.jpg");
 export const ImgBanner = require("@/assets/images/banner.png");
 export const ImgCleaning = require("@/assets/images/cleaning.jpg");
+export const ImgLoadingSuccess = require("@/assets/images/loading_success.gif");
