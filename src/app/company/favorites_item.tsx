@@ -7,12 +7,17 @@ import React from "react";
 import { FlatList, Image, Pressable, Text, View } from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import { SvgXml } from "react-native-svg";
-const bookingsHistory = () => {
+
+const Favorites_Item = () => {
   const serviceItemRender = ({ item }: any) => {
     return (
       <Pressable
-        onPress={() => router.push("/company/booking_service_details")}
-        style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
+        onPress={() =>
+          router.push(
+            "/company/previous_item_Book/previous_booking_confirmation"
+          )
+        }
+        style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5 `}
         key={item?.Id}
       >
         <Image
@@ -66,17 +71,17 @@ const bookingsHistory = () => {
       renderItem={serviceItemRender}
       ListHeaderComponent={() => (
         <BackTitleButton
-          pageName={"Bookings history"}
+          pageName={"Favorites"}
           onPress={() => router.back()}
           titleTextStyle={tw`text-2xl`}
         />
       )}
       keyExtractor={(item) => item.Id.toString()}
-      contentContainerStyle={tw`  bg-base_color px-5  gap-3 pb-10`}
+      contentContainerStyle={tw` bg-base_color px-5  gap-3 pb-10`}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
     />
   );
 };
 
-export default bookingsHistory;
+export default Favorites_Item;
