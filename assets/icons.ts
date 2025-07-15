@@ -335,3 +335,13 @@ export const IconDisputeRequest = `<svg width="21" height="25" viewBox="0 0 21 2
 </svg>
 
 `;
+export const IconUploadImage = `<svg width="40" height="34" viewBox="0 0 40 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19.9407 32L19.9333 16.1176M34.5078 26.1025C37.4077 24.0633 38.6512 20.3796 37.5804 17C36.5097 13.6204 33.2308 11.7689 29.6856 11.7716H27.6377C26.2989 6.5541 21.8817 2.70211 16.5305 2.08577C11.1792 1.46943 6.00195 4.2163 3.51204 8.99292C1.02212 13.7695 1.7351 19.5868 5.30484 23.6208M25.5488 20.2084L19.9335 14.5932L14.3182 20.2084" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+`;
+export const IconEmailYellow = `<svg width="25" height="20" viewBox="0 0 25 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.5 0H2.5C1.125 0 0.0125 1.125 0.0125 2.5L0 17.5C0 18.875 1.125 20 2.5 20H22.5C23.875 20 25 18.875 25 17.5V2.5C25 1.125 23.875 0 22.5 0ZM22.5 5L12.5 11.25L2.5 5V2.5L12.5 8.75L22.5 2.5V5Z" fill="#FF6600"/>
+</svg>
+
+`;

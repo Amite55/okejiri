@@ -68,6 +68,7 @@ const bookingsHistory = () => {
         <BackTitleButton
           pageName={"Bookings history"}
           onPress={() => router.back()}
+          titleTextStyle={tw`text-2xl`}
         />
       )}
       keyExtractor={(item) => item.Id.toString()}

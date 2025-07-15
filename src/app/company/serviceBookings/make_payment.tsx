@@ -216,7 +216,7 @@ const Make_Payment = () => {
       {/*  ------------- next button -------------------- */}
       <PrimaryButton
         onPress={() => setModalVisible(true)}
-        titleProps="Next  3/4"
+        titleProps="Next "
         IconProps={IconRightArrow}
         contentStyle={tw`mt-4`}
       />

@@ -1,10 +1,15 @@
 import {
+  IconCardProfile,
   IconCross,
-  IconDisputeRequest,
-  IconPlus,
+  IconEditPen,
+  IconEmailYellow,
+  IconLocation,
+  IconPhoneYellow,
+  IconRightArrow,
   IconTick,
 } from "@/assets/icons";
-import { ImgCleaning } from "@/assets/images/image";
+import { ImgCleaning, ImgProfileImg } from "@/assets/images/image";
+import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { _HEIGHT } from "@/utils/utils";
@@ -16,175 +21,128 @@ import {
   Pressable,
   ScrollView,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 
-const Booking_Service_Details = () => {
-  const [tickmark, setTickMark] = useState<boolean>(false);
+const Previous_Booking_Confirmation = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
   return (
-    <View style={tw`flex-1 bg-base_color `}>
-      <View style={tw`px-5`}>
+    <ScrollView
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+      style={tw`flex-1 px-5 bg-base_color `}
+      contentContainerStyle={tw`pb-8 justify-between flex-grow`}
+    >
+      <View>
         <BackTitleButton
-          pageName={"Previous services"}
+          pageName={"Booking confirmation"}
           onPress={() => router.back()}
           titleTextStyle={tw`text-2xl`}
         />
-
-        <Text
-          style={tw`font-DegularDisplayDemoRegular text-xl text-regularText text-center px-10 my-2`}
+        <Pressable
+          //   onPress={() => router.push("/company/serviceDetails")}
+          style={tw`flex-row justify-between items-center rounded-xl bg-white mt-2 p-1.5`}
         >
-          Your previous services with this provider will shown here.
-        </Text>
-
-        <View style={tw`gap-2`}>
-          <Pressable
-            style={tw`flex-row justify-between items-center  px-4 py-3 rounded-3xl bg-white`}
-          >
+          <View style={tw`flex-row gap-3 items-center`}>
+            <Image style={tw`w-20 h-20 rounded-2xl`} source={ImgProfileImg} />
             <View>
               <Text
-                style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
+                style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
               >
-                House cleaning
+                Room cleaning
               </Text>
+
               <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
-              >
-                ₦ 49.00
-              </Text>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
+                style={tw`font-DegularDisplayDemoRegular text-xl text-darkWhite`}
               >
                 Est. time : 30 mins
               </Text>
             </View>
+          </View>
 
-            <View style={tw`flex-row items-center gap-4`}>
-              <TouchableOpacity
-                onPress={() => setModalVisible(true)}
-                style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
-              >
-                <Text style={tw``}>See details</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => setTickMark(!tickmark)}
-                style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
-              >
-                <SvgXml xml={tickmark ? IconTick : IconPlus} />
-              </TouchableOpacity>
-            </View>
-          </Pressable>
-          <Pressable
-            style={tw`flex-row justify-between items-center  px-4 py-3 rounded-3xl bg-white`}
-          >
-            <View>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
-              >
-                Yard cleaning
-              </Text>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
-              >
-                ₦ 49.00
-              </Text>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
-              >
-                Est. time : 30 mins
-              </Text>
-            </View>
-
-            <View style={tw`flex-row items-center gap-4`}>
-              <TouchableOpacity
-                onPress={() => setModalVisible(true)}
-                style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
-              >
-                <Text style={tw``}>See details</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => setTickMark(!tickmark)}
-                style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
-              >
-                <SvgXml xml={tickmark ? IconTick : IconPlus} />
-              </TouchableOpacity>
-            </View>
-          </Pressable>
-        </View>
-
-        <TouchableOpacity
-          onPress={() => router.push("/company/dispute_process")}
-          style={tw`flex-row justify-center items-center gap-3 py-4 my-10`}
-        >
-          <SvgXml xml={IconDisputeRequest} />
-          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-            Request for dispute
-          </Text>
-        </TouchableOpacity>
-      </View>
-      {/*  ================= Static bottom tab =================== */}
-
-      {tickmark && (
-        <View
-          style={[
-            tw`absolute bottom-0 left-0 right-0 bg-white px-5`,
-            {
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: -4 },
-              shadowOpacity: 0.1,
-              shadowRadius: 16,
-              elevation: 10, // For Android
-              overflow: "visible", // Important for iOS shadow visibility
-            },
-          ]}
-        >
-          <View style={tw`flex-row justify-between items-center h-28 px-5`}>
-            <View style={tw`flex-1`}>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}
-              >
-                ₦ 49.00
-              </Text>
-              <View style={tw`flex-row items-center gap-3`}>
-                <Text
-                  style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
-                >
-                  1 service
-                </Text>
-                <View style={tw`flex-row items-center gap-2`}>
-                  <View style={tw`w-2 h-2 rounded-full bg-regularText`} />
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
-                  >
-                    Est. 30 mins
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <TouchableOpacity
-              onPress={() =>
-                router.push(
-                  "/company/previous_item_Book/previous_booking_confirmation"
-                )
-              }
-              style={tw`w-28 h-12 justify-center items-center bg-primary rounded-lg`}
+          <View style={tw`justify-between gap-3`}>
+            <Text
+              style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
+            >
+              ₦ 49.00
+            </Text>
+            <View
+              style={[
+                tw`bg-primary -mr-2 -mb-4 w-20 h-9 justify-center items-center`,
+                { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
+              ]}
             >
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-base text-white`}
               >
-                {" "}
-                Reorder
+                Cleaning
               </Text>
-            </TouchableOpacity>
+            </View>
+          </View>
+        </Pressable>
+
+        {/* ------------------ see service details --------- button  */}
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          style={tw`flex-row justify-end items-center py-3 my-2`}
+        >
+          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-primary`}>
+            See service details
+          </Text>
+        </TouchableOpacity>
+
+        {/* =============== user info details ================ */}
+
+        <View style={tw`gap-3 `}>
+          {/* ---------- user name -------------- */}
+          <View
+            style={tw`border border-gray-300 w-full h-14 rounded-full flex-row justify-between items-center px-4 gap-2`}
+          >
+            <SvgXml xml={IconCardProfile} />
+            <TextInput defaultValue="Madhab Mozumder" style={tw`flex-1`} />
+            <SvgXml xml={IconEditPen} />
+          </View>
+
+          {/* --------- user email ------------ */}
+          <View
+            style={tw`border border-gray-300 w-full h-14 rounded-full flex-row justify-between items-center px-4 gap-2`}
+          >
+            <SvgXml xml={IconEmailYellow} />
+            <TextInput defaultValue="example@gmail.com" style={tw`flex-1`} />
+            <SvgXml xml={IconEditPen} />
+          </View>
+
+          {/*  ------------- user mobile number ------------ */}
+          <View
+            style={tw`border border-gray-300 w-full h-14 rounded-full flex-row justify-between items-center px-4 gap-2`}
+          >
+            <SvgXml xml={IconPhoneYellow} />
+            <TextInput defaultValue="0121212121" style={tw`flex-1`} />
+            <SvgXml xml={IconEditPen} />
+          </View>
+
+          {/*  --------- user location ----------------- */}
+          <View
+            style={tw`border border-gray-300 w-full h-14 rounded-full flex-row justify-between items-center px-4 gap-2`}
+          >
+            <SvgXml xml={IconLocation} />
+            <TextInput defaultValue="Location 1" style={tw`flex-1`} />
+            <SvgXml xml={IconEditPen} />
           </View>
         </View>
-      )}
+      </View>
+
+      {/*  ------------- next button -------------------- */}
+      <PrimaryButton
+        onPress={() => router.push("/company/serviceBookings/make_payment")}
+        titleProps="Reorder  1/2"
+        IconProps={IconRightArrow}
+        contentStyle={tw`mt-4`}
+      />
 
       {/* =================== see service details modal ===================== */}
       <Modal
@@ -308,19 +266,19 @@ const Booking_Service_Details = () => {
                     ₦ 49.00
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setTickMark(!tickmark)}
+                <Pressable
+                  // onPress={() => setTickMark(!tickmark)}
                   style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
                 >
-                  <SvgXml xml={tickmark ? IconTick : IconPlus} />
-                </TouchableOpacity>
+                  <SvgXml xml={IconTick} />
+                </Pressable>
               </View>
             </ScrollView>
           </Pressable>
         </Pressable>
       </Modal>
-    </View>
+    </ScrollView>
   );
 };
 
-export default Booking_Service_Details;
+export default Previous_Booking_Confirmation;

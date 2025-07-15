@@ -1,4 +1,3 @@
-import { IconRightArrow } from "@/assets/icons";
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { SvgXml } from "react-native-svg";
@@ -35,7 +34,7 @@ const PrimaryButton = ({
       >
         {titleProps}
       </Text>
-      <SvgXml xml={IconProps || IconRightArrow} />
+      <SvgXml xml={IconProps || null} />
     </TouchableOpacity>
   );
 };
