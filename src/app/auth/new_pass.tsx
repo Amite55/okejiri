@@ -35,7 +35,7 @@ const new_pass = () => {
 
   return (
     <View style={tw`flex-1 bg-base_color px-5`}>
-      <BackTitleButton onPress={() => router.canGoBack()} pageName={""} />
+      <BackTitleButton onPress={() => router.back()} pageName={""} />
 
       <View style={tw`justify-center items-center mb-12`}>
         <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />

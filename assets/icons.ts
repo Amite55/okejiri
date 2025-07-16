@@ -416,3 +416,13 @@ export const IconUpArrow = `<svg width="13" height="8" viewBox="0 0 13 8" fill="
 </svg>
 
 `;
+export const IconReportBlack = `<svg width="19" height="21" viewBox="0 0 19 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.5 20.5V0.5H11.3L11.78 2.85294H18.5V14.6176H10.1L9.62 12.2647H2.9V20.5H0.5Z" fill="black"/>
+</svg>
+
+`;
+export const IconMessageWhite = `<svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.5 0.5C1.12109 0.5 0 1.62114 0 3.00011V14.2506C0 15.6296 1.12109 16.7507 2.5 16.7507H6.25V19.8758C6.25 20.1141 6.38281 20.329 6.59375 20.4345C6.80469 20.5399 7.05859 20.5165 7.25 20.3759L12.082 16.7507H17.5C18.8789 16.7507 20 15.6296 20 14.2506V3.00011C20 1.62114 18.8789 0.5 17.5 0.5H2.5Z" fill="white"/>
+</svg>
+
+`;

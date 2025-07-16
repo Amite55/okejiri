@@ -10,6 +10,11 @@ const AuthLayout = () => {
     >
       <Stack.Screen name="login" />
       <Stack.Screen name="singUp" />
+      <Stack.Screen name="change_pass" />
+      <Stack.Screen name="contact" />
+      <Stack.Screen name="forgot_pass" />
+      <Stack.Screen name="new_pass" />
+      <Stack.Screen name="OTP" />
     </Stack>
   );
 };

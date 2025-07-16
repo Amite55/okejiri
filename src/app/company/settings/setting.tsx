@@ -55,7 +55,7 @@ const Setting_Index = () => {
 
         {/* ---------------------- About us -=--------------- */}
         <Pressable
-          onPress={() => router.push("/company/favorites_item")}
+          onPress={() => router.push("/company/settings/about")}
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>
@@ -67,9 +67,9 @@ const Setting_Index = () => {
           <SvgXml xml={IconGetterThen} />
         </Pressable>
 
-        {/* ---------------------- Edit profile -=--------------- */}
+        {/* ---------------------- terms and condition  -=--------------- */}
         <Pressable
-          onPress={() => router.push("/company/favorites_item")}
+          onPress={() => router.push("/company/settings/terms_and_condition")}
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>
@@ -83,7 +83,7 @@ const Setting_Index = () => {
 
         {/* ---------------------- Edit profile -=--------------- */}
         <Pressable
-          onPress={() => router.push("/company/favorites_item")}
+          onPress={() => router.push("/auth/change_pass")}
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>

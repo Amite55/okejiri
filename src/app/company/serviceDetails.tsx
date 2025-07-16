@@ -248,8 +248,13 @@ const ServiceDetails = () => {
           </Text>
         </View>
 
+        {/* ------------------- prover der profile =--------------------- */}
+
         <View style={tw`flex-row`}>
-          <TouchableOpacity style={tw`flex-1 flex-row items-center gap-3`}>
+          <TouchableOpacity
+            onPress={() => router.push("/company/provider_profile")}
+            style={tw`flex-1 flex-row items-center gap-3`}
+          >
             <Image style={tw`w-11 h-11 rounded-full`} source={ImgProfileImg} />
             <View>
               <View style={tw`flex-row gap-2 items-center`}>

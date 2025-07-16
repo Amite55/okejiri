@@ -8,15 +8,19 @@ interface IProps {
   onPress?: () => void;
   pageName?: string;
   titleTextStyle?: any;
+  contentStyle?: any;
 }
 
 const BackTitleButton = ({
   onPress,
   pageName,
   titleTextStyle = "",
+  contentStyle = "",
 }: IProps): JSX.Element => {
   return (
-    <View style={tw`flex-row justify-between items-center py-2`}>
+    <View
+      style={[tw`flex-row justify-between items-center py-2`, contentStyle]}
+    >
       <TouchableOpacity
         onPress={onPress}
         style={tw`w-14 h-14 bg-white rounded-full justify-center items-center`}

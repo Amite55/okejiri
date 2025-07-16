@@ -20,6 +20,7 @@ const _layout = () => {
       <Stack.Screen name="favorites_item" />
       <Stack.Screen name="disputes" />
       <Stack.Screen name="settings" />
+      <Stack.Screen name="provider_profile" />
     </Stack>
   );
 };

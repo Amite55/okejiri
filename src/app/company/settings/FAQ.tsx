@@ -9,8 +9,8 @@ import Collapsible from "react-native-collapsible";
 import { SvgXml } from "react-native-svg";
 
 const FAQ = () => {
-  const [qnsOne, setQnsTwo] = useState<boolean>(false);
-  const [qnsThree, setQnsThree] = useState<boolean>(false);
+  const [qnsOne, setQnsOne] = useState<boolean>(false);
+  const [qnsTwo, setQnsTwo] = useState<boolean>(false);
 
   return (
     <ScrollView
@@ -31,7 +31,7 @@ const FAQ = () => {
       </View>
       <View style={tw`justify-center items-center`}>
         <View
-          style={tw`w-[90%] h-16 justify-center items-center bg-white rounded-full`}
+          style={tw`w-full h-16 justify-center items-center bg-white rounded-full`}
         >
           <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
             Frequently Asked Questions (FAQ)
@@ -41,27 +41,51 @@ const FAQ = () => {
 
       {/* -=-------------------- FAq ---------------- */}
 
-      <View>
-        <Text style={tw`font-PoppinsSemiBold text-sm text-black`}>
-          1. How do I place an order?
-        </Text>
+      <View style={tw`mt-10 gap-3`}>
         <TouchableOpacity
-          //   onPress={() => setPleaseOrder(!pleaseOrder)}
-          style={tw`w-8 h-8 justify-center items-center bg-white rounded-full shadow-lg`}
+          onPress={() => setQnsOne(!qnsOne)}
+          style={tw`flex-row justify-between items-center bg-white h-14 rounded-full px-6`}
         >
-          {qnsOne && <SvgXml xml={qnsOne ? IconUpArrow : IconDownArrow} />}
+          <Text style={tw`font-DegularDisplayDemoMedium text-base text-black`}>
+            Question 1
+          </Text>
+          <SvgXml xml={qnsOne ? IconUpArrow : IconDownArrow} />
         </TouchableOpacity>
-      </View>
-      <Collapsible collapsed={qnsOne}>
-        <Text
-          style={tw` px-5 py-4 bg-white rounded-lg font-PoppinsRegular text-sm`}
+
+        <Collapsible collapsed={!qnsOne}>
+          <Text
+            style={tw` px-5 py-4 text-black rounded-lg font-PoppinsRegular text-sm`}
+          >
+            Placing an order is easy! Simply browse through our categories, add
+            items to your cart, and proceed to checkout. Select your delivery
+            address, choose a payment method, and confirm your order. We’ll take
+            care of the rest!
+          </Text>
+        </Collapsible>
+
+        {/* -=----------------------------Question 1 --------------- */}
+
+        <TouchableOpacity
+          onPress={() => setQnsTwo(!qnsTwo)}
+          style={tw`flex-row justify-between items-center bg-white h-14 rounded-full px-6`}
         >
-          Placing an order is easy! Simply browse through our categories, add
-          items to your cart, and proceed to checkout. Select your delivery
-          address, choose a payment method, and confirm your order. We’ll take
-          care of the rest!
-        </Text>
-      </Collapsible>
+          <Text style={tw`font-DegularDisplayDemoMedium text-base text-black`}>
+            Question 2
+          </Text>
+          <SvgXml xml={qnsTwo ? IconUpArrow : IconDownArrow} />
+        </TouchableOpacity>
+
+        <Collapsible collapsed={!qnsTwo}>
+          <Text
+            style={tw` px-5 py-4 text-black rounded-lg font-PoppinsRegular text-sm`}
+          >
+            Placing an order is easy! Simply browse through our categories, add
+            items to your cart, and proceed to checkout. Select your delivery
+            address, choose a payment method, and confirm your order. We’ll take
+            care of the rest!
+          </Text>
+        </Collapsible>
+      </View>
     </ScrollView>
   );
 };

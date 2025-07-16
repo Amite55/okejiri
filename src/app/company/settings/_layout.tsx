@@ -12,6 +12,7 @@ const _layout = () => {
       <Stack.Screen name="setting" />
       <Stack.Screen name="edit_profile" />
       <Stack.Screen name="FAQ" />
+      <Stack.Screen name="about" />
     </Stack>
   );
 };
