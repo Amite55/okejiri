@@ -69,10 +69,11 @@ const serviceNearbyHistory = () => {
         <BackTitleButton
           pageName={"Services nearby"}
           onPress={() => router.back()}
+          titleTextStyle={tw`text-2xl`}
         />
       )}
       keyExtractor={(item) => item.Id.toString()}
-      contentContainerStyle={tw`mt-4  bg-base_color px-5 gap-3 pb-10`}
+      contentContainerStyle={tw`pt-4  bg-base_color px-5 gap-3 pb-10`}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
     />

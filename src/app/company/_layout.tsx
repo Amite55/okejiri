@@ -19,6 +19,7 @@ const _layout = () => {
       <Stack.Screen name="previous_item_Book" />
       <Stack.Screen name="favorites_item" />
       <Stack.Screen name="disputes" />
+      <Stack.Screen name="settings" />
     </Stack>
   );
 };

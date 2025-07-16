@@ -1,10 +1,12 @@
-import { IconDeleteWhite } from "@/assets/icons";
+import { IconDeleteWhite, IconProfileBadge } from "@/assets/icons";
+import { ImgProfileImg } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
+import { SvgXml } from "react-native-svg";
 
 const Disputes_Status = () => {
   return (
@@ -31,14 +33,58 @@ const Disputes_Status = () => {
             </Text>
           </View>
         </View>
+
+        <View>
+          <Text
+            style={tw`font-DegularDisplayDemoMedium text-2xl text-redWhite mb-2`}
+          >
+            Provider
+          </Text>
+          <View style={tw`flex-row items-center gap-1 mb-5`}>
+            <Image style={tw`w-12 h-12 rounded-full `} source={ImgProfileImg} />
+            <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
+              Profile Name
+            </Text>
+            <SvgXml xml={IconProfileBadge} />
+          </View>
+
+          <Text
+            style={tw`font-DegularDisplayDemoMedium text-2xl text-redWhite mb-1`}
+          >
+            Reason
+          </Text>
+          <Text
+            style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+          >
+            Provider harassed me
+          </Text>
+
+          <Text
+            style={tw`font-DegularDisplayDemoMedium text-2xl text-redWhite mb-1 mt-4`}
+          >
+            Explanation
+          </Text>
+          <Text
+            style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+          >
+            Lorem ipsum dolor sit amet consectetur. Id in tempor varius arcu
+            aliquet habitasse tristique vitae sapien. Tincidunt purus morbi
+            nascetur id. Aliquam risus magna eu diam aliquam faucibus duis.
+            Vitae eu consectetur urna eget. Habitant at gravida cras eu gravida
+            mauris pellentesque. Nunc rutrum nunc augue vitae dapibus hendrerit.
+            In at id amet odio dui elit a. Integer ultrices ac ut eu non
+            suspendisse ac aenean tristique. Amet at tempor sed neque sem
+            egestas in.
+          </Text>
+        </View>
       </View>
 
       {/*  ------------- next button -------------------- */}
       <PrimaryButton
-        // onPress={() => router.push("/company/(Tabs)")}
+        onPress={() => router.push("/company/(Tabs)")}
         titleProps="Delete dispute"
         IconProps={IconDeleteWhite}
-        contentStyle={tw`mt-4`}
+        contentStyle={tw`mt-4 bg-redDeep`}
       />
     </ScrollView>
   );

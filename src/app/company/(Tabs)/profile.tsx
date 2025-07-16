@@ -132,6 +132,7 @@ const profile = () => {
         </Pressable>
 
         <Pressable
+          onPress={() => router.push("/company/serviceNearbyHistory")}
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>
@@ -144,6 +145,7 @@ const profile = () => {
         </Pressable>
 
         <Pressable
+          onPress={() => router.push("/company/settings/setting")}
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>
