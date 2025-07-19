@@ -35,7 +35,10 @@ const ServiceProviderRoll = () => {
         </Text>
 
         <TouchableOpacity
-          onPress={() => router.push("/auth/login")}
+          // onPress={() => router.push("/auth/login")}
+          onPress={() =>
+            router.push("/service_provider/individual/(Tabs)/home")
+          }
           style={tw`bg-white w-full rounded-3xl mt-10 p-2 flex-row justify-between items-center`}
         >
           <View style={tw`flex-row items-center gap-5`}>
@@ -50,9 +53,10 @@ const ServiceProviderRoll = () => {
             <SvgXml xml={IconRightCornerArrow} />
           </View>
         </TouchableOpacity>
-        {/* ------------------------------ service provider ---------------------------- */}
+        {/* ------------------------------ service provider with company  ---------------------------- */}
         <TouchableOpacity
-          onPress={() => router.push("/auth/login")}
+          // onPress={() => router.push("/auth/login")}
+          onPress={() => router.push("/service_provider/company/(Tabs)/home")}
           style={tw`bg-white w-full rounded-3xl p-2 flex-row justify-between items-center mt-3`}
         >
           <View style={tw`flex-row items-center gap-5`}>

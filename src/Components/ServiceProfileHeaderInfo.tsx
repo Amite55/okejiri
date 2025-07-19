@@ -6,13 +6,17 @@ import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
-const ServiceProfileHeaderInfo = () => {
+interface IProps {
+  onPress?: () => void;
+}
+
+const ServiceProfileHeaderInfo = ({ onPress }: IProps) => {
   return (
     <View
       style={tw`py-3 flex-1 bg-base_color flex-row items-center justify-between `}
     >
       <Pressable
-        onPress={() => router.push("/company/profile")}
+        onPress={onPress}
         style={tw`flex-row justify-start items-center  gap-4`}
       >
         <View style={tw` `}>

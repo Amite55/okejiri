@@ -11,3 +11,6 @@ export const ImgFAQ = require("@/assets/images/FAQ.png");
 export const ImgAbout_Us = require("@/assets/images/about_us.png");
 export const ImgTermsAndCondition = require("@/assets/images/termsAndCondiction.png");
 export const ImgTransferBalance = require("@/assets/images/transfer_balance.png");
+export const ImgNewDoc = require("@/assets/images/new_doc.png");
+export const ImgNew = require("@/assets/images/new.png");
+export const ImgSecond = require("@/assets/images/second.png");

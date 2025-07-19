@@ -2,6 +2,7 @@ import { IconMostResentGray, IconProfileBadge } from "@/assets/icons";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import CleaningData from "@/src/json/CleaningData.json";
 import tw from "@/src/lib/tailwind";
+import { router } from "expo-router";
 import React from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import StarRating from "react-native-star-rating-widget";
@@ -16,7 +17,9 @@ const bookings = () => {
       contentContainerStyle={tw`pb-28`}
     >
       {/* ================== profile header component =========== */}
-      <ServiceProfileHeaderInfo />
+      <ServiceProfileHeaderInfo
+        onPress={() => router.push("/company/(Tabs)/profile")}
+      />
 
       <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>
         My Bookings

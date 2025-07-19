@@ -69,7 +69,9 @@ const Company_Home_Index = () => {
       contentContainerStyle={tw`pb-28`}
     >
       {/* header parts  */}
-      <ServiceProfileHeaderInfo />
+      <ServiceProfileHeaderInfo
+        onPress={() => router.push("/company/(Tabs)/profile")}
+      />
 
       {/* ======================= search bar -=-o--------------------------- */}
       <View

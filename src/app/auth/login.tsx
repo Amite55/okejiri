@@ -44,7 +44,7 @@ const LoginIndex = () => {
   return (
     <ScrollView style={tw`px-5 bg-base_color `}>
       <BackTitleButton
-        onPress={() => router.canGoBack()}
+        onPress={() => router.back()}
         pageName={"Login as a service user"}
       />
 

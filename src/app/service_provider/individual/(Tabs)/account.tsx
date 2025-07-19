@@ -1,12 +1,12 @@
 import React from "react";
 import { Text, View } from "react-native";
 
-const Individual_Index = () => {
+const Account = () => {
   return (
     <View>
-      <Text>Individual_Index</Text>
+      <Text>Account</Text>
     </View>
   );
 };
 
-export default Individual_Index;
+export default Account;

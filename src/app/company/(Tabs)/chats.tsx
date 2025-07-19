@@ -24,7 +24,9 @@ const chats = () => {
       contentContainerStyle={tw`pb-28`}
     >
       {/* ================== profile header component =========== */}
-      <ServiceProfileHeaderInfo />
+      <ServiceProfileHeaderInfo
+        onPress={() => router.push("/company/(Tabs)/profile")}
+      />
 
       <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>
         Chats

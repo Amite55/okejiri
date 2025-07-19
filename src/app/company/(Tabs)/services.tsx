@@ -2,6 +2,7 @@ import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo"
 import ServicesData from "@/src/json/ServiceData.json";
 import tw from "@/src/lib/tailwind";
 import { BlurView } from "@react-native-community/blur";
+import { router } from "expo-router";
 import React from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 
@@ -50,7 +51,9 @@ const services = () => {
   const serviceHeaderRender = () => {
     return (
       <View>
-        <ServiceProfileHeaderInfo />
+        <ServiceProfileHeaderInfo
+          onPress={() => router.push("/company/(Tabs)/profile")}
+        />
         <Text
           style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}
         >

@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import React from "react";
 
-const Individual_Layout = () => {
+const Company_Layout = () => {
   return (
     <Stack
       screenOptions={{
@@ -13,4 +13,4 @@ const Individual_Layout = () => {
   );
 };
 
-export default Individual_Layout;
+export default Company_Layout;
