@@ -2,6 +2,7 @@ import { IconProfileBadge, IconSearch } from "@/assets/icons";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ChatListData from "@/src/json/ChatListData.json";
 import tw from "@/src/lib/tailwind";
+import { router } from "expo-router";
 import React from "react";
 import {
   Image,
@@ -48,6 +49,7 @@ const chats = () => {
           ChatListData?.map((chatItem) => {
             return (
               <TouchableOpacity
+                onPress={() => router.push("/company/messaging")}
                 key={chatItem?.id}
                 style={tw`flex-row justify-start items-center bg-white border-gray-200 p-3.5 rounded-2xl border gap-1`}
               >

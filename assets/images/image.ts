@@ -10,3 +10,4 @@ export const ImgLoadingSuccess = require("@/assets/images/loading_success.gif");
 export const ImgFAQ = require("@/assets/images/FAQ.png");
 export const ImgAbout_Us = require("@/assets/images/about_us.png");
 export const ImgTermsAndCondition = require("@/assets/images/termsAndCondiction.png");
+export const ImgTransferBalance = require("@/assets/images/transfer_balance.png");

@@ -21,6 +21,8 @@ const _layout = () => {
       <Stack.Screen name="disputes" />
       <Stack.Screen name="settings" />
       <Stack.Screen name="provider_profile" />
+      <Stack.Screen name="messaging" />
+      <Stack.Screen name="wallets" />
     </Stack>
   );
 };

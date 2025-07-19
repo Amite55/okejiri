@@ -49,9 +49,9 @@ export default function Index() {
     AppLoader();
 
     setTimeout(() => {
-      router.push("/company/(Tabs)");
+      // router.push("/company/(Tabs)");
       // router.push("/auth/singUp");
-      // router.push("/chose_roll");
+      router.push("/chose_roll");
     }, 10);
   }, []);
 

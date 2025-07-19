@@ -40,7 +40,7 @@ const ServiceDetails = () => {
   //  ranking profile item render  -------------------------------
   const RenderRankingItem = () => {
     return (
-      <View style={tw`bg-white w-80 h-72 rounded-lg p-6`}>
+      <View style={tw`bg-white shadow-md w-80 h-72 rounded-lg p-6`}>
         <View style={tw`flex-row items-center gap-3`}>
           <Image style={tw`w-16 h-16 rounded-full `} source={ImgProfileImg} />
           <View>

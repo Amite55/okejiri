@@ -14,7 +14,14 @@ import {
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
 import React from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const profile = () => {
@@ -54,6 +61,7 @@ const profile = () => {
       </View>
 
       <Pressable
+        onPress={() => router.push("/company/wallets/wallet")}
         style={tw`flex-row justify-between items-center my-4 bg-white p-4 rounded-2xl`}
       >
         <View style={tw`flex-row items-center gap-3`}>
@@ -72,11 +80,12 @@ const profile = () => {
             </Text>
           </View>
         </View>
-        <View
+        <TouchableOpacity
+          onPress={() => router.push("/company/wallets/wallet")}
           style={tw`w-14 h-14 rounded-full border border-gray-500 justify-center items-center`}
         >
           <SvgXml xml={IconRightCornerArrow} />
-        </View>
+        </TouchableOpacity>
       </Pressable>
 
       <View style={tw`gap-3`}>
@@ -158,6 +167,7 @@ const profile = () => {
         </Pressable>
 
         <Pressable
+          onPress={() => router.push("/company/refer_friend")}
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>
