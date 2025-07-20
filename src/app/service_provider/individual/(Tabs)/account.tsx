@@ -111,7 +111,9 @@ const Account = () => {
         </Pressable>
 
         <Pressable
-          // onPress={() => router.push("/company/bookingsHistory")}
+          onPress={() =>
+            router.push("/service_provider/individual/my_services/my_service")
+          }
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>
@@ -124,7 +126,9 @@ const Account = () => {
         </Pressable>
 
         <Pressable
-          // onPress={() => router.push("/company/favorites_item")}
+          onPress={() =>
+            router.push("/service_provider/individual/manage_discounts")
+          }
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>
@@ -137,7 +141,7 @@ const Account = () => {
         </Pressable>
 
         <Pressable
-          // onPress={() => router.push("/company/serviceNearbyHistory")}
+          onPress={() => router.push("/service_provider/individual/portfolio")}
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>

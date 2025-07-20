@@ -12,6 +12,7 @@ const Individual_Layout = () => {
       <Stack.Screen name="order_details_profile" />
       <Stack.Screen name="individual_user_wallet" />
       <Stack.Screen name="manage_discounts" />
+      <Stack.Screen name="portfolio" />
     </Stack>
   );
 };

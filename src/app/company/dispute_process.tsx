@@ -89,7 +89,7 @@ const Dispute_Process = () => {
         {/* ------------------ Image upload ------------------ */}
 
         <Pressable
-          style={tw`border-2 border-dashed border-gray-500 rounded-3xl p-6 justify-center items-center  text-center `}
+          style={tw`border-2 border-dashed border-gray-500 rounded-3xl p-6 justify-center items-center   gap-2 `}
         >
           <SvgXml xml={IconUploadImage} />
           <Text style={tw`font-DegularDisplayDemoRegular text-xl  text-black`}>
