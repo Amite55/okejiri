@@ -1,6 +1,5 @@
 import { IconLocation, IconNotificationDark } from "@/assets/icons";
 import { ImgProfileImg } from "@/assets/images/image";
-import { router } from "expo-router";
 import React from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
@@ -42,7 +41,7 @@ const ServiceProfileHeaderInfo = ({ onPress }: IProps) => {
       </Pressable>
 
       <TouchableOpacity
-        onPress={() => router.push("/company/notification")}
+        // onPress={() => router.push("/company/notification")}
         style={tw`w-18 h-16 p-3 text-center bg-white rounded-3xl justify-center items-center`}
       >
         <SvgXml xml={IconNotificationDark} />

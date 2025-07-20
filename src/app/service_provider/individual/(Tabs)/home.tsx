@@ -1,10 +1,29 @@
-import { IconBalance, IconSettingWhite } from "@/assets/icons";
-import { ImgNew } from "@/assets/images/image";
+import {
+  IconBalance,
+  IconDate,
+  IconProfileBadge,
+  IconRightArrowCornerPrimaryColor,
+  IconSettingWhite,
+} from "@/assets/icons";
+import {
+  ImgComplete,
+  ImgNew,
+  ImgPending,
+  ImgProfileImg,
+} from "@/assets/images/image";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
 
@@ -69,9 +88,9 @@ const Individual_Service_Provider_Index = () => {
       </View>
 
       {/* -------------------- status ------------------------ */}
-      <View>
+      <View style={tw`gap-4 mt-8`}>
         <View
-          style={tw`relative flex-row gap-4 bg-redWhite h-20 items-center px-4 rounded-2xl`}
+          style={tw`relative flex-row gap-4 bg-primary h-20 items-center px-4 rounded-2xl`}
         >
           <SvgXml xml={IconSettingWhite} />
           <View style={tw`flex-row items-center gap-2`}>
@@ -87,6 +106,142 @@ const Individual_Service_Provider_Index = () => {
           <View style={tw`absolute -top-2 right-1`}>
             <Image source={ImgNew} />
           </View>
+        </View>
+
+        <View
+          style={tw`relative flex-row gap-4 bg-violet h-20 items-center px-4 rounded-2xl`}
+        >
+          <SvgXml xml={IconSettingWhite} />
+          <View style={tw`flex-row items-center gap-2`}>
+            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
+              Pending order:
+            </Text>
+            <Text
+              style={tw`font-DegularDisplayDemoSemibold text-3xl text-white`}
+            >
+              10
+            </Text>
+          </View>
+          <View style={tw`absolute -top-2 right-1`}>
+            <Image source={ImgPending} />
+          </View>
+        </View>
+
+        <View
+          style={tw`relative flex-row gap-4 bg-success600 h-20 items-center px-4 rounded-2xl`}
+        >
+          <SvgXml xml={IconSettingWhite} />
+          <View style={tw`flex-row items-center gap-2`}>
+            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
+              Completed order:
+            </Text>
+            <Text
+              style={tw`font-DegularDisplayDemoSemibold text-3xl text-white`}
+            >
+              10
+            </Text>
+          </View>
+          <View style={tw`absolute -top-2 right-1`}>
+            <Image source={ImgComplete} />
+          </View>
+        </View>
+      </View>
+
+      {/* -------------Recent orders --------------- */}
+
+      <View style={tw`flex-row justify-between items-center mt-6 `}>
+        <Text style={tw`font-DegularDisplayDemoRegular text-2xl text-black`}>
+          Recent orders
+        </Text>
+        <TouchableOpacity
+          // onPress={() => router.push("/company/serviceNearbyHistory")}
+          style={tw`border border-primary rounded-full w-28 h-11 flex-row justify-between items-center px-4`}
+        >
+          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-primary`}>
+            See all
+          </Text>
+          <SvgXml xml={IconRightArrowCornerPrimaryColor} />
+        </TouchableOpacity>
+      </View>
+
+      <View style={tw`gap-3 mt-4`}>
+        {[1, 2, 3, 4].map((index) => {
+          return (
+            <Pressable
+              onPress={() =>
+                router.push(
+                  "/service_provider/individual/order_details_profile"
+                )
+              }
+              style={tw`h-32 px-5 rounded-2xl bg-white flex-row justify-between items-center`}
+              key={index}
+            >
+              <View style={tw`flex-row items-center gap-3`}>
+                <Image
+                  style={tw`w-16 h-16 rounded-full `}
+                  source={ImgProfileImg}
+                />
+                <View style={tw`gap-1.5`}>
+                  <View style={tw`flex-row items-center gap-2`}>
+                    <Text>Profile Name</Text>
+                    <SvgXml xml={IconProfileBadge} />
+                  </View>
+                  <Text>Service title goes here</Text>
+                  <View style={tw`flex-row items-center gap-2`}>
+                    <SvgXml xml={IconDate} />
+                    <Text>Mon, June 2</Text>
+                  </View>
+                </View>
+              </View>
+              <TouchableOpacity
+                style={tw`w-12 h-12 rounded-2xl border border-primary justify-center items-center `}
+              >
+                <SvgXml xml={IconRightArrowCornerPrimaryColor} />
+              </TouchableOpacity>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {/* ------------------------ Recent transactions ----------------- */}
+      <View style={tw`mt-4`}>
+        <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
+          Recent transactions
+        </Text>
+        <View style={tw`gap-6 my-4`}>
+          {[1, 2, 3, 4, 5, 6, 7].map((index) => {
+            return (
+              <View
+                key={index}
+                style={tw`flex-row items-center justify-between`}
+              >
+                <View style={tw`flex-row items-center gap-4`}>
+                  <SvgXml xml={IconRightArrowCornerPrimaryColor} />
+                  <View>
+                    <Text
+                      style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
+                    >
+                      Service title goes here
+                    </Text>
+                    <View style={tw`flex-row gap-2 items-center `}>
+                      <Text
+                        style={tw`font-DegularDisplayDemoSemibold text-xl text-black`}
+                      >
+                        Jhon Doe
+                      </Text>
+                      <SvgXml xml={IconProfileBadge} />
+                    </View>
+                  </View>
+                </View>
+
+                <Text
+                  style={tw`font-DegularDisplayDemoMedium text-primary  text-2xl `}
+                >
+                  ₦200.00
+                </Text>
+              </View>
+            );
+          })}
         </View>
       </View>
     </ScrollView>
