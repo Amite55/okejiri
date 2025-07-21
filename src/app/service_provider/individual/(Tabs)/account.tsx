@@ -154,7 +154,11 @@ const Account = () => {
         </Pressable>
 
         <Pressable
-          // onPress={() => router.push("/company/settings/setting")}
+          onPress={() =>
+            router.push(
+              "/service_provider/individual/boost_profiles/boost_profile"
+            )
+          }
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>
@@ -167,7 +171,9 @@ const Account = () => {
         </Pressable>
 
         <Pressable
-          // onPress={() => router.push("/company/disputes/my_disputes")}
+          onPress={() =>
+            router.push("/service_provider/individual/disputes/my_disputes")
+          }
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>

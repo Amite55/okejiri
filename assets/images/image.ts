@@ -22,3 +22,4 @@ export const ImgportfolioFour = require("@/assets/images/portfolioFour.jpg");
 export const ImgportfolioFive = require("@/assets/images/portfolioFive.jpg");
 export const ImgportfolioSix = require("@/assets/images/portfolioSix.jpg");
 export const ImgportfolioSeven = require("@/assets/images/portfolioSeven.jpg");
+export const ImgBoostPlan = require("@/assets/images/boost_plan.png");

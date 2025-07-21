@@ -17,7 +17,13 @@ import {
 } from "@react-navigation/native";
 import { Tabs } from "expo-router";
 import React from "react";
-import { Keyboard, Text, TouchableOpacity, View } from "react-native";
+import {
+  Keyboard,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Animated, {
   FadeIn,
   FadeOut,
@@ -167,18 +173,21 @@ function MyTabBar({ state, descriptors, navigation }: MyTabBarProps) {
 }
 const Individual_Service_Provider_Layout = () => {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        // tabBarHideOnKeyboard: true,
-      }}
-      tabBar={(props: any) => <MyTabBar {...props} />}
-    >
-      <Tabs.Screen name="home" />
-      <Tabs.Screen name="order" />
-      <Tabs.Screen name="chats" />
-      <Tabs.Screen name="account" />
-    </Tabs>
+    <View style={tw`flex-1`}>
+      <StatusBar barStyle={"dark-content"} />
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          // tabBarHideOnKeyboard: true,
+        }}
+        tabBar={(props: any) => <MyTabBar {...props} />}
+      >
+        <Tabs.Screen name="home" />
+        <Tabs.Screen name="order" />
+        <Tabs.Screen name="chats" />
+        <Tabs.Screen name="account" />
+      </Tabs>
+    </View>
   );
 };
 

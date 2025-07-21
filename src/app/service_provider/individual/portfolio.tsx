@@ -88,8 +88,6 @@ const Portfolio = () => {
         )}
       />
 
-      {/*  ------------- next button -------------------- */}
-
       {/* ========= selected modal ============= */}
       <Modal
         animationType="none"

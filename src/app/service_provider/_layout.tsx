@@ -8,6 +8,7 @@ const ServicerProviderLayout = () => {
         headerShown: false,
       }}
     >
+      {/* <StatusBar barStyle={"dark-content"} /> */}
       <Stack.Screen name="service_provider_roll" />
     </Stack>
   );

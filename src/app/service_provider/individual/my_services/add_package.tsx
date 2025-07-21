@@ -71,7 +71,7 @@ const Add_Package = () => {
           contentContainerStyle={tw`pb-6 px-5 `}
         >
           <BackTitleButton
-            pageName={"Bookings history"}
+            pageName={"Add package"}
             onPress={() => router.back()}
             titleTextStyle={tw`text-2xl`}
           />

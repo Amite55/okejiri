@@ -37,7 +37,7 @@ const Delivery_Extension = () => {
         >
           <View>
             <BackTitleButton
-              pageName={"Bookings history"}
+              pageName={"Delivery extension"}
               onPress={() => router.back()}
               titleTextStyle={tw`text-2xl`}
             />
