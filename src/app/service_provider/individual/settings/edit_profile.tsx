@@ -10,15 +10,27 @@ import {
   Modal,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
+
+// ------------------ static dropdown value -----------------
+const dropdownData = [
+  { label: "Cleaning", value: "1" },
+  { label: "Barbing", value: "2" },
+  { label: "Cooking", value: "3" },
+  { label: "Plumbing", value: "4" },
+];
 
 const Edit_Profile = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
 
   return (
     <ScrollView
@@ -86,13 +98,60 @@ const Edit_Profile = () => {
           >
             <TextInput placeholder="Dhaka, Bangladesh" />
           </View>
+
+          {/*  ----------- About you ------------------  */}
+          <Text
+            style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2`}
+          >
+            About you
+          </Text>
+
+          <TextInput
+            style={[styles.textArea, tw`border border-gray-300`]}
+            multiline={true}
+            numberOfLines={4}
+            // placeholder="Type here"
+            defaultValue="Lorem ipsum dolor sit amet consectetur. Volutpat neque in proin laoreet nulla malesuada vestibulum duis tristique. Purus diam consequat pharetra est urna. "
+            onChangeText={(newText) => console.log(newText)}
+            // value={}
+            textAlignVertical="top"
+          />
+        </View>
+
+        <View style={tw`gap-3`}>
+          {/*  ------------ dropdown section j----------------- */}
+          <View style={tw``}>
+            <Text
+              style={tw`font-DegularDisplayDemoMedium text-xl text-black mb-2 ml-2`}
+            >
+              Reason
+            </Text>
+            <Dropdown
+              style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              data={dropdownData}
+              maxHeight={300}
+              labelField="label"
+              dropdownPosition="top"
+              valueField="value"
+              placeholder={!isFocus ? "Cleaning" : "..."}
+              value={value}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              onChange={(item) => {
+                setValue(item.value);
+                setIsFocus(false);
+              }}
+            />
+          </View>
         </View>
       </View>
 
       {/*  ------------- next button -------------------- */}
       <PrimaryButton
         onPress={() => setModalVisible(true)}
-        titleProps="Submit"
+        titleProps="Save changes"
         // IconProps={""}
         contentStyle={tw`mt-4`}
       />
@@ -121,14 +180,13 @@ const Edit_Profile = () => {
               Your Profile Updated.
             </Text>
 
-            {/* Close Button */}
             {/*  ------------- next button -------------------- */}
             <PrimaryButton
               onPress={() => {
                 setModalVisible(false);
-                router.push("/company/settings/setting");
+                router.push("/service_provider/individual/settings/setting");
               }}
-              titleProps="Go Back"
+              titleProps="Save changes"
               // IconProps={""}
               contentStyle={tw`mt-4`}
             />
@@ -140,3 +198,37 @@ const Edit_Profile = () => {
 };
 
 export default Edit_Profile;
+
+const styles = StyleSheet.create({
+  textArea: {
+    borderWidth: 1,
+
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    minHeight: 180,
+    maxHeight: 200,
+    borderRadius: 30,
+  },
+
+  container: {
+    backgroundColor: "white",
+    padding: 16,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: "gray",
+    borderWidth: 0.5,
+    borderRadius: 100,
+    paddingHorizontal: 24,
+  },
+  icon: {
+    marginRight: 5,
+  },
+
+  placeholderStyle: {
+    fontSize: 18,
+  },
+  selectedTextStyle: {
+    fontSize: 18,
+  },
+});

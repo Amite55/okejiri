@@ -1,7 +1,7 @@
 import {
   IconPending,
   IconResolved,
-  IconRightCornerArrow,
+  IconRightArrowCornerGray,
   IconUnderReview,
 } from "@/assets/icons";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
@@ -56,7 +56,7 @@ const My_Disputes = () => {
             Lorem ipsum dolor sit amet consectetur. Blandit pharetra adipiscing
             neque
           </Text>
-          <SvgXml xml={IconRightCornerArrow} />
+          <SvgXml xml={IconRightArrowCornerGray} />
         </View>
 
         <TouchableOpacity style={tw`absolute -right-2 top-3 z-50`}>

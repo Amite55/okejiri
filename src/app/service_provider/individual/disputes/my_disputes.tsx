@@ -1,7 +1,7 @@
 import {
   IconPending,
   IconResolved,
-  IconRightCornerArrow,
+  IconRightArrowCornerGray,
   IconUnderReview,
 } from "@/assets/icons";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
@@ -43,7 +43,9 @@ const My_Disputes = () => {
 
     return (
       <TouchableOpacity
-        onPress={() => router.push("/company/disputes/disputes_status")}
+        onPress={() =>
+          router.push("/service_provider/individual/disputes/disputes_status")
+        }
         style={[
           tw`  h-28 px-4 py-2 rounded-3xl w-full bg-white border-b border-red-400`,
         ]}
@@ -56,7 +58,7 @@ const My_Disputes = () => {
             Lorem ipsum dolor sit amet consectetur. Blandit pharetra adipiscing
             neque
           </Text>
-          <SvgXml xml={IconRightCornerArrow} />
+          <SvgXml xml={IconRightArrowCornerGray} />
         </View>
 
         <TouchableOpacity style={tw`absolute -right-2 top-3 z-50`}>

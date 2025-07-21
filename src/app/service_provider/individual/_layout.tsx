@@ -18,6 +18,7 @@ const Individual_Layout = () => {
         <Stack.Screen name="manage_discounts" />
         <Stack.Screen name="portfolio" />
         <Stack.Screen name="disputes" />
+        <Stack.Screen name="settings" />
       </Stack>
     </View>
   );

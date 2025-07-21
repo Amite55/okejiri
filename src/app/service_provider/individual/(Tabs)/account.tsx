@@ -186,7 +186,7 @@ const Account = () => {
         </Pressable>
 
         <Pressable
-          // onPress={() => router.push("/company/refer_friend")}
+          onPress={() => router.push("/company/refer_friend")}
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>
@@ -199,7 +199,9 @@ const Account = () => {
         </Pressable>
 
         <Pressable
-          // onPress={() => router.push("/company/refer_friend")}
+          onPress={() =>
+            router.push("/service_provider/individual/settings/setting")
+          }
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>

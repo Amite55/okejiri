@@ -580,3 +580,13 @@ export const IconPayCardWhite = `<svg width="19" height="20" viewBox="0 0 19 20"
 </svg>
 
 `;
+export const IconRightArrowCornerGray = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.0197468 10.8344L8.52374 2.33042L1.99923 2.41181L2.02481 0.361666L12.0494 0.236613L11.9243 10.2612L9.87416 10.2867L9.95555 3.76223L1.45155 12.2662L0.0197468 10.8344Z" fill="#888888"/>
+</svg>
+
+`;
+export const IconCrossWhite = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M1.4 14L0 12.6L5.6 7L0 1.4L1.4 0L7 5.6L12.6 0L14 1.4L8.4 7L14 12.6L12.6 14L7 8.4L1.4 14Z" fill="white"/>
+</svg>
+
+`;
