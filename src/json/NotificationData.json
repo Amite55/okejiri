@@ -1,0 +1,69 @@
+[
+  {
+    "id": 1,
+    "type": "new_order",
+    "notification_title": "New Order",
+    "icon": "new_order",
+    "profile_name": "Profile Name",
+    "work": "Home Cleaning",
+    "price": 152.02
+  },
+  {
+    "id": 2,
+    "type": "request_approved",
+    "notification_title": "Request Approved",
+    "icon": "request_approved",
+    "profile_name": "Profile Name"
+  },
+  {
+    "id": 3,
+    "type": "KYC_complete",
+    "notification_title": "Complete your KYC to access all the features.",
+    "sub_title": "Tap to continue",
+    "icon": "KYC_complete"
+  },
+  {
+    "id": 4,
+    "type": "warning",
+    "notification_title": "Warning",
+    "sub_title": "Tap to view",
+    "icon": "warning"
+  },
+  {
+    "id": 5,
+    "type": "cancelled",
+    "notification_title": "Booking cancelled",
+    "sub_title": "Tap to view the reason",
+    "icon": "cancelled"
+  },
+  {
+    "id": 6,
+    "type": "new_dispute",
+    "notification_title": "New dispute",
+    "sub_title": "Tap to view",
+    "icon": "new_dispute"
+  },
+  {
+    "id": 7,
+    "type": "withdrawal_request_pending",
+    "notification_title": "Withdrawal request in Pending",
+    "sub_title": "After approving from the admin side you will get your money.",
+    "icon": "withdrawal_request_pending"
+  },
+  {
+    "id": 8,
+    "type": "delivery_extension",
+    "notification_title": "Request for delivery time extension.",
+    "icon": "delivery_extension",
+    "profile_name": "Profile Name",
+    "sub_title": "Tap to see details"
+  },
+  {
+    "id": 9,
+    "type": "delivery_request",
+    "notification_title": "Requested for delivery",
+
+    "profile_name": "Profile Name",
+    "sub_title": "Requested for delivery"
+  }
+]

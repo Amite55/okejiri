@@ -48,6 +48,9 @@ const Individual_Service_Provider_Index = () => {
       {/* header parts  */}
       <ServiceProfileHeaderInfo
         onPress={() => router.push("/service_provider/individual/account")}
+        individualPathPress={() =>
+          router.push("/notification_Global/notifications")
+        }
       />
 
       <View
