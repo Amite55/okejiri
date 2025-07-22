@@ -1,7 +1,4 @@
-import {
-  IconCrossWhite,
-  IconRightArrowCornerPrimaryColor,
-} from "@/assets/icons";
+import { IconCrossWhite, IconProfileBadge } from "@/assets/icons";
 import {
   ImgDisputeFour,
   ImgDisputeThree,
@@ -9,7 +6,9 @@ import {
   ImgDisputFive,
   ImgDisputOne,
   ImgDisputSix,
+  ImgProfileImg,
 } from "@/assets/images/image";
+import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { _HEIGHT } from "@/utils/utils";
@@ -27,7 +26,7 @@ import {
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 
-const Disputes_Status = () => {
+const Dispute_Review = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const disputeGallary = [
     {
@@ -56,6 +55,7 @@ const Disputes_Status = () => {
     },
   ];
   const visibleImages = disputeGallary.slice(0, 3);
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -69,18 +69,31 @@ const Disputes_Status = () => {
         titleTextStyle={tw`text-2xl`}
       />
 
-      <View style={tw`justify-center items-center`}>
-        <View
-          style={tw`flex-row justify-center items-center h-14 w-36 gap-2 rounded-full bg-violet`}
+      <View style={tw`mt-4`}>
+        <Text
+          style={tw`font-DegularDisplayDemoMedium text-2xl text-redWhite mb-2`}
         >
-          <View style={tw`w-2 h-2 rounded-full bg-white`} />
-          <Text style={tw`font-DegularDisplayDemoMedium text-xl text-white`}>
-            Pending
+          User
+        </Text>
+        <View style={tw`flex-row items-center gap-1 mb-5`}>
+          <Image style={tw`w-12 h-12 rounded-full `} source={ImgProfileImg} />
+          <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
+            Profile Name
           </Text>
+          <SvgXml xml={IconProfileBadge} />
         </View>
-      </View>
 
-      <View>
+        <Text
+          style={tw`font-DegularDisplayDemoMedium text-2xl text-redWhite mb-1`}
+        >
+          Reason
+        </Text>
+        <Text
+          style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+        >
+          Provider harassed me
+        </Text>
+
         <Text
           style={tw`font-DegularDisplayDemoMedium text-2xl text-redWhite mb-1 mt-4`}
         >
@@ -103,7 +116,7 @@ const Disputes_Status = () => {
       >
         Files
       </Text>
-      <View style={tw`flex-row gap-2 relative`}>
+      <View style={tw`flex-row gap-2 relative mb-6`}>
         {visibleImages.map((img, index) => (
           <Image
             key={index}
@@ -127,17 +140,15 @@ const Disputes_Status = () => {
         )}
       </View>
 
-      <TouchableOpacity
+      {/* ---------- appeal button -----------  */}
+      <PrimaryButton
         onPress={() =>
-          router.push("/service_provider/individual/disputes/dispute_review")
+          router.push("/service_provider/individual/disputes/dispute_appeal")
         }
-        style={tw`flex-row my-4 justify-end items-center gap-2`}
-      >
-        <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-          See dispute
-        </Text>
-        <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-      </TouchableOpacity>
+        contentStyle={tw`bg-transparent border border-gray-500`}
+        textStyle={tw`text-black`}
+        titleProps="Submit your appeal"
+      />
 
       {/* ============= Photo gallary ====================== */}
       <Modal
@@ -210,4 +221,4 @@ const Disputes_Status = () => {
   );
 };
 
-export default Disputes_Status;
+export default Dispute_Review;

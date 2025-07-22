@@ -11,6 +11,8 @@ const Disputes_Layout = () => {
     >
       <Stack.Screen name="my_disputes" />
       <Stack.Screen name="disputes_status" />
+      <Stack.Screen name="dispute_review" />
+      <Stack.Screen name="dispute_appeal" />
     </Stack>
   );
 };

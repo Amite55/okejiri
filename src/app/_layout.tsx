@@ -21,6 +21,8 @@ export default function RootLayout() {
             <Stack.Screen name="index" />
             <Stack.Screen name="chose_roll" />
             <Stack.Screen name="auth" />
+            <Stack.Screen name="notification_Global" />
+            <Stack.Screen name="KYC_auth" />
           </Stack>
         </GestureHandlerRootView>
       </SafeAreaView>

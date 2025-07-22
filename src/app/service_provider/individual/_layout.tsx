@@ -19,6 +19,9 @@ const Individual_Layout = () => {
         <Stack.Screen name="portfolio" />
         <Stack.Screen name="disputes" />
         <Stack.Screen name="settings" />
+
+        <Stack.Screen name="booking_cancel" />
+        <Stack.Screen name="warning" />
       </Stack>
     </View>
   );

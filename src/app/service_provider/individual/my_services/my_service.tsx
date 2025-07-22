@@ -1,5 +1,5 @@
 import { IconEditPen, IconPlus } from "@/assets/icons";
-import { ImgCleaning } from "@/assets/images/image";
+import { ImgCleaning, ImgEmptyService } from "@/assets/images/image";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
@@ -158,10 +158,21 @@ const My_Service = () => {
         </View>
       )}
       keyExtractor={(item) => item.id.toString()}
-      contentContainerStyle={tw`px-5 bg-base_color gap-4  `}
-      style={tw`flex-1 `}
+      contentContainerStyle={tw`px-5  gap-4 `}
+      style={tw`flex-1 bg-base_color`}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
+      ListEmptyComponent={() => (
+        <View style={tw`flex-1 justify-center items-center gap-3`}>
+          <Image style={tw`w-full h-80`} source={ImgEmptyService} />
+          <Text style={tw`font-DegularDisplayDemoRegular text-3xl text-black`}>
+            Nothing to show here
+          </Text>
+          <Text style={tw`font-DegularDisplayDemoRegular text-xl to-black`}>
+            Please add a service to see them here.
+          </Text>
+        </View>
+      )}
     />
   );
 };

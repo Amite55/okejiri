@@ -69,7 +69,7 @@ const Dispute_Process = () => {
 
         {/*  ---------- message explanation --------------- */}
 
-        <View style={tw`p-3`}>
+        <View style={tw``}>
           <Text
             style={tw`font-DegularDisplayDemoMedium text-xl text-black mb-2 ml-2`}
           >

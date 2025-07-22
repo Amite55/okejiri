@@ -29,3 +29,7 @@ export const ImgDisputeThree = require("@/assets/images/disputeThree.jpg");
 export const ImgDisputeFour = require("@/assets/images/disputeFour.jpg");
 export const ImgDisputFive = require("@/assets/images/disputFive.jpg");
 export const ImgDisputSix = require("@/assets/images/disputSix.jpg");
+export const ImgBookingCancel = require("@/assets/images/booking_cancel.png");
+export const ImgEmptyService = require("@/assets/images/empty_service.png");
+export const ImgCard = require("@/assets/images/card.png");
+export const ImgTakeSelfie = require("@/assets/images/take_selfie.png");

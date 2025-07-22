@@ -39,7 +39,7 @@ const Order_Details_Profile = () => {
       </View>
 
       {/* ------------------- user datails --------------- */}
-      <View style={tw`bg-white rounded-2xl p-5 mb-4 shadow-sm gap-2 my-4`}>
+      <View style={tw`bg-white rounded-2xl p-5 mb-4 shadow-sm gap-3 my-4`}>
         <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
           Booking details
         </Text>

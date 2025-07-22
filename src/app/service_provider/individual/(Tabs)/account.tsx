@@ -103,6 +103,7 @@ const Account = () => {
 
       <View style={tw`gap-3`}>
         <Pressable
+          onPress={() => router.push("/company/(Tabs)")}
           style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
         >
           <View style={tw`flex-row items-center gap-3`}>

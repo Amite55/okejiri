@@ -100,19 +100,7 @@ const Message = () => {
     <View style={tw`bg-base_color flex-1`}>
       <View style={tw`px-4 py-3 flex-row items-center gap-2`}>
         <View style={tw`flex-row items-center gap-2`}>
-          {/* <TouchableOpacity
-            onPress={() => {
-              router.back();
-            }}
-            style={tw`flex-row items-center gap-2 `}
-          >
-            <View
-              style={tw`bg-white  h-10 justify-center items-center rounded-lg`}
-            >
-              <SvgXml xml={} />
-            </View>
-          </TouchableOpacity> */}
-          <TouchableOpacity style={tw`pr-3`}>
+          <TouchableOpacity onPress={() => router.back()} style={tw`pr-3`}>
             <SvgXml xml={IconBackLeftArrow} />
           </TouchableOpacity>
           <Image style={tw`w-11 h-11 rounded-full `} source={ImgProfileImg} />

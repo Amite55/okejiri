@@ -37,11 +37,18 @@ const textColorMap = {
   delivery_request: "#4F52FF",
 };
 
-const NotificationCard = ({ item }) => {
+const NotificationCard = ({
+  item,
+  onPress,
+}: {
+  item: any;
+  onPress: () => void;
+}) => {
   const Icon = iconMap[item.icon];
   const textColor = textColorMap[item.type] || "#000000";
   return (
     <TouchableOpacity
+      onPress={onPress}
       style={tw`flex-row  items-center gap-5 bg-white rounded-3xl py-4 px-5 relative shadow-md`}
     >
       {/* ----------------------- notification icon ------------------------------ */}
