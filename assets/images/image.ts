@@ -33,3 +33,5 @@ export const ImgBookingCancel = require("@/assets/images/booking_cancel.png");
 export const ImgEmptyService = require("@/assets/images/empty_service.png");
 export const ImgCard = require("@/assets/images/card.png");
 export const ImgTakeSelfie = require("@/assets/images/take_selfie.png");
+export const ImgTakeSelfieImage = require("@/assets/images/take_selfie.jpg");
+export const ImgSuccessKYC = require("@/assets/images/success_kyc.png");

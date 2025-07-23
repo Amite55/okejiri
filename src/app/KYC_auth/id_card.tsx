@@ -8,11 +8,12 @@ import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Id_Card = () => {
+  const [isDisable, setIsDisable] = useState<boolean>(false);
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -44,7 +45,7 @@ const Id_Card = () => {
 
         <View style={tw`my-4 gap-4`}>
           <TouchableOpacity
-            style={tw`border-2 border-dashed border-gray-400 rounded-sm h-14 flex-row justify-center items-center gap-2`}
+            style={tw`border-2 border-dashed border-gray-300 rounded-sm h-14 flex-row justify-center items-center gap-2`}
           >
             <SvgXml xml={IconUploadImage} />
             <Text
@@ -55,7 +56,7 @@ const Id_Card = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={tw`border-2 border-dashed border-gray-400 rounded-sm h-14 flex-row justify-center items-center gap-2`}
+            style={tw`border-2 border-dashed border-gray-300 rounded-sm h-14 flex-row justify-center items-center gap-2`}
           >
             <SvgXml xml={IconUploadImage} />
             <Text
@@ -70,22 +71,33 @@ const Id_Card = () => {
       {/*  */}
 
       <View>
-        {/* ----------------------- submit password -------------- */}
-        <PrimaryButton
-          // onPress={() => handleSubmit()}
-          //   onPress={() => setModalVisible(true)}
-          titleProps="Take photo "
-          IconProps={IconCameraYellow}
-          contentStyle={tw`mt-4 bg-transparent border border-gray-400`}
-          textStyle={tw`text-primary`}
-        />
-        <PrimaryButton
-          onPress={() => router.push("/KYC_auth/take_selfie")}
-          //   onPress={() => setModalVisible(true)}
-          titleProps="Next "
-          IconProps={IconRightArrow}
-          contentStyle={tw`mt-4`}
-        />
+        {isDisable ? (
+          <PrimaryButton
+            onPress={() => router.push("/KYC_auth/take_selfie")}
+            //   onPress={() => setModalVisible(true)}
+            titleProps="Next "
+            IconProps={IconRightArrow}
+            contentStyle={tw`mt-4`}
+          />
+        ) : (
+          <>
+            <PrimaryButton
+              // onPress={() => handleSubmit()}
+              //   onPress={() => setModalVisible(true)}
+              titleProps="Take photo "
+              IconProps={IconCameraYellow}
+              contentStyle={tw`mt-4 bg-transparent border border-gray-400`}
+              textStyle={tw`text-primary`}
+            />
+            <PrimaryButton
+              // onPress={() => router.push("/KYC_auth/take_selfie")}
+              onPress={() => setIsDisable(true)}
+              titleProps="Next "
+              IconProps={IconRightArrow}
+              contentStyle={tw`mt-4 bg-slate-400`}
+            />
+          </>
+        )}
       </View>
     </ScrollView>
   );

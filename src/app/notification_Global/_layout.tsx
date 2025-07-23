@@ -7,7 +7,11 @@ const Notifications_Layout = () => {
   return (
     <View style={tw`flex-1 `}>
       <StatusBar barStyle={"dark-content"} />
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
         <Stack.Screen name="notifications" />
       </Stack>
     </View>

@@ -14,6 +14,8 @@ const KYC_Layout = () => {
       >
         <Stack.Screen name="id_card" />
         <Stack.Screen name="take_selfie" />
+        <Stack.Screen name="KYC_confirmation" />
+        <Stack.Screen name="success_screen" />
       </Stack>
     </View>
   );
