@@ -2,7 +2,6 @@ import {
   IconBalance,
   IconDisputes,
   IconFvt,
-  IconGetterThen,
   IconLocationBlack,
   IconLogout,
   IconMostResentGray,
@@ -11,6 +10,7 @@ import {
   IconShare,
   IconSwitch,
 } from "@/assets/icons";
+import SettingsCard from "@/src/Components/SettingsCard";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
 import React from "react";
@@ -88,114 +88,53 @@ const profile = () => {
         </TouchableOpacity>
       </Pressable>
 
-      <View style={tw`gap-3`}>
-        <Pressable
+      <View style={tw`gap-3 mb-6`}>
+        <SettingsCard
+          title="  Switch to service provider"
           onPress={() =>
             router.push("/service_provider/individual/(Tabs)/home")
           }
-          style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
-        >
-          <View style={tw`flex-row items-center gap-3`}>
-            <SvgXml xml={IconSwitch} />
-            <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-              Switch to service provider
-            </Text>
-          </View>
-          <SvgXml xml={IconGetterThen} />
-        </Pressable>
-
-        <Pressable
+          fastIcon={IconSwitch}
+        />
+        <SettingsCard
+          title=" Bookings history"
           onPress={() => router.push("/company/bookingsHistory")}
-          style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
-        >
-          <View style={tw`flex-row items-center gap-3`}>
-            <SvgXml xml={IconMostResentGray} />
-            <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-              Bookings history
-            </Text>
-          </View>
-          <SvgXml xml={IconGetterThen} />
-        </Pressable>
-
-        <Pressable
+          fastIcon={IconMostResentGray}
+        />
+        <SettingsCard
+          title="Favorites"
           onPress={() => router.push("/company/favorites_item")}
-          style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
-        >
-          <View style={tw`flex-row items-center gap-3`}>
-            <SvgXml xml={IconFvt} />
-            <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-              Favorites
-            </Text>
-          </View>
-          <SvgXml xml={IconGetterThen} />
-        </Pressable>
-
-        <Pressable
+          fastIcon={IconFvt}
+        />
+        <SettingsCard
+          title=" My disputes"
           onPress={() => router.push("/company/disputes/my_disputes")}
-          style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
-        >
-          <View style={tw`flex-row items-center gap-3`}>
-            <SvgXml xml={IconDisputes} />
-            <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-              My disputes
-            </Text>
-          </View>
-          <SvgXml xml={IconGetterThen} />
-        </Pressable>
-
-        <Pressable
+          fastIcon={IconDisputes}
+        />
+        <SettingsCard
+          title="   Services nearby"
           onPress={() => router.push("/company/serviceNearbyHistory")}
-          style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
-        >
-          <View style={tw`flex-row items-center gap-3`}>
-            <SvgXml xml={IconLocationBlack} />
-            <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-              Services nearby
-            </Text>
-          </View>
-          <SvgXml xml={IconGetterThen} />
-        </Pressable>
-
-        <Pressable
+          fastIcon={IconLocationBlack}
+        />
+        <SettingsCard
+          title="Settings"
           onPress={() => router.push("/company/settings/setting")}
-          style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
-        >
-          <View style={tw`flex-row items-center gap-3`}>
-            <SvgXml xml={IconSettings} />
-            <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-              Settings
-            </Text>
-          </View>
-          <SvgXml xml={IconGetterThen} />
-        </Pressable>
-
-        <Pressable
+          fastIcon={IconSettings}
+        />
+        <SettingsCard
+          title=" Refer a friend"
           onPress={() => router.push("/company/refer_friend")}
-          style={tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`}
-        >
-          <View style={tw`flex-row items-center gap-3`}>
-            <SvgXml xml={IconShare} />
-            <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-              Refer a friend
-            </Text>
-          </View>
-          <SvgXml xml={IconGetterThen} />
-        </Pressable>
+          fastIcon={IconShare}
+        />
       </View>
 
-      <Pressable
-        style={tw`flex-row justify-between bg-white rounded-full items-center w-full my-6 h-14 px-4`}
-      >
-        <View style={tw`flex-row items-center gap-3`}>
-          <SvgXml xml={IconLogout} />
-          <Text
-            style={tw`font-DegularDisplayDemoRegular text-xl text-primary `}
-          >
-            Logout
-          </Text>
-        </View>
-        <SvgXml xml={IconGetterThen} />
-      </Pressable>
+      <SettingsCard
+        title="Logout"
+        // onPress={() => setModalVisible(true)}
+        fastIcon={IconLogout}
+        textStyle={tw`text-primary`}
+        contentStyle={tw`mb-4`}
+      />
     </ScrollView>
   );
 };

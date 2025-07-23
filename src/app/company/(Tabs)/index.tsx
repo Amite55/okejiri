@@ -5,6 +5,7 @@ import {
 } from "@/assets/icons";
 import { ImgBanner } from "@/assets/images/image";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
+import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import CleaningData from "@/src/json/CleaningData.json";
 import ServicesData from "@/src/json/ServiceData.json";
 import tw from "@/src/lib/tailwind";
@@ -72,7 +73,6 @@ const Company_Home_Index = () => {
       <ServiceProfileHeaderInfo
         onPress={() => router.push("/company/(Tabs)/profile")}
       />
-
       {/* ======================= search bar -=-o--------------------------- */}
       <View
         style={tw`w-full h-14 flex-row justify-start items-center px-4 gap-2 bg-white rounded-full my-3`}
@@ -80,7 +80,6 @@ const Company_Home_Index = () => {
         <SvgXml xml={IconSearch} />
         <TextInput placeholder="Search service" />
       </View>
-
       {/* ======================== benner section start hare ==================== */}
       <View style={tw`flex-1 justify-center items-center `}>
         <Image
@@ -92,22 +91,12 @@ const Company_Home_Index = () => {
 
       {/* ================== services =================== */}
       <View style={tw``}>
-        <View style={tw`flex-row justify-between items-center mt-6 `}>
-          <Text style={tw`font-DegularDisplayDemoRegular text-2xl text-black`}>
-            Service
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.push("/company/(Tabs)/services")}
-            style={tw`border border-primary rounded-full w-28 h-11 flex-row justify-between items-center px-4`}
-          >
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-xl text-primary`}
-            >
-              See all
-            </Text>
-            <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-          </TouchableOpacity>
-        </View>
+        <ShortDataTitle
+          FastTitle="Service"
+          IconTitle="See all"
+          Icon={IconRightArrowCornerPrimaryColor}
+          SeeMorePathPress={() => router.push("/company/(Tabs)/services")}
+        />
 
         <FlatList
           data={ServicesData}
@@ -119,26 +108,14 @@ const Company_Home_Index = () => {
           showsHorizontalScrollIndicator={false}
         />
       </View>
-
       {/* ===================== service nearby you ===================== */}
-
       <View>
-        <View style={tw`flex-row justify-between items-center mt-6 `}>
-          <Text style={tw`font-DegularDisplayDemoRegular text-2xl text-black`}>
-            Services nearby you
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.push("/company/serviceNearbyHistory")}
-            style={tw`border border-primary rounded-full w-28 h-11 flex-row justify-between items-center px-4`}
-          >
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-xl text-primary`}
-            >
-              See all
-            </Text>
-            <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-          </TouchableOpacity>
-        </View>
+        <ShortDataTitle
+          FastTitle="Service Near by you"
+          IconTitle="See all"
+          Icon={IconRightArrowCornerPrimaryColor}
+          SeeMorePathPress={() => router.push("/company/serviceNearbyHistory")}
+        />
 
         <View style={tw`gap-3 mt-3`}>
           {CleaningData?.length === 0 ? (
@@ -204,26 +181,14 @@ const Company_Home_Index = () => {
           )}
         </View>
       </View>
-
       {/* ------------------ order history -------------------------- */}
-
       <View>
-        <View style={tw`flex-row justify-between items-center mt-6 `}>
-          <Text style={tw`font-DegularDisplayDemoRegular text-2xl text-black`}>
-            Order history
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.push("/company/bookingsHistory")}
-            style={tw`border border-primary rounded-full w-28 h-11 flex-row justify-between items-center px-4`}
-          >
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-xl text-primary`}
-            >
-              See all
-            </Text>
-            <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-          </TouchableOpacity>
-        </View>
+        <ShortDataTitle
+          FastTitle="Order History"
+          IconTitle="See all"
+          Icon={IconRightArrowCornerPrimaryColor}
+          SeeMorePathPress={() => router.push("/company/bookingsHistory")}
+        />
 
         <View style={tw`gap-3 mt-3`}>
           {CleaningData?.length === 0 ? (

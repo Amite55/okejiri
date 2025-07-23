@@ -5,7 +5,8 @@ import ChatListData from "@/src/json/ChatListData.json";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
 import React from "react";
-import { ScrollView, Text, TextInput, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const Chats = () => {
@@ -19,9 +20,7 @@ const Chats = () => {
     >
       {/* ================== profile header component =========== */}
       <ServiceProfileHeaderInfo
-        onPress={() =>
-          router.push("/service_provider/individual/(Tabs)/account")
-        }
+        onPress={() => router.push("/service_provider/company/(Tabs)/account")}
       />
 
       <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>

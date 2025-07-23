@@ -12,6 +12,7 @@ import {
   ImgProfileImg,
 } from "@/assets/images/image";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
+import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -152,20 +153,14 @@ const Individual_Service_Provider_Index = () => {
 
       {/* -------------Recent orders --------------- */}
 
-      <View style={tw`flex-row justify-between items-center mt-6 `}>
-        <Text style={tw`font-DegularDisplayDemoRegular text-2xl text-black`}>
-          Recent orders
-        </Text>
-        <TouchableOpacity
-          // onPress={() => router.push("/company/serviceNearbyHistory")}
-          style={tw`border border-primary rounded-full w-28 h-11 flex-row justify-between items-center px-4`}
-        >
-          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-primary`}>
-            See all
-          </Text>
-          <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-        </TouchableOpacity>
-      </View>
+      <ShortDataTitle
+        FastTitle="Recent orders"
+        IconTitle="See all"
+        Icon={IconRightArrowCornerPrimaryColor}
+        SeeMorePathPress={() =>
+          router.push("/service_provider/individual/(Tabs)/order")
+        }
+      />
 
       <View style={tw`gap-3 mt-4`}>
         {[1, 2, 3, 4].map((index) => {

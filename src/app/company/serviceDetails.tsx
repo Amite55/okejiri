@@ -15,6 +15,7 @@ import {
   ImgProfileImg,
   ImgServiceProviderRoll,
 } from "@/assets/images/image";
+import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import CleaningData from "@/src/json/CleaningData.json";
 import tw from "@/src/lib/tailwind";
 import { _HEIGHT } from "@/utils/utils";
@@ -116,13 +117,11 @@ const ServiceDetails = () => {
             />
           </Pressable>
         </View>
-
         <Text
           style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}
         >
           Chats
         </Text>
-
         <View style={tw`gap-3`}>
           <Pressable
             style={tw`flex-row justify-between items-center  px-4 py-3 rounded-3xl bg-white`}
@@ -238,7 +237,6 @@ const ServiceDetails = () => {
             </View>
           </Pressable>
         </View>
-
         <View
           style={tw`border border-gray-400 rounded-full flex-row justify-center h-14 items-center gap-3 my-6`}
         >
@@ -247,9 +245,7 @@ const ServiceDetails = () => {
             2 km away
           </Text>
         </View>
-
         {/* ------------------- prover der profile =--------------------- */}
-
         <View style={tw`flex-row`}>
           <TouchableOpacity
             onPress={() => router.push("/company/provider_profile")}
@@ -305,26 +301,14 @@ const ServiceDetails = () => {
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
         />
-
+        onPress={}
         {/* ============== portfolio section ================ */}
-
-        <View style={tw`flex-row justify-between items-center mt-6 `}>
-          <Text style={tw`font-DegularDisplayDemoRegular text-2xl text-black`}>
-            Service
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.push("/company/bookingsHistory")}
-            style={tw`border border-primary rounded-full w-28 h-11 flex-row justify-between items-center px-4`}
-          >
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-xl text-primary`}
-            >
-              See all
-            </Text>
-            <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-          </TouchableOpacity>
-        </View>
-
+        <ShortDataTitle
+          FastTitle="Service"
+          IconTitle="See all"
+          Icon={IconRightArrowCornerPrimaryColor}
+          SeeMorePathPress={() => router.push("/company/bookingsHistory")}
+        />
         <FlatList
           data={[1, 2, 3, 4, 5]}
           renderItem={RenderPortfolioRenderItem}
@@ -334,15 +318,12 @@ const ServiceDetails = () => {
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
         />
-
         {/* ---------------- More services from this provider =-=---------- */}
-
         <Text
           style={tw`font-DegularDisplayDemoMedium text-2xl text-black mt-6 `}
         >
           More services from this provider
         </Text>
-
         <View style={tw`gap-3 mt-4`}>
           {CleaningData?.length === 0 ? (
             <Text
@@ -406,15 +387,12 @@ const ServiceDetails = () => {
             ))
           )}
         </View>
-
         {/* ---------------- You might also like ---------- */}
-
         <Text
           style={tw`font-DegularDisplayDemoMedium text-2xl text-black mt-6 `}
         >
           You might also like
         </Text>
-
         <View style={tw`gap-3 mt-4`}>
           {CleaningData?.length === 0 ? (
             <Text

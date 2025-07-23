@@ -1,17 +1,11 @@
-import { IconProfileBadge, IconSearch } from "@/assets/icons";
+import { IconSearch } from "@/assets/icons";
+import ChatListProfile from "@/src/Components/ChatListProfile";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ChatListData from "@/src/json/ChatListData.json";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
 import React from "react";
-import {
-  Image,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, Text, TextInput, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const chats = () => {
@@ -50,37 +44,11 @@ const chats = () => {
         ) : (
           ChatListData?.map((chatItem) => {
             return (
-              <TouchableOpacity
-                onPress={() => router.push("/company/messaging")}
+              <ChatListProfile
                 key={chatItem?.id}
-                style={tw`flex-row justify-start items-center bg-white border-gray-200 p-3.5 rounded-2xl border gap-1`}
-              >
-                <Image
-                  style={tw`w-14 h-14 rounded-full mr-3`}
-                  source={{ uri: chatItem?.image }}
-                />
-                <View>
-                  <View style={tw`flex-row justify-between`}>
-                    <View style={tw`flex-row items-center gap-2`}>
-                      <Text
-                        style={tw`font-DegularDisplayDemoSemibold text-black text-xl `}
-                      >
-                        {chatItem?.name}
-                      </Text>
-                      {chatItem.badge ? (
-                        <SvgXml xml={IconProfileBadge} />
-                      ) : null}
-                    </View>
-                    <Text style={tw``}>Time</Text>
-                  </View>
-                  <Text
-                    numberOfLines={1}
-                    style={tw`mt-1 font-DegularDisplayDemoRegular text-base text-black`}
-                  >
-                    {chatItem?.text}
-                  </Text>
-                </View>
-              </TouchableOpacity>
+                chatItem={chatItem}
+                onPress={() => router.push("/company/messaging")}
+              />
             );
           })
         )}

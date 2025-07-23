@@ -1,6 +1,7 @@
 import {
   IconBalance,
   IconBoostBlack,
+  IconDisputes,
   IconLogout,
   IconManageDispute,
   IconMyPortfolio,
@@ -8,17 +9,15 @@ import {
   IconRightCornerArrow,
   IconSettings,
   IconShare,
+  IconSmallMultiple,
   IconSwitch,
 } from "@/assets/icons";
-import { ImgSuccessGIF } from "@/assets/images/image";
-import PrimaryButton from "@/src/Components/PrimaryButton";
 import SettingsCard from "@/src/Components/SettingsCard";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
   Image,
-  Modal,
   Pressable,
   ScrollView,
   Text,
@@ -28,7 +27,6 @@ import {
 import { SvgXml } from "react-native-svg";
 
 const Account = () => {
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -105,40 +103,54 @@ const Account = () => {
       <View style={tw`gap-3 mb-6`}>
         <SettingsCard
           title=" Switch to User"
-          onPress={() => router.push("/company/(Tabs)")}
+          // onPress={() => router.push("/company/(Tabs)")}
           fastIcon={IconSwitch}
         />
         <SettingsCard
-          title=" My services"
-          onPress={() =>
-            router.push("/service_provider/individual/my_services/my_service")
-          }
+          title="services"
+          // onPress={() =>
+          //   router.push("/service_provider/individual/my_services/my_service")
+          // }
           fastIcon={IconMyService}
         />
         <SettingsCard
           title=" Manage discounts"
-          onPress={() =>
-            router.push("/service_provider/individual/manage_discounts")
-          }
+          // onPress={() =>
+          //   router.push("/service_provider/individual/manage_discounts")
+          // }
           fastIcon={IconManageDispute}
         />
         <SettingsCard
+          title="Employees"
+          // onPress={() => router.push("/service_provider/individual/portfolio")}
+          fastIcon={IconSmallMultiple}
+        />
+        <SettingsCard
           title="Portfolio"
-          onPress={() => router.push("/service_provider/individual/portfolio")}
+          // onPress={() =>
+          //   router.push(
+          //     "/service_provider/individual/boost_profiles/boost_profile"
+          //   )
+          // }
           fastIcon={IconMyPortfolio}
         />
         <SettingsCard
+          title="My disputes"
+          // onPress={() => router.push("/company/refer_friend")}
+          fastIcon={IconDisputes}
+        />
+        <SettingsCard
           title=" Boost profile"
-          onPress={() =>
-            router.push(
-              "/service_provider/individual/boost_profiles/boost_profile"
-            )
-          }
+          // onPress={() =>
+          //   router.push(
+          //     "/service_provider/individual/boost_profiles/boost_profile"
+          //   )
+          // }
           fastIcon={IconBoostBlack}
         />
         <SettingsCard
           title="Refer a friend"
-          onPress={() => router.push("/company/refer_friend")}
+          // onPress={() => router.push("/company/refer_friend")}
           fastIcon={IconShare}
         />
         <SettingsCard
@@ -151,50 +163,11 @@ const Account = () => {
       </View>
       <SettingsCard
         title="Logout"
-        onPress={() => setModalVisible(true)}
+        // onPress={() => setModalVisible(true)}
         fastIcon={IconLogout}
         textStyle={tw`text-primary`}
         contentStyle={tw`mb-4`}
       />
-
-      {/*  ========================== successful modal ======================= */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View
-          style={tw` flex-1 bg-black bg-opacity-50 justify-center items-center`}
-        >
-          <View
-            style={tw`w-8/9 bg-white p-5 rounded-2xl items-center shadow-lg`}
-          >
-            {/* Check Icon */}
-            <Image style={tw`mt-6 mb-2`} source={ImgSuccessGIF} />
-
-            {/* Success Message */}
-            <Text style={tw`text-4xl font-DegularDisplayDemoBold mt-3`}>
-              Success!
-            </Text>
-            <Text style={tw`text-base text-gray-500 text-center mt-2`}>
-              Your Password Updated.
-            </Text>
-
-            {/* Close Button */}
-            {/*  ------------- next button -------------------- */}
-            <PrimaryButton
-              onPress={() => {
-                setModalVisible(false);
-                // router.push("/company/settings/setting");
-              }}
-              titleProps="Go Back"
-              // IconProps={""}
-              contentStyle={tw`mt-4`}
-            />
-          </View>
-        </View>
-      </Modal>
     </ScrollView>
   );
 };
