@@ -2,10 +2,10 @@ import {
   IconBalance,
   IconCopy,
   IconDownloadBlack,
-  IconProfileBadge,
   IconRightArrowCornerPrimaryColor,
   IconTransfer,
 } from "@/assets/icons";
+import TransactionsCard from "@/src/Components/TransactionsCard";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import * as Clipboard from "expo-clipboard";
@@ -13,24 +13,24 @@ import { router } from "expo-router";
 import React from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
-
-const Wallet_Index = () => {
+const Company_Wallet = () => {
   const copyToClipboard = async (text: string) => {
     await Clipboard.setStringAsync(text);
     Alert.alert("Copied to clipboard!");
   };
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
-      style={tw`flex-1  `}
-      contentContainerStyle={tw`pb-6 px-5 bg-base_color`}
+      style={tw`flex-1  px-5 bg-base_color`}
+      contentContainerStyle={tw`pb-6 `}
     >
       <BackTitleButton
-        pageName={"Your wallet"}
+        pageName={"Transfer balance"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-2xl`}
-        contentStyle={tw`px-5`}
+        // contentStyle={tw`px-5`}
       />
 
       {/* ---------------- card balance -------------- */}
@@ -75,8 +75,12 @@ const Wallet_Index = () => {
 
       <View style={tw`flex-1 flex-row justify-center items-center gap-4 my-7`}>
         <TouchableOpacity
-          onPress={() => router.push("/company/wallets/transfer_balance")}
-          style={tw`flex-row justify-center items-center gap-3 flex-1h-12 border border-gray-300 rounded-2xl`}
+          onPress={() =>
+            router.push(
+              "/service_provider/company/company_wallets/transfer_balance"
+            )
+          }
+          style={tw`flex-row justify-center items-center gap-3 flex-1 h-12 border border-gray-300 rounded-2xl`}
         >
           <SvgXml xml={IconTransfer} />
           <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
@@ -95,42 +99,23 @@ const Wallet_Index = () => {
       </View>
 
       {/* ------------------------ Recent transactions ----------------- */}
-      <View>
+
+      <View style={tw`mt-4`}>
         <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
           Recent transactions
         </Text>
-        <View style={tw`gap-4 my-3`}>
+
+        <View style={tw`gap-6 my-4`}>
           {[1, 2, 3, 4, 5, 6, 7].map((index) => {
             return (
-              <View
+              <TransactionsCard
                 key={index}
-                style={tw`flex-row items-center justify-between`}
-              >
-                <View style={tw`flex-row items-center gap-4`}>
-                  <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-                  <View>
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
-                    >
-                      Service title goes here
-                    </Text>
-                    <View style={tw`flex-row gap-2 items-center `}>
-                      <Text
-                        style={tw`font-DegularDisplayDemoSemibold text-xl text-black`}
-                      >
-                        Jhon Doe
-                      </Text>
-                      <SvgXml xml={IconProfileBadge} />
-                    </View>
-                  </View>
-                </View>
-
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-primary  text-2xl `}
-                >
-                  ₦200.00
-                </Text>
-              </View>
+                price={200}
+                profileBadge
+                title="Service title goes here"
+                transactionIcon={IconRightArrowCornerPrimaryColor}
+                userName="User Name"
+              />
             );
           })}
         </View>
@@ -139,4 +124,4 @@ const Wallet_Index = () => {
   );
 };
 
-export default Wallet_Index;
+export default Company_Wallet;

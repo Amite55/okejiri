@@ -73,7 +73,7 @@ const Manage_Discounts = () => {
           {/* ----------------------- submit password -------------- */}
           <PrimaryButton
             // onPress={() => handleSubmit()}
-            onPress={() => router.push("/service_provider/individual/account")}
+            onPress={() => router.back()}
             titleProps="Save"
             // IconProps={IconRightArrow}
             contentStyle={tw`mt-4`}

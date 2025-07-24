@@ -722,3 +722,8 @@ export const IconSmallMultiple = `<svg width="28" height="22" viewBox="0 0 28 22
 </svg>
 
 `;
+export const IconRightCornerArrowWhite = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.609135 10.9231L9.11313 2.41908L2.50723 2.41908L2.50723 0.343355L12.6568 0.343356V10.493L10.5811 10.493L10.5811 3.88706L2.07711 12.3911L0.609135 10.9231Z" fill="white"/>
+</svg>
+
+`;

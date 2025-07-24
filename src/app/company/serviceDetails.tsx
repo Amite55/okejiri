@@ -149,7 +149,7 @@ const ServiceDetails = () => {
                 onPress={() => setModalVisible(true)}
                 style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
               >
-                <Text style={tw``}>See details</Text>
+                <Text>See details</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -187,7 +187,7 @@ const ServiceDetails = () => {
                 onPress={() => setModalVisible(true)}
                 style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
               >
-                <Text style={tw``}>See details</Text>
+                <Text>See details</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -301,7 +301,7 @@ const ServiceDetails = () => {
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
         />
-        onPress={}
+
         {/* ============== portfolio section ================ */}
         <ShortDataTitle
           FastTitle="Service"
@@ -507,7 +507,6 @@ const ServiceDetails = () => {
             <Text
               style={tw`font-DegularDisplayDemoMedium text-base text-white`}
             >
-              {" "}
               Book now
             </Text>
           </TouchableOpacity>
@@ -551,7 +550,7 @@ const ServiceDetails = () => {
                 { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
               ]}
             >
-              <Text>{""}</Text>
+              <Text></Text>
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
               >

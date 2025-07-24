@@ -181,7 +181,7 @@ const Previous_Booking_Confirmation = () => {
                 { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
               ]}
             >
-              <Text>{""}</Text>
+              <Text></Text>
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
               >

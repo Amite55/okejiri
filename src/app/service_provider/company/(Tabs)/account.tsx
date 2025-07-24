@@ -65,7 +65,7 @@ const Account = () => {
       <Pressable
         onPress={() =>
           router.push(
-            "/service_provider/individual/individual_user_wallet/wallet"
+            "/service_provider/company/company_wallets/company_wallet"
           )
         }
         style={tw`flex-row justify-between items-center my-4 bg-white p-4 rounded-2xl`}
@@ -103,26 +103,30 @@ const Account = () => {
       <View style={tw`gap-3 mb-6`}>
         <SettingsCard
           title=" Switch to User"
-          // onPress={() => router.push("/company/(Tabs)")}
+          onPress={() => router.push("/company/(Tabs)")}
           fastIcon={IconSwitch}
         />
         <SettingsCard
           title="services"
-          // onPress={() =>
-          //   router.push("/service_provider/individual/my_services/my_service")
-          // }
+          onPress={() =>
+            router.push(
+              "/service_provider/company/company_services/my_services"
+            )
+          }
           fastIcon={IconMyService}
         />
         <SettingsCard
           title=" Manage discounts"
-          // onPress={() =>
-          //   router.push("/service_provider/individual/manage_discounts")
-          // }
+          onPress={() =>
+            router.push("/service_provider/individual/manage_discounts")
+          }
           fastIcon={IconManageDispute}
         />
         <SettingsCard
           title="Employees"
-          // onPress={() => router.push("/service_provider/individual/portfolio")}
+          onPress={() =>
+            router.push("/service_provider/company/my_employees/my_employee")
+          }
           fastIcon={IconSmallMultiple}
         />
         <SettingsCard
@@ -155,9 +159,9 @@ const Account = () => {
         />
         <SettingsCard
           title="Settings"
-          onPress={() =>
-            router.push("/service_provider/individual/settings/setting")
-          }
+          // onPress={() =>
+          //   router.push("/service_provider/individual/settings/setting")
+          // }
           fastIcon={IconSettings}
         />
       </View>

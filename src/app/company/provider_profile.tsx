@@ -30,14 +30,57 @@ import {
 import StarRating from "react-native-star-rating-widget";
 import { SvgXml } from "react-native-svg";
 
+const reportingItem = [
+  {
+    id: 1,
+    reportName: "Sexual content",
+  },
+  {
+    id: 2,
+    reportName: "Violent or repulsive content",
+  },
+  {
+    id: 3,
+    reportName: "Hateful or abusive content",
+  },
+  {
+    id: 4,
+    rep4ortName: "Harassment or bullying",
+  },
+  {
+    id: 5,
+    reportName: "Harmful or dangerous acts",
+  },
+  {
+    id: 6,
+    reportName: "Misinformation",
+  },
+  {
+    id: 7,
+    reportName: "Child abuse",
+  },
+  {
+    id: 8,
+    reportName: "Promotes terrorism",
+  },
+  {
+    id: 9,
+    reportName: "Spam or misleading",
+  },
+  {
+    id: 11,
+    reportName: "Legal issue",
+  },
+  {
+    id: 12,
+    reportName: "Captions issue",
+  },
+];
+
 const Provider_Profile = () => {
-  const [isChecked, setIsChecked] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [reportReason, setReportReason] = useState<boolean>(false);
-
-  const handleCheckBox = async () => {
-    setIsChecked(!isChecked);
-  };
+  const [selectedIndex, setSelectedIndex] = useState(null);
 
   //  review profile item render  -------------------------------
   const RenderRankingItem = () => {
@@ -334,7 +377,7 @@ const Provider_Profile = () => {
                 { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
               ]}
             >
-              <Text>{""}</Text>
+              <Text></Text>
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
               >
@@ -431,162 +474,28 @@ const Provider_Profile = () => {
               ) : (
                 // --------------------------------  selected reason text-----------------
                 <View style={tw`px-6 gap-3 mt-6`}>
-                  <View style={tw`flex-row gap-3 items-center rounded-none`}>
-                    <TouchableOpacity
-                      onPress={() => handleCheckBox()}
-                      style={tw.style(
-                        `border w-5 h-5  justify-center items-center rounded-full`,
-                        isChecked ? `bg-primary border-white` : `bg-transparent`
-                      )}
-                    ></TouchableOpacity>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-base text-black`}
+                  {reportingItem.map((item, index) => (
+                    <Pressable
+                      onPress={() => setSelectedIndex(index)}
+                      key={item.id}
+                      style={tw`flex-row gap-3 items-center rounded-none`}
                     >
-                      Sexual content
-                    </Text>
-                  </View>
-                  <View style={tw`flex-row gap-3 items-center rounded-none`}>
-                    <TouchableOpacity
-                      onPress={() => handleCheckBox()}
-                      style={tw.style(
-                        `border w-5 h-5  justify-center items-center rounded-full`,
-                        isChecked ? `bg-primary border-white` : `bg-transparent`
-                      )}
-                    ></TouchableOpacity>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                    >
-                      Violent or repulsive content
-                    </Text>
-                  </View>
-                  <View style={tw`flex-row gap-3 items-center rounded-none`}>
-                    <TouchableOpacity
-                      onPress={() => handleCheckBox()}
-                      style={tw.style(
-                        `border w-5 h-5  justify-center items-center rounded-full`,
-                        isChecked ? `bg-primary border-white` : `bg-transparent`
-                      )}
-                    ></TouchableOpacity>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                    >
-                      Hateful or abusive content
-                    </Text>
-                  </View>
-                  <View style={tw`flex-row gap-3 items-center rounded-none`}>
-                    <TouchableOpacity
-                      onPress={() => handleCheckBox()}
-                      style={tw.style(
-                        `border w-5 h-5  justify-center items-center rounded-full`,
-                        isChecked ? `bg-primary border-white` : `bg-transparent`
-                      )}
-                    ></TouchableOpacity>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                    >
-                      Harassment or bullying
-                    </Text>
-                  </View>
-                  <View style={tw`flex-row gap-3 items-center rounded-none`}>
-                    <TouchableOpacity
-                      onPress={() => handleCheckBox()}
-                      style={tw.style(
-                        `border w-5 h-5  justify-center items-center rounded-full`,
-                        isChecked ? `bg-primary border-white` : `bg-transparent`
-                      )}
-                    ></TouchableOpacity>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                    >
-                      Harmful or dangerous acts
-                    </Text>
-                  </View>
-                  <View style={tw`flex-row gap-3 items-center rounded-none`}>
-                    <TouchableOpacity
-                      onPress={() => handleCheckBox()}
-                      style={tw.style(
-                        `border w-5 h-5  justify-center items-center rounded-full`,
-                        isChecked ? `bg-primary border-white` : `bg-transparent`
-                      )}
-                    ></TouchableOpacity>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                    >
-                      Misinformation
-                    </Text>
-                  </View>
-                  <View style={tw`flex-row gap-3 items-center rounded-none`}>
-                    <TouchableOpacity
-                      onPress={() => handleCheckBox()}
-                      style={tw.style(
-                        `border w-5 h-5  justify-center items-center rounded-full`,
-                        isChecked ? `bg-primary border-white` : `bg-transparent`
-                      )}
-                    ></TouchableOpacity>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                    >
-                      Child abuse
-                    </Text>
-                  </View>
-                  <View style={tw`flex-row gap-3 items-center rounded-none`}>
-                    <TouchableOpacity
-                      onPress={() => handleCheckBox()}
-                      style={tw.style(
-                        `border w-5 h-5  justify-center items-center rounded-full`,
-                        isChecked ? `bg-primary border-white` : `bg-transparent`
-                      )}
-                    ></TouchableOpacity>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                    >
-                      Promotes terrorism
-                    </Text>
-                  </View>
-                  <View style={tw`flex-row gap-3 items-center rounded-none`}>
-                    <TouchableOpacity
-                      onPress={() => handleCheckBox()}
-                      style={tw.style(
-                        `border w-5 h-5  justify-center items-center rounded-full`,
-                        isChecked ? `bg-primary border-white` : `bg-transparent`
-                      )}
-                    ></TouchableOpacity>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                    >
-                      Spam or misleading
-                    </Text>
-                  </View>
-
-                  <View style={tw`flex-row gap-3 items-center rounded-none`}>
-                    <TouchableOpacity
-                      onPress={() => handleCheckBox()}
-                      style={tw.style(
-                        `border w-5 h-5  justify-center items-center rounded-full`,
-                        isChecked ? `bg-primary border-white` : `bg-transparent`
-                      )}
-                    ></TouchableOpacity>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                    >
-                      Legal issue
-                    </Text>
-                  </View>
-
-                  <View style={tw`flex-row gap-3 items-center rounded-none`}>
-                    <TouchableOpacity
-                      onPress={() => handleCheckBox()}
-                      style={tw.style(
-                        `border w-5 h-5  justify-center items-center rounded-full`,
-                        isChecked ? `bg-primary border-white` : `bg-transparent`
-                      )}
-                    ></TouchableOpacity>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                    >
-                      Captions issue
-                    </Text>
-                  </View>
+                      <TouchableOpacity
+                        onPress={() => setSelectedIndex(index)}
+                        style={tw.style(
+                          `border w-5 h-5  justify-center items-center rounded-full`,
+                          selectedIndex === index
+                            ? `bg-primary border-white`
+                            : `bg-transparent`
+                        )}
+                      ></TouchableOpacity>
+                      <Text
+                        style={tw`font-DegularDisplayDemoRegular text-base text-black`}
+                      >
+                        {item.reportName}
+                      </Text>
+                    </Pressable>
+                  ))}
 
                   {/*  ----------- next button -------------- */}
 
@@ -599,7 +508,7 @@ const Provider_Profile = () => {
                       </Text>
                     </TouchableOpacity>
 
-                    {isChecked ? (
+                    {selectedIndex ? (
                       <TouchableOpacity
                         style={tw`p-2`}
                         onPress={() => setReportReason(true)}
