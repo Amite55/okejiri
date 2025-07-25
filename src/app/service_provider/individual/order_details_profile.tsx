@@ -23,7 +23,7 @@ const Order_Details_Profile = () => {
       contentContainerStyle={tw`pb-6`}
     >
       <BackTitleButton
-        pageName={"Bookings history"}
+        pageName={"New order"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-2xl`}
       />

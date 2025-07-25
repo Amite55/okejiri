@@ -27,7 +27,7 @@ const Terms_And_Condition = () => {
           style={tw`w-full h-16 justify-center items-center bg-white rounded-full`}
         >
           <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
-            About us
+            Terms & Conditions
           </Text>
         </View>
       </View>

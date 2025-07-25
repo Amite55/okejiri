@@ -46,10 +46,10 @@ const Individual_Service_Provider_Index = () => {
       style={tw`flex-1 bg-base_color px-5 `}
       contentContainerStyle={tw`pb-28`}
     >
-      {/* header parts  */}
+      {/* ----------------------- Profile header parts -=------------  */}
       <ServiceProfileHeaderInfo
         onPress={() => router.push("/service_provider/individual/account")}
-        individualPathPress={() =>
+        onPressNotification={() =>
           router.push("/notification_Global/notifications")
         }
       />

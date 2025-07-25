@@ -5,20 +5,17 @@ import tw from "@/src/lib/tailwind";
 import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
 import React from "react";
-import {
-  Alert,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import { SvgXml } from "react-native-svg";
 
 const Refer_Friend = () => {
   const copyToClipboard = async (text: string) => {
     await Clipboard.setStringAsync(text);
-    Alert.alert("Copied to clipboard!");
+    Toast.show({
+      type: ALERT_TYPE.SUCCESS,
+      title: "Copy",
+    });
   };
 
   return (

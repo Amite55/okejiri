@@ -7,10 +7,10 @@ import tw from "../lib/tailwind";
 
 interface IProps {
   onPress?: () => void;
-  individualPathPress?: () => void;
+  onPressNotification?: () => void;
 }
 
-const ServiceProfileHeaderInfo = ({ onPress, individualPathPress }: IProps) => {
+const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
   return (
     <View
       style={tw`py-3 flex-1 bg-base_color flex-row items-center justify-between `}
@@ -42,7 +42,7 @@ const ServiceProfileHeaderInfo = ({ onPress, individualPathPress }: IProps) => {
       </Pressable>
 
       <TouchableOpacity
-        onPress={individualPathPress}
+        onPress={onPressNotification}
         style={tw`w-18 h-16 p-3 text-center bg-white rounded-3xl justify-center items-center`}
       >
         <SvgXml xml={IconNotificationDark} />

@@ -103,12 +103,12 @@ const Disputes_Status = () => {
       >
         Files
       </Text>
-      <View style={tw`flex-row gap-2 relative`}>
+      <View style={tw`flex-row items-center justify-center gap-2 relative`}>
         {visibleImages.map((img, index) => (
           <Image
             key={index}
             source={img.image}
-            style={tw`w-32 h-32 rounded-2xl`}
+            style={tw`w-28 h-28 rounded-2xl`}
             resizeMode="cover"
           />
         ))}
@@ -118,7 +118,7 @@ const Disputes_Status = () => {
         {disputeGallary.length > 3 && (
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
-            style={tw`absolute top-0 w-32 h-32 bg-black opacity-50 rounded-2xl right-2 justify-center items-center`}
+            style={tw`absolute top-0 w-28 h-28 bg-black opacity-60 rounded-2xl right-2 justify-center items-center`}
           >
             <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
               + {disputeGallary.length}

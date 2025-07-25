@@ -76,7 +76,7 @@ const Employees_Details = () => {
         <SettingsCard
           onPress={() =>
             router.push(
-              "/service_provider/company/company_settings/edit_profile"
+              "/service_provider/company/my_employees/employee_profile_edit"
             )
           }
           fastIcon={IconEditPenBlack}

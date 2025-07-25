@@ -14,6 +14,8 @@ const _layout = () => {
       >
         <Stack.Screen name="my_employee" />
         <Stack.Screen name="add_new_employee" />
+        <Stack.Screen name="employee_profile_edit" />
+        <Stack.Screen name="employees_details" />
       </Stack>
     </View>
   );

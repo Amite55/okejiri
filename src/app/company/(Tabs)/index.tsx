@@ -72,6 +72,9 @@ const Company_Home_Index = () => {
       {/* header parts  */}
       <ServiceProfileHeaderInfo
         onPress={() => router.push("/company/(Tabs)/profile")}
+        onPressNotification={() =>
+          router.push("/notification_Global/notifications")
+        }
       />
       {/* ======================= search bar -=-o--------------------------- */}
       <View

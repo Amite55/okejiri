@@ -76,6 +76,7 @@ const Boost_Profile_Plan = () => {
             maxHeight={300}
             labelField="label"
             valueField="value"
+            dropdownPosition="top"
             placeholder={!isFocus ? "- Select -" : "..."}
             value={value}
             onFocus={() => setIsFocus(true)}
@@ -88,7 +89,7 @@ const Boost_Profile_Plan = () => {
         </View>
       </View>
 
-      <View style={tw`gap-2 `}>
+      <View style={tw`gap-2 mt-6`}>
         <View style={tw`flex-row justify-between items-center `}>
           <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
             Upgrade your boost for 30 days
@@ -106,7 +107,7 @@ const Boost_Profile_Plan = () => {
           // }}
           titleProps="Pay now "
           IconProps={IconPayCardWhite}
-          contentStyle={tw`mt-4`}
+          contentStyle={tw`mt-1`}
         />
       </View>
     </ScrollView>

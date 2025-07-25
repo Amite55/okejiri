@@ -39,10 +39,10 @@ const Home_Index_Company = () => {
     >
       {/* header parts  */}
       <ServiceProfileHeaderInfo
-      // onPress={() => router.push("/service_provider/individual/account")}
-      // individualPathPress={() =>
-      //   router.push("/notification_Global/notifications")
-      // }
+        onPress={() => router.push("/service_provider/company/(Tabs)/account")}
+        onPressNotification={() =>
+          router.push("/notification_Global/notifications")
+        }
       />
 
       <View

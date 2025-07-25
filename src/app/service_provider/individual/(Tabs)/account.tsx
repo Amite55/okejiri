@@ -1,6 +1,7 @@
 import {
   IconBalance,
   IconBoostBlack,
+  IconDisputes,
   IconLogout,
   IconManageDispute,
   IconMyPortfolio,
@@ -135,6 +136,13 @@ const Account = () => {
             )
           }
           fastIcon={IconBoostBlack}
+        />
+        <SettingsCard
+          title="My disputes"
+          onPress={() =>
+            router.push("/service_provider/individual/disputes/my_disputes")
+          }
+          fastIcon={IconDisputes}
         />
         <SettingsCard
           title="Refer a friend"

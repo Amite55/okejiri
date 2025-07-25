@@ -1,9 +1,5 @@
-import {
-  IconLocationGray,
-  IconPhoneGray,
-  IconUploadImage,
-} from "@/assets/icons";
-import { ImgSuccessGIF } from "@/assets/images/image";
+import { IconLocationGray, IconPhoneGray, IconReplace } from "@/assets/icons";
+import { ImgProfileImg, ImgSuccessGIF } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import SuccessModal from "@/src/Components/SuccessModal";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
@@ -11,7 +7,7 @@ import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-  Pressable,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -28,45 +24,37 @@ const dropdownData = [
   { label: "Service Provider", value: "2" },
 ];
 
-const Add_New_Employee = () => {
+const Employee_Profile_Edit = () => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [successModalVisible, setSuccessModal] = useState<boolean>(false);
-
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       keyboardDismissMode="interactive"
       style={tw`flex-1 bg-base_color px-5 `}
-      contentContainerStyle={tw`pb-6 flex-grow justify-between`}
+      contentContainerStyle={tw`pb-4 flex-grow justify-between`}
     >
       <View>
         <BackTitleButton
-          pageName={"Add employee"}
+          pageName={"Edit employee"}
           onPress={() => router.back()}
           titleTextStyle={tw`text-2xl`}
           // contentStyle={tw`px-5`}
         />
 
-        {/* ------------------ Image upload ------------------ */}
-
-        <Pressable
-          style={tw`border border-dashed border-gray-500 rounded-3xl p-6 justify-center items-center mt-2  gap-2 `}
+        <View
+          style={tw`relative bg-white h-48 rounded-xl justify-center items-center gap-2`}
         >
-          <SvgXml xml={IconUploadImage} />
+          <Image style={tw`w-24 h-24 rounded-full `} source={ImgProfileImg} />
 
-          <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
-            Upload employee image
-          </Text>
           <TouchableOpacity
-            style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
+            style={tw`absolute top-4 right-4 border border-deepBlue200 p-2 rounded-md`}
           >
-            <Text style={tw`font-DegularDisplayDemoRegular text-xl text-white`}>
-              Browse
-            </Text>
+            <SvgXml xml={IconReplace} />
           </TouchableOpacity>
-        </Pressable>
+        </View>
 
         {/* ----------- employee name ------------ */}
 
@@ -142,14 +130,18 @@ const Add_New_Employee = () => {
         </View>
       </View>
 
-      <PrimaryButton titleProps="Add" onPress={() => setSuccessModal(true)} />
+      {/* ---------------- primary button ---------------- */}
 
-      {/* =============c successful modal -========================= */}
+      <PrimaryButton
+        titleProps="Save changes"
+        onPress={() => setSuccessModal(true)}
+      />
+
       <SuccessModal
         setModalVisible={setSuccessModal}
         modalVisible={successModalVisible}
         successImage={ImgSuccessGIF}
-        modalTitle="New employee added"
+        modalTitle="Changes Employee Info"
       >
         <PrimaryButton
           contentStyle={tw`bg-redDeep`}
@@ -161,7 +153,7 @@ const Add_New_Employee = () => {
   );
 };
 
-export default Add_New_Employee;
+export default Employee_Profile_Edit;
 
 // ------------ dropdown Style --------------------
 

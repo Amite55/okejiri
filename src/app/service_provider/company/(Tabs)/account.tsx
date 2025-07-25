@@ -131,37 +131,35 @@ const Account = () => {
         />
         <SettingsCard
           title="Portfolio"
-          // onPress={() =>
-          //   router.push(
-          //     "/service_provider/individual/boost_profiles/boost_profile"
-          //   )
-          // }
+          onPress={() => router.push("/service_provider/individual/portfolio")}
           fastIcon={IconMyPortfolio}
         />
         <SettingsCard
           title="My disputes"
-          // onPress={() => router.push("/company/refer_friend")}
+          onPress={() =>
+            router.push("/service_provider/individual/disputes/my_disputes")
+          }
           fastIcon={IconDisputes}
         />
         <SettingsCard
           title=" Boost profile"
-          // onPress={() =>
-          //   router.push(
-          //     "/service_provider/individual/boost_profiles/boost_profile"
-          //   )
-          // }
+          onPress={() =>
+            router.push(
+              "/service_provider/individual/boost_profiles/boost_profile"
+            )
+          }
           fastIcon={IconBoostBlack}
         />
         <SettingsCard
           title="Refer a friend"
-          // onPress={() => router.push("/company/refer_friend")}
+          onPress={() => router.push("/company/refer_friend")}
           fastIcon={IconShare}
         />
         <SettingsCard
           title="Settings"
-          // onPress={() =>
-          //   router.push("/service_provider/individual/settings/setting")
-          // }
+          onPress={() =>
+            router.push("/service_provider/individual/settings/setting")
+          }
           fastIcon={IconSettings}
         />
       </View>

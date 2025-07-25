@@ -26,7 +26,7 @@ const providedServicesData = [
   },
   {
     id: 5,
-    statu5s: "Completed",
+    status: "Completed",
   },
   {
     id: 6,
@@ -39,17 +39,19 @@ const providedServicesData = [
 ];
 
 const renderServiceProvided = ({ item }) => {
-  let statusStyle;
+  let statusStyle = "";
 
   if (item.status === "Pending") {
-    statusStyle = "bg_violet";
+    statusStyle = "bg-blue-500";
   } else if (item.status === "Completed") {
-    statusStyle = "success600";
+    statusStyle = "bg-green-600";
   }
 
   return (
-    <TouchableOpacity style={tw`flex-row justify-between`}>
-      <View style={tw`flex-row gap-3`}>
+    <TouchableOpacity
+      style={tw`flex-row justify-between bg-white px-2 py-3 rounded-xl`}
+    >
+      <View style={tw`flex-1 flex-row gap-3`}>
         <Image style={tw`w-20 h-20 rounded-xl`} source={ImgProfileImg} />
         <View>
           <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
@@ -74,12 +76,20 @@ const renderServiceProvided = ({ item }) => {
         </View>
       </View>
 
-      <View>
-        <Text style={tw`font-DegularDisplayDemoMedium text-xl text-primary`}>
+      <View style={tw`items-end gap-2`}>
+        <Text
+          style={tw`flex-1 font-DegularDisplayDemoMedium text-xl text-primary`}
+        >
           ₦10.50
         </Text>
-        <View style={[tw`px-4 py-2 rounded-lg justify-center items-center`]}>
-          <Text>{item?.status}</Text>
+        <View
+          style={[
+            tw`flex-1 px-2 py-0.5 rounded-lg justify-center items-center  ${statusStyle}`,
+          ]}
+        >
+          <Text style={tw`font-DegularDisplayDemoRegular text-base text-white`}>
+            {item?.status}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -90,7 +100,7 @@ const Service_Provided = () => {
   return (
     <FlatList
       style={tw`flex-1 bg-base_color`}
-      contentContainerStyle={tw`px-5 gap-3`}
+      contentContainerStyle={tw`px-5 gap-3 pb-4`}
       data={providedServicesData}
       keyExtractor={(i) => i.id.toLocaleString()}
       renderItem={renderServiceProvided}

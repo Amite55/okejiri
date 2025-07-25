@@ -116,12 +116,14 @@ const Dispute_Review = () => {
       >
         Files
       </Text>
-      <View style={tw`flex-row gap-2 relative mb-6`}>
+      <View
+        style={tw`flex-row gap-2 relative justify-center items-center mb-6`}
+      >
         {visibleImages.map((img, index) => (
           <Image
             key={index}
             source={img.image}
-            style={tw`w-32 h-32 rounded-2xl`}
+            style={tw`w-28 h-28 rounded-2xl`}
             resizeMode="cover"
           />
         ))}
@@ -131,7 +133,7 @@ const Dispute_Review = () => {
         {disputeGallary.length > 3 && (
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
-            style={tw`absolute top-0 w-32 h-32 bg-black opacity-50 rounded-2xl right-2 justify-center items-center`}
+            style={tw`absolute top-0 w-28 h-28 bg-black opacity-50 rounded-2xl right-2 justify-center items-center`}
           >
             <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
               + {disputeGallary.length}
