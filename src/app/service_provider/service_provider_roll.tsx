@@ -5,6 +5,7 @@ import {
 } from "@/assets/icons";
 import { ImgLogo, ImgServiceProviderRoll } from "@/assets/images/image";
 import tw from "@/src/lib/tailwind";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -36,9 +37,10 @@ const ServiceProviderRoll = () => {
 
         <TouchableOpacity
           // onPress={() => router.push("/auth/login")}
-          onPress={() =>
-            router.push("/service_provider/individual/(Tabs)/home")
-          }
+          onPress={() => {
+            AsyncStorage.setItem("roll", JSON.stringify("service_provider"));
+            router.push("/service_provider/individual/(Tabs)/home");
+          }}
           style={tw`bg-white w-full rounded-3xl mt-10 p-2 flex-row justify-between items-center`}
         >
           <View style={tw`flex-row items-center gap-5`}>
@@ -56,7 +58,10 @@ const ServiceProviderRoll = () => {
         {/* ------------------------------ service provider with company  ---------------------------- */}
         <TouchableOpacity
           // onPress={() => router.push("/auth/login")}
-          onPress={() => router.push("/service_provider/company/(Tabs)/home")}
+          onPress={() => {
+            AsyncStorage.setItem("roll", JSON.stringify("company_provider"));
+            router.push("/service_provider/company/(Tabs)/home");
+          }}
           style={tw`bg-white w-full rounded-3xl p-2 flex-row justify-between items-center mt-3`}
         >
           <View style={tw`flex-row items-center gap-5`}>

@@ -3,6 +3,7 @@ import {
   IconBoostBlack,
   IconDisputes,
   IconLogout,
+  IconLogoutModal,
   IconManageDispute,
   IconMyPortfolio,
   IconMyService,
@@ -12,10 +13,12 @@ import {
   IconSmallMultiple,
   IconSwitch,
 } from "@/assets/icons";
+import LogoutModal from "@/src/Components/LogoutModal";
 import SettingsCard from "@/src/Components/SettingsCard";
 import tw from "@/src/lib/tailwind";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   Pressable,
@@ -27,6 +30,8 @@ import {
 import { SvgXml } from "react-native-svg";
 
 const Account = () => {
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -165,10 +170,25 @@ const Account = () => {
       </View>
       <SettingsCard
         title="Logout"
-        // onPress={() => setModalVisible(true)}
+        onPress={() => setModalVisible(true)}
         fastIcon={IconLogout}
         textStyle={tw`text-primary`}
         contentStyle={tw`mb-4`}
+      />
+      {/* ------------------------- logout modal ------------------------ */}
+
+      <LogoutModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        logoutIcon={IconLogoutModal}
+        buttonTitle="Yes, Log out"
+        modalTitle="Are you sure you want to log out?"
+        subTitle="You will need to log in again to access your account."
+        onPress={() => {
+          setModalVisible(false);
+          router.push("/chose_roll");
+          AsyncStorage.removeItem("roll");
+        }}
       />
     </ScrollView>
   );

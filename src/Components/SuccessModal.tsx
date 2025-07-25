@@ -35,7 +35,9 @@ const SuccessModal = ({
         setModalVisible(!modalVisible);
       }}
     >
-      <View style={tw`flex-1 justify-center items-center`}>
+      <View
+        style={tw`flex-1 justify-center items-center  bg-black bg-opacity-40`}
+      >
         <View style={tw`bg-white w-[85%] rounded-xl py-4 px-6`}>
           <View style={tw`justify-center items-center mb-4`}>
             {successImage && (

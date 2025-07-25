@@ -17,7 +17,7 @@ import {
 import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
-const contact = () => {
+const Contact = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [number, setNumber] = useState("");
   const [location, setLocation] = useState("");
@@ -26,8 +26,9 @@ const contact = () => {
   return (
     <ScrollView style={tw`flex-1 bg-base_color px-5`}>
       <BackTitleButton
-        onPress={() => router.canGoBack()}
+        onPress={() => router.back()}
         pageName={"Sign up as a service user"}
+        titleTextStyle={tw`text-2xl`}
       />
 
       <View style={tw`justify-center items-center mb-12`}>
@@ -161,4 +162,4 @@ const contact = () => {
   );
 };
 
-export default contact;
+export default Contact;

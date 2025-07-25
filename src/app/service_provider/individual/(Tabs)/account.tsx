@@ -3,6 +3,7 @@ import {
   IconBoostBlack,
   IconDisputes,
   IconLogout,
+  IconLogoutModal,
   IconManageDispute,
   IconMyPortfolio,
   IconMyService,
@@ -11,15 +12,14 @@ import {
   IconShare,
   IconSwitch,
 } from "@/assets/icons";
-import { ImgSuccessGIF } from "@/assets/images/image";
-import PrimaryButton from "@/src/Components/PrimaryButton";
+import LogoutModal from "@/src/Components/LogoutModal";
 import SettingsCard from "@/src/Components/SettingsCard";
 import tw from "@/src/lib/tailwind";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
-  Modal,
   Pressable,
   ScrollView,
   Text,
@@ -165,44 +165,19 @@ const Account = () => {
         contentStyle={tw`mb-4`}
       />
 
-      {/*  ========================== successful modal ======================= */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View
-          style={tw` flex-1 bg-black bg-opacity-50 justify-center items-center`}
-        >
-          <View
-            style={tw`w-8/9 bg-white p-5 rounded-2xl items-center shadow-lg`}
-          >
-            {/* Check Icon */}
-            <Image style={tw`mt-6 mb-2`} source={ImgSuccessGIF} />
-
-            {/* Success Message */}
-            <Text style={tw`text-4xl font-DegularDisplayDemoBold mt-3`}>
-              Success!
-            </Text>
-            <Text style={tw`text-base text-gray-500 text-center mt-2`}>
-              Your Password Updated.
-            </Text>
-
-            {/* Close Button */}
-            {/*  ------------- next button -------------------- */}
-            <PrimaryButton
-              onPress={() => {
-                setModalVisible(false);
-                // router.push("/company/settings/setting");
-              }}
-              titleProps="Go Back"
-              // IconProps={""}
-              contentStyle={tw`mt-4`}
-            />
-          </View>
-        </View>
-      </Modal>
+      <LogoutModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        logoutIcon={IconLogoutModal}
+        buttonTitle="Yes, Log out"
+        modalTitle="Are you sure you want to log out?"
+        subTitle="You will need to log in again to access your account."
+        onPress={() => {
+          setModalVisible(false);
+          router.push("/chose_roll");
+          AsyncStorage.removeItem("roll");
+        }}
+      />
     </ScrollView>
   );
 };

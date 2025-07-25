@@ -133,7 +133,7 @@ const Dispute_Review = () => {
         {disputeGallary.length > 3 && (
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
-            style={tw`absolute top-0 w-28 h-28 bg-black opacity-50 rounded-2xl right-2 justify-center items-center`}
+            style={tw`absolute top-0 w-28 h-28 bg-black bg-opacity-50 rounded-2xl right-2 justify-center items-center`}
           >
             <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
               + {disputeGallary.length}

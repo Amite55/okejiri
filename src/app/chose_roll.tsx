@@ -4,6 +4,7 @@ import {
   IconUser,
 } from "@/assets/icons";
 import { ImgChoseRoll, ImgLogo } from "@/assets/images/image";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -31,7 +32,10 @@ const chose_roll = () => {
         </View>
 
         <TouchableOpacity
-          onPress={() => router.push("/auth/login")}
+          onPress={() => {
+            AsyncStorage.setItem("roll", JSON.stringify("user"));
+            router.push("/auth/login");
+          }}
           style={tw`bg-white w-full rounded-3xl mt-4 p-2 flex-row justify-between items-center`}
         >
           <View style={tw`flex-row items-center gap-5`}>
@@ -48,7 +52,10 @@ const chose_roll = () => {
         </TouchableOpacity>
         {/* ------------------------------ service provider ---------------------------- */}
         <TouchableOpacity
-          onPress={() => router.push("/service_provider/service_provider_roll")}
+          onPress={() => {
+            AsyncStorage.setItem("roll", JSON.stringify("user"));
+            router.push("/service_provider/service_provider_roll");
+          }}
           style={tw`bg-white w-full rounded-3xl p-2 flex-row justify-between items-center mt-3`}
         >
           <View style={tw`flex-row items-center gap-5`}>
