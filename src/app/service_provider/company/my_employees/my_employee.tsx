@@ -82,6 +82,11 @@ const My_Employee = () => {
       <View style={tw`gap-2 my-5`}>
         {[1, 2, 3, 4, 5].map((item) => (
           <Pressable
+            onPress={() =>
+              router.push(
+                "/service_provider/company/my_employees/employees_details"
+              )
+            }
             key={item}
             style={tw`relative bg-white flex-row items-center gap-4 p-2 rounded-lg`}
           >
