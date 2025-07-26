@@ -9,11 +9,13 @@ import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import CleaningData from "@/src/json/CleaningData.json";
 import ServicesData from "@/src/json/ServiceData.json";
 import tw from "@/src/lib/tailwind";
+import { BlurView } from "@react-native-community/blur";
 import { router } from "expo-router";
 import React from "react";
 import {
   FlatList,
   Image,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -38,12 +40,14 @@ const Company_Home_Index = () => {
           style={tw`absolute bottom-2 justify-center items-center w-38 h-10 rounded-xl border border-white60 overflow-hidden`}
         >
           {/* Background Blur */}
-          {/* <BlurView
-            style={tw`absolute inset-0`}
-            blurType="dark"
-            blurAmount={5}
-            reducedTransparencyFallbackColor="white"
-          /> */}
+          {Platform.OS === "ios" && (
+            <BlurView
+              style={tw`absolute inset-0`}
+              blurType="dark"
+              blurAmount={5}
+              reducedTransparencyFallbackColor="white"
+            />
+          )}
 
           {/* Foreground content (Text) */}
           <TouchableOpacity
@@ -81,7 +85,10 @@ const Company_Home_Index = () => {
         style={tw`w-full h-14 flex-row justify-start items-center px-4 gap-2 bg-white rounded-full my-3`}
       >
         <SvgXml xml={IconSearch} />
-        <TextInput placeholder="Search service" />
+        <TextInput
+          placeholder="Search service"
+          placeholderTextColor={"#535353"}
+        />
       </View>
       {/* ======================== benner section start hare ==================== */}
       <View style={tw`flex-1 justify-center items-center `}>

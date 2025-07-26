@@ -4,7 +4,15 @@ import tw from "@/src/lib/tailwind";
 import { BlurView } from "@react-native-community/blur";
 import { router } from "expo-router";
 import React from "react";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Platform,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const services = () => {
   const serviceItemRender = ({ item }) => {
@@ -23,12 +31,14 @@ const services = () => {
           style={tw`absolute bottom-2 justify-center items-center w-38 h-10 rounded-xl border border-white60 overflow-hidden`}
         >
           {/* Background Blur */}
-          <BlurView
-            style={tw`absolute inset-0`}
-            blurType="dark"
-            blurAmount={5}
-            reducedTransparencyFallbackColor="white"
-          />
+          {Platform.OS === "ios" && (
+            <BlurView
+              style={tw`absolute inset-0`}
+              blurType="dark"
+              blurAmount={5}
+              reducedTransparencyFallbackColor="white"
+            />
+          )}
 
           {/* Foreground content (Text) */}
           <TouchableOpacity
@@ -53,6 +63,9 @@ const services = () => {
       <View>
         <ServiceProfileHeaderInfo
           onPress={() => router.push("/company/(Tabs)/profile")}
+          onPressNotification={() =>
+            router.push("/notification_Global/notifications")
+          }
         />
         <Text
           style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}
@@ -64,17 +77,19 @@ const services = () => {
   };
 
   return (
-    <FlatList
-      data={ServicesData}
-      renderItem={serviceItemRender}
-      ListHeaderComponent={serviceHeaderRender}
-      numColumns={2}
-      keyExtractor={(item) => item.id.toString()}
-      ListHeaderComponentStyle={tw`w-full`}
-      contentContainerStyle={tw` flex-1 items-center bg-base_color px-5 gap-3 `}
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-    />
+    <SafeAreaView style={tw`flex-1 bg-base_color`}>
+      <FlatList
+        data={ServicesData}
+        renderItem={serviceItemRender}
+        ListHeaderComponent={serviceHeaderRender}
+        numColumns={2}
+        keyExtractor={(item) => item.id.toString()}
+        ListHeaderComponentStyle={tw`w-full mb-3`}
+        contentContainerStyle={tw`pt-2 items-center px-5 gap-3`}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      />
+    </SafeAreaView>
   );
 };
 

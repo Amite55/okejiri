@@ -19,6 +19,9 @@ const bookings = () => {
       {/* ================== profile header component =========== */}
       <ServiceProfileHeaderInfo
         onPress={() => router.push("/company/(Tabs)/profile")}
+        onPressNotification={() =>
+          router.push("/notification_Global/notifications")
+        }
       />
 
       <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>

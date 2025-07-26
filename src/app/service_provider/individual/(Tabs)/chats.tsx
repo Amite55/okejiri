@@ -22,6 +22,9 @@ const Chats = () => {
         onPress={() =>
           router.push("/service_provider/individual/(Tabs)/account")
         }
+        onPressNotification={() =>
+          router.push("/notification_Global/notifications")
+        }
       />
 
       <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>
@@ -33,7 +36,10 @@ const Chats = () => {
         style={tw`w-full h-14 flex-row justify-start items-center px-4 gap-2 bg-white rounded-full my-3`}
       >
         <SvgXml xml={IconSearch} />
-        <TextInput placeholder="Search chats" />
+        <TextInput
+          placeholder="Search chats"
+          placeholderTextColor={"#535353"}
+        />
       </View>
 
       <View style={tw`gap-1`}>

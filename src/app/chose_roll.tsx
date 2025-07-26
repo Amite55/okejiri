@@ -18,7 +18,7 @@ const chose_roll = () => {
       showsVerticalScrollIndicator={false}
       style={tw`flex-1 px-5 bg-base_color`}
     >
-      <View style={tw`justify-center items-center mt-4`}>
+      <View style={tw`flex-1 justify-center items-center mt-4`}>
         <Image style={tw`w-44 h-12`} source={ImgLogo} />
         <Image style={tw`px-11 mt-3`} source={ImgChoseRoll} />
         <View style={tw`justify-center items-center gap-3 my-3`}>

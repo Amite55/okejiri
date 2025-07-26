@@ -165,6 +165,7 @@ const Make_Payment = () => {
                   <View style={tw`flex-row justify-between items-center`}>
                     <TextInput
                       placeholder="card number"
+                      placeholderTextColor={"#535353"}
                       keyboardType="numeric"
                       style={tw`text-lg flex-1`}
                     />
@@ -188,6 +189,7 @@ const Make_Payment = () => {
                     <TextInput
                       placeholder="CVC"
                       keyboardType="numeric"
+                      placeholderTextColor={"#535353"}
                       secureTextEntry
                       style={tw`text-lg`}
                     />
@@ -202,6 +204,7 @@ const Make_Payment = () => {
                 <View style={tw`border border-gray-300 rounded-lg p-3 mt-2`}>
                   <TextInput
                     placeholder="ZIP"
+                    placeholderTextColor={"#535353"}
                     keyboardType="numeric"
                     style={tw`text-lg`}
                   />

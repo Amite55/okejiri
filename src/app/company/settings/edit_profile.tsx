@@ -60,7 +60,10 @@ const Edit_Profile = () => {
           <View
             style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center my-2`}
           >
-            <TextInput placeholder="John Smith" />
+            <TextInput
+              placeholder="John Smith"
+              placeholderTextColor={"#535353"}
+            />
           </View>
 
           {/* -------------- contact number ------------------- */}
@@ -72,7 +75,10 @@ const Edit_Profile = () => {
           <View
             style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center my-2`}
           >
-            <TextInput placeholder="+12121212112" />
+            <TextInput
+              placeholder="+12121212112"
+              placeholderTextColor={"#535353"}
+            />
           </View>
 
           {/*  ----------- address and location ------------------  */}
@@ -84,7 +90,10 @@ const Edit_Profile = () => {
           <View
             style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center my-2`}
           >
-            <TextInput placeholder="Dhaka, Bangladesh" />
+            <TextInput
+              placeholder="Dhaka, Bangladesh"
+              placeholderTextColor={"#535353"}
+            />
           </View>
         </View>
       </View>

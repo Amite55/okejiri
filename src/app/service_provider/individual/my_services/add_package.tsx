@@ -114,6 +114,7 @@ const Add_Package = () => {
               style={tw`border border-gray-300 h-14 rounded-full px-4 justify-center items-center`}
               placeholder="Service title goes here"
               onChangeText={(newText) => console.log(newText)}
+              placeholderTextColor={"#535353"}
               // value={}
               textAlignVertical="top"
             />
@@ -130,6 +131,7 @@ const Add_Package = () => {
               multiline={true}
               numberOfLines={4}
               placeholder="Type here"
+              placeholderTextColor={"#535353"}
               onChangeText={(newText) => console.log(newText)}
               // value={}
               textAlignVertical="top"
@@ -149,6 +151,7 @@ const Add_Package = () => {
                 style={tw`flex-1`}
                 placeholder="Service title goes here"
                 onChangeText={(newText) => console.log(newText)}
+                placeholderTextColor={"#535353"}
                 // value={}
                 textAlignVertical="top"
               />

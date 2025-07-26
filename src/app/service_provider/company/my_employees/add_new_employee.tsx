@@ -82,6 +82,7 @@ const Add_New_Employee = () => {
               style={tw`flex-1`}
               placeholder="Employee name hare"
               onChangeText={(value) => console.log(value)}
+              placeholderTextColor={"#535353"}
             />
           </View>
         </View>
@@ -122,6 +123,7 @@ const Add_New_Employee = () => {
             <TextInput
               style={tw`flex-1`}
               placeholder="Phone number"
+              placeholderTextColor={"#535353"}
               onChangeText={(value) => console.log(value)}
             />
           </View>

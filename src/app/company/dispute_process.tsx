@@ -80,6 +80,7 @@ const Dispute_Process = () => {
             multiline={true}
             numberOfLines={4}
             placeholder="Type here"
+            placeholderTextColor={"#535353"}
             onChangeText={(newText) => console.log(newText)}
             // value={}
             textAlignVertical="top"

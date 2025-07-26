@@ -110,6 +110,7 @@ const Employee_Profile_Edit = () => {
             <TextInput
               style={tw`flex-1`}
               placeholder="Phone number"
+              placeholderTextColor={"#535353"}
               onChangeText={(value) => console.log(value)}
             />
           </View>
@@ -124,6 +125,7 @@ const Employee_Profile_Edit = () => {
             <TextInput
               style={tw`flex-1`}
               placeholder="Location"
+              placeholderTextColor={"#535353"}
               onChangeText={(value) => console.log(value)}
             />
           </View>

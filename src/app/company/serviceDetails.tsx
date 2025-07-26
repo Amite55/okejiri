@@ -110,7 +110,7 @@ const ServiceDetails = () => {
           {/*  ================= add wish list fvt icon =========================== */}
           <Pressable
             onPress={() => setAddWishList(!addWishlist)}
-            style={tw`absolute bottom-4 right-2 w-14 h-14 bg-black bg-opacity-60 rounded-full justify-center items-center`}
+            style={tw`absolute bottom-4 right-2 w-14 h-14 bg-black bg-opacity-50 border border-white rounded-full justify-center items-center`}
           >
             <SvgXml
               xml={addWishlist ? IconWhishListSelected : IconFavouriteWhite}

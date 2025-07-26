@@ -103,6 +103,7 @@ const Edit_Package = () => {
               style={tw`border border-gray-300 h-14 rounded-full px-4 justify-center items-center`}
               placeholder="Service title goes here"
               onChangeText={(newText) => console.log(newText)}
+              placeholderTextColor={"#535353"}
               // value={}
               textAlignVertical="top"
             />
@@ -115,7 +116,10 @@ const Edit_Package = () => {
 
             <View style={tw`border border-gray-300 rounded-3xl p-5 gap-3`}>
               <View style={tw`flex-row justify-between items-center`}>
-                <TextInput placeholder="Type hare" />
+                <TextInput
+                  placeholder="Type hare"
+                  placeholderTextColor={"#535353"}
+                />
                 <TouchableOpacity
                   style={tw`w-11 h-11 rounded-full border border-gray-300 justify-center items-center`}
                 >
@@ -168,6 +172,7 @@ const Edit_Package = () => {
                   defaultValue="40.00"
                   //   placeholder="49.00"
                   onChangeText={(newText) => console.log(newText)}
+                  placeholderTextColor={"#535353"}
                   // value={}
                   textAlignVertical="top"
                 />

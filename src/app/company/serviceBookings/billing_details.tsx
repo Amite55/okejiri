@@ -26,7 +26,10 @@ const BillingDetails = () => {
             <View
               style={tw`border border-gray-300 justify-center  w-full rounded-full h-14 px-4 `}
             >
-              <TextInput placeholder="Jone Doe" />
+              <TextInput
+                placeholder="Jone Doe"
+                placeholderTextColor={"#535353"}
+              />
             </View>
           </View>
 
@@ -38,7 +41,10 @@ const BillingDetails = () => {
             <View
               style={tw`border border-gray-300 justify-center  w-full rounded-full h-14 px-4 `}
             >
-              <TextInput placeholder="example@gmail.com" />
+              <TextInput
+                placeholder="example@gmail.com"
+                placeholderTextColor={"#535353"}
+              />
             </View>
           </View>
 
@@ -50,7 +56,10 @@ const BillingDetails = () => {
             <View
               style={tw`border border-gray-300 justify-center  w-full rounded-full h-14 px-4 `}
             >
-              <TextInput placeholder="+2156985632" />
+              <TextInput
+                placeholder="+2156985632"
+                placeholderTextColor={"#535353"}
+              />
             </View>
           </View>
         </View>

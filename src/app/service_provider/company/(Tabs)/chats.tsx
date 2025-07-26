@@ -32,7 +32,11 @@ const Chats = () => {
         style={tw`w-full h-14 flex-row justify-start items-center px-4 gap-2 bg-white rounded-full my-3`}
       >
         <SvgXml xml={IconSearch} />
-        <TextInput placeholder="Search chats" />
+        <TextInput
+          style={tw`flex-1`}
+          placeholder="Search chats"
+          placeholderTextColor={"#535353"}
+        />
       </View>
 
       <View style={tw`gap-1`}>

@@ -177,6 +177,7 @@ const Message = () => {
         <TextInput
           style={tw`flex-1 bg-white px-4 rounded-md`}
           placeholder="Type a message"
+          placeholderTextColor={"#535353"}
           value={message}
           onChangeText={(text) => setMessage(text)}
         />

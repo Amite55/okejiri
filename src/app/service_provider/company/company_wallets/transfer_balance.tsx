@@ -48,6 +48,7 @@ const Transfer_Balance = () => {
               <TextInput
                 // style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
                 placeholder="0x742d35Cc6634C05....................."
+                placeholderTextColor={"#535353"}
               />
             </TouchableOpacity>
           </View>
@@ -64,6 +65,7 @@ const Transfer_Balance = () => {
               keyboardType="number-pad"
               disableKeyboardShortcuts
               placeholder="  0.00"
+              placeholderTextColor={"#535353"}
             />
 
             <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
