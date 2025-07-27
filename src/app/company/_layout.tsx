@@ -23,6 +23,7 @@ const _layout = () => {
       <Stack.Screen name="provider_profile" />
       <Stack.Screen name="messaging" />
       <Stack.Screen name="wallets" />
+      <Stack.Screen name="my_booking" />
     </Stack>
   );
 };

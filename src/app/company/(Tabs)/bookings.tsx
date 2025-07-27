@@ -1,11 +1,11 @@
-import { IconMostResentGray, IconProfileBadge } from "@/assets/icons";
+import { IconMostResentGray } from "@/assets/icons";
+import ServiceCard from "@/src/Components/ServiceCard";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import CleaningData from "@/src/json/CleaningData.json";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
 import React from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
-import StarRating from "react-native-star-rating-widget";
+import { ScrollView, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 const bookings = () => {
   return (
@@ -37,50 +37,13 @@ const bookings = () => {
             Your ServiCe No Data
           </Text>
         ) : (
-          CleaningData.slice(0, 3).map((item) => (
-            <Pressable
-              style={tw`flex-row  justify-between items-center rounded-xl bg-white p-1.5`}
-              key={item?.Id}
-            >
-              <Image
-                style={tw`w-20 h-20 rounded-2xl`}
-                source={{ uri: item?.image }}
-              />
-              <View>
-                <Text
-                  style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                >
-                  {item?.title}
-                </Text>
-                <View style={tw`flex-row items-center gap-2`}>
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-darkWhite`}
-                  >
-                    {item?.profile_name}
-                  </Text>
-
-                  {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
-                </View>
-                <Text
-                  style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
-                >
-                  ₦{item?.price}
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  tw`bg-primary -mr-1 -mb-14 bottom-0 w-20 h-9 justify-center items-center`,
-                  { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
-                ]}
-              >
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-base text-white`}
-                >
-                  {item?.type}
-                </Text>
-              </View>
-            </Pressable>
+          CleaningData.slice(0, 3).map((item, index) => (
+            <ServiceCard
+              key={index}
+              item={item}
+              index={index}
+              onPress={() => router.push("/company/my_booking")}
+            />
           ))
         )}
       </View>
@@ -102,57 +65,8 @@ const bookings = () => {
               Your ServiCe No Data
             </Text>
           ) : (
-            CleaningData.slice(0, 5).map((item) => (
-              <Pressable
-                style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
-                key={item?.Id}
-              >
-                <Image
-                  style={tw`w-20 h-20 rounded-2xl`}
-                  source={{ uri: item?.image }}
-                />
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                  >
-                    {item?.title}
-                  </Text>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-xl text-darkWhite`}
-                    >
-                      {item?.profile_name}
-                    </Text>
-
-                    {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
-                  </View>
-                  <StarRating
-                    color="#FF6600"
-                    starSize={24}
-                    rating={item?.rating || 0}
-                    onChange={() => {}}
-                  />
-                </View>
-                <View style={tw`justify-between gap-3`}>
-                  <Text
-                    style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
-                  >
-                    ₦{item?.price}
-                  </Text>
-                  <View
-                    style={[
-                      tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
-                      { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
-                    ]}
-                  >
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-base text-white`}
-                    >
-                      {item?.type}
-                    </Text>
-                  </View>
-                </View>
-              </Pressable>
+            CleaningData.slice(0, 5).map((item, index) => (
+              <ServiceCard key={index} item={item} index={index} />
             ))
           )}
         </View>

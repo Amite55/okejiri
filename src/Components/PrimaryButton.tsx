@@ -9,6 +9,7 @@ interface IPrimaryButtonProps {
   titleProps?: string;
   IconProps?: any;
   onPress?: () => void;
+  IconFastProps?: any;
 }
 
 const PrimaryButton = ({
@@ -17,6 +18,7 @@ const PrimaryButton = ({
   titleProps = "next",
   IconProps,
   onPress,
+  IconFastProps,
 }: IPrimaryButtonProps) => {
   return (
     <TouchableOpacity
@@ -26,6 +28,7 @@ const PrimaryButton = ({
         contentStyle,
       ]}
     >
+      {IconFastProps && <SvgXml xml={IconFastProps || null} />}
       <Text
         style={[
           tw`font-DegularDisplayDemoMedium text-xl text-white text-center`,

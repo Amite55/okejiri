@@ -28,7 +28,10 @@ const services = () => {
         />
 
         <View
-          style={tw`absolute bottom-2 justify-center items-center w-38 h-10 rounded-xl border border-white60 overflow-hidden`}
+          style={[
+            tw`absolute bottom-2 justify-center items-center w-38 h-10 rounded-xl border border-white60 overflow-hidden`,
+            Platform.OS === "android" && tw`bg-white bg-opacity-20`,
+          ]}
         >
           {/* Background Blur */}
           {Platform.OS === "ios" && (

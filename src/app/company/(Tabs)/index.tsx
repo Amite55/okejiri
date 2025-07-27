@@ -2,10 +2,12 @@ import {
   IconProfileBadge,
   IconRightArrowCornerPrimaryColor,
   IconSearch,
+  IconStar,
 } from "@/assets/icons";
-import { ImgBanner } from "@/assets/images/image";
+
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
+import UserCarousel from "@/src/Components/UserCarousel";
 import CleaningData from "@/src/json/CleaningData.json";
 import ServicesData from "@/src/json/ServiceData.json";
 import tw from "@/src/lib/tailwind";
@@ -16,17 +18,27 @@ import {
   FlatList,
   Image,
   Platform,
-  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
-import StarRating from "react-native-star-rating-widget";
+import { useSharedValue } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
 
+const defaultDataWith6Colors = [
+  "#B0604D",
+  "#899F9C",
+  "#B3C680",
+  "#5C6265",
+  "#F5D399",
+  "#F1F1F1",
+];
+
 const Company_Home_Index = () => {
+  const progress = useSharedValue<number>(0);
+
   const serviceItemRender = ({ item }) => {
     return (
       <View style={tw`relative justify-center items-center`} key={item?.id}>
@@ -37,7 +49,10 @@ const Company_Home_Index = () => {
         />
 
         <View
-          style={tw`absolute bottom-2 justify-center items-center w-38 h-10 rounded-xl border border-white60 overflow-hidden`}
+          style={[
+            tw`absolute bottom-2 justify-center items-center w-38 h-10 rounded-xl border border-white60 overflow-hidden`,
+            Platform.OS === "android" && tw`bg-white bg-opacity-20`,
+          ]}
         >
           {/* Background Blur */}
           {Platform.OS === "ios" && (
@@ -51,7 +66,7 @@ const Company_Home_Index = () => {
 
           {/* Foreground content (Text) */}
           <TouchableOpacity
-            style={tw`flex-1 justify-center items-center`}
+            style={[tw`flex-1 justify-center items-center `]}
             activeOpacity={0.7}
           >
             <Text
@@ -92,11 +107,7 @@ const Company_Home_Index = () => {
       </View>
       {/* ======================== benner section start hare ==================== */}
       <View style={tw`flex-1 justify-center items-center `}>
-        <Image
-          style={tw`w-[97%] h-36 rounded-xl`}
-          resizeMode="cover"
-          source={ImgBanner}
-        />
+        <UserCarousel />
       </View>
 
       {/* ================== services =================== */}
@@ -136,7 +147,7 @@ const Company_Home_Index = () => {
             </Text>
           ) : (
             CleaningData.slice(0, 3).map((item) => (
-              <Pressable
+              <TouchableOpacity
                 onPress={() => router.push("/company/serviceDetails")}
                 style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
                 key={item?.Id}
@@ -160,12 +171,14 @@ const Company_Home_Index = () => {
 
                     {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
                   </View>
-                  <StarRating
-                    color="#FF6600"
-                    starSize={24}
-                    rating={item?.rating || 0}
-                    onChange={() => {}}
-                  />
+                  <View style={tw`flex-row items-center gap-2`}>
+                    <SvgXml xml={IconStar} />
+                    <Text
+                      style={tw`font-DegularDisplayDemoMedium text-primary text-lg`}
+                    >
+                      (5.0)
+                    </Text>
+                  </View>
                 </View>
                 <View style={tw`justify-between gap-3`}>
                   <Text
@@ -186,7 +199,7 @@ const Company_Home_Index = () => {
                     </Text>
                   </View>
                 </View>
-              </Pressable>
+              </TouchableOpacity>
             ))
           )}
         </View>
@@ -209,7 +222,7 @@ const Company_Home_Index = () => {
             </Text>
           ) : (
             CleaningData.slice(0, 2).map((item) => (
-              <Pressable
+              <TouchableOpacity
                 onPress={() => router.push("/company/serviceDetails")}
                 style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
                 key={item?.Id}
@@ -233,12 +246,14 @@ const Company_Home_Index = () => {
 
                     {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
                   </View>
-                  <StarRating
-                    color="#FF6600"
-                    starSize={24}
-                    rating={item?.rating || 0}
-                    onChange={() => {}}
-                  />
+                  <View style={tw`flex-row items-center gap-2`}>
+                    <SvgXml xml={IconStar} />
+                    <Text
+                      style={tw`font-DegularDisplayDemoMedium text-primary text-lg`}
+                    >
+                      (5.0)
+                    </Text>
+                  </View>
                 </View>
                 <View style={tw`justify-between gap-3`}>
                   <Text
@@ -259,7 +274,7 @@ const Company_Home_Index = () => {
                     </Text>
                   </View>
                 </View>
-              </Pressable>
+              </TouchableOpacity>
             ))
           )}
         </View>

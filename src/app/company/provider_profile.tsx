@@ -10,6 +10,7 @@ import {
   IconReportBlack,
 } from "@/assets/icons";
 import { ImgCleaning, ImgProfileImg } from "@/assets/images/image";
+import ServiceCard from "@/src/Components/ServiceCard";
 import CleaningData from "@/src/json/CleaningData.json";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
@@ -131,7 +132,7 @@ const Provider_Profile = () => {
           pageName={"Provider profile"}
           onPress={() => router.back()}
           titleTextStyle={tw`text-2xl`}
-          contentStyle={tw`px-5`}
+          contentStyle={tw`px-4`}
         />
 
         <View style={tw`relative justify-center items-center mt-2`}>
@@ -168,10 +169,12 @@ const Provider_Profile = () => {
 
         {/* ----------------------------- report and message =---------------------- */}
 
-        <View style={tw`flex-row items-center gap-3 justify-center mt-32`}>
+        <View
+          style={tw`flex-1 px-4 flex-row items-center gap-3 justify-center mt-32`}
+        >
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
-            style={tw`border border-gray-400 w-48 rounded-2xl h-14 flex-row justify-center items-center gap-3`}
+            style={tw`border border-gray-400 flex-1 rounded-2xl h-12 flex-row justify-center items-center gap-3`}
           >
             <SvgXml xml={IconReportBlack} />
             <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black `}>
@@ -181,7 +184,7 @@ const Provider_Profile = () => {
 
           <TouchableOpacity
             onPress={() => router.push("/company/messaging")}
-            style={tw`bg-primary w-48 rounded-2xl h-14 flex-row justify-center items-center gap-3`}
+            style={tw`bg-primary flex-1 rounded-2xl h-12 flex-row justify-center items-center gap-3`}
           >
             <SvgXml xml={IconMessageWhite} />
             <Text style={tw`font-DegularDisplayDemoMedium text-xl text-white `}>
@@ -191,14 +194,14 @@ const Provider_Profile = () => {
         </View>
 
         {/*  ---------- provider details info  ----------------- */}
-        <View style={tw`px-5 flex-row justify-between my-6`}>
+        <View style={tw`flex-1 px-5 flex-row justify-between my-6`}>
           <View
-            style={tw`border border-gray-300 w-[60%] h-40 rounded-xl gap-3 p-6`}
+            style={tw`border border-gray-300 w-[60%] h-40 rounded-lg gap-1 p-4`}
           >
-            <View style={tw`flex-row gap-3 items-center`}>
+            <View style={tw`flex-row gap-3  items-center`}>
               <SvgXml xml={IconEmailGray} />
               <Text
-                style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                style={tw`flex-1 font-DegularDisplayDemoRegular text-lg text-black`}
               >
                 example@gmail.com
               </Text>
@@ -206,7 +209,7 @@ const Provider_Profile = () => {
             <View style={tw`flex-row gap-3 items-center`}>
               <SvgXml xml={IconPhoneGray} />
               <Text
-                style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
               >
                 +65896585232
               </Text>
@@ -214,7 +217,7 @@ const Provider_Profile = () => {
             <View style={tw`flex-row gap-3 items-center`}>
               <SvgXml xml={IconLocationGray} />
               <Text
-                style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                style={tw` flex-1 font-DegularDisplayDemoRegular text-lg text-black`}
               >
                 New work, USA
               </Text>
@@ -271,58 +274,13 @@ const Provider_Profile = () => {
               Your ServiCe No Data
             </Text>
           ) : (
-            CleaningData.slice(0, 2).map((item) => (
-              <Pressable
+            CleaningData.slice(0, 2).map((item, index) => (
+              <ServiceCard
+                key={index}
+                item={item}
+                index={index}
                 onPress={() => router.push("/company/serviceDetails")}
-                style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
-                key={item?.Id}
-              >
-                <Image
-                  style={tw`w-20 h-20 rounded-2xl`}
-                  source={{ uri: item?.image }}
-                />
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                  >
-                    {item?.title}
-                  </Text>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-xl text-darkWhite`}
-                    >
-                      {item?.profile_name}
-                    </Text>
-
-                    {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
-                  </View>
-                  <StarRating
-                    color="#FF6600"
-                    starSize={24}
-                    rating={item?.rating || 0}
-                    onChange={() => {}}
-                  />
-                </View>
-                <View style={tw`justify-between gap-3`}>
-                  <Text
-                    style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
-                  >
-                    ₦{item?.price}
-                  </Text>
-                  <View
-                    style={[
-                      tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
-                      { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
-                    ]}
-                  >
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-base text-white`}
-                    >
-                      {item?.type}
-                    </Text>
-                  </View>
-                </View>
-              </Pressable>
+              />
             ))
           )}
         </View>
@@ -334,13 +292,13 @@ const Provider_Profile = () => {
           data={[1, 2, 3, 4, 5]}
           renderItem={RenderRankingItem}
           keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={tw`mt-4 pl-4 gap-3 `}
+          contentContainerStyle={tw`mt-4 pl-4 gap-3 pb-4 `}
           horizontal={true}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
         />
       </ScrollView>
-      {/* =================== see service details modal ===================== */}
+      {/* =================== see Report details modal ===================== */}
       <Modal
         animationType="slide"
         transparent

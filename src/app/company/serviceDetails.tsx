@@ -7,6 +7,7 @@ import {
   IconPlus,
   IconProfileBadge,
   IconRightArrowCornerPrimaryColor,
+  IconStar,
   IconTick,
   IconWhishListSelected,
 } from "@/assets/icons";
@@ -15,6 +16,7 @@ import {
   ImgProfileImg,
   ImgServiceProviderRoll,
 } from "@/assets/images/image";
+import ServiceCard from "@/src/Components/ServiceCard";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import CleaningData from "@/src/json/CleaningData.json";
 import tw from "@/src/lib/tailwind";
@@ -90,7 +92,7 @@ const ServiceDetails = () => {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         style={tw`flex-1 px-5 `}
-        contentContainerStyle={tw`pb-28`}
+        contentContainerStyle={tw`pb-6`}
       >
         <View style={tw`relative`}>
           <Image
@@ -120,7 +122,7 @@ const ServiceDetails = () => {
         <Text
           style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}
         >
-          Chats
+          Services
         </Text>
         <View style={tw`gap-3`}>
           <Pressable
@@ -246,7 +248,7 @@ const ServiceDetails = () => {
           </Text>
         </View>
         {/* ------------------- prover der profile =--------------------- */}
-        <View style={tw`flex-row`}>
+        <View style={tw`flex-row flex-1`}>
           <TouchableOpacity
             onPress={() => router.push("/company/provider_profile")}
             style={tw`flex-1 flex-row items-center gap-3`}
@@ -261,18 +263,15 @@ const ServiceDetails = () => {
                 </Text>
                 <SvgXml xml={IconProfileBadge} />
               </View>
-              <View style={tw`flex-row items-center`}>
+              <View style={tw`flex-row items-center gap-1`}>
                 <Text
                   style={tw`font-DegularDisplayDemoRegular text-primary text-xl`}
                 >
                   5.0
                 </Text>
-                <StarRating
-                  starSize={20}
-                  rating={4}
-                  color="#FF6600"
-                  onChange={() => {}}
-                />
+                <View style={tw`flex-row items-center gap-2`}>
+                  <SvgXml xml={IconStar} />
+                </View>
                 <Text
                   style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
                 >
@@ -283,7 +282,7 @@ const ServiceDetails = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={tw`border border-gray-300 flex-row items-center rounded-2xl gap-2 p-2`}
+            style={tw`border border-gray-300 flex-row items-center rounded-2xl gap-2 px-2 h-11`}
           >
             <SvgXml xml={IconChatsYellow} />
             <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
@@ -332,58 +331,13 @@ const ServiceDetails = () => {
               Your ServiCe No Data
             </Text>
           ) : (
-            CleaningData.slice(0, 2).map((item) => (
-              <Pressable
+            CleaningData.slice(0, 2).map((item, index) => (
+              <ServiceCard
+                key={index}
+                item={item}
+                index={index}
                 onPress={() => router.push("/company/serviceDetails")}
-                style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
-                key={item?.Id}
-              >
-                <Image
-                  style={tw`w-20 h-20 rounded-2xl`}
-                  source={{ uri: item?.image }}
-                />
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                  >
-                    {item?.title}
-                  </Text>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-xl text-darkWhite`}
-                    >
-                      {item?.profile_name}
-                    </Text>
-
-                    {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
-                  </View>
-                  <StarRating
-                    color="#FF6600"
-                    starSize={24}
-                    rating={item?.rating || 0}
-                    onChange={() => {}}
-                  />
-                </View>
-                <View style={tw`justify-between gap-3`}>
-                  <Text
-                    style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
-                  >
-                    ₦{item?.price}
-                  </Text>
-                  <View
-                    style={[
-                      tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
-                      { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
-                    ]}
-                  >
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-base text-white`}
-                    >
-                      {item?.type}
-                    </Text>
-                  </View>
-                </View>
-              </Pressable>
+              />
             ))
           )}
         </View>
@@ -401,118 +355,73 @@ const ServiceDetails = () => {
               Your ServiCe No Data
             </Text>
           ) : (
-            CleaningData.slice(0, 2).map((item) => (
-              <Pressable
+            CleaningData.slice(0, 2).map((item, index) => (
+              <ServiceCard
+                key={index}
+                item={item}
+                index={index}
                 onPress={() => router.push("/company/serviceDetails")}
-                style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
-                key={item?.Id}
-              >
-                <Image
-                  style={tw`w-20 h-20 rounded-2xl`}
-                  source={{ uri: item?.image }}
-                />
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                  >
-                    {item?.title}
-                  </Text>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-xl text-darkWhite`}
-                    >
-                      {item?.profile_name}
-                    </Text>
-
-                    {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
-                  </View>
-                  <StarRating
-                    color="#FF6600"
-                    starSize={24}
-                    rating={item?.rating || 0}
-                    onChange={() => {}}
-                  />
-                </View>
-                <View style={tw`justify-between gap-3`}>
-                  <Text
-                    style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
-                  >
-                    ₦{item?.price}
-                  </Text>
-                  <View
-                    style={[
-                      tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
-                      { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
-                    ]}
-                  >
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-base text-white`}
-                    >
-                      {item?.type}
-                    </Text>
-                  </View>
-                </View>
-              </Pressable>
+              />
             ))
           )}
         </View>
       </ScrollView>
 
       {/*  ================= Static bottom tab =================== */}
-
-      <View
-        style={[
-          tw`absolute bottom-0 left-0 right-0 bg-white px-5`,
-          {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: -4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 16,
-            elevation: 10, // For Android
-            overflow: "visible", // Important for iOS shadow visibility
-          },
-        ]}
-      >
-        <View style={tw`flex-row justify-between items-center h-28 px-5`}>
-          <View style={tw`flex-1`}>
-            <Text
-              style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}
-            >
-              ₦ 49.00
-            </Text>
-            <View style={tw`flex-row items-center gap-3`}>
+      {tickmark && (
+        <View
+          style={[
+            tw`absolute bottom-0 left-0 right-0 bg-white px-5`,
+            {
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: -4 },
+              shadowOpacity: 0.1,
+              shadowRadius: 16,
+              elevation: 10, // For Android
+              overflow: "visible", // Important for iOS shadow visibility
+            },
+          ]}
+        >
+          <View style={tw`flex-row justify-between items-center h-28 px-5`}>
+            <View style={tw`flex-1`}>
               <Text
-                style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+                style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}
               >
-                1 service
+                ₦ 49.00
               </Text>
-              <View style={tw`flex-row items-center gap-2`}>
-                <View style={tw`w-2 h-2 rounded-full bg-regularText`} />
+              <View style={tw`flex-row items-center gap-3`}>
                 <Text
                   style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
                 >
-                  Est. 30 mins
+                  1 service
                 </Text>
+                <View style={tw`flex-row items-center gap-2`}>
+                  <View style={tw`w-2 h-2 rounded-full bg-regularText`} />
+                  <Text
+                    style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+                  >
+                    Est. 30 mins
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-          <TouchableOpacity
-            onPress={() =>
-              router.push("/company/serviceBookings/serviceBooking")
-            }
-            style={tw`w-28 h-12 justify-center items-center bg-primary rounded-lg`}
-          >
-            <Text
-              style={tw`font-DegularDisplayDemoMedium text-base text-white`}
+            <TouchableOpacity
+              onPress={() =>
+                router.push("/company/serviceBookings/serviceBooking")
+              }
+              style={tw`w-28 h-12 justify-center items-center bg-primary rounded-lg`}
             >
-              Book now
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-base text-white`}
+              >
+                Book now
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-
+      )}
       {/* =================== see service details modal ===================== */}
       <Modal
         animationType="slide"

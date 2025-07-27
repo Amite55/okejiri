@@ -43,9 +43,10 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
 
       <TouchableOpacity
         onPress={onPressNotification}
-        style={tw`w-18 h-16 p-3 text-center bg-white rounded-3xl justify-center items-center`}
+        style={tw`w-14 h-14 p-3 text-center bg-white rounded-3xl justify-center items-center`}
       >
         <SvgXml xml={IconNotificationDark} />
+        {/* <SvgXml xml={IconNotificationDark} /> */}
       </TouchableOpacity>
     </View>
   );
