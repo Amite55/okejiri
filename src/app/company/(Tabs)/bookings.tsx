@@ -42,7 +42,12 @@ const bookings = () => {
               key={index}
               item={item}
               index={index}
-              onPress={() => router.push("/company/my_booking")}
+              onPress={() =>
+                router.push({
+                  pathname: "/company/my_booking",
+                  params: { status: "booking_request_pending" },
+                })
+              }
             />
           ))
         )}
@@ -56,7 +61,7 @@ const bookings = () => {
           </Text>
         </View>
 
-        {/* =============== boooking item =============== */}
+        {/* =============== booked service item =============== */}
         <View style={tw`gap-3 mt-3`}>
           {CleaningData?.length === 0 ? (
             <Text
@@ -66,7 +71,12 @@ const bookings = () => {
             </Text>
           ) : (
             CleaningData.slice(0, 5).map((item, index) => (
-              <ServiceCard key={index} item={item} index={index} />
+              <ServiceCard
+                key={index}
+                item={item}
+                index={index}
+                onPress={() => router.push("/company/booking_service_details")}
+              />
             ))
           )}
         </View>

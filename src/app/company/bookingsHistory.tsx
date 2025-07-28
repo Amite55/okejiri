@@ -13,7 +13,7 @@ const bookingsHistory = () => {
         <ServiceCard
           item={item}
           index={index}
-          onPress={() => router.push("/company/serviceDetails")}
+          onPress={() => router.push("/company/booking_service_details")}
         />
       )}
       ListHeaderComponent={() => (

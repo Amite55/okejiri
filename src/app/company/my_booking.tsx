@@ -1,10 +1,13 @@
 import {
+  IconBookingConfirm,
   IconCross,
   IconFileUpload,
   IconIconCross,
+  IconMessageWhite,
   IconOrderCancel,
   IconProfileBadge,
   IconReportBlack,
+  IconReportBlue,
   IconStar,
   IconTick,
 } from "@/assets/icons";
@@ -18,7 +21,7 @@ import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { _HEIGHT } from "@/utils/utils";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
@@ -80,6 +83,11 @@ const reportingItem = [
 ];
 
 const My_Booking = () => {
+  const params = useLocalSearchParams();
+  console.log(
+    params.status,
+    "this is search params ----------------------> my booking screen "
+  );
   const [ReportModalVisible, setReportModalVisible] = useState<boolean>(false);
   const [cancelModalVisible, setCancelModalVisible] = useState<boolean>(false);
   const [serviceDetailsModalVisible, setServiceDetailsModalVisible] =
@@ -149,75 +157,118 @@ const My_Booking = () => {
         </Text>
       </View>
 
-      {/* -------------------- booking service ------------------- */}
+      {/* -------------------- if user booking is pending show down the component ------------------- */}
+      {params.status === "booking_request_pending" && (
+        <View>
+          <View style={tw`gap-2 px-5 my-4`}>
+            {[1, 2, 3].map((item, index) => (
+              <Pressable
+                key={index}
+                style={tw`flex-row justify-between items-center  px-4 py-3 rounded-2xl bg-white`}
+              >
+                <View>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
+                  >
+                    House cleaning
+                  </Text>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
+                  >
+                    ₦ 49.00
+                  </Text>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
+                  >
+                    Est. time : 30 mins
+                  </Text>
+                </View>
 
-      <View style={tw`gap-2 px-5 my-4`}>
-        {[1, 2, 3].map((item, index) => (
-          <Pressable
-            key={index}
-            style={tw`flex-row justify-between items-center  px-4 py-3 rounded-2xl bg-white`}
+                <View style={tw`flex-row items-center gap-4`}>
+                  <TouchableOpacity
+                    onPress={() => setServiceDetailsModalVisible(true)}
+                    style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
+                  >
+                    <Text style={tw``}>See details</Text>
+                  </TouchableOpacity>
+
+                  <View
+                    style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
+                  >
+                    <SvgXml xml={IconTick} />
+                  </View>
+                </View>
+              </Pressable>
+            ))}
+          </View>
+
+          <View style={tw`justify-center items-center`}>
+            <Image style={tw`w-36 h-36`} source={ImgOrderPending} />
+          </View>
+          <Text
+            style={tw`flex-1 font-DegularDisplayDemoMedium text-2xl text-black text-center px-5 my-3`}
           >
-            <View>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
-              >
-                House cleaning
-              </Text>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
-              >
-                ₦ 49.00
-              </Text>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
-              >
-                Est. time : 30 mins
-              </Text>
-            </View>
+            Service provider hasn’t responded yet
+          </Text>
 
-            <View style={tw`flex-row items-center gap-4`}>
-              <TouchableOpacity
-                onPress={() => setServiceDetailsModalVisible(true)}
-                style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
-              >
-                <Text style={tw``}>See details</Text>
-              </TouchableOpacity>
+          <View style={tw`px-5 gap-3`}>
+            <PrimaryButton
+              titleProps="Cancel order"
+              IconFastProps={IconIconCross}
+              contentStyle={tw`bg-transparent border border-primary`}
+              textStyle={tw`text-primary `}
+              onPress={() => setCancelModalVisible(true)}
+            />
+            <PrimaryButton
+              titleProps="Report provider"
+              IconFastProps={IconReportBlack}
+              contentStyle={tw`bg-transparent border border-primary`}
+              textStyle={tw`text-black `}
+              onPress={() => setReportModalVisible(true)}
+            />
+          </View>
+        </View>
+      )}
 
-              <View
-                style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
-              >
-                <SvgXml xml={IconTick} />
-              </View>
-            </View>
-          </Pressable>
-        ))}
-      </View>
+      {/*  ---------------------- if user booking request accepted service provider end to show this component ----------- */}
 
-      <View style={tw`justify-center items-center`}>
-        <Image style={tw`w-36 h-36`} source={ImgOrderPending} />
-      </View>
-      <Text
-        style={tw`flex-1 font-DegularDisplayDemoMedium text-2xl text-black text-center px-5 my-3`}
-      >
-        Service provider hasn’t responded yet
-      </Text>
+      {params.status === "booking_request_approved" && (
+        <View style={tw`px-5`}>
+          <TouchableOpacity
+            onPress={() => router.push("/company/serviceDetails")}
+          >
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-xl text-primary text-center`}
+            >
+              See service details
+            </Text>
+          </TouchableOpacity>
 
-      <View style={tw`px-5 gap-3`}>
-        <PrimaryButton
-          titleProps="Cancel order"
-          IconFastProps={IconIconCross}
-          contentStyle={tw`bg-transparent border border-primary`}
-          textStyle={tw`text-primary `}
-          onPress={() => setCancelModalVisible(true)}
-        />
-        <PrimaryButton
-          titleProps="Report provider"
-          IconFastProps={IconReportBlack}
-          contentStyle={tw`bg-transparent border border-primary`}
-          textStyle={tw`text-black `}
-          onPress={() => setReportModalVisible(true)}
-        />
-      </View>
+          {/*  confirm icon */}
+
+          <View style={tw`justify-center items-center mt-6`}>
+            <SvgXml xml={IconBookingConfirm} />
+            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
+              Order confirmed
+            </Text>
+          </View>
+
+          <View style={tw`my-4 gap-3`}>
+            <PrimaryButton
+              IconFastProps={IconMessageWhite}
+              titleProps="Message"
+              onPress={() => router.push("/company/messaging")}
+            />
+            <PrimaryButton
+              IconFastProps={IconReportBlue}
+              titleProps="Report provider"
+              textStyle={tw`text-blue-700`}
+              contentStyle={tw` border border-blue-400 bg-transparent`}
+              onPress={() => setReportModalVisible(true)}
+            />
+          </View>
+        </View>
+      )}
 
       {/* =================== see Report details modal ===================== */}
       <Modal

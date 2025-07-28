@@ -43,6 +43,11 @@ const Notification = () => {
                   );
                 } else if (item.type === "KYC_complete") {
                   router.push("/KYC_auth/id_card");
+                } else if (item.type === "request_approved") {
+                  router.push({
+                    pathname: "/company/my_booking",
+                    params: { status: "booking_request_approved" },
+                  });
                 }
               }}
             />
