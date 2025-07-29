@@ -14,14 +14,19 @@ const ServiceCard = ({ item, index, onPress }: IServiceCardProps) => {
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
+      style={tw`relative flex-row  items-center rounded-xl bg-white p-1.5 gap-4 `}
       key={item?.Id}
     >
       <Image style={tw`w-20 h-20 rounded-2xl`} source={{ uri: item?.image }} />
       <View>
-        <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-          {item?.title}
-        </Text>
+        <View style={tw`flex-row items-center gap-4`}>
+          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+            {item?.title}
+          </Text>
+          <Text style={tw`text-primary font-DegularDisplayDemoMedium text-xl `}>
+            ₦{item?.price}
+          </Text>
+        </View>
         <View style={tw`flex-row items-center gap-2`}>
           <Text
             style={tw`font-DegularDisplayDemoRegular text-xl text-darkWhite`}
@@ -38,20 +43,16 @@ const ServiceCard = ({ item, index, onPress }: IServiceCardProps) => {
           </Text>
         </View>
       </View>
-      <View style={tw` justify-between gap-3`}>
-        <Text style={tw`text-primary font-DegularDisplayDemoMedium text-xl `}>
-          ₦{item?.price}
+
+      <View
+        style={[
+          tw`absolute bottom-4 right-1 bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
+          { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
+        ]}
+      >
+        <Text style={tw`font-DegularDisplayDemoMedium text-base text-white`}>
+          {item?.type}
         </Text>
-        <View
-          style={[
-            tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
-            { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
-          ]}
-        >
-          <Text style={tw`font-DegularDisplayDemoMedium text-base text-white`}>
-            {item?.type}
-          </Text>
-        </View>
       </View>
     </TouchableOpacity>
   );

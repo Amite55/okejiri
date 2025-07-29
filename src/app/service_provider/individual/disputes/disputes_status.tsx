@@ -194,11 +194,11 @@ const Disputes_Status = () => {
               data={disputeGallary}
               numColumns={3}
               keyExtractor={(_, index) => index.toString()}
-              contentContainerStyle={tw`justify-center items-center mt-3 `}
+              contentContainerStyle={tw`justify-center items-center mt-3 px-2`}
               renderItem={({ item }) => (
                 <Image
                   source={item.image}
-                  style={tw`w-32 h-32 rounded-xl m-1`}
+                  style={tw`w-28 h-28 rounded-xl m-1`}
                   resizeMode="cover"
                 />
               )}

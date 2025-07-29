@@ -1,9 +1,5 @@
-import {
-  IconProfileBadge,
-  IconRightArrowCornerPrimaryColor,
-  IconSearch,
-  IconStar,
-} from "@/assets/icons";
+import { IconRightArrowCornerPrimaryColor, IconSearch } from "@/assets/icons";
+import ServiceCard from "@/src/Components/ServiceCard";
 
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
@@ -24,21 +20,9 @@ import {
   View,
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
-import { useSharedValue } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
 
-const defaultDataWith6Colors = [
-  "#B0604D",
-  "#899F9C",
-  "#B3C680",
-  "#5C6265",
-  "#F5D399",
-  "#F1F1F1",
-];
-
 const Company_Home_Index = () => {
-  const progress = useSharedValue<number>(0);
-
   const serviceItemRender = ({ item }) => {
     return (
       <View style={tw`relative justify-center items-center`} key={item?.id}>
@@ -152,60 +136,13 @@ const Company_Home_Index = () => {
               Your ServiCe No Data
             </Text>
           ) : (
-            CleaningData.slice(0, 3).map((item) => (
-              <TouchableOpacity
+            CleaningData.slice(0, 3).map((item, index) => (
+              <ServiceCard
+                key={index}
+                item={item}
+                index={index}
                 onPress={() => router.push("/company/serviceDetails")}
-                style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
-                key={item?.Id}
-              >
-                <Image
-                  style={tw`w-20 h-20 rounded-2xl`}
-                  source={{ uri: item?.image }}
-                />
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                  >
-                    {item?.title}
-                  </Text>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-xl text-darkWhite`}
-                    >
-                      {item?.profile_name}
-                    </Text>
-
-                    {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
-                  </View>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <SvgXml xml={IconStar} />
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-primary text-lg`}
-                    >
-                      (5.0)
-                    </Text>
-                  </View>
-                </View>
-                <View style={tw`justify-between gap-3`}>
-                  <Text
-                    style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
-                  >
-                    ₦{item?.price}
-                  </Text>
-                  <View
-                    style={[
-                      tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
-                      { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
-                    ]}
-                  >
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-base text-white`}
-                    >
-                      {item?.type}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
+              />
             ))
           )}
         </View>
@@ -227,60 +164,13 @@ const Company_Home_Index = () => {
               Your ServiCe No Data
             </Text>
           ) : (
-            CleaningData.slice(0, 2).map((item) => (
-              <TouchableOpacity
+            CleaningData.slice(0, 2).map((item, index) => (
+              <ServiceCard
+                key={index}
+                item={item}
+                index={index}
                 onPress={() => router.push("/company/serviceDetails")}
-                style={tw`flex-row justify-between items-center rounded-xl bg-white p-1.5`}
-                key={item?.Id}
-              >
-                <Image
-                  style={tw`w-20 h-20 rounded-2xl`}
-                  source={{ uri: item?.image }}
-                />
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                  >
-                    {item?.title}
-                  </Text>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-xl text-darkWhite`}
-                    >
-                      {item?.profile_name}
-                    </Text>
-
-                    {item.badge ? <SvgXml xml={IconProfileBadge} /> : null}
-                  </View>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <SvgXml xml={IconStar} />
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-primary text-lg`}
-                    >
-                      (5.0)
-                    </Text>
-                  </View>
-                </View>
-                <View style={tw`justify-between gap-3`}>
-                  <Text
-                    style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
-                  >
-                    ₦{item?.price}
-                  </Text>
-                  <View
-                    style={[
-                      tw`bg-primary -mr-1 -mb-4 w-20 h-9 justify-center items-center`,
-                      { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
-                    ]}
-                  >
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-base text-white`}
-                    >
-                      {item?.type}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
+              />
             ))
           )}
         </View>

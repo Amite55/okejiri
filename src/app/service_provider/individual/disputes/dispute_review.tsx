@@ -133,7 +133,7 @@ const Dispute_Review = () => {
         {disputeGallary.length > 3 && (
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
-            style={tw`absolute top-0 w-28 h-28 bg-black bg-opacity-50 rounded-2xl right-2 justify-center items-center`}
+            style={tw`absolute top-0 w-28 h-28 bg-black bg-opacity-50 rounded-2xl right-0 justify-center items-center`}
           >
             <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
               + {disputeGallary.length}
@@ -197,7 +197,7 @@ const Dispute_Review = () => {
               <Text
                 style={tw`font-DegularDisplayDemoMedium  text-xl text-white`}
               >
-                All files
+                All files alkjhflaksjdh
               </Text>
               <Pressable onPress={() => setModalVisible(false)}>
                 <SvgXml style={tw`p-3`} xml={IconCrossWhite} />
@@ -207,11 +207,11 @@ const Dispute_Review = () => {
               data={disputeGallary}
               numColumns={3}
               keyExtractor={(_, index) => index.toString()}
-              contentContainerStyle={tw`justify-center items-center mt-3 `}
+              contentContainerStyle={tw`justify-center items-center mt-3 px-2`}
               renderItem={({ item }) => (
                 <Image
                   source={item.image}
-                  style={tw`w-32 h-32 rounded-xl m-1`}
+                  style={tw`w-28 h-28 rounded-xl m-1 `}
                   resizeMode="cover"
                 />
               )}
