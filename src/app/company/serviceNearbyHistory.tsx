@@ -3,11 +3,13 @@ import ServiceCard from "@/src/Components/ServiceCard";
 import CleaningData from "@/src/json/CleaningData.json";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { FlatList } from "react-native";
 
-const serviceNearbyHistory = () => {
+const ServiceNearbyHistory = () => {
+  const { categoryService } = useLocalSearchParams();
+
   return (
     <FlatList
       data={CleaningData}
@@ -19,18 +21,28 @@ const serviceNearbyHistory = () => {
         />
       )}
       ListHeaderComponent={() => (
-        <BackTitleButton
-          pageName={"Services nearby"}
-          onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
-        />
+        <>
+          {categoryService ? (
+            <BackTitleButton
+              pageName={"Booking"}
+              onPress={() => router.back()}
+              titleTextStyle={tw`text-2xl`}
+            />
+          ) : (
+            <BackTitleButton
+              pageName={"Services nearby"}
+              onPress={() => router.back()}
+              titleTextStyle={tw`text-2xl`}
+            />
+          )}
+        </>
       )}
       keyExtractor={(item) => item.Id.toString()}
-      contentContainerStyle={tw`pt-4  bg-base_color px-5 gap-3 pb-10`}
+      contentContainerStyle={tw`  bg-base_color px-5 gap-3 pb-10`}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
     />
   );
 };
 
-export default serviceNearbyHistory;
+export default ServiceNearbyHistory;

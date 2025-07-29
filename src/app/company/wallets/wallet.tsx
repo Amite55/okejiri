@@ -76,7 +76,7 @@ const Wallet_Index = () => {
       <View style={tw`flex-1 flex-row justify-center items-center gap-4 my-7`}>
         <TouchableOpacity
           onPress={() => router.push("/company/wallets/transfer_balance")}
-          style={tw`flex-row justify-center items-center gap-3 flex-1h-12 border border-gray-300 rounded-2xl`}
+          style={tw`flex-row justify-center items-center gap-3 flex-1 h-12 border border-gray-300 rounded-2xl`}
         >
           <SvgXml xml={IconTransfer} />
           <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>

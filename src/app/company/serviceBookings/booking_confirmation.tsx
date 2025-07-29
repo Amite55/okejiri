@@ -1,5 +1,6 @@
 import {
   IconCardProfile,
+  IconCross,
   IconEditPen,
   IconLocation,
   IconMailYellow,
@@ -11,19 +12,24 @@ import { ImgProfileImg } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { _HEIGHT } from "@/utils/utils";
 import { router } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
+  Modal,
   Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const Booking_Confirmation = () => {
+  const [editInfoModalVisible, setEditInfoModalVisible] =
+    useState<boolean>(false);
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -99,7 +105,7 @@ const Booking_Confirmation = () => {
             >
               Personal details
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setEditInfoModalVisible(true)}>
               <SvgXml xml={IconEditPen} />
             </TouchableOpacity>
           </View>
@@ -139,9 +145,16 @@ const Booking_Confirmation = () => {
             <Text
               style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}
             >
-              Personal details
+              Booking details
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/company/serviceBookings/serviceBooking",
+                  params: { cameFromEdit: "true" },
+                })
+              }
+            >
               <SvgXml xml={IconEditPen} />
             </TouchableOpacity>
           </View>
@@ -191,6 +204,7 @@ const Booking_Confirmation = () => {
         </View>
 
         <TouchableOpacity
+          onPress={() => router.push("/company/(Tabs)/services")}
           style={tw`flex-row justify-end items-center gap-2 mt-6`}
         >
           <SvgXml xml={IconPlusYellow} />
@@ -206,6 +220,118 @@ const Booking_Confirmation = () => {
         IconProps={IconRightArrow}
         contentStyle={tw`mt-4`}
       />
+
+      {/* =================== edit user info  details modal ===================== */}
+      <Modal
+        animationType="slide"
+        transparent
+        onRequestClose={() => {
+          setEditInfoModalVisible(!editInfoModalVisible);
+        }}
+        visible={editInfoModalVisible}
+        onDismiss={() => setEditInfoModalVisible(false)}
+      >
+        <Pressable
+          onPress={() => {
+            setEditInfoModalVisible(false);
+          }}
+          style={[
+            {
+              height: _HEIGHT,
+            },
+            tw`justify-end items-end bg-black bg-opacity-15  `,
+          ]}
+        >
+          <Pressable
+            style={[
+              {
+                height: _HEIGHT * 0.65,
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+              },
+              tw`bg-gray-50 `,
+            ]}
+          >
+            <View
+              style={[
+                tw`w-full flex-row justify-between items-center h-14  bg-primary px-4`,
+                { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
+              ]}
+            >
+              <Text></Text>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
+              >
+                Service details
+              </Text>
+              <TouchableOpacity
+                onPress={() => setEditInfoModalVisible(false)}
+                style={tw`border-2 border-white bg-white rounded-full shadow-lg`}
+              >
+                <SvgXml xml={IconCross} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              keyboardShouldPersistTaps="always"
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={tw`pb-20 px-5 flex-grow justify-between `}
+            >
+              <View style={tw`my-4 gap-3`}>
+                <View>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-base text-black ml-2`}
+                  >
+                    Name
+                  </Text>
+                  <TextInput
+                    defaultValue="Jon doe"
+                    style={tw`border border-gray-300 h-12 rounded-full px-4`}
+                  />
+                </View>
+
+                <View>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-base text-black ml-2`}
+                  >
+                    Email
+                  </Text>
+                  <TextInput
+                    defaultValue="example@gmail.com"
+                    keyboardType="email-address"
+                    style={tw`border border-gray-300 h-12 rounded-full px-4`}
+                  />
+                </View>
+
+                <View>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-base text-black ml-2`}
+                  >
+                    Contact Number
+                  </Text>
+                  <TextInput
+                    defaultValue="+2156985632"
+                    style={tw`border border-gray-300 h-12 rounded-full px-4`}
+                  />
+                </View>
+
+                <View>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-base text-black ml-2`}
+                  >
+                    Location
+                  </Text>
+                  <TextInput
+                    defaultValue="Location"
+                    style={tw`border border-gray-300 h-12 rounded-full px-4`}
+                  />
+                </View>
+              </View>
+
+              <PrimaryButton titleProps="Save" />
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </ScrollView>
   );
 };

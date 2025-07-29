@@ -8,6 +8,7 @@ import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
+import { useLocalSearchParams } from "expo-router/build/hooks";
 import React, { useState } from "react";
 import {
   Pressable,
@@ -38,10 +39,19 @@ const bookingTimeData = [
 ];
 
 const ServiceBooking = () => {
+  const { cameFromEdit } = useLocalSearchParams();
   const [isBookingSchedule, setIsBookingSchedule] = useState<boolean>(false);
   const [isGroup, setIsGroup] = useState<boolean>(false);
 
   const [selectedTime, setSelectedTime] = useState<number>(0);
+
+  const handleNextRoute = () => {
+    if (cameFromEdit) {
+      router.push("/company/serviceBookings/booking_confirmation");
+    } else {
+      router.push("/company/serviceBookings/billing_details");
+    }
+  };
 
   return (
     <ScrollView
@@ -268,7 +278,7 @@ const ServiceBooking = () => {
       {/* ----------------- next button ------------------- */}
 
       <PrimaryButton
-        onPress={() => router.push("/company/serviceBookings/billing_details")}
+        onPress={() => handleNextRoute()}
         titleProps="Next  1/4"
         IconProps={IconRightArrow}
         contentStyle={tw`mt-4`}

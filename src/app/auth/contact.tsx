@@ -1,6 +1,7 @@
 import { IconRightArrow } from "@/assets/icons";
-import { ImgLocationView, ImgLogo } from "@/assets/images/image";
+import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
+import LocationAccessModal from "@/src/Components/LocationAccessModal";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
@@ -8,7 +9,6 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Image,
-  Modal,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -114,50 +114,14 @@ const Contact = () => {
         </TouchableOpacity>
       </View>
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={locationModalVisible}
-        onRequestClose={() => {
-          setLocationModal(!locationModalVisible);
-        }}
-      >
-        <View style={tw`flex-1 justify-center items-center`}>
-          <View style={tw`bg-white w-[85%] rounded-xl py-4 px-6`}>
-            <View style={tw`justify-center items-center mb-4`}>
-              <Image style={tw`w-56 h-56`} source={ImgLocationView} />
-              <Text
-                style={tw`text-center font-DegularDisplayDemoRegular text-black text-xl my-2`}
-              >
-                Allow Okejiri to access your location
-              </Text>
-            </View>
+      {/*  n================= access your current location allow ------------------------- */}
 
-            <View style={tw`gap-3`}>
-              <TouchableOpacity
-                onPress={() => setLocationModal(false)}
-                style={tw`w-full  rounded-full  border border-success600`}
-              >
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-xl text-center p-3 text-success600`}
-                >
-                  Allow
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setLocationModal(false)}
-                style={tw`w-full  rounded-full  border border-redDeep`}
-              >
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-xl text-center p-3 text-redDeep`}
-                >
-                  Deny
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <LocationAccessModal
+        setLocationModalVisible={setLocationModal}
+        locationModalVisible={locationModalVisible}
+        onAllowPress={() => setLocationModal(false)}
+        onDenyPress={() => setLocationModal(false)}
+      />
     </ScrollView>
   );
 };
