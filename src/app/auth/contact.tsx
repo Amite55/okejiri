@@ -1,4 +1,4 @@
-import { IconRightArrow } from "@/assets/icons";
+import { IconLocation, IconRightArrow } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
 import LocationAccessModal from "@/src/Components/LocationAccessModal";
@@ -66,9 +66,13 @@ const Contact = () => {
           />
         </View>
 
-        <TouchableOpacity onPress={() => setLocationModal(true)}>
+        <TouchableOpacity
+          style={tw`flex-row items-center gap-2 justify-center`}
+          onPress={() => setLocationModal(true)}
+        >
+          <SvgXml xml={IconLocation} />
           <Text
-            style={tw`text-secondary font-DegularDisplayDemoRegular text-center my-4`}
+            style={tw`text-secondary font-DegularDisplayDemoRegular text-center text-xl my-4`}
           >
             Use my current location
           </Text>
@@ -89,7 +93,7 @@ const Contact = () => {
         <TouchableOpacity
           style={tw`bg-primary rounded-full my-4`}
           onPress={() => {
-            router.replace("/auth/contact");
+            router.replace("/KYC_auth/id_card");
           }}
         >
           {isLoading ? (

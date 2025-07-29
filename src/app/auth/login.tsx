@@ -9,14 +9,13 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Image,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { SvgXml } from "react-native-svg";
-
 const LoginIndex = () => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -42,7 +41,7 @@ const LoginIndex = () => {
   };
 
   return (
-    <ScrollView style={tw`px-5 bg-base_color `}>
+    <KeyboardAwareScrollView style={tw`px-5 bg-base_color `}>
       <BackTitleButton
         onPress={() => router.back()}
         pageName={"Login as a service user"}
@@ -199,7 +198,7 @@ const LoginIndex = () => {
           </Link>
         </Text>
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 

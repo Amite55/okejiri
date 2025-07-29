@@ -1,4 +1,3 @@
-import { IconRightArrow } from "@/assets/icons";
 import { ImgSuccessKYC } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
@@ -73,10 +72,14 @@ const Success_Screen = () => {
 
       <View>
         <PrimaryButton
-          onPress={() => router.push("/service_provider/individual/home")}
+          onPress={() => {
+            router.push("/company/(Tabs)");
+            setTimeout(() => {
+              router.push("/kyc_completed_modal");
+            }, 500);
+          }}
           //   onPress={() => setModalVisible(true)}
           titleProps="Go to home  "
-          IconProps={IconRightArrow}
           contentStyle={tw`mt-4 bg-transparent border border-blue-950`}
           textStyle={tw`text-primary`}
         />
