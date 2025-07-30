@@ -3,8 +3,8 @@ import { Text, View } from "react-native";
 import tw from "../lib/tailwind";
 
 interface IAuthTitle {
-  title: string;
-  subTitle: string;
+  title: any;
+  subTitle: any;
 }
 
 const AuthComponents = ({ title, subTitle }: IAuthTitle) => {

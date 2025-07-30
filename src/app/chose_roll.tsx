@@ -37,7 +37,7 @@ const chose_roll = () => {
 
         <TouchableOpacity
           onPress={() => {
-            AsyncStorage.setItem("roll", JSON.stringify("user"));
+            AsyncStorage.setItem("roll", "user");
             router.push("/auth/login");
           }}
           style={tw`bg-white w-full rounded-3xl mt-4 p-2 flex-row justify-between items-center`}
@@ -57,7 +57,6 @@ const chose_roll = () => {
         {/* ------------------------------ service provider ---------------------------- */}
         <TouchableOpacity
           onPress={() => {
-            AsyncStorage.setItem("roll", JSON.stringify("user"));
             router.push("/service_provider/service_provider_roll");
           }}
           style={tw`bg-white w-full rounded-3xl p-2 flex-row justify-between items-center mt-3`}

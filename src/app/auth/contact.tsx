@@ -2,6 +2,7 @@ import { IconLocation, IconRightArrow } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
 import LocationAccessModal from "@/src/Components/LocationAccessModal";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
@@ -22,23 +23,40 @@ const Contact = () => {
   const [number, setNumber] = useState("");
   const [location, setLocation] = useState("");
   const [locationModalVisible, setLocationModal] = useState(false);
+  const roll = useRoll();
+
+  const handleRouting = () => {
+    if (roll === "user") {
+      router.push("/KYC_auth/id_card");
+    } else if (roll === "service_provider") {
+      router.push("/auth/provide_service");
+    } else if (roll === "company_provider") {
+      router.push("/auth/setup_business_profile");
+    }
+  };
 
   return (
-    <ScrollView style={tw`flex-1 bg-base_color px-5`}>
-      <BackTitleButton
-        onPress={() => router.back()}
-        pageName={"Sign up as a service user"}
-        titleTextStyle={tw`text-2xl`}
-      />
-
-      <View style={tw`justify-center items-center mb-12`}>
-        <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
-        <AuthComponents
-          title="Enter your contact information"
-          subTitle="Please enter your legal contact information so that users can find you faster."
-        />
-      </View>
+    <ScrollView
+      style={tw`flex-1 bg-base_color px-5`}
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={tw`pb-2 justify-between  flex-grow`}
+    >
       <View>
+        <BackTitleButton
+          onPress={() => router.back()}
+          pageName={"Sign up as a service user"}
+          titleTextStyle={tw`text-2xl`}
+        />
+
+        <View style={tw`justify-center items-center mb-12`}>
+          <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
+          <AuthComponents
+            title="Enter your contact information"
+            subTitle="Please enter your legal contact information so that users can find you faster."
+          />
+        </View>
+
         <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
           Contact Number
         </Text>
@@ -77,46 +95,51 @@ const Contact = () => {
             Use my current location
           </Text>
         </TouchableOpacity>
-        <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
-          About you
-        </Text>
-        <View style={tw`flex-row  gap-2 border h-52 rounded-3xl px-3 mb-4`}>
-          <TextInput
-            placeholderTextColor="#777777"
-            textAlignVertical="top"
-            style={tw`flex-1 text-base font-PoppinsMedium `}
-            placeholder="Write a bio about you"
-            onChangeText={(value) => setLocation(value)}
-          />
-        </View>
 
-        <TouchableOpacity
-          style={tw`bg-primary rounded-full my-4`}
-          onPress={() => {
-            router.replace("/KYC_auth/id_card");
-          }}
-        >
-          {isLoading ? (
-            <View style={tw`flex-row justify-center items-center gap-3`}>
-              <ActivityIndicator size={"small"} color={tw.color("white")} />{" "}
-              <Text
-                style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
-              >
-                Sign in
-              </Text>
+        {(roll === "company_provider" || roll === "service_provider") && (
+          <View>
+            <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
+              About you
+            </Text>
+            <View style={tw`flex-row  gap-2 border h-52 rounded-3xl px-3 mb-4`}>
+              <TextInput
+                placeholderTextColor="#777777"
+                textAlignVertical="top"
+                style={tw`flex-1 text-base font-PoppinsMedium `}
+                placeholder="Write a bio about you"
+                onChangeText={(value) => setLocation(value)}
+              />
             </View>
-          ) : (
-            <View style={tw`flex-row justify-center items-center gap-4`}>
-              <Text
-                style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
-              >
-                Continue
-              </Text>
-              <SvgXml xml={IconRightArrow} />
-            </View>
-          )}
-        </TouchableOpacity>
+          </View>
+        )}
       </View>
+
+      <TouchableOpacity
+        style={tw`bg-primary rounded-full my-4`}
+        onPress={() => {
+          handleRouting();
+        }}
+      >
+        {isLoading ? (
+          <View style={tw`flex-row justify-center items-center gap-3`}>
+            <ActivityIndicator size={"small"} color={tw.color("white")} />{" "}
+            <Text
+              style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
+            >
+              Sign in
+            </Text>
+          </View>
+        ) : (
+          <View style={tw`flex-row justify-center items-center gap-4`}>
+            <Text
+              style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
+            >
+              Continue
+            </Text>
+            <SvgXml xml={IconRightArrow} />
+          </View>
+        )}
+      </TouchableOpacity>
 
       {/*  n================= access your current location allow ------------------------- */}
 

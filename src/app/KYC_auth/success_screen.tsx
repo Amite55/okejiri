@@ -1,5 +1,6 @@
 import { ImgSuccessKYC } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
@@ -7,6 +8,20 @@ import React from "react";
 import { Image, ScrollView, Text, View } from "react-native";
 
 const Success_Screen = () => {
+  const roll = useRoll();
+
+  const handleRouting = () => {
+    if (roll === "user") {
+      router.push("/company/(Tabs)");
+      setTimeout(() => {
+        router.push("/kyc_completed_modal");
+      }, 500);
+    } else if (roll === "service_provider") {
+      router.push("/service_provider/company/(Tabs)/home");
+    } else if (roll === "company_provider") {
+      router.push("/service_provider/company/home");
+    }
+  };
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -73,10 +88,7 @@ const Success_Screen = () => {
       <View>
         <PrimaryButton
           onPress={() => {
-            router.push("/company/(Tabs)");
-            setTimeout(() => {
-              router.push("/kyc_completed_modal");
-            }, 500);
+            handleRouting();
           }}
           //   onPress={() => setModalVisible(true)}
           titleProps="Go to home  "

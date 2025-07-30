@@ -7,6 +7,7 @@ import {
 } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import tw from "@/src/lib/tailwind";
 import { Link, router } from "expo-router";
 import { Formik } from "formik";
@@ -22,13 +23,13 @@ import {
 import { ScrollView } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
-const singUp = () => {
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+const SingUp = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEyeShow, setIsEyeShow] = useState<boolean>(false);
   const [isEyeShowCP, setIsEyeShowCP] = useState<boolean>(false);
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [isVisibleCP, setIsVisibleCP] = useState<boolean>(true);
+  const roll = useRoll();
 
   const validate = (values: any) => {
     const errors: any = {};
@@ -43,11 +44,31 @@ const singUp = () => {
     }
     return errors;
   };
+
+  // ------------------------------ auto header title and subtitle ----------------------------
+  let autoHeaderTitle;
+  if (roll === "user") {
+    autoHeaderTitle = "Create an account as a user";
+  } else if (roll === "service_provider") {
+    autoHeaderTitle = "Create an account as a provider";
+  } else if (roll === "company_provider") {
+    autoHeaderTitle = "Create an account as a comapny";
+  }
+
+  let autoHeaderSubTitle;
+  if (roll === "user") {
+    autoHeaderSubTitle = "Use your credentials to create a new account";
+  } else if (roll === "service_provider") {
+    autoHeaderSubTitle = "Use your credentials to create a new account";
+  } else if (roll === "company_provider") {
+    autoHeaderSubTitle = "Use your credentials to create a new account";
+  }
+
   return (
     <ScrollView style={tw`px-5 bg-base_color `}>
       <View style={tw`flex-row justify-between items-center mb-6 my-2`}>
         <TouchableOpacity
-          onPress={() => router.canGoBack()}
+          onPress={() => router.back()}
           style={tw`w-14 h-14 bg-white rounded-full justify-center items-center`}
         >
           <SvgXml xml={IconBackLeftArrow} />
@@ -57,10 +78,7 @@ const singUp = () => {
       </View>
 
       <View style={tw`justify-center items-center mb-12`}>
-        <AuthComponents
-          title="Create an account as a user"
-          subTitle="Use your credentials to create a new account"
-        />
+        <AuthComponents title={autoHeaderTitle} subTitle={autoHeaderSubTitle} />
       </View>
       <Formik
         initialValues={{
@@ -261,4 +279,4 @@ const singUp = () => {
   );
 };
 
-export default singUp;
+export default SingUp;

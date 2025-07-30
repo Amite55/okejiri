@@ -38,3 +38,4 @@ export const ImgSuccessKYC = require("@/assets/images/success_kyc.png");
 export const ImgMyBookingBanner = require("@/assets/images/my_booking_banner.jpg");
 export const ImgOrderPending = require("@/assets/images/orderPenddingState.gif");
 export const ImgexpoModalUserHome = require("@/assets/images/expoModalUserHome.png");
+export const ImgCompanyLogo = require("@/assets/images/companyLogo.jpg");

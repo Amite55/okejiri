@@ -38,8 +38,8 @@ const ServiceProviderRoll = () => {
         <TouchableOpacity
           // onPress={() => router.push("/auth/login")}
           onPress={() => {
-            AsyncStorage.setItem("roll", JSON.stringify("service_provider"));
-            router.push("/service_provider/individual/(Tabs)/home");
+            AsyncStorage.setItem("roll", "service_provider");
+            router.push("/auth/login");
           }}
           style={tw`bg-white w-full rounded-3xl mt-10 p-2 flex-row justify-between items-center`}
         >
@@ -59,8 +59,8 @@ const ServiceProviderRoll = () => {
         <TouchableOpacity
           // onPress={() => router.push("/auth/login")}
           onPress={() => {
-            AsyncStorage.setItem("roll", JSON.stringify("company_provider"));
-            router.push("/service_provider/company/(Tabs)/home");
+            AsyncStorage.setItem("roll", "company_provider");
+            router.push("/auth/login");
           }}
           style={tw`bg-white w-full rounded-3xl p-2 flex-row justify-between items-center mt-3`}
         >
