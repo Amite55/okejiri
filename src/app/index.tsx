@@ -52,7 +52,7 @@ export default function Index() {
       // router.push("/company/(Tabs)");
       // router.push("/auth/singUp");
       router.push("/chose_roll");
-    }, 10);
+    }, 3000);
   }, []);
 
   return (
@@ -60,6 +60,7 @@ export default function Index() {
       <View style={tw`flex-1 bg-base_color`}>
         <View style={tw`flex-1 justify-center items-center gap-4`}>
           <Image
+            style={tw`w-52 h-20`}
             resizeMode="contain"
             source={require("@/assets/images/splashScreen.png")}
           />

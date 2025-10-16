@@ -19,6 +19,8 @@
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
+    "@reduxjs/toolkit": "^2.9.0",
+    "axios": "^1.12.2",
     "expo": "~53.0.17",
     "expo-blur": "~14.1.5",
     "expo-clipboard": "~7.1.5",
@@ -52,6 +54,7 @@
     "react-native-svg": "15.11.2",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
+    "react-redux": "^9.2.0",
     "twrnc": "^4.9.1"
   },
   "devDependencies": {

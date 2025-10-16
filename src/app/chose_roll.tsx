@@ -5,13 +5,19 @@ import {
 } from "@/assets/icons";
 import { ImgChoseRoll, ImgLogo } from "@/assets/images/image";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Image } from "expo-image";
 import { router } from "expo-router";
-import React from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect } from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
+import { useDispatch } from "react-redux";
 import tw from "../lib/tailwind";
 
-const chose_roll = () => {
+const Chose_roll = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch({ type: "reset" });
+  }, []);
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -19,8 +25,12 @@ const chose_roll = () => {
       style={tw`flex-1 px-5 bg-base_color`}
     >
       <View style={tw`flex-1 justify-center items-center mt-4`}>
-        <Image style={tw`w-44 h-12`} source={ImgLogo} />
-        <Image style={tw`px-11 mt-3`} source={ImgChoseRoll} />
+        <Image style={tw`w-44 h-12`} source={ImgLogo} contentFit="contain" />
+        <Image
+          contentFit="cover"
+          style={tw`w-full h-80 px-11 mt-3`}
+          source={ImgChoseRoll}
+        />
         <View style={tw`flex-1 justify-center items-center gap-3 my-3`}>
           <Text
             style={tw`flex-1 font-PoppinsMedium text-3xl text-black text-center`}
@@ -80,4 +90,4 @@ const chose_roll = () => {
   );
 };
 
-export default chose_roll;
+export default Chose_roll;
