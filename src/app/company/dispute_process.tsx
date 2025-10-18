@@ -38,7 +38,7 @@ const Dispute_Process = () => {
       <BackTitleButton
         pageName={"Dispute process"}
         onPress={() => router.back()}
-        titleTextStyle={tw`text-2xl`}
+        titleTextStyle={tw`text-xl`}
       />
       <View style={tw`gap-3`}>
         {/*  ------------ dropdown section j----------------- */}

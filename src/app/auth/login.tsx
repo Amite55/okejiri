@@ -45,7 +45,7 @@ const LoginIndex = () => {
       <BackTitleButton
         onPress={() => router.back()}
         pageName={"Login as a service user"}
-        titleTextStyle={tw`text-2xl`}
+        titleTextStyle={tw`text-xl`}
       />
 
       <View style={tw`justify-center items-center mb-12`}>

@@ -64,7 +64,7 @@ const ServiceBooking = () => {
         <BackTitleButton
           pageName={"Booking"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
         />
 
         <View style={tw`flex-row justify-between items-center gap-4 my-5`}>

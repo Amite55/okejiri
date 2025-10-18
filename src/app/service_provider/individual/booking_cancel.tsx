@@ -17,7 +17,7 @@ const Booking_Cancel = () => {
       <BackTitleButton
         pageName={"Booking cancelled"}
         onPress={() => router.back()}
-        titleTextStyle={tw`text-2xl`}
+        titleTextStyle={tw`text-xl`}
       />
 
       <View style={tw`flex-1 justify-center items-center`}>

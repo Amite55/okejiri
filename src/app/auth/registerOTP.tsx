@@ -18,10 +18,9 @@ import {
 } from "react-native";
 import { OtpInput } from "react-native-otp-entry";
 
-const OTP = () => {
+const RegisterOTP = () => {
   const [value, setValue] = useState();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -93,7 +92,7 @@ const OTP = () => {
             <TouchableOpacity
               style={tw`bg-primary rounded-full my-3`}
               onPress={() => {
-                router.push("/auth/new_pass");
+                router.replace("/auth/contact");
               }}
             >
               {isLoading ? (
@@ -128,4 +127,4 @@ const OTP = () => {
   );
 };
 
-export default OTP;
+export default RegisterOTP;

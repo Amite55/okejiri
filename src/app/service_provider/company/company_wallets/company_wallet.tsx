@@ -29,7 +29,7 @@ const Company_Wallet = () => {
       <BackTitleButton
         pageName={"Transfer balance"}
         onPress={() => router.back()}
-        titleTextStyle={tw`text-2xl`}
+        titleTextStyle={tw`text-xl`}
         // contentStyle={tw`px-5`}
       />
 

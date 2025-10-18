@@ -35,7 +35,7 @@ const Make_Payment = () => {
         <BackTitleButton
           pageName={"Payment"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
         />
         {/* ----------------- hare is make payment and not make payment ------------- */}
 

@@ -28,7 +28,7 @@ const Refer_Friend = () => {
       <BackTitleButton
         pageName={"Refer a friend"}
         onPress={() => router.back()}
-        titleTextStyle={tw`text-2xl`}
+        titleTextStyle={tw`text-xl`}
       />
 
       <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black mt-2`}>

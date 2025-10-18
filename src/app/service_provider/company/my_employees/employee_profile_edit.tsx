@@ -40,7 +40,7 @@ const Employee_Profile_Edit = () => {
         <BackTitleButton
           pageName={"Edit employee"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
           // contentStyle={tw`px-5`}
         />
 

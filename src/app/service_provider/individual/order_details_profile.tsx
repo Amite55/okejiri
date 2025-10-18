@@ -25,7 +25,7 @@ const Order_Details_Profile = () => {
       <BackTitleButton
         pageName={"New order"}
         onPress={() => router.back()}
-        titleTextStyle={tw`text-2xl`}
+        titleTextStyle={tw`text-xl`}
       />
 
       <View

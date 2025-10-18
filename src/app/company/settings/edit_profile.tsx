@@ -33,7 +33,7 @@ const Edit_Profile = () => {
         <BackTitleButton
           pageName={"Edit profile"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
         />
 
         <View style={tw`relative justify-center items-center`}>

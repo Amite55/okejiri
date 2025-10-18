@@ -16,6 +16,7 @@ const AuthLayout = () => {
       <Stack.Screen name="new_pass" />
       <Stack.Screen name="OTP" />
       <Stack.Screen name="provide_service" />
+      <Stack.Screen name="registerOTP" />
       <Stack.Screen
         name="ServiceRequestModal"
         options={{

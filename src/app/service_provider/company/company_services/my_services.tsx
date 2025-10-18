@@ -114,7 +114,7 @@ const My_Services = () => {
             <BackTitleButton
               pageName={"My services"}
               onPress={() => router.back()}
-              titleTextStyle={tw`text-2xl`}
+              titleTextStyle={tw`text-xl`}
             />
 
             <View style={tw`items-end mb-2`}>

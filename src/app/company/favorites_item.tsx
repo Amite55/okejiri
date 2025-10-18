@@ -25,7 +25,7 @@ const Favorites_Item = () => {
         <BackTitleButton
           pageName={"Favorites"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
         />
       )}
       keyExtractor={(item) => item.Id.toString()}

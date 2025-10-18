@@ -133,7 +133,7 @@ const My_Service = () => {
           <BackTitleButton
             pageName={"My services"}
             onPress={() => router.back()}
-            titleTextStyle={tw`text-2xl`}
+            titleTextStyle={tw`text-xl`}
           />
           <View style={tw`flex-row justify-between items-center mt-2 `}>
             <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>

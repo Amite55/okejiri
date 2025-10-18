@@ -108,7 +108,7 @@ const Service_Provided = () => {
         <BackTitleButton
           pageName={"Employee details"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
           // contentStyle={tw`px-5`}
         />
       )}

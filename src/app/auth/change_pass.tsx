@@ -53,7 +53,7 @@ const Change_Pass = () => {
       <BackTitleButton
         pageName={"Change password"}
         onPress={() => router.back()}
-        titleTextStyle={tw`text-2xl`}
+        titleTextStyle={tw`text-xl`}
       />
 
       {/*  ------------- password information ------------------- */}

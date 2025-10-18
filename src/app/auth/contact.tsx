@@ -10,9 +10,13 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
@@ -27,129 +31,141 @@ const Contact = () => {
 
   const handleRouting = () => {
     if (roll === "user") {
-      router.push("/KYC_auth/id_card");
+      // router.push("/KYC_auth/id_card");
+      router.replace("/company/(Tabs)");
     } else if (roll === "service_provider") {
-      router.push("/auth/provide_service");
+      router.replace("/auth/provide_service");
     } else if (roll === "company_provider") {
-      router.push("/auth/setup_business_profile");
+      router.replace("/auth/setup_business_profile");
     }
   };
 
   return (
-    <ScrollView
-      style={tw`flex-1 bg-base_color px-5`}
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={tw`pb-2 justify-between  flex-grow`}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS/Android alada behavior
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
-      <View>
-        <BackTitleButton
-          onPress={() => router.back()}
-          pageName={"Sign up as a service user"}
-          titleTextStyle={tw`text-2xl`}
-        />
-
-        <View style={tw`justify-center items-center mb-12`}>
-          <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
-          <AuthComponents
-            title="Enter your contact information"
-            subTitle="Please enter your legal contact information so that users can find you faster."
-          />
-        </View>
-
-        <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
-          Contact Number
-        </Text>
-        <View
-          style={tw`flex-row items-center gap-2 border h-12 rounded-full px-3 mb-4`}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView
+          style={tw`flex-1 bg-base_color px-5`}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={tw`pb-2 justify-between  flex-grow`}
         >
-          <TextInput
-            placeholderTextColor="#777777"
-            style={tw`flex-1 text-base font-PoppinsMedium `}
-            placeholder="Your number"
-            onChangeText={(value) => setNumber(value)}
-          />
-        </View>
-        <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
-          Location
-        </Text>
-        <View
-          style={tw`flex-row items-center gap-2 border h-12 rounded-full px-3 mb-4`}
-        >
-          <TextInput
-            placeholderTextColor="#777777"
-            style={tw`flex-1 text-base font-PoppinsMedium `}
-            placeholder="Your location"
-            onChangeText={(value) => setLocation(value)}
-          />
-        </View>
-
-        <TouchableOpacity
-          style={tw`flex-row items-center gap-2 justify-center`}
-          onPress={() => setLocationModal(true)}
-        >
-          <SvgXml xml={IconLocation} />
-          <Text
-            style={tw`text-secondary font-DegularDisplayDemoRegular text-center text-xl my-4`}
-          >
-            Use my current location
-          </Text>
-        </TouchableOpacity>
-
-        {(roll === "company_provider" || roll === "service_provider") && (
           <View>
+            <BackTitleButton
+              onPress={() => router.back()}
+              pageName={"Sign up as a service user"}
+              titleTextStyle={tw`text-lg`}
+            />
+
+            <View style={tw`justify-center items-center mb-12`}>
+              <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
+              <AuthComponents
+                title="Enter your contact information"
+                subTitle="Please enter your legal contact information so that users can find you faster."
+              />
+            </View>
+
             <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
-              About you
+              Contact Number
             </Text>
-            <View style={tw`flex-row  gap-2 border h-52 rounded-3xl px-3 mb-4`}>
+            <View
+              style={tw`flex-row items-center gap-2 border h-12 rounded-full px-3 mb-4`}
+            >
               <TextInput
                 placeholderTextColor="#777777"
-                textAlignVertical="top"
                 style={tw`flex-1 text-base font-PoppinsMedium `}
-                placeholder="Write a bio about you"
+                placeholder="Your number"
+                onChangeText={(value) => setNumber(value)}
+              />
+            </View>
+            <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
+              Location
+            </Text>
+            <View
+              style={tw`flex-row items-center gap-2 border h-12 rounded-full px-3 mb-4`}
+            >
+              <TextInput
+                placeholderTextColor="#777777"
+                style={tw`flex-1 text-base font-PoppinsMedium `}
+                placeholder="Your location"
                 onChangeText={(value) => setLocation(value)}
               />
             </View>
-          </View>
-        )}
-      </View>
 
-      <TouchableOpacity
-        style={tw`bg-primary rounded-full my-4`}
-        onPress={() => {
-          handleRouting();
-        }}
-      >
-        {isLoading ? (
-          <View style={tw`flex-row justify-center items-center gap-3`}>
-            <ActivityIndicator size={"small"} color={tw.color("white")} />{" "}
-            <Text
-              style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
+            <TouchableOpacity
+              style={tw`flex-row items-center gap-2 justify-center`}
+              onPress={() => setLocationModal(true)}
             >
-              Sign in
-            </Text>
-          </View>
-        ) : (
-          <View style={tw`flex-row justify-center items-center gap-4`}>
-            <Text
-              style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
-            >
-              Continue
-            </Text>
-            <SvgXml xml={IconRightArrow} />
-          </View>
-        )}
-      </TouchableOpacity>
+              <SvgXml xml={IconLocation} />
+              <Text
+                style={tw`text-secondary font-DegularDisplayDemoRegular text-center text-xl my-4`}
+              >
+                Use my current location
+              </Text>
+            </TouchableOpacity>
 
-      {/*  n================= access your current location allow ------------------------- */}
+            {(roll === "company_provider" || roll === "service_provider") && (
+              <View>
+                <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
+                  About you
+                </Text>
+                <View
+                  style={tw`flex-row  gap-2 border h-52 rounded-3xl px-3 mb-4`}
+                >
+                  <TextInput
+                    placeholderTextColor="#777777"
+                    textAlignVertical="top"
+                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    placeholder="Write a bio about you"
+                    onChangeText={(value) => setLocation(value)}
+                  />
+                </View>
+              </View>
+            )}
+          </View>
 
-      <LocationAccessModal
-        setLocationModalVisible={setLocationModal}
-        locationModalVisible={locationModalVisible}
-        onAllowPress={() => setLocationModal(false)}
-        onDenyPress={() => setLocationModal(false)}
-      />
-    </ScrollView>
+          <TouchableOpacity
+            style={tw`bg-primary rounded-full my-2`}
+            onPress={() => {
+              handleRouting();
+            }}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <View style={tw`flex-row justify-center items-center gap-3 h-12`}>
+                <ActivityIndicator size={"small"} color={tw.color("white")} />{" "}
+                <Text
+                  style={tw` text-center text-white text-base font-PoppinsBold`}
+                >
+                  Continue
+                </Text>
+              </View>
+            ) : (
+              <View style={tw`flex-row justify-center items-center gap-4 h-12`}>
+                <Text
+                  style={tw` text-center text-white text-base  font-PoppinsBold`}
+                >
+                  Continue
+                </Text>
+                <SvgXml xml={IconRightArrow} />
+              </View>
+            )}
+          </TouchableOpacity>
+
+          {/*  n================= access your current location allow ------------------------- */}
+
+          <LocationAccessModal
+            setLocationModalVisible={setLocationModal}
+            locationModalVisible={locationModalVisible}
+            onAllowPress={() => setLocationModal(false)}
+            onDenyPress={() => setLocationModal(false)}
+          />
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -112,7 +112,7 @@ const My_Booking = () => {
 
         <BackTitleButton
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
           contentStyle={tw`absolute top-0 px-4`}
         />
       </View>

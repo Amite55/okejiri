@@ -26,7 +26,7 @@ const KYC_Confirmation = () => {
         <BackTitleButton
           pageName={"KYC process"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
         />
         <View style={tw`justify-center items-center mt-14`}>
           <Image resizeMode="contain" style={tw`w-44 h-14 `} source={ImgLogo} />

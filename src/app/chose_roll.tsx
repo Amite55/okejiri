@@ -7,17 +7,12 @@ import { ImgChoseRoll, ImgLogo } from "@/assets/images/image";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
-import { useDispatch } from "react-redux";
 import tw from "../lib/tailwind";
 
 const Chose_roll = () => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch({ type: "reset" });
-  }, []);
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}

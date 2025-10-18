@@ -18,7 +18,7 @@ const Warning = () => {
       <BackTitleButton
         pageName={"Warning details"}
         onPress={() => router.back()}
-        titleTextStyle={tw`text-2xl`}
+        titleTextStyle={tw`text-xl`}
       />
       <View style={tw`justify-center items-center gap-1 mt-4`}>
         <SvgXml xml={IconWaringRed} />

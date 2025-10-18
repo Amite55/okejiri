@@ -31,7 +31,7 @@ const Dispute_Appeal = () => {
         <BackTitleButton
           pageName={"Appeal"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
         />
         <View style={tw`gap-3`}>
           {/*  ---------- message explanation --------------- */}

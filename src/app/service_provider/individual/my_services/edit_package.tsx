@@ -80,7 +80,7 @@ const Edit_Package = () => {
           <BackTitleButton
             pageName={"Edit package"}
             onPress={() => router.back()}
-            titleTextStyle={tw`text-2xl`}
+            titleTextStyle={tw`text-xl`}
           />
 
           {/* -------------- service image j------------------- */}

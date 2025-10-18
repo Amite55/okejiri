@@ -25,7 +25,7 @@ const Boost_sProfile = () => {
         <BackTitleButton
           pageName={"Boost your profile"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
         />
 
         <Text

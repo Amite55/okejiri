@@ -73,7 +73,7 @@ const Add_Package = () => {
           <BackTitleButton
             pageName={"Add package"}
             onPress={() => router.back()}
-            titleTextStyle={tw`text-2xl`}
+            titleTextStyle={tw`text-xl`}
           />
 
           {/* ------------------ Image upload ------------------ */}

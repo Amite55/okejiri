@@ -41,7 +41,7 @@ const Provide_Service = () => {
         <BackTitleButton
           onPress={() => router.back()}
           pageName={"Sign up as a service provider"}
-          titleTextStyle={tw`text-xl`}
+          titleTextStyle={tw`text-lg`}
         />
         <View style={tw`justify-center items-center mb-12`}>
           <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
@@ -85,9 +85,9 @@ const Provide_Service = () => {
 
       <TouchableOpacity
         style={tw`bg-primary rounded-full my-4`}
-        // onPress={() => {
-        //   handleRouting();
-        // }}
+        onPress={() =>
+          router.replace("/service_provider/individual/(Tabs)/home")
+        }
       >
         {isLoading ? (
           <View style={tw`flex-row justify-center items-center gap-3`}>

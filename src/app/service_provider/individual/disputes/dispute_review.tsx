@@ -66,7 +66,7 @@ const Dispute_Review = () => {
       <BackTitleButton
         pageName={"Dispute status"}
         onPress={() => router.back()}
-        titleTextStyle={tw`text-2xl`}
+        titleTextStyle={tw`text-xl`}
       />
 
       <View style={tw`mt-4`}>

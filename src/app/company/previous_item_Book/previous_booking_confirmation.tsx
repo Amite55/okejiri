@@ -41,7 +41,7 @@ const Previous_Booking_Confirmation = () => {
         <BackTitleButton
           pageName={"Booking confirmation"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
         />
         <Pressable
           //   onPress={() => router.push("/company/serviceDetails")}

@@ -7,10 +7,14 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { MultiSelect } from "react-native-element-dropdown";
@@ -31,112 +35,123 @@ const Setup_Business_Profile = () => {
   const [isFocus, setIsFocus] = useState(false);
 
   return (
-    <ScrollView
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-      style={tw`flex-1  bg-base_color`}
-      contentContainerStyle={tw`pb-6 px-4 `}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS/Android alada behavior
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
-      <BackTitleButton
-        pageName={"Setup your business profile"}
-        onPress={() => router.back()}
-        titleTextStyle={tw`text-xl`}
-      />
-      <View style={tw` justify-center items-center mt-4`}>
-        <Image
-          style={tw`relative w-24 h-24 rounded-full `}
-          source={ImgCompanyLogo}
-        />
-        <TouchableOpacity
-          style={tw`w-12 h-12 bg-primary rounded-full justify-center items-center absolute -bottom-4 right-33`}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          style={tw`flex-1  bg-base_color`}
+          contentContainerStyle={tw`p-4 `}
         >
-          <SvgXml xml={IconCameraProfile} />
-        </TouchableOpacity>
-      </View>
+          <BackTitleButton
+            pageName={"Setup your business profile"}
+            onPress={() => router.back()}
+            titleTextStyle={tw`text-lg`}
+          />
+          <View style={tw` justify-center items-center mt-4`}>
+            <Image
+              style={tw`relative w-24 h-24 rounded-full `}
+              source={ImgCompanyLogo}
+            />
+            <TouchableOpacity
+              style={tw`w-12 h-12 bg-primary rounded-full justify-center items-center absolute -bottom-4 right-33`}
+            >
+              <SvgXml xml={IconCameraProfile} />
+            </TouchableOpacity>
+          </View>
 
-      <Text
-        style={tw`font-DegularDisplayDemoMedium text-lg text-black text-center mt-6`}
-      >
-        Upload your business logo
-      </Text>
+          <Text
+            style={tw`font-DegularDisplayDemoMedium text-lg text-black text-center mt-6`}
+          >
+            Upload your business logo
+          </Text>
 
-      {/* --------------------- input from ---------------- */}
+          {/* --------------------- input from ---------------- */}
 
-      <View style={tw` mb-8`}>
-        {/*  ------------------ business name ------------------- */}
-        <Text
-          style={tw`font-DegularDisplayDemoMedium text-base ml-2 text-black mt-6`}
-        >
-          Business name
-        </Text>
-        <TextInput
-          style={tw` rounded-full border border-gray-400 mt-2 text-base text-black px-4`}
-          defaultValue="Okejiri Company"
-        />
+          <View style={tw` mb-8`}>
+            {/*  ------------------ business name ------------------- */}
+            <Text
+              style={tw`font-DegularDisplayDemoMedium text-base ml-2 text-black mt-6`}
+            >
+              Business name
+            </Text>
+            <TextInput
+              style={tw` rounded-full border border-gray-400 mt-2 text-base text-black px-4`}
+              defaultValue="Okejiri Company"
+            />
 
-        {/*  --------- company location ------------- */}
-        <Text
-          style={tw`font-DegularDisplayDemoMedium text-base ml-2 text-black mt-3`}
-        >
-          Location
-        </Text>
-        <TextInput
-          style={tw` rounded-full border border-gray-400 mt-2 text-base text-black px-4`}
-          defaultValue="Dhaka, Bangladesh"
-        />
+            {/*  --------- company location ------------- */}
+            <Text
+              style={tw`font-DegularDisplayDemoMedium text-base ml-2 text-black mt-3`}
+            >
+              Location
+            </Text>
+            <TextInput
+              style={tw` rounded-full border border-gray-400 mt-2 text-base text-black px-4`}
+              defaultValue="Dhaka, Bangladesh"
+            />
 
-        {/* ----------- company about --------------- */}
-        <Text
-          style={tw`font-DegularDisplayDemoMedium text-base ml-2 text-black mt-3`}
-        >
-          About your business
-        </Text>
-        <TextInput
-          style={tw` rounded-3xl border border-gray-400 mt-2 text-base text-black px-4`}
-          multiline
-          numberOfLines={8}
-          defaultValue="Lorem ipsum dolor sit amet consectetur. Volutpat neque in proin laoreet nulla malesuada vestibulum duis tristique. Purus diam consequat pharetra est urna. "
-        />
+            {/* ----------- company about --------------- */}
+            <Text
+              style={tw`font-DegularDisplayDemoMedium text-base ml-2 text-black mt-3`}
+            >
+              About your business
+            </Text>
+            <TextInput
+              style={tw` rounded-3xl border border-gray-400 mt-2 text-base text-black px-4`}
+              multiline
+              numberOfLines={8}
+              defaultValue="Lorem ipsum dolor sit amet consectetur. Volutpat neque in proin laoreet nulla malesuada vestibulum duis tristique. Purus diam consequat pharetra est urna. "
+            />
 
-        <MultiSelect
-          style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={dropdownData}
-          maxHeight={300}
-          labelField="label"
-          dropdownPosition="top"
-          valueField="value"
-          //   multiple={true}
-          placeholder={!isFocus ? "-select your services-" : "..."}
-          value={value}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={(item) => {
-            setValue(item);
-            // setIsFocus(false);
-          }}
-        />
+            <MultiSelect
+              style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              data={dropdownData}
+              maxHeight={300}
+              labelField="label"
+              dropdownPosition="top"
+              valueField="value"
+              //   multiple={true}
+              placeholder={!isFocus ? "-select your services-" : "..."}
+              value={value}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              onChange={(item) => {
+                setValue(item);
+                // setIsFocus(false);
+              }}
+            />
 
-        {/*  --------- company location ------------- */}
-        <Text
-          style={tw`font-DegularDisplayDemoMedium text-base ml-2 text-black mt-3`}
-        >
-          Number of employees
-        </Text>
-        <TextInput
-          style={tw` rounded-full border border-gray-400 mt-2 text-base text-black px-4`}
-          innputMode="numeric"
-          keyboardType="numeric"
-          defaultValue="20"
-        />
-      </View>
+            {/*  --------- company location ------------- */}
+            <Text
+              style={tw`font-DegularDisplayDemoMedium text-base ml-2 text-black mt-3`}
+            >
+              Number of employees
+            </Text>
+            <TextInput
+              style={tw` rounded-full border border-gray-400 mt-2 text-base text-black px-4`}
+              innputMode="numeric"
+              keyboardType="numeric"
+              defaultValue="20"
+            />
+          </View>
 
-      <PrimaryButton
-        onPress={() => router.push("/KYC_auth/id_card")}
-        titleProps="Sign up"
-      />
-    </ScrollView>
+          <PrimaryButton
+            // onPress={() => router.push("/KYC_auth/id_card")}
+            onPress={() =>
+              router.replace("/service_provider/company/(Tabs)/home")
+            }
+            titleProps="Sign up"
+          />
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

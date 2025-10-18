@@ -26,13 +26,13 @@ const ServiceNearbyHistory = () => {
             <BackTitleButton
               pageName={"Booking"}
               onPress={() => router.back()}
-              titleTextStyle={tw`text-2xl`}
+              titleTextStyle={tw`text-xl`}
             />
           ) : (
             <BackTitleButton
               pageName={"Services nearby"}
               onPress={() => router.back()}
-              titleTextStyle={tw`text-2xl`}
+              titleTextStyle={tw`text-xl`}
             />
           )}
         </>

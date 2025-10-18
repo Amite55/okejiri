@@ -53,7 +53,7 @@ const Portfolio = () => {
           <BackTitleButton
             pageName="Portfolio"
             onPress={() => router.back()}
-            titleTextStyle={tw`text-2xl`}
+            titleTextStyle={tw`text-xl`}
           />
         }
         ListFooterComponent={

@@ -22,8 +22,9 @@ const BackTitleButton = ({
       style={[tw`flex-row justify-between items-center py-2`, contentStyle]}
     >
       <TouchableOpacity
+        activeOpacity={0.6}
         onPress={onPress}
-        style={tw`w-14 h-14 bg-white rounded-full justify-center items-center`}
+        style={tw`w-12 h-12 bg-white rounded-full justify-center items-center`}
       >
         <SvgXml xml={IconBackLeftArrow} />
       </TouchableOpacity>

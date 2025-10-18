@@ -23,7 +23,7 @@ const FAQ = () => {
     >
       <BackTitleButton
         onPress={() => router.back()}
-        titleTextStyle={tw`text-2xl`}
+        titleTextStyle={tw`text-xl`}
       />
 
       <View style={tw`justify-center items-center -mt-10`}>

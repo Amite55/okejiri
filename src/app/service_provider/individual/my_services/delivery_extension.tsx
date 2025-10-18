@@ -39,7 +39,7 @@ const Delivery_Extension = () => {
             <BackTitleButton
               pageName={"Delivery extension"}
               onPress={() => router.back()}
-              titleTextStyle={tw`text-2xl`}
+              titleTextStyle={tw`text-xl`}
             />
 
             {/*  ------------ dropdown section j----------------- */}

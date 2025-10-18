@@ -24,7 +24,7 @@ const Setting_Index = () => {
       <BackTitleButton
         pageName={"Settings"}
         onPress={() => router.back()}
-        titleTextStyle={tw`text-2xl`}
+        titleTextStyle={tw`text-xl`}
       />
       <View style={tw`gap-3 my-2`}>
         {/* ---------------------- Edit profile -=--------------- */}

@@ -76,7 +76,7 @@ const My_Disputes = () => {
         <BackTitleButton
           pageName={"My disputes"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
         />
       )}
       keyExtractor={(item) => item.id.toString()}

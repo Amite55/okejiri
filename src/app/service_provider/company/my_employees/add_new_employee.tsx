@@ -45,7 +45,7 @@ const Add_New_Employee = () => {
         <BackTitleButton
           pageName={"Add employee"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
           // contentStyle={tw`px-5`}
         />
 

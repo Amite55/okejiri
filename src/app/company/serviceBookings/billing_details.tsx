@@ -29,7 +29,7 @@ const BillingDetails = () => {
         <BackTitleButton
           pageName={"Billing details"}
           onPress={() => router.back()}
-          titleTextStyle={tw`text-2xl`}
+          titleTextStyle={tw`text-xl`}
         />
         {/* [=================== user info form =================] */}
         <View style={tw`gap-4 mt-4`}>
