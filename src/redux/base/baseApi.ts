@@ -20,7 +20,7 @@ const baseQueryWithPath: BaseQueryFn<BaseQueryArgs, unknown, unknown> = async (
     const token = await AsyncStorage.getItem("token");
 
     const result: AxiosResponse = await axios({
-      baseURL: "http://127.0.0.1:8000/api",
+      baseURL: "http://103.186.20.114:8005/api",
       ...args,
       url: args.url,
       method: args.method,
@@ -71,6 +71,6 @@ export const api = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithPath,
   endpoints: () => ({}),
-  tagTypes: ["login", "logout", "register", "user"],
+  tagTypes: ["login", "logout", "register", "user", "profile"],
 });
 export const imageUrl = "http://10.10.10.63:8001/api";

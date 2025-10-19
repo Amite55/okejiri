@@ -2,6 +2,7 @@ import { IconLocation, IconRightArrow } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
 import LocationAccessModal from "@/src/Components/LocationAccessModal";
+import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
@@ -28,15 +29,17 @@ const Contact = () => {
   const [location, setLocation] = useState("");
   const [locationModalVisible, setLocationModal] = useState(false);
   const roll = useRoll();
+  const providerTypes = useProviderTypes();
 
   const handleRouting = () => {
-    if (roll === "user") {
-      // router.push("/KYC_auth/id_card");
+    if (roll === "USER") {
       router.replace("/company/(Tabs)");
-    } else if (roll === "service_provider") {
-      router.replace("/auth/provide_service");
-    } else if (roll === "company_provider") {
-      router.replace("/auth/setup_business_profile");
+    } else if (roll === "PROVIDER") {
+      if (providerTypes === "Individual") {
+        router.replace("/auth/provide_service");
+      } else {
+        router.replace("/auth/setup_business_profile");
+      }
     }
   };
 
@@ -107,7 +110,8 @@ const Contact = () => {
               </Text>
             </TouchableOpacity>
 
-            {(roll === "company_provider" || roll === "service_provider") && (
+            {((roll === "PROVIDER" && providerTypes === "Company") ||
+              providerTypes === "Individual") && (
               <View>
                 <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
                   About you

@@ -2,11 +2,12 @@ import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useVerifyOtpMutation } from "@/src/redux/apiSlices/authSlices";
 import { PrimaryColor } from "@/utils/utils";
-import { router } from "expo-router";
-import React, { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router, useLocalSearchParams } from "expo-router";
+import React from "react";
 import {
-  ActivityIndicator,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -19,8 +20,29 @@ import {
 import { OtpInput } from "react-native-otp-entry";
 
 const RegisterOTP = () => {
-  const [value, setValue] = useState();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { email } = useLocalSearchParams();
+
+  // ------------------------ api end point ---------------------
+  const [otpVerify, { isLoading: isLoadingRegister }] = useVerifyOtpMutation();
+
+  const handleResendOtp = async () => {
+    try {
+      const response = await otpVerify({ email }).unwrap();
+      if (response) {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: "OTP resent again" },
+        });
+      }
+    } catch (error) {
+      console.log("Error resending OTP:", error);
+      router.push({
+        pathname: "/Toaster",
+        params: { res: error?.message || error },
+      });
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -53,29 +75,29 @@ const RegisterOTP = () => {
                 type="numeric"
                 secureTextEntry={false}
                 focusStickBlinkingDuration={500}
-                onTextChange={(text) => {
-                  setValue(text);
-                }}
+                // onTextChange={(text) => {
+                //   clg
+                // }}
                 onFilled={async (text) => {
-                  // try {
-                  //   const res = await otpVerify({
-                  //     email: email,
-                  //     otp: text,
-                  //   }).unwrap();
-                  //   if (res.status) {
-                  //     await AsyncStorage.setItem(
-                  //       "token",
-                  //       res?.data?.access_token
-                  //     );
-                  //     router?.replace("/drewer/home");
-                  //   } else {
-                  //     Toast.show({
-                  //       type: ALERT_TYPE.DANGER,
-                  //       title: "Error!",
-                  //       textBody: "Wrong OTP",
-                  //     });
-                  //   }
-                  // } catch (error) {}
+                  try {
+                    const res = await otpVerify({
+                      email: email,
+                      otp: text,
+                    }).unwrap();
+                    if (res.status) {
+                      await AsyncStorage.setItem(
+                        "token",
+                        res?.data?.access_token
+                      );
+                      router.replace("/auth/contact");
+                    }
+                  } catch (error) {
+                    console.log(error, "OTP not verified ");
+                    router.push({
+                      pathname: `/Toaster`,
+                      params: { res: error?.message || error },
+                    });
+                  }
                 }}
                 textInputProps={{
                   accessibilityLabel: "One-Time Password",
@@ -89,32 +111,12 @@ const RegisterOTP = () => {
               />
             </View>
 
-            <TouchableOpacity
-              style={tw`bg-primary rounded-full my-3`}
-              onPress={() => {
-                router.replace("/auth/contact");
-              }}
-            >
-              {isLoading ? (
-                <View style={tw`flex-row justify-center items-center gap-3`}>
-                  <ActivityIndicator size={"small"} color={tw.color("white")} />{" "}
-                  <Text
-                    style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
-                  >
-                    Send
-                  </Text>
-                </View>
-              ) : (
-                <Text
-                  style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
-                >
-                  Send
-                </Text>
-              )}
-            </TouchableOpacity>
-
             <View style={tw`w-full items-end mt-1`}>
-              <TouchableOpacity style={tw``}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => handleResendOtp()}
+                style={tw``}
+              >
                 <Text style={tw`text-primary font-semibold text-[12px]`}>
                   Send Again
                 </Text>

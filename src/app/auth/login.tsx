@@ -1,6 +1,8 @@
 import { IconEyeClose, IconEyeShow, IconGoogle } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
+import { useProviderTypes } from "@/src/hooks/useProviderTypes";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { Link, router } from "expo-router";
@@ -21,6 +23,8 @@ const LoginIndex = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEyeShow, setIsEyeShow] = useState<boolean>(false);
   const [isVisible, setIsVisible] = useState<boolean>(true);
+  const providerTypes = useProviderTypes();
+  const roll = useRoll();
 
   const handleCheckBox = async () => {
     setIsChecked(!isChecked);
@@ -150,7 +154,19 @@ const LoginIndex = () => {
               style={tw`bg-primary rounded-full`}
               onPress={() => {
                 // handleSubmit();
-                router.replace("/company");
+                // router.replace("/company");
+                if (roll === "USER") {
+                  router.push("/company/(Tabs)");
+                  setTimeout(() => {
+                    router.push("/kyc_completed_modal");
+                  }, 500);
+                } else if (roll === "PROVIDER") {
+                  if (providerTypes === "Individual") {
+                    router.push("/service_provider/individual/(Tabs)/home");
+                  } else if (providerTypes === "Company") {
+                    router.push("/service_provider/company/home");
+                  }
+                }
               }}
             >
               {isLoading ? (

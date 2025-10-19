@@ -33,6 +33,17 @@ export default function RootLayout() {
                     presentation: "transparentModal",
                   }}
                 />
+                <Stack.Screen
+                  name="Toaster"
+                  options={{
+                    sheetAllowedDetents: "fitToContents",
+                    presentation: "formSheet",
+                    contentStyle: {
+                      backgroundColor: "transparent",
+                      paddingBottom: 8,
+                    },
+                  }}
+                />
               </Stack>
             </GestureHandlerRootView>
           </Provider>

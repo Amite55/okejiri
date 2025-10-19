@@ -7,8 +7,10 @@ import {
 } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
+import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
 import tw from "@/src/lib/tailwind";
+import { useRegisterMutation } from "@/src/redux/apiSlices/authSlices";
 import { Link, router } from "expo-router";
 import { Formik } from "formik";
 import React, { useState } from "react";
@@ -28,15 +30,21 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const SingUp = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEyeShow, setIsEyeShow] = useState<boolean>(false);
   const [isEyeShowCP, setIsEyeShowCP] = useState<boolean>(false);
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [isVisibleCP, setIsVisibleCP] = useState<boolean>(true);
   const roll = useRoll();
+  const providerTypes = useProviderTypes();
 
+  // ------------------------ api end point ---------------------
+  const [credentials, { isLoading: isLoadingRegister }] = useRegisterMutation();
+  // ------------------- validate formik ---------------------
   const validate = (values: any) => {
     const errors: any = {};
+    if (!values.name) {
+      errors.name = "Your name is required";
+    }
     if (!values.email) {
       errors.email = "Email is required";
     }
@@ -47,12 +55,12 @@ const SingUp = () => {
       errors.password = "Password is required";
     } else if (values.password && values.password.length < 8) {
       errors.password = "Password must be at least 8 characters";
-    } else if (!values.c_password) {
-      errors.password = "Password is required";
+    }
+    if (!values.password_confirmation) {
+      errors.password_confirmation = "Confirm password is required";
     }
     return errors;
   };
-
   // ------------------------------ auto header title and subtitle ----------------------------
   let autoHeaderTitle;
   if (roll === "user") {
@@ -70,6 +78,30 @@ const SingUp = () => {
   } else if (roll === "company_provider") {
     autoHeaderSubTitle = "Use your credentials to create a new account";
   }
+
+  const handelRegister = async (value: any) => {
+    console.log(value);
+    try {
+      const payload = {
+        ...value,
+        role: roll,
+        provider_type: providerTypes ? providerTypes : null,
+      };
+      const res = await credentials(payload).unwrap();
+      if (res) {
+        router.push({
+          pathname: "/auth/registerOTP",
+          params: { email: payload.email },
+        });
+      }
+    } catch (error) {
+      console.log(error, "not registered user");
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
+      });
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -105,14 +137,11 @@ const SingUp = () => {
               email: "",
               password: "",
               name: "",
-              c_password: "",
-              r_code: "",
+              password_confirmation: "",
+              referral_code: "",
             }}
             onSubmit={(values) => {
-              console.log(
-                values,
-                "this is 39 line login input console -------------->"
-              );
+              handelRegister(values);
             }}
             validate={validate}
           >
@@ -137,9 +166,14 @@ const SingUp = () => {
                     placeholder="Enter your name"
                     value={values.name}
                     onChangeText={handleChange("name")}
-                    onBlur={handleBlur("email")}
+                    onBlur={handleBlur("name")}
                   />
                 </View>
+                {touched.name && errors.name && (
+                  <Text style={tw`text-red-500 ml-3 mt-[-12px] mb-4 text-sm`}>
+                    {errors.name}
+                  </Text>
+                )}
 
                 <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
                   Email
@@ -201,9 +235,9 @@ const SingUp = () => {
                     style={tw`flex-1 text-base font-PoppinsMedium `}
                     placeholderTextColor="#777777"
                     placeholder="confirm password"
-                    value={values.c_password}
-                    onChangeText={handleChange("c_password")}
-                    onBlur={handleBlur("c_password")}
+                    value={values.password_confirmation}
+                    onChangeText={handleChange("password_confirmation")}
+                    onBlur={handleBlur("password_confirmation")}
                   />
                   <TouchableOpacity
                     onPress={() => {
@@ -214,11 +248,12 @@ const SingUp = () => {
                     <SvgXml xml={isEyeShowCP ? IconEyeShow : IconEyeClose} />
                   </TouchableOpacity>
                 </View>
-                {touched.c_password && errors.c_password && (
-                  <Text style={tw`text-red-500 ml-3 mt-[-12px] mb-4 text-sm`}>
-                    {errors.c_password}
-                  </Text>
-                )}
+                {touched.password_confirmation &&
+                  errors.password_confirmation && (
+                    <Text style={tw`text-red-500 ml-3 mt-[-12px] mb-4 text-sm`}>
+                      {errors.password_confirmation}
+                    </Text>
+                  )}
                 <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
                   Referral code (Optional)
                 </Text>
@@ -229,22 +264,23 @@ const SingUp = () => {
                     style={tw`flex-1 text-base font-PoppinsMedium `}
                     placeholderTextColor="#777777"
                     placeholder="454545"
-                    value={values.r_code}
-                    onChangeText={handleChange("r_code")}
-                    onBlur={handleBlur("r_code")}
+                    value={values.referral_code}
+                    onChangeText={handleChange("referral_code")}
+                    onBlur={handleBlur("referral_code")}
+                    maxLength={6}
                   />
                 </View>
 
                 <TouchableOpacity
+                  activeOpacity={0.8}
                   style={tw`bg-primary rounded-full`}
                   onPress={() => {
                     handleSubmit();
-                    // router.replace("/auth/contact");
-                    router.replace("/auth/registerOTP");
+                    // router.replace("/auth/registerOTP");
                   }}
-                  disabled={isLoading}
+                  disabled={isLoadingRegister}
                 >
-                  {isLoading ? (
+                  {isLoadingRegister ? (
                     <View
                       style={tw`flex-row justify-center items-center gap-3`}
                     >

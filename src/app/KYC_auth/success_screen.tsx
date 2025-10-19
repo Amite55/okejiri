@@ -1,5 +1,6 @@
 import { ImgSuccessKYC } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
+import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
@@ -9,17 +10,20 @@ import { Image, ScrollView, Text, View } from "react-native";
 
 const Success_Screen = () => {
   const roll = useRoll();
+  const providerTypes = useProviderTypes();
 
   const handleRouting = () => {
-    if (roll === "user") {
+    if (roll === "USER") {
       router.push("/company/(Tabs)");
       setTimeout(() => {
         router.push("/kyc_completed_modal");
       }, 500);
-    } else if (roll === "service_provider") {
-      router.push("/service_provider/company/(Tabs)/home");
-    } else if (roll === "company_provider") {
-      router.push("/service_provider/company/home");
+    } else if (roll === "PROVIDER") {
+      if (providerTypes === "Individual") {
+        router.push("/service_provider/individual/(Tabs)/home");
+      } else if (providerTypes === "Company") {
+        router.push("/service_provider/company/home");
+      }
     }
   };
   return (
