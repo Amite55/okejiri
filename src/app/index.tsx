@@ -50,8 +50,8 @@ export default function Index() {
 
     setTimeout(() => {
       // router.push("/company/(Tabs)");
-      // router.push("/auth/singUp");
-      router.push("/chose_roll");
+      router.push("/auth/provide_service");
+      // router.push("/chose_roll");
     }, 3000);
   }, []);
 

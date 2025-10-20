@@ -1,6 +1,12 @@
-import { IconQunsMark, IconRightArrow } from "@/assets/icons";
+import {
+  IconCrossWhite,
+  IconQunsMark,
+  IconRightArrow,
+  IconSettingsPrimary,
+} from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
+import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { router } from "expo-router";
@@ -8,9 +14,11 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -27,89 +35,181 @@ const dropdownData = [
 ];
 
 const Provide_Service = () => {
+  // const { jsonContactInfo } = useLocalSearchParams();
+  // const contactInfo = JSON.parse(jsonContactInfo);
+  // console.log(contactInfo, "hare is contact info");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState([]);
+  const [error, setError] = useState("");
   const [isFocus, setIsFocus] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleScreenInfo = () => {
+    try {
+      if (value.length === 0) {
+        setError("Please select your service");
+        return;
+      } else {
+        setError("");
+        console.log(value, "this is value");
+      }
+    } catch (error) {
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
+      });
+    }
+  };
+
   return (
-    <ScrollView
-      style={tw`flex-1 bg-base_color px-5`}
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={tw`pb-2 justify-between  flex-grow`}
-    >
-      <View>
-        <BackTitleButton
-          onPress={() => router.back()}
-          pageName={"Sign up as a service provider"}
-          titleTextStyle={tw`text-lg`}
-        />
-        <View style={tw`justify-center items-center mb-12`}>
-          <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
-          <AuthComponents
-            title="What kind of service you provide ?"
-            subTitle="Please select a service that suits best with your work."
+    <>
+      <ScrollView
+        style={tw`flex-1 bg-base_color px-5`}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={tw`pb-2 justify-between  flex-grow`}
+      >
+        <View>
+          <BackTitleButton
+            onPress={() => router.back()}
+            pageName={"Sign up as a service provider"}
+            titleTextStyle={tw`text-lg`}
           />
+          <View style={tw`justify-center items-center mb-12`}>
+            <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
+            <AuthComponents
+              title="What kind of service you provide ?"
+              subTitle="Please select a service that suits best with your work."
+            />
+          </View>
+
+          <Dropdown
+            style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            data={dropdownData}
+            maxHeight={300}
+            labelField="label"
+            dropdownPosition="top"
+            valueField="value"
+            placeholder={!isFocus ? "Select service" : "..."}
+            value={value}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
+            onChange={(item) => {
+              setValue(item.value);
+              setIsFocus(false);
+            }}
+          />
+          {error && (
+            <Text style={tw`text-red-500 ml-3 mt-[-12px] mb-4 text-sm pt-4`}>
+              {error}
+            </Text>
+          )}
+
+          <TouchableOpacity
+            // onPress={() => {
+            //   router.push("/auth/ServiceRequestModal");
+            // }}
+            onPress={() => setModalVisible(true)}
+            style={tw`flex-row items-center gap-2 my-4 justify-center`}
+          >
+            <SvgXml xml={IconQunsMark} />
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-lg text-primary`}
+            >
+              Request to add service
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={dropdownData}
-          maxHeight={300}
-          labelField="label"
-          dropdownPosition="top"
-          valueField="value"
-          placeholder={!isFocus ? "Select service" : "..."}
-          value={value}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={(item) => {
-            setValue(item.value);
-            setIsFocus(false);
-          }}
-        />
-
         <TouchableOpacity
-          onPress={() => {
-            router.push("/auth/ServiceRequestModal");
-          }}
-          style={tw`flex-row items-center gap-2 my-4 justify-center`}
+          style={tw`bg-primary rounded-full my-4`}
+          onPress={handleScreenInfo}
+          // onPress={() =>
+          //   router.replace("/service_provider/individual/(Tabs)/home")
+          // }
         >
-          <SvgXml xml={IconQunsMark} />
-          <Text style={tw`font-DegularDisplayDemoRegular text-lg text-primary`}>
-            Request to add service
-          </Text>
+          {isLoading ? (
+            <View style={tw`flex-row justify-center items-center gap-3`}>
+              <ActivityIndicator size={"small"} color={tw.color("white")} />{" "}
+              <Text
+                style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
+              >
+                Sign in
+              </Text>
+            </View>
+          ) : (
+            <View style={tw`flex-row justify-center items-center gap-4`}>
+              <Text
+                style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
+              >
+                Sign up
+              </Text>
+              <SvgXml xml={IconRightArrow} />
+            </View>
+          )}
         </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity
-        style={tw`bg-primary rounded-full my-4`}
-        onPress={() =>
-          router.replace("/service_provider/individual/(Tabs)/home")
-        }
+      </ScrollView>
+      {/* ------------------------------- cancel modal ---------------------------------- */}
+      <Modal
+        animationType="fade"
+        transparent
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
       >
-        {isLoading ? (
-          <View style={tw`flex-row justify-center items-center gap-3`}>
-            <ActivityIndicator size={"small"} color={tw.color("white")} />{" "}
-            <Text
-              style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
+        <View
+          style={tw`flex-1 justify-center items-center bg-black bg-opacity-40`}
+        >
+          <View style={tw`bg-white w-[90%] self-center rounded-2xl h-6/12 `}>
+            <View
+              style={[
+                tw`flex-row items-center justify-between px-5 bg-primary h-12 `,
+                { borderTopLeftRadius: 16, borderTopRightRadius: 16 },
+              ]}
             >
-              Sign in
-            </Text>
+              <View />
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
+              >
+                Request to add service
+              </Text>
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={tw`p-2`}
+              >
+                <SvgXml xml={IconCrossWhite} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={tw`flex-grow justify-between `}>
+              <View>
+                <View style={tw`justify-center items-center mt-4`}>
+                  <SvgXml xml={IconSettingsPrimary} />
+                </View>
+                <Text
+                  style={tw`font-DegularDisplayDemoMedium text-xl text-black text-center mt-4`}
+                >
+                  What kind of service you want to add ?
+                </Text>
+
+                <TextInput
+                  style={tw`border border-gray-400 h-14 px-4 rounded-full mt-2 mx-4`}
+                  placeholder="Type here..."
+                />
+              </View>
+
+              <View style={tw`px-4 pb-6`}>
+                <PrimaryButton titleProps="Send request" />
+              </View>
+            </View>
           </View>
-        ) : (
-          <View style={tw`flex-row justify-center items-center gap-4`}>
-            <Text
-              style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
-            >
-              Sign up
-            </Text>
-            <SvgXml xml={IconRightArrow} />
-          </View>
-        )}
-      </TouchableOpacity>
-    </ScrollView>
+        </View>
+      </Modal>
+    </>
   );
 };
 

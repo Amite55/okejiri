@@ -2,10 +2,12 @@ import { IconLocation, IconRightArrow } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
 import LocationAccessModal from "@/src/Components/LocationAccessModal";
+import useLocation from "@/src/hooks/useLocation";
 import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useCompletePersonalizationMutation } from "@/src/redux/apiSlices/personalizationSlice";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -25,11 +27,18 @@ import { SvgXml } from "react-native-svg";
 
 const Contact = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [number, setNumber] = useState("");
-  const [location, setLocation] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [about, setAbout] = useState("");
+  const [isLatitude, setIsLatitude] = useState(null);
+  const [isLongitude, setIsLongitude] = useState(null);
   const [locationModalVisible, setLocationModal] = useState(false);
   const roll = useRoll();
   const providerTypes = useProviderTypes();
+  const { longitude, latitude, errorMsg } = useLocation();
+
+  // ------------------------ api end point ---------------------
+  const [information] = useCompletePersonalizationMutation();
 
   const handleRouting = () => {
     if (roll === "USER") {
@@ -40,6 +49,48 @@ const Contact = () => {
       } else {
         router.replace("/auth/setup_business_profile");
       }
+    }
+  };
+
+  const handleLocation = () => {
+    setIsLatitude(latitude);
+    setIsLongitude(longitude);
+  };
+
+  const handlePersonalInfo = async () => {
+    try {
+      const info = {
+        phone,
+        address,
+        about,
+        latitude: isLatitude ? isLatitude : null,
+        longitude: isLongitude ? isLongitude : null,
+        role: roll,
+        provider_type: providerTypes ? providerTypes : " ",
+      };
+      if (roll === "USER") {
+        const res = await information(info).unwrap();
+        if (res) {
+          router.replace("/company/(Tabs)");
+        }
+      } else if (roll === "PROVIDER") {
+        if (providerTypes === "Individual") {
+          router.replace({
+            pathname: "/auth/provide_service",
+            params: { jsonContactInfo: JSON.stringify(info) },
+          });
+        } else {
+          router.replace({
+            pathname: "/auth/setup_business_profile",
+            params: { jsonContactInfo: JSON.stringify(info) },
+          });
+        }
+      }
+    } catch (error) {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: error?.message || error },
+      });
     }
   };
 
@@ -81,7 +132,7 @@ const Contact = () => {
                 placeholderTextColor="#777777"
                 style={tw`flex-1 text-base font-PoppinsMedium `}
                 placeholder="Your number"
-                onChangeText={(value) => setNumber(value)}
+                onChangeText={(value) => setPhone(value)}
               />
             </View>
             <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
@@ -94,13 +145,13 @@ const Contact = () => {
                 placeholderTextColor="#777777"
                 style={tw`flex-1 text-base font-PoppinsMedium `}
                 placeholder="Your location"
-                onChangeText={(value) => setLocation(value)}
+                onChangeText={(value) => setAddress(value)}
               />
             </View>
 
             <TouchableOpacity
               style={tw`flex-row items-center gap-2 justify-center`}
-              onPress={() => setLocationModal(true)}
+              onPress={() => handleLocation()}
             >
               <SvgXml xml={IconLocation} />
               <Text
@@ -124,7 +175,7 @@ const Contact = () => {
                     textAlignVertical="top"
                     style={tw`flex-1 text-base font-PoppinsMedium `}
                     placeholder="Write a bio about you"
-                    onChangeText={(value) => setLocation(value)}
+                    onChangeText={(value) => setAbout(value)}
                   />
                 </View>
               </View>
