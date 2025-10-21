@@ -3,8 +3,13 @@ import * as Font from "expo-font";
 import { router } from "expo-router";
 import React from "react";
 import { ActivityIndicator, Image, SafeAreaView, View } from "react-native";
+import { useProfileQuery } from "../redux/apiSlices/authSlices";
 
 export default function Index() {
+  // api end point ====================
+  const { data: userProfileInfo, isLoading, error } = useProfileQuery({});
+  console.log(userProfileInfo, "there is is ---------------");
+
   React.useEffect(() => {
     const AppLoader = async () => {
       await Font.loadAsync({
@@ -50,8 +55,8 @@ export default function Index() {
 
     setTimeout(() => {
       // router.push("/company/(Tabs)");
-      router.push("/auth/provide_service");
-      // router.push("/chose_roll");
+      // router.push("/auth/provide_service");
+      router.push("/chose_roll");
     }, 3000);
   }, []);
 

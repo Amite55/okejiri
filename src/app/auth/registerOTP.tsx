@@ -115,7 +115,6 @@ const RegisterOTP = () => {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => handleResendOtp()}
-                style={tw``}
               >
                 <Text style={tw`text-primary font-semibold text-[12px]`}>
                   Send Again

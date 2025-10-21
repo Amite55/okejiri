@@ -7,7 +7,7 @@ import {
   useCompletePersonalizationMutation,
   useGetServicesQuery,
 } from "@/src/redux/apiSlices/personalizationSlice";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import {
@@ -36,9 +36,8 @@ const dropdownData = [
 ];
 
 const Setup_Business_Profile = () => {
-  // const { jsonContactInfo } = useLocalSearchParams();
-  // const contactInfo = JSON.parse(jsonContactInfo);
-  // console.log(contactInfo, "hare is contact info");
+  const { jsonContactInfo } = useLocalSearchParams();
+  const contactInfo = JSON.parse(jsonContactInfo as any);
   const [value, setValue] = useState([]);
   const [isFocus, setIsFocus] = useState(false);
   const [error, setError] = useState("");
@@ -48,6 +47,8 @@ const Setup_Business_Profile = () => {
     useCompletePersonalizationMutation();
   const { data: getServiceData, isLoading } = useGetServicesQuery({});
 
+  console.log(value, "this is get service ");
+
   const handleScreenValue = async (formData: any) => {
     try {
       if (value.length === 0) {
@@ -55,12 +56,19 @@ const Setup_Business_Profile = () => {
         return;
       } else {
         setError("");
+        const payload = {
+          ...contactInfo,
+          ...formData,
+          service_id: [value],
+        };
+        console.log(payload, ";alskdjfa;slkdjfal;skdjf");
+        const res = await information(payload).unwrap();
+        if (res) {
+          router.replace("/service_provider/company/(Tabs)/home");
+        }
       }
-      const payload = {
-        ...formData,
-        services: value,
-      };
     } catch (error) {
+      console.log(error, "not registered user");
       router.push({
         pathname: `/Toaster`,
         params: { res: error?.message || error },
@@ -91,8 +99,6 @@ const Setup_Business_Profile = () => {
     }
     if (!values.emp_no) {
       errors.emp_no = "Required";
-    } else if (values.emp_no.length < 3) {
-      errors.emp_no = "Employee number must be at least 3 characters";
     }
     if (Object.keys(errors).length > 0) {
       return errors;
@@ -232,11 +238,11 @@ const Setup_Business_Profile = () => {
                   style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
                   placeholderStyle={styles.placeholderStyle}
                   selectedTextStyle={styles.selectedTextStyle}
-                  data={dropdownData}
+                  data={getServiceData?.data?.services}
                   maxHeight={300}
-                  labelField="label"
+                  labelField="name"
                   dropdownPosition="bottom"
-                  valueField="value"
+                  valueField="id"
                   placeholder={!isFocus ? "-select your services-" : "..."}
                   value={value}
                   onFocus={() => setIsFocus(true)}

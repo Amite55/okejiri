@@ -85,8 +85,11 @@ const SingUp = () => {
       const payload = {
         ...value,
         role: roll,
-        provider_type: providerTypes ? providerTypes : null,
+        provider_type: providerTypes ? providerTypes : "",
       };
+      if (roll === "USER") {
+        delete payload.provider_type;
+      }
       const res = await credentials(payload).unwrap();
       if (res) {
         router.push({

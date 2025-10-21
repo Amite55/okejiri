@@ -43,6 +43,7 @@ const Chose_roll = () => {
         <TouchableOpacity
           onPress={() => {
             AsyncStorage.setItem("roll", "USER");
+            AsyncStorage.removeItem("providerTypes");
             router.push("/auth/login");
           }}
           style={tw`bg-white w-full rounded-3xl mt-4 p-2 flex-row justify-between items-center`}

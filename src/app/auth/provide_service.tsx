@@ -9,7 +9,11 @@ import AuthComponents from "@/src/Components/AuthComponents";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
+import {
+  useCompletePersonalizationMutation,
+  useGetServicesQuery,
+} from "@/src/redux/apiSlices/personalizationSlice";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -35,23 +39,54 @@ const dropdownData = [
 ];
 
 const Provide_Service = () => {
-  // const { jsonContactInfo } = useLocalSearchParams();
-  // const contactInfo = JSON.parse(jsonContactInfo);
-  // console.log(contactInfo, "hare is contact info");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { jsonContactInfo } = useLocalSearchParams();
+  const contactInfo = JSON.parse(jsonContactInfo as any);
   const [value, setValue] = useState([]);
   const [error, setError] = useState("");
   const [isFocus, setIsFocus] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [sendRequest, setSendRequest] = useState("");
 
-  const handleScreenInfo = () => {
+  // -------------------- api end point ---------------------
+  const [information, { isLoading: isLoadingPersonalization }] =
+    useCompletePersonalizationMutation();
+  const { data: getServiceData } = useGetServicesQuery({});
+  console.log(value, "this is get service ");
+
+  const handleScreenInfo = async () => {
     try {
       if (value.length === 0) {
         setError("Please select your service");
         return;
       } else {
         setError("");
-        console.log(value, "this is value");
+        const payload = {
+          ...contactInfo,
+          service_id: [value],
+        };
+        const res = await information(payload).unwrap();
+        if (res) {
+          router.replace("/service_provider/individual/(Tabs)/home");
+        }
+      }
+    } catch (error) {
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
+      });
+    }
+  };
+
+  // ============================ request for new service ============================
+  const handleRequestService = () => {
+    try {
+      if (!sendRequest) {
+        setError("Please Enter your Service");
+        return;
+      } else {
+        setError("");
+        setModalVisible(false);
+        console.log(sendRequest, "this is value");
       }
     } catch (error) {
       router.push({
@@ -87,17 +122,17 @@ const Provide_Service = () => {
             style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
-            data={dropdownData}
+            data={getServiceData?.data?.services}
             maxHeight={300}
-            labelField="label"
+            labelField="name"
+            valueField="id"
             dropdownPosition="top"
-            valueField="value"
             placeholder={!isFocus ? "Select service" : "..."}
             value={value}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
             onChange={(item) => {
-              setValue(item.value);
+              setValue(item.id);
               setIsFocus(false);
             }}
           />
@@ -125,18 +160,17 @@ const Provide_Service = () => {
 
         <TouchableOpacity
           style={tw`bg-primary rounded-full my-4`}
+          activeOpacity={0.8}
           onPress={handleScreenInfo}
-          // onPress={() =>
-          //   router.replace("/service_provider/individual/(Tabs)/home")
-          // }
+          disabled={isLoadingPersonalization}
         >
-          {isLoading ? (
+          {isLoadingPersonalization ? (
             <View style={tw`flex-row justify-center items-center gap-3`}>
-              <ActivityIndicator size={"small"} color={tw.color("white")} />{" "}
+              <ActivityIndicator size={"small"} color={tw.color("white")} />
               <Text
                 style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
               >
-                Sign in
+                Sign up
               </Text>
             </View>
           ) : (
@@ -197,13 +231,27 @@ const Provide_Service = () => {
                 </Text>
 
                 <TextInput
-                  style={tw`border border-gray-400 h-14 px-4 rounded-full mt-2 mx-4`}
+                  style={tw`border border-gray-400 h-14 text-black px-4 rounded-full mt-2 mx-4`}
                   placeholder="Type here..."
+                  placeholderTextColor="#535353"
+                  onChangeText={(i) => setSendRequest(i)}
                 />
+                {error && (
+                  <Text
+                    style={tw`text-red-500 ml-3 mt-[-12px] mb-4 text-sm pt-4`}
+                  >
+                    {error}
+                  </Text>
+                )}
               </View>
 
               <View style={tw`px-4 pb-6`}>
-                <PrimaryButton titleProps="Send request" />
+                <PrimaryButton
+                  onPress={() => {
+                    handleRequestService();
+                  }}
+                  titleProps="Send request"
+                />
               </View>
             </View>
           </View>

@@ -5,6 +5,8 @@ import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useLoginMutation } from "@/src/redux/apiSlices/authSlices";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, router } from "expo-router";
 import { Formik } from "formik";
 import React, { useState } from "react";
@@ -20,11 +22,57 @@ import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 const LoginIndex = () => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEyeShow, setIsEyeShow] = useState<boolean>(false);
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const providerTypes = useProviderTypes();
   const roll = useRoll();
+
+  // ------------------------ api end point ---------------------
+  const [credentials, { isLoading: isLoadingLogin }] = useLoginMutation();
+
+  // ----------------- handel login ---------------------
+  const handleLogin = async (formData: any) => {
+    const payload = {
+      ...formData,
+      role: roll,
+      provider_type: providerTypes ? providerTypes : "",
+    };
+    console.log(payload, "hare is form data -------");
+    if (roll === "USER") {
+      delete payload.provider_type;
+      const res = await credentials(payload).unwrap();
+
+      if (res?.data?.user?.role === roll) {
+        await AsyncStorage.setItem("token", res?.data?.access_token);
+        router.replace("/company/(Tabs)");
+        setTimeout(() => {
+          router.replace("/kyc_completed_modal");
+        }, 500);
+      }
+    } else if (roll === "PROVIDER") {
+      if (providerTypes === "Individual") {
+        const res = await credentials(payload).unwrap();
+        if (res?.data?.user?.provider_type === providerTypes) {
+          await AsyncStorage.setItem("token", res?.data?.access_token);
+          router.replace("/service_provider/individual/(Tabs)/home");
+        }
+      } else if (providerTypes === "Company") {
+        const res = await credentials(payload).unwrap();
+        if (res?.data?.user?.provider_type === providerTypes) {
+          await AsyncStorage.setItem("token", res?.data?.access_token);
+          router.replace("/service_provider/company/home");
+        }
+      }
+    }
+    try {
+    } catch (error) {
+      console.log(error, "login fail -----");
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
+      });
+    }
+  };
 
   const handleCheckBox = async () => {
     setIsChecked(!isChecked);
@@ -62,10 +110,7 @@ const LoginIndex = () => {
       <Formik
         initialValues={{ email: "", password: "" }}
         onSubmit={(values) => {
-          console.log(
-            values,
-            "this is 39 line login input console -------------->"
-          );
+          handleLogin(values);
         }}
         validate={validate}
       >
@@ -151,27 +196,14 @@ const LoginIndex = () => {
             </View>
 
             <TouchableOpacity
+              activeOpacity={0.8}
               style={tw`bg-primary rounded-full`}
-              onPress={() => {
-                // handleSubmit();
-                // router.replace("/company");
-                if (roll === "USER") {
-                  router.push("/company/(Tabs)");
-                  setTimeout(() => {
-                    router.push("/kyc_completed_modal");
-                  }, 500);
-                } else if (roll === "PROVIDER") {
-                  if (providerTypes === "Individual") {
-                    router.push("/service_provider/individual/(Tabs)/home");
-                  } else if (providerTypes === "Company") {
-                    router.push("/service_provider/company/home");
-                  }
-                }
-              }}
+              disabled={isLoadingLogin}
+              onPress={() => handleSubmit()}
             >
-              {isLoading ? (
+              {isLoadingLogin ? (
                 <View style={tw`flex-row justify-center items-center gap-3`}>
-                  <ActivityIndicator size={"small"} color={tw.color("white")} />{" "}
+                  <ActivityIndicator size={"small"} color={tw.color("white")} />
                   <Text
                     style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
                   >

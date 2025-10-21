@@ -38,27 +38,25 @@ const Contact = () => {
   const { longitude, latitude, errorMsg } = useLocation();
 
   // ------------------------ api end point ---------------------
-  const [information] = useCompletePersonalizationMutation();
-
-  const handleRouting = () => {
-    if (roll === "USER") {
-      router.replace("/company/(Tabs)");
-    } else if (roll === "PROVIDER") {
-      if (providerTypes === "Individual") {
-        router.replace("/auth/provide_service");
-      } else {
-        router.replace("/auth/setup_business_profile");
-      }
-    }
-  };
+  const [information, { isLoading: isLoadingPersonalization }] =
+    useCompletePersonalizationMutation();
 
   const handleLocation = () => {
     setIsLatitude(latitude);
     setIsLongitude(longitude);
+    console.log(isLatitude, isLongitude, "add location  your location ");
   };
 
   const handlePersonalInfo = async () => {
     try {
+      // -------------- validation ---------------------
+      if (!phone || !address) {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: "Please fill all the fields" },
+        });
+        return;
+      }
       const info = {
         phone,
         address,
@@ -69,6 +67,8 @@ const Contact = () => {
         provider_type: providerTypes ? providerTypes : " ",
       };
       if (roll === "USER") {
+        delete info.about;
+        delete info.provider_type;
         const res = await information(info).unwrap();
         if (res) {
           router.replace("/company/(Tabs)");
@@ -79,7 +79,7 @@ const Contact = () => {
             pathname: "/auth/provide_service",
             params: { jsonContactInfo: JSON.stringify(info) },
           });
-        } else {
+        } else if (providerTypes === "Company") {
           router.replace({
             pathname: "/auth/setup_business_profile",
             params: { jsonContactInfo: JSON.stringify(info) },
@@ -185,7 +185,7 @@ const Contact = () => {
           <TouchableOpacity
             style={tw`bg-primary rounded-full my-2`}
             onPress={() => {
-              handleRouting();
+              handlePersonalInfo();
             }}
             disabled={isLoading}
           >
