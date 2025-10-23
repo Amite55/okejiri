@@ -4,6 +4,7 @@ import React from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
+import { useProfileQuery } from "../redux/apiSlices/authSlices";
 
 interface IProps {
   onPress?: () => void;
@@ -11,6 +12,10 @@ interface IProps {
 }
 
 const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
+  // ================== api end point ==================
+  const { data: userProfileInfo, isLoading, error } = useProfileQuery({});
+  console.log(userProfileInfo?.data?.address, "this is get profile");
+  console.log(userProfileInfo?.data?.name, "this is get profile");
   return (
     <View
       style={tw`py-3 flex-1 bg-base_color flex-row items-center justify-between `}
@@ -22,21 +27,20 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
         <View style={tw` `}>
           <Image style={tw`w-16 h-16 rounded-full `} source={ImgProfileImg} />
         </View>
-        <View>
-          <View style={tw` items-start gap-2`}>
+
+        <View style={tw` items-start gap-1`}>
+          <Text
+            style={tw`font-DegularDisplayDemoSemibold flex-row items-center text-black text-xl`}
+          >
+            {userProfileInfo?.data?.name}
+          </Text>
+          <View style={tw`flex-row justify-start items-center gap-1`}>
+            <SvgXml xml={IconLocation} />
             <Text
-              style={tw`font-DegularDisplayDemoBold flex-row items-center text-black text-2xl`}
+              style={tw`font-DegularDisplayDemoRegular text-base text-black`}
             >
-              John Doe,
+              Dhaka, Bangladesh
             </Text>
-            <View style={tw`flex-row justify-start items-center gap-1`}>
-              <SvgXml xml={IconLocation} />
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-              >
-                Dhaka, Bangladesh
-              </Text>
-            </View>
           </View>
         </View>
       </Pressable>

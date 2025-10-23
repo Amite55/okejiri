@@ -14,6 +14,7 @@ import {
 import LogoutModal from "@/src/Components/LogoutModal";
 import SettingsCard from "@/src/Components/SettingsCard";
 import tw from "@/src/lib/tailwind";
+import { useLogoutMutation } from "@/src/redux/apiSlices/authSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -29,6 +30,29 @@ import { SvgXml } from "react-native-svg";
 
 const Profile = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  // ============================ api end point ==============================
+  const [logout] = useLogoutMutation({});
+
+  // -------------- handle logout --------------
+  const handleLogoutUser = async () => {
+    const token = await AsyncStorage.getItem("token");
+    try {
+      setModalVisible(false);
+      await logout(token).unwrap();
+      await AsyncStorage.removeItem("roll");
+      await AsyncStorage.removeItem("providerTypes");
+      await AsyncStorage.removeItem("token");
+      router.replace("/chose_roll");
+    } catch (e) {
+      console.log("Error reading role from AsyncStorage", e);
+      router.push({
+        pathname: "/Toaster",
+        params: { res: e?.message || e },
+      });
+    }
+  };
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -150,9 +174,7 @@ const Profile = () => {
         modalTitle="Are you sure you want to log out?"
         subTitle="You will need to log in again to access your account."
         onPress={() => {
-          setModalVisible(false);
-          router.push("/chose_roll");
-          AsyncStorage.removeItem("roll");
+          handleLogoutUser();
         }}
       />
     </ScrollView>

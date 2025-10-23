@@ -13,9 +13,13 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
@@ -37,17 +41,15 @@ const LoginIndex = () => {
       role: roll,
       provider_type: providerTypes ? providerTypes : "",
     };
-    console.log(payload, "hare is form data -------");
     if (roll === "USER") {
       delete payload.provider_type;
       const res = await credentials(payload).unwrap();
-
       if (res?.data?.user?.role === roll) {
         await AsyncStorage.setItem("token", res?.data?.access_token);
         router.replace("/company/(Tabs)");
-        setTimeout(() => {
-          router.replace("/kyc_completed_modal");
-        }, 500);
+        // setTimeout(() => {
+        //   router.replace("/kyc_completed_modal");
+        // }, 500);
       }
     } else if (roll === "PROVIDER") {
       if (providerTypes === "Individual") {
@@ -93,160 +95,177 @@ const LoginIndex = () => {
   };
 
   return (
-    <ScrollView style={tw`px-5 bg-base_color `}>
-      <BackTitleButton
-        onPress={() => router.back()}
-        pageName={"Login as a service user"}
-        titleTextStyle={tw`text-xl`}
-      />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS/Android alada behavior
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView style={tw`px-5 bg-base_color `}>
+          <BackTitleButton
+            onPress={() => router.back()}
+            pageName={"Login as a service user"}
+            titleTextStyle={tw`text-xl`}
+          />
 
-      <View style={tw`justify-center items-center mb-12`}>
-        <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
-        <AuthComponents
-          title="Welcome back"
-          subTitle="Use your credentials to sign in"
-        />
-      </View>
-      <Formik
-        initialValues={{ email: "", password: "" }}
-        onSubmit={(values) => {
-          handleLogin(values);
-        }}
-        validate={validate}
-      >
-        {({
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          values,
-          touched,
-          errors,
-        }) => (
-          <View style={tw` `}>
-            <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
-              Email
-            </Text>
-            <View
-              style={tw`flex-row items-center gap-2 border h-12 rounded-full px-3 mb-4`}
-            >
-              <TextInput
-                placeholderTextColor="#777777"
-                style={tw`flex-1 text-base font-PoppinsMedium `}
-                placeholder="Enter your email"
-                value={values.email}
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-              />
-            </View>
-            {touched.email && errors.email && (
-              <Text style={tw`text-red-500 ml-3 mt-[-12px] mb-4 text-sm`}>
-                {errors.email}
-              </Text>
-            )}
-            <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
-              Password
-            </Text>
-            <View
-              style={tw`flex-row items-center gap-2 border h-12 rounded-full mb-3 px-3`}
-            >
-              <TextInput
-                secureTextEntry={isVisible}
-                style={tw`flex-1 text-base font-PoppinsMedium `}
-                placeholderTextColor="#777777"
-                placeholder="Enter your password"
-                value={values.password}
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  setIsVisible(!isVisible);
-                  setIsEyeShow(!isEyeShow);
-                }}
-              >
-                <SvgXml xml={isEyeShow ? IconEyeShow : IconEyeClose} />
-              </TouchableOpacity>
-            </View>
-            {touched.password && errors.password && (
-              <Text style={tw`text-red-500 ml-3 mt-[-12px] mb-4 text-sm`}>
-                {errors.password}
-              </Text>
-            )}
-            {/* ----------- checkbox and password -------------------- */}
-            <View style={tw`flex-row justify-between items-center mt-4 mb-10`}>
-              <View style={tw`flex-row gap-2 items-center rounded-none`}>
-                <TouchableOpacity
-                  onPress={() => handleCheckBox()}
-                  style={tw.style(
-                    `border w-5 h-5  justify-center items-center rounded-sm`,
-                    isChecked ? `bg-primary border-0` : `bg-transparent`
-                  )}
+          <View style={tw`justify-center items-center mb-12`}>
+            <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
+            <AuthComponents
+              title="Welcome back"
+              subTitle="Use your credentials to sign in"
+            />
+          </View>
+          <Formik
+            initialValues={{ email: "", password: "" }}
+            onSubmit={(values) => {
+              handleLogin(values);
+            }}
+            validate={validate}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              touched,
+              errors,
+            }) => (
+              <View style={tw` `}>
+                <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
+                  Email
+                </Text>
+                <View
+                  style={tw`flex-row items-center gap-2 border h-12 rounded-full px-3 mb-4`}
                 >
-                  {isChecked ? (
-                    <Text style={tw`text-white text-sm`}>✔</Text>
-                  ) : null}
-                </TouchableOpacity>
-                <Text>Remember me</Text>
-              </View>
-              <Text
-                style={tw`text-primary text-base font-DegularDisplayDemoRegular`}
-              >
-                <Link href={"/auth/forgot_pass"}>Forgot password?</Link>
-              </Text>
-            </View>
-
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={tw`bg-primary rounded-full`}
-              disabled={isLoadingLogin}
-              onPress={() => handleSubmit()}
-            >
-              {isLoadingLogin ? (
-                <View style={tw`flex-row justify-center items-center gap-3`}>
-                  <ActivityIndicator size={"small"} color={tw.color("white")} />
-                  <Text
-                    style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
+                  <TextInput
+                    placeholderTextColor="#777777"
+                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    placeholder="Enter your email"
+                    value={values.email}
+                    onChangeText={handleChange("email")}
+                    onBlur={handleBlur("email")}
+                  />
+                </View>
+                {touched.email && errors.email && (
+                  <Text style={tw`text-red-500 ml-3 mt-[-12px] mb-4 text-sm`}>
+                    {errors.email}
+                  </Text>
+                )}
+                <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
+                  Password
+                </Text>
+                <View
+                  style={tw`flex-row items-center gap-2 border h-12 rounded-full mb-3 px-3`}
+                >
+                  <TextInput
+                    secureTextEntry={isVisible}
+                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    placeholderTextColor="#777777"
+                    placeholder="Enter your password"
+                    value={values.password}
+                    onChangeText={handleChange("password")}
+                    onBlur={handleBlur("password")}
+                  />
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsVisible(!isVisible);
+                      setIsEyeShow(!isEyeShow);
+                    }}
                   >
-                    Sign in
+                    <SvgXml xml={isEyeShow ? IconEyeShow : IconEyeClose} />
+                  </TouchableOpacity>
+                </View>
+                {touched.password && errors.password && (
+                  <Text style={tw`text-red-500 ml-3 mt-[-12px] mb-4 text-sm`}>
+                    {errors.password}
+                  </Text>
+                )}
+                {/* ----------- checkbox and password -------------------- */}
+                <View
+                  style={tw`flex-row justify-between items-center mt-4 mb-10`}
+                >
+                  <View style={tw`flex-row gap-2 items-center rounded-none`}>
+                    <TouchableOpacity
+                      onPress={() => handleCheckBox()}
+                      style={tw.style(
+                        `border w-5 h-5  justify-center items-center rounded-sm`,
+                        isChecked ? `bg-primary border-0` : `bg-transparent`
+                      )}
+                    >
+                      {isChecked ? (
+                        <Text style={tw`text-white text-sm`}>✔</Text>
+                      ) : null}
+                    </TouchableOpacity>
+                    <Text>Remember me</Text>
+                  </View>
+                  <Text
+                    style={tw`text-primary text-base font-DegularDisplayDemoRegular`}
+                  >
+                    <Link href={"/auth/forgot_pass"}>Forgot password?</Link>
                   </Text>
                 </View>
-              ) : (
-                <Text
-                  style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
+
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={tw`bg-primary rounded-full`}
+                  disabled={isLoadingLogin}
+                  onPress={() => handleSubmit()}
                 >
-                  Sign in
-                </Text>
-              )}
-            </TouchableOpacity>
+                  {isLoadingLogin ? (
+                    <View
+                      style={tw`flex-row justify-center items-center gap-3`}
+                    >
+                      <ActivityIndicator
+                        size={"small"}
+                        color={tw.color("white")}
+                      />
+                      <Text
+                        style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
+                      >
+                        Sign in
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text
+                      style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
+                    >
+                      Sign in
+                    </Text>
+                  )}
+                </TouchableOpacity>
 
-            <View style={tw`flex-row justify-between items-center gap-4 my-6`}>
-              <View style={tw`flex-1 h-px bg-gray-500`} />
-              <Text>or continue with</Text>
-              <View style={tw`flex-1 h-px bg-gray-500`} />
-            </View>
+                <View
+                  style={tw`flex-row justify-between items-center gap-4 my-6`}
+                >
+                  <View style={tw`flex-1 h-px bg-gray-500`} />
+                  <Text>or continue with</Text>
+                  <View style={tw`flex-1 h-px bg-gray-500`} />
+                </View>
 
-            <View style={tw`justify-center items-center`}>
-              <TouchableOpacity
-                style={tw`w-14 h-14 bg-white rounded-full justify-center items-center `}
+                <View style={tw`justify-center items-center`}>
+                  <TouchableOpacity
+                    style={tw`w-14 h-14 bg-white rounded-full justify-center items-center `}
+                  >
+                    <SvgXml xml={IconGoogle} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </Formik>
+          <View style={tw`justify-end items-center my-2`}>
+            <Text style={tw` text-sm font-DegularDisplayDemoRegular`}>
+              Don’t have an account?{" "}
+              <Link
+                style={tw`text-primary font-bold underline`}
+                href={"/auth/singUp"}
               >
-                <SvgXml xml={IconGoogle} />
-              </TouchableOpacity>
-            </View>
+                Sign up
+              </Link>
+            </Text>
           </View>
-        )}
-      </Formik>
-      <View style={tw`justify-end items-center my-2`}>
-        <Text style={tw` text-sm font-DegularDisplayDemoRegular`}>
-          Don’t have an account?{" "}
-          <Link
-            style={tw`text-primary font-bold underline`}
-            href={"/auth/singUp"}
-          >
-            Sign up
-          </Link>
-        </Text>
-      </View>
-    </ScrollView>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

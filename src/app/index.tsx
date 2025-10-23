@@ -1,14 +1,13 @@
 import tw from "@/src/lib/tailwind";
 import * as Font from "expo-font";
-import { router } from "expo-router";
-import React from "react";
+import { router, SplashScreen } from "expo-router";
+import React, { useEffect } from "react";
 import { ActivityIndicator, Image, SafeAreaView, View } from "react-native";
 import { useProfileQuery } from "../redux/apiSlices/authSlices";
 
 export default function Index() {
   // api end point ====================
   const { data: userProfileInfo, isLoading, error } = useProfileQuery({});
-  console.log(userProfileInfo, "there is is ---------------");
 
   React.useEffect(() => {
     const AppLoader = async () => {
@@ -52,13 +51,40 @@ export default function Index() {
       // await SplashScreen.hideAsync();
     };
     AppLoader();
-
-    setTimeout(() => {
-      // router.push("/company/(Tabs)");
-      // router.push("/auth/provide_service");
-      router.push("/chose_roll");
-    }, 3000);
+    // setTimeout(() => {
+    //   // router.push("/company/(Tabs)");
+    //   // router.push("/auth/provide_service");
+    //   router.push("/chose_roll");
+    // }, 3000);
   }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      const render = async () => {
+        try {
+          if (userProfileInfo?.data?.role === "USER") {
+            router.push("/company/(Tabs)");
+          } else if (userProfileInfo?.data?.role === "PROVIDER") {
+            if (userProfileInfo?.data?.provider_type === "Individual") {
+              router.replace("/service_provider/individual/(Tabs)/home");
+            } else if (userProfileInfo?.data?.provider_type === "Company") {
+              router.replace("/service_provider/company/home");
+            }
+          } else {
+            router.push("/chose_roll");
+          }
+        } catch (error) {
+          // router.push("/company/(Tabs)");
+          // router.push("/auth/provide_service");
+          // router.push("/chose_roll");
+        } finally {
+          await SplashScreen.hideAsync();
+        }
+      };
+      render();
+    }, 2000);
+    // ============= call function ============= //
+  }, [useProfileQuery, userProfileInfo, isLoading]);
 
   return (
     <SafeAreaView style={tw`flex-1 bg-white`}>
