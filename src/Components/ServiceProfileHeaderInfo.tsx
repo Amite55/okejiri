@@ -1,7 +1,7 @@
 import { IconLocation, IconNotificationDark } from "@/assets/icons";
-import { ImgProfileImg } from "@/assets/images/image";
+import { Image } from "expo-image";
 import React from "react";
-import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 import { useProfileQuery } from "../redux/apiSlices/authSlices";
@@ -25,7 +25,11 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
         style={tw`flex-row justify-start items-center  gap-4`}
       >
         <View style={tw` `}>
-          <Image style={tw`w-16 h-16 rounded-full `} source={ImgProfileImg} />
+          <Image
+            style={tw`w-14 h-14 rounded-full `}
+            source={userProfileInfo?.data?.avatar}
+            contentFit="contain"
+          />
         </View>
 
         <View style={tw` items-start gap-1`}>

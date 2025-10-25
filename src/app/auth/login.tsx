@@ -47,9 +47,9 @@ const LoginIndex = () => {
       if (res?.data?.user?.role === roll) {
         await AsyncStorage.setItem("token", res?.data?.access_token);
         router.replace("/company/(Tabs)");
-        // setTimeout(() => {
-        //   router.replace("/kyc_completed_modal");
-        // }, 500);
+        setTimeout(() => {
+          router.push("/kyc_completed_modal");
+        }, 500);
       }
     } else if (roll === "PROVIDER") {
       if (providerTypes === "Individual") {

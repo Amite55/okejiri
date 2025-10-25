@@ -182,10 +182,10 @@ const Individual_Service_Provider_Layout = () => {
         }}
         tabBar={(props: any) => <MyTabBar {...props} />}
       >
-        <Tabs.Screen name="home" />
-        <Tabs.Screen name="order" />
-        <Tabs.Screen name="chats" />
-        <Tabs.Screen name="account" />
+        <Tabs.Screen name="home" options={{ title: "Home" }} />
+        <Tabs.Screen name="order" options={{ title: "Order" }} />
+        <Tabs.Screen name="chats" options={{ title: "Chats" }} />
+        <Tabs.Screen name="account" options={{ title: "Account" }} />
       </Tabs>
     </View>
   );

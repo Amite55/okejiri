@@ -183,11 +183,11 @@ const Company_Layout = () => {
       }}
       tabBar={(props: any) => <MyTabBar {...props} />}
     >
-      <Tabs.Screen name="index" />
-      <Tabs.Screen name="services" />
-      <Tabs.Screen name="bookings" />
-      <Tabs.Screen name="chats" />
-      <Tabs.Screen name="profile" />
+      <Tabs.Screen name="index" options={{ title: "Home" }} />
+      <Tabs.Screen name="services" options={{ title: "Services" }} />
+      <Tabs.Screen name="bookings" options={{ title: "Bookings" }} />
+      <Tabs.Screen name="chats" options={{ title: "Chats" }} />
+      <Tabs.Screen name="profile" options={{ title: "Profile" }} />
     </Tabs>
   );
 };

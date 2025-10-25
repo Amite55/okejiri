@@ -14,6 +14,7 @@ import { SvgXml } from "react-native-svg";
 
 const Id_Card = () => {
   const [isDisable, setIsDisable] = useState<boolean>(false);
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -34,8 +35,10 @@ const Id_Card = () => {
             style={tw`w-44 h-14 mb-8`}
             source={ImgLogo}
           />
+
           <Image resizeMode="contain" style={tw`w-60 h-36`} source={ImgCard} />
         </View>
+        {/* ----------------------------- is open camera ---------------------- */}
 
         <Text
           style={tw`font-DegularDisplayDemoSemibold text-3xl text-primary text-center mt-8`}
@@ -45,6 +48,7 @@ const Id_Card = () => {
 
         <View style={tw`my-4 gap-4`}>
           <TouchableOpacity
+            onPress={() => router.push("/KYC_auth/camera")}
             style={tw`border-2 border-dashed border-gray-300 rounded-sm h-14 flex-row justify-center items-center gap-2`}
           >
             <SvgXml xml={IconUploadImage} />
@@ -69,7 +73,6 @@ const Id_Card = () => {
       </View>
 
       {/*  */}
-
       <View>
         {isDisable ? (
           <PrimaryButton
