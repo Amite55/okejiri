@@ -1,6 +1,7 @@
 import tw from "@/src/lib/tailwind";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -9,7 +10,8 @@ const Camera = () => {
   const [openCameraFast, setOpenCameraFast] = useState<boolean>(false);
   const [openCameraSecond, setOpenCameraSecond] = useState<boolean>(false);
   const [permission, requestPermission] = useCameraPermissions();
-  const [photoUri, setPhotoUri] = useState(null);
+  const [fastPhotoUri, setFastPhotoUri] = useState(null);
+  const [secondPhotoUri, setSecondPhotoUri] = useState(null);
   const cameraRef = useRef(null);
 
   // 📸 যদি permission এখনো না নেয়া হয়
@@ -36,26 +38,67 @@ const Camera = () => {
       </View>
     );
   }
-
-  if (photoUri) {
+  // ------------------------- fast image preview --------------------------------
+  if (fastPhotoUri && !secondPhotoUri) {
     return (
       <View style={tw`flex-1 bg-black items-center justify-center`}>
         <Image
-          source={{ uri: photoUri }}
+          source={{ uri: fastPhotoUri }}
           style={tw`w-11/12 h-3/4 rounded-lg`}
           contentFit="cover"
         />
 
         <View style={tw`flex-row mt-5`}>
           <TouchableOpacity
-            onPress={() => setPhotoUri(null)} // Retake
+            onPress={() => setFastPhotoUri(null)} // Retake
             style={tw`bg-gray-600 px-6 py-3 rounded-lg mr-4`}
           >
             <Text style={tw`text-white text-base`}>Retake</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => console.log("✅ Upload this:", photoUri)}
+            onPress={() =>
+              router.push({
+                pathname: "/KYC_auth/id_card",
+                params: { fontImage: fastPhotoUri, backImage: fastPhotoUri },
+              })
+            }
+            style={tw`bg-green-600 px-6 py-3 rounded-lg`}
+          >
+            <Text style={tw`text-white text-base`}>Use Photo</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+  //   second image preview ---------------------------------
+  if (secondPhotoUri && fastPhotoUri) {
+    return (
+      <View style={tw`flex-1 bg-black items-center justify-center`}>
+        <Image
+          source={{ uri: secondPhotoUri }}
+          style={tw`w-11/12 h-3/4 rounded-lg`}
+          contentFit="cover"
+        />
+
+        <View style={tw`flex-row mt-5`}>
+          <TouchableOpacity
+            onPress={() => setFastPhotoUri(null)} // Retake
+            style={tw`bg-gray-600 px-6 py-3 rounded-lg mr-4`}
+          >
+            <Text style={tw`text-white text-base`}>Retake</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/KYC_auth/id_card",
+                params: {
+                  fontImage: secondPhotoUri,
+                  backImage: secondPhotoUri,
+                },
+              })
+            }
             style={tw`bg-green-600 px-6 py-3 rounded-lg`}
           >
             <Text style={tw`text-white text-base`}>Use Photo</Text>
@@ -81,11 +124,9 @@ const Camera = () => {
               if (cameraRef.current) {
                 // console.log("📸 Capturing...");
                 const photo = await cameraRef.current.takePictureAsync();
-                // const ratio =
-                //   await cameraRef.current.getAvailablePictureSizesAsync();
-                // console.log(ratio, "ratio");
-                console.log(photo.uri);
-                setPhotoUri(photo.uri);
+                if (photo.uri) {
+                  setFastPhotoUri(photo.uri);
+                }
               }
             }}
             style={tw`w-20 h-20 rounded-full bg-white border-4 border-gray-300`}
