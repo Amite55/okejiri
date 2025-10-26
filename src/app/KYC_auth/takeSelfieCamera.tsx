@@ -1,16 +1,15 @@
 import tw from "@/src/lib/tailwind";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { Image } from "expo-image";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
-const Camera = () => {
-  const [facing, setFacing] = useState<CameraType>("back");
+const TakeSelfieCamera = () => {
+  const { fastPhotoUri, secondPhotoUri } = useLocalSearchParams();
+  const [facing, setFacing] = useState<CameraType>("front");
   const [permission, requestPermission] = useCameraPermissions();
-  const [frontPhoto, setFrontPhoto] = useState<string | null>(null);
-  const [backPhoto, setBackPhoto] = useState<string | null>(null);
-  const [stage, setStage] = useState<"front" | "back">("front");
+  const [selfiePhotoUri, setSelfiePhotoUri] = useState<string | null>(null);
   const cameraRef = useRef(null);
 
   // 📸 যদি permission এখনো না নেয়া হয়
@@ -37,14 +36,12 @@ const Camera = () => {
       </View>
     );
   }
-  // ---------------------- Preview (Front / Back) --------------------------
-  if ((stage === "front" && frontPhoto) || (stage === "back" && backPhoto)) {
-    const currentPhoto = stage === "front" ? frontPhoto : backPhoto;
 
+  if (selfiePhotoUri) {
     return (
       <View style={tw`flex-1 bg-black items-center justify-center`}>
         <Image
-          source={currentPhoto}
+          source={selfiePhotoUri}
           style={tw`w-11/12 h-3/4 rounded-lg`}
           contentFit="cover"
         />
@@ -52,8 +49,7 @@ const Camera = () => {
         <View style={tw`flex-row mt-5`}>
           <TouchableOpacity
             onPress={() => {
-              if (stage === "front") setFrontPhoto(null);
-              else setBackPhoto(null);
+              setSelfiePhotoUri(null);
             }}
             style={tw`bg-gray-600 px-6 py-3 rounded-lg mr-4`}
           >
@@ -62,33 +58,23 @@ const Camera = () => {
 
           <TouchableOpacity
             onPress={() => {
-              if (stage === "front") {
-                // move to next step: capture back side
-                setStage("back");
-                setFrontPhoto(currentPhoto);
-                setBackPhoto(null);
-              } else {
-                // done: go back with both photos
-                router.push({
-                  pathname: "/KYC_auth/id_card",
-                  params: {
-                    fastPhotoUri: JSON.stringify(frontPhoto),
-                    secondPhotoUri: JSON.stringify(backPhoto),
-                  },
-                });
-              }
+              router.push({
+                pathname: "/KYC_auth/take_selfie",
+                params: {
+                  selfiePhotoUri: JSON.stringify(selfiePhotoUri),
+                  fastPhotoUri,
+                  secondPhotoUri,
+                },
+              });
             }}
             style={tw`bg-green-600 px-6 py-3 rounded-lg`}
           >
-            <Text style={tw`text-white text-base`}>
-              {stage === "front" ? "Next for Back Side" : "Use Both Photos"}
-            </Text>
+            <Text style={tw`text-white text-base`}>Use this photo</Text>
           </TouchableOpacity>
         </View>
       </View>
     );
   }
-
   return (
     <View style={tw`flex-1 bg-black`}>
       <CameraView
@@ -98,12 +84,6 @@ const Camera = () => {
         ratio="4:3"
         zoom={0}
       />
-      {/* Label on top */}
-      <View style={tw`absolute top-10 w-full items-center`}>
-        <Text style={tw`text-white text-xl font-semibold`}>
-          {stage === "front" ? "Capture Front Side" : "Capture Back Side"}
-        </Text>
-      </View>
 
       {/* Capture Button */}
       <View style={tw`absolute bottom-10 w-full items-center`}>
@@ -111,10 +91,7 @@ const Camera = () => {
           onPress={async () => {
             if (cameraRef.current) {
               const photo = await cameraRef.current.takePictureAsync();
-              if (photo.uri) {
-                if (stage === "front") setFrontPhoto(photo.uri);
-                else setBackPhoto(photo.uri);
-              }
+              setSelfiePhotoUri(photo.uri);
             }
           }}
           style={tw`w-20 h-20 rounded-full bg-white border-4 border-gray-300`}
@@ -124,4 +101,4 @@ const Camera = () => {
   );
 };
 
-export default Camera;
+export default TakeSelfieCamera;

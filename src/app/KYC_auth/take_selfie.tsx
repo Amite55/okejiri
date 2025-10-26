@@ -1,18 +1,19 @@
 import { IconCameraYellow, IconRightArrow } from "@/assets/icons";
-import {
-  ImgLogo,
-  ImgTakeSelfie,
-  ImgTakeSelfieImage,
-} from "@/assets/images/image";
+import { ImgLogo, ImgTakeSelfie } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
-import React, { useState } from "react";
-import { Image, ScrollView, Text, View } from "react-native";
+import { Image } from "expo-image";
+import { router, useLocalSearchParams } from "expo-router";
+import React from "react";
+import { ScrollView, Text, View } from "react-native";
 
 const Take_Selfie = () => {
-  const [isDisable, setIsDisable] = useState<boolean>(false);
+  const { selfiePhotoUri, fastPhotoUri, secondPhotoUri } =
+    useLocalSearchParams();
+  console.log(fastPhotoUri, "\n", secondPhotoUri);
+  const selfiePhotoURIPerse = selfiePhotoUri && JSON.parse(selfiePhotoUri);
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -29,44 +30,52 @@ const Take_Selfie = () => {
         />
         <View style={tw`justify-center items-center mt-14`}>
           <Image
-            resizeMode="contain"
+            contentFit="contain"
             style={tw`w-44 h-14 mb-8`}
             source={ImgLogo}
           />
 
-          {isDisable ? (
+          {selfiePhotoUri ? (
             <Image
-              resizeMode="cover"
-              style={tw`w-40  h-36 rounded-2xl `}
-              source={ImgTakeSelfieImage}
+              contentFit="cover"
+              style={tw`w-40 h-40 rounded-2xl `}
+              source={selfiePhotoURIPerse}
             />
           ) : (
-            <Image
-              resizeMode="contain"
-              style={tw`w-72 h-36`}
-              source={ImgTakeSelfie}
-            />
+            <View>
+              <Image
+                contentFit="contain"
+                style={tw`w-72 h-36`}
+                source={ImgTakeSelfie}
+              />
+              <Text
+                style={tw`font-DegularDisplayDemoSemibold text-3xl text-primary text-center mt-8`}
+              >
+                Take a selfie
+              </Text>
+              <Text
+                style={tw`font-DegularDisplayDemoRegular text-lg text-black text-center`}
+              >
+                We will match your face with your ID card
+              </Text>
+            </View>
           )}
         </View>
-
-        <Text
-          style={tw`font-DegularDisplayDemoSemibold text-3xl text-primary text-center mt-8`}
-        >
-          Take a selfie
-        </Text>
-        <Text
-          style={tw`font-DegularDisplayDemoRegular text-lg text-black text-center`}
-        >
-          We will match your face with your ID card
-        </Text>
       </View>
 
-      {/*  */}
-
       <View>
-        {isDisable ? (
+        {selfiePhotoUri ? (
           <PrimaryButton
-            onPress={() => router.push("/KYC_auth/KYC_confirmation")}
+            onPress={() =>
+              router.push({
+                pathname: "/KYC_auth/KYC_confirmation",
+                params: {
+                  selfiePhotoUri,
+                  fastPhotoUri,
+                  secondPhotoUri,
+                },
+              })
+            }
             //   onPress={() => setModalVisible(true)}
             titleProps="Next "
             IconProps={IconRightArrow}
@@ -75,16 +84,21 @@ const Take_Selfie = () => {
         ) : (
           <>
             <PrimaryButton
-              // onPress={() => handleSubmit()}
-              //   onPress={() => setModalVisible(true)}
+              onPress={() =>
+                router.push({
+                  pathname: "/KYC_auth/takeSelfieCamera",
+                  params: {
+                    fastPhotoUri,
+                    secondPhotoUri,
+                  },
+                })
+              }
               titleProps="Take photo "
               IconProps={IconCameraYellow}
               contentStyle={tw`mt-4 bg-transparent border border-gray-400`}
               textStyle={tw`text-primary`}
             />
             <PrimaryButton
-              // onPress={() => router.push("/KYC_auth/take_selfie")}
-              onPress={() => setIsDisable(true)}
               titleProps="Next "
               IconProps={IconRightArrow}
               contentStyle={tw`mt-4 bg-slate-400`}
