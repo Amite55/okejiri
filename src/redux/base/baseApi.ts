@@ -71,6 +71,22 @@ export const api = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithPath,
   endpoints: () => ({}),
-  tagTypes: ["login", "logout", "register", "user", "profile"],
+  tagTypes: [
+    "login",
+    "logout",
+    "register",
+    "user",
+    "profile",
+    "promotions",
+    "services",
+    "provider",
+    "booking",
+    "delivery",
+    "order",
+    "dispute",
+    "cart",
+    "balance",
+    "favorite",
+  ],
 });
 export const imageUrl = "http://10.10.10.63:8001/api";
