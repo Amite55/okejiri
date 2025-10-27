@@ -5,7 +5,10 @@ import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useLoginMutation } from "@/src/redux/apiSlices/authSlices";
+import {
+  useLoginMutation,
+  useProfileQuery,
+} from "@/src/redux/apiSlices/authSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, router } from "expo-router";
 import { Formik } from "formik";
@@ -33,6 +36,7 @@ const LoginIndex = () => {
 
   // ------------------------ api end point ---------------------
   const [credentials, { isLoading: isLoadingLogin }] = useLoginMutation();
+  const { data: userProfileInfo, isLoading } = useProfileQuery({});
 
   // ----------------- handel login ---------------------
   const handleLogin = async (formData: any) => {
@@ -47,9 +51,11 @@ const LoginIndex = () => {
       if (res?.data?.user?.role === roll) {
         await AsyncStorage.setItem("token", res?.data?.access_token);
         router.replace("/company/(Tabs)");
-        setTimeout(() => {
-          router.push("/kyc_completed_modal");
-        }, 500);
+        if (userProfileInfo?.data?.kyc_status === "Unverified") {
+          setTimeout(() => {
+            router.push("/kyc_completed_modal");
+          }, 500);
+        }
       }
     } else if (roll === "PROVIDER") {
       if (providerTypes === "Individual") {
