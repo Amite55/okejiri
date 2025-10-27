@@ -1,19 +1,18 @@
-import {
-  IconCameraYellow,
-  IconRightArrow,
-  IconUploadImage,
-} from "@/assets/icons";
+import { IconRightArrow, IconUploadImage } from "@/assets/icons";
 import { ImgCard, ImgLogo } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
-import React, { useState } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Image } from "expo-image";
+import { router, useLocalSearchParams } from "expo-router";
+import React from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Id_Card = () => {
-  const [isDisable, setIsDisable] = useState<boolean>(false);
+  const { fastPhotoUri, secondPhotoUri } = useLocalSearchParams();
+  const fastPhotoURIPerse = fastPhotoUri && JSON.parse(fastPhotoUri);
+  const secondPhotoURIPerse = secondPhotoUri && JSON.parse(secondPhotoUri);
 
   return (
     <ScrollView
@@ -31,12 +30,12 @@ const Id_Card = () => {
         />
         <View style={tw`justify-center items-center mt-14`}>
           <Image
-            resizeMode="contain"
+            contentFit="contain"
             style={tw`w-44 h-14 mb-8`}
             source={ImgLogo}
           />
 
-          <Image resizeMode="contain" style={tw`w-60 h-36`} source={ImgCard} />
+          <Image contentFit="contain" style={tw`w-60 h-36`} source={ImgCard} />
         </View>
         {/* ----------------------------- is open camera ---------------------- */}
 
@@ -47,59 +46,63 @@ const Id_Card = () => {
         </Text>
 
         <View style={tw`my-4 gap-4`}>
-          <TouchableOpacity
-            onPress={() => router.push("/KYC_auth/camera")}
-            style={tw`border-2 border-dashed border-gray-300 rounded-sm h-14 flex-row justify-center items-center gap-2`}
-          >
-            <SvgXml xml={IconUploadImage} />
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-base text-black`}
+          {!fastPhotoUri && !secondPhotoUri && (
+            <TouchableOpacity
+              onPress={() => router.push("/KYC_auth/camera")}
+              style={tw`border-2 border-dashed border-gray-300 rounded-sm h-14 flex-row justify-center items-center gap-2`}
             >
-              Upload front side of drag & drop here
-            </Text>
-          </TouchableOpacity>
+              <SvgXml xml={IconUploadImage} />
+              <Text
+                style={tw`font-DegularDisplayDemoRegular text-base text-black`}
+              >
+                Upload front side and back side ID card
+              </Text>
+            </TouchableOpacity>
+          )}
 
-          <TouchableOpacity
-            style={tw`border-2 border-dashed border-gray-300 rounded-sm h-14 flex-row justify-center items-center gap-2`}
-          >
-            <SvgXml xml={IconUploadImage} />
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-            >
-              Upload back side of drag & drop here
-            </Text>
-          </TouchableOpacity>
+          {/* ------------------------ if this is not null image ---------------- */}
+          <View style={tw`justify-center items-center`}>
+            {fastPhotoUri && secondPhotoUri && (
+              <View style={tw`gap-4`}>
+                <Image
+                  source={fastPhotoURIPerse}
+                  style={tw`w-64 h-36 rounded-xl border border-dotted border-primary`}
+                  contentFit="cover"
+                />
+                <Image
+                  source={secondPhotoURIPerse}
+                  style={tw`w-64 h-36 rounded-xl border border-dotted border-primary`}
+                  contentFit="cover"
+                />
+              </View>
+            )}
+          </View>
         </View>
       </View>
 
       {/*  */}
       <View>
-        {isDisable ? (
+        {fastPhotoUri && secondPhotoUri ? (
           <PrimaryButton
-            onPress={() => router.push("/KYC_auth/take_selfie")}
-            //   onPress={() => setModalVisible(true)}
-            titleProps="Next "
+            onPress={() =>
+              router.push({
+                pathname: "/KYC_auth/take_selfie",
+                params: {
+                  fastPhotoUri: fastPhotoUri,
+                  secondPhotoUri: secondPhotoUri,
+                },
+              })
+            }
+            titleProps="Next"
             IconProps={IconRightArrow}
             contentStyle={tw`mt-4`}
           />
         ) : (
-          <>
-            <PrimaryButton
-              // onPress={() => handleSubmit()}
-              //   onPress={() => setModalVisible(true)}
-              titleProps="Take photo "
-              IconProps={IconCameraYellow}
-              contentStyle={tw`mt-4 bg-transparent border border-gray-400`}
-              textStyle={tw`text-primary`}
-            />
-            <PrimaryButton
-              // onPress={() => router.push("/KYC_auth/take_selfie")}
-              onPress={() => setIsDisable(true)}
-              titleProps="Next "
-              IconProps={IconRightArrow}
-              contentStyle={tw`mt-4 bg-slate-400`}
-            />
-          </>
+          <PrimaryButton
+            titleProps="Next "
+            IconProps={IconRightArrow}
+            contentStyle={tw`mt-4 bg-slate-400`}
+          />
         )}
       </View>
     </ScrollView>
