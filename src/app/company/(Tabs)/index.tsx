@@ -5,14 +5,17 @@ import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo"
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import UserCarousel from "@/src/Components/UserCarousel";
 import CleaningData from "@/src/json/CleaningData.json";
-import ServicesData from "@/src/json/ServiceData.json";
 import tw from "@/src/lib/tailwind";
+import {
+  useServiceNearbyQuery,
+  useServicesQuery,
+} from "@/src/redux/apiSlices/userProvider/homeSlices";
 import { BlurView } from "@react-native-community/blur";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import React from "react";
 import {
   FlatList,
-  Image,
   Platform,
   ScrollView,
   Text,
@@ -23,12 +26,26 @@ import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const Company_Home_Index = () => {
+  // ------------------ api end point ------------------
+  const { data: serviceNearbyData, isLoading: serviceNearbyLoading } =
+    useServiceNearbyQuery({});
+  const {
+    data: servicesData,
+    isLoading: servicesLoading,
+    error,
+  } = useServicesQuery({});
+  // console.log(servicesData?.data?.services, "this is servicesData");
+  console.log(
+    serviceNearbyData?.data,
+    "this is near by service with data _---------------------->"
+  );
+
   const serviceItemRender = ({ item }) => {
     return (
       <View style={tw`relative justify-center items-center`} key={item?.id}>
         <Image
-          resizeMode="cover"
-          style={tw`w-44 h-48 rounded-lg `}
+          contentFit="cover"
+          style={tw`w-44 h-40 rounded-lg `}
           source={{ uri: item?.image }}
         />
 
@@ -110,7 +127,7 @@ const Company_Home_Index = () => {
         />
 
         <FlatList
-          data={ServicesData}
+          data={servicesData?.data?.services}
           renderItem={serviceItemRender}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={tw`mt-4 pl-4 gap-3 `}

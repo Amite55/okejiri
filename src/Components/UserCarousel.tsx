@@ -1,37 +1,15 @@
-import { ImgBanner } from "@/assets/images/image";
 import { _HEIGHT, _WIDTH } from "@/utils/utils";
+import { Image } from "expo-image";
 import React from "react";
-import { Image, View } from "react-native";
-import { useSharedValue } from "react-native-reanimated";
+import { View } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import tw from "../lib/tailwind";
 import { usePromotionsQuery } from "../redux/apiSlices/userProvider/homeSlices";
 
-const bannerData = [
-  {
-    id: 1,
-    img: ImgBanner,
-  },
-  {
-    id: 2,
-    img: ImgBanner,
-  },
-  {
-    id: 3,
-    img: ImgBanner,
-  },
-  {
-    id: 4,
-    img: ImgBanner,
-  },
-];
-
 const UserCarousel = () => {
   // =========== api end point ===========
   const { data, error } = usePromotionsQuery({});
-  console.log(data, "this promation data ------------>>");
 
-  const progressValue = useSharedValue(0);
   const renderItem = ({ item }) => (
     <View
       style={{
@@ -44,8 +22,8 @@ const UserCarousel = () => {
       }}
     >
       <Image
-        source={item.img}
-        resizeMode="cover"
+        source={item.image}
+        contentFit="cover"
         style={{
           width: "100%",
           height: "100%",
@@ -63,7 +41,7 @@ const UserCarousel = () => {
       <Carousel
         autoPlay
         autoPlayInterval={2000}
-        data={bannerData}
+        data={data?.data?.data}
         height={_HEIGHT * 0.18}
         width={_WIDTH}
         loop
