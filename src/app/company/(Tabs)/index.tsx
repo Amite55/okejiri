@@ -35,7 +35,10 @@ const Company_Home_Index = () => {
     error,
   } = useServicesQuery({});
   // console.log(servicesData?.data?.services, "this is servicesData");
-  console.log(serviceNearbyData?.data, "this is near by service with data");
+  console.log(
+    serviceNearbyData?.data,
+    "this is near by service with data _---------------------->"
+  );
 
   const serviceItemRender = ({ item }) => {
     return (
