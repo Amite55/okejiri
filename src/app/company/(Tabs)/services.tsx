@@ -1,6 +1,6 @@
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
-import ServicesData from "@/src/json/ServiceData.json";
 import tw from "@/src/lib/tailwind";
+import { useGetServicesQuery } from "@/src/redux/apiSlices/userProvider/servicesSlices";
 import { BlurView } from "@react-native-community/blur";
 import { router } from "expo-router";
 import React from "react";
@@ -15,10 +15,14 @@ import {
 } from "react-native";
 
 const services = () => {
-  const serviceItemRender = ({ item }) => {
+  const { data: getServicesData, isLoading } = useGetServicesQuery({});
+  console.log("getServicesData", getServicesData, "getServicesData");
+  // const { image, name } = getServicesData?.data.services;
+
+  const serviceItemRender = ({ item }: any) => {
     return (
       <View
-        style={tw`relative justify-center items-center px-2`}
+        style={tw`relative justify-center items-center px-2 `}
         key={item?.id}
       >
         <Image
@@ -65,7 +69,7 @@ const services = () => {
     );
   };
 
-  // ----------- Header content ---------------------
+  // ----------- Header content -----------//
 
   const serviceHeaderRender = () => {
     return (
@@ -86,9 +90,9 @@ const services = () => {
   };
 
   return (
-    <SafeAreaView style={tw`flex-1 bg-base_color`}>
+    <SafeAreaView style={tw`flex-1 bg-base_color mb-24`}>
       <FlatList
-        data={ServicesData}
+        data={getServicesData?.data.services}
         renderItem={serviceItemRender}
         ListHeaderComponent={serviceHeaderRender}
         numColumns={2}
