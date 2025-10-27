@@ -31,12 +31,6 @@ const personalizationSlice = api.injectEndpoints({
         }),
         invalidatesTags: ["user"],
       }),
-      getServices: builder.query({
-        query: () => ({
-          url: "/services",
-          method: "GET",
-        }),
-      }),
     };
   },
 });
@@ -45,5 +39,4 @@ export const {
   useCompletePersonalizationMutation,
   useCompleteKYCMutation,
   useRequestAddServiceMutation,
-  useGetServicesQuery,
 } = personalizationSlice;
