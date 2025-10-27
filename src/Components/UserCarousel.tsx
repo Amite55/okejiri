@@ -5,6 +5,7 @@ import { Image, View } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";
 import tw from "../lib/tailwind";
+import { usePromotionsQuery } from "../redux/apiSlices/userProvider/homeSlices";
 
 const bannerData = [
   {
@@ -26,6 +27,10 @@ const bannerData = [
 ];
 
 const UserCarousel = () => {
+  // =========== api end point ===========
+  const { data, error } = usePromotionsQuery({});
+  console.log(data, "this promation data ------------>>");
+
   const progressValue = useSharedValue(0);
   const renderItem = ({ item }) => (
     <View

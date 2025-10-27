@@ -12,11 +12,15 @@ const personalizationSlice = api.injectEndpoints({
         invalidatesTags: ["user"],
       }),
       completeKYC: builder.mutation({
-        query: (information) => ({
-          url: "/complete-kyc",
-          method: "POST",
-          body: information,
-        }),
+        query: (information) => {
+          console.log(information, "this api end point ");
+          return {
+            url: "/complete-kyc",
+            method: "POST",
+            body: information,
+            "Content-Type": "multipart/form-data",
+          };
+        },
         invalidatesTags: ["user"],
       }),
       requestAddService: builder.mutation({
