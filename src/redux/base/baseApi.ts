@@ -87,6 +87,9 @@ export const api = createApi({
     "cart",
     "balance",
     "favorite",
+    "settings",
+    "message",
+    "search",
   ],
 });
 export const imageUrl = "http://10.10.10.63:8001/api";

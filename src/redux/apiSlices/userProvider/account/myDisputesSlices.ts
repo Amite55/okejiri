@@ -33,3 +33,10 @@ export const myDisputesSlices = api.injectEndpoints({
     }),
   }),
 });
+
+export const {
+  useMyDisputeQuery,
+  useDisputeDetailsQuery,
+  useDisputeDeleteMutation,
+  useAddDisputeAppealMutation,
+} = myDisputesSlices;
