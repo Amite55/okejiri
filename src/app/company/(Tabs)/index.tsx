@@ -36,7 +36,7 @@ const Company_Home_Index = () => {
   } = useServicesQuery({});
   // console.log(servicesData?.data?.services, "this is servicesData");
   console.log(
-    serviceNearbyData?.data,
+    serviceNearbyData?.data?.data,
     "this is near by service with data _---------------------->"
   );
 
@@ -153,7 +153,7 @@ const Company_Home_Index = () => {
               Your ServiCe No Data
             </Text>
           ) : (
-            CleaningData.slice(0, 3).map((item, index) => (
+            serviceNearbyData?.data?.data.map((item, index) => (
               <ServiceCard
                 key={index}
                 item={item}

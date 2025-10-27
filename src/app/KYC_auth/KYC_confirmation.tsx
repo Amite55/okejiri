@@ -25,11 +25,27 @@ const KYC_Confirmation = () => {
 
   const handleSubmitKYCProcess = async () => {
     try {
-      const response = await sendKYC({
-        id_card_front: fastPhotoUriPerse,
-        id_card_back: secondPhotoUriPerse,
-        selfie: selfiePhotoUriPerse,
-      }).unwrap();
+      const formData = new FormData();
+
+      formData.append("id_card_front", {
+        uri: fastPhotoUriPerse,
+        name: "id_card_front.jpg",
+        type: "image/jpeg",
+      } as any);
+
+      formData.append("id_card_back", {
+        uri: secondPhotoUriPerse,
+        name: "id_card_back.jpg",
+        type: "image/jpeg",
+      } as any);
+
+      formData.append("selfie", {
+        uri: selfiePhotoUriPerse,
+        name: "selfie.jpg",
+        type: "image/jpeg",
+      } as any);
+
+      const response = await sendKYC(formData).unwrap();
       if (response) {
         router.push("/KYC_auth/success_screen");
       }

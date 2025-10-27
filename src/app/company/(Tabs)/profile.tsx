@@ -14,7 +14,10 @@ import {
 import LogoutModal from "@/src/Components/LogoutModal";
 import SettingsCard from "@/src/Components/SettingsCard";
 import tw from "@/src/lib/tailwind";
-import { useLogoutMutation } from "@/src/redux/apiSlices/authSlices";
+import {
+  useLogoutMutation,
+  useProfileQuery,
+} from "@/src/redux/apiSlices/authSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -33,6 +36,8 @@ const Profile = () => {
 
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
+  const { data: userProfileInfo } = useProfileQuery({});
+  console.log(userProfileInfo?.data?.name, "this is profile info");
 
   // -------------- handle logout --------------
   const handleLogoutUser = async () => {
@@ -75,15 +80,21 @@ const Profile = () => {
           }}
         />
         <Text
-          style={tw`font-DegularDisplayDemoRegular text-2xl text-black text-center`}
+          style={tw`font-DegularDisplayDemoSemibold text-2xl text-black text-center`}
         >
-          Profile Name
+          {userProfileInfo?.data?.name}
         </Text>
+
         <View
-          style={tw`w-32 h-8 rounded-2xl bg-blue100 justify-center items-center`}
+          style={[
+            tw`w-32 h-8 rounded-2xl  justify-center items-center`,
+            userProfileInfo?.data?.kyc_status === "Verified"
+              ? tw`bg-blue100`
+              : tw`bg-red-600`,
+          ]}
         >
           <Text style={tw`font-DegularDisplayDemoMedium text-base text-white`}>
-            Unverified
+            {userProfileInfo?.data?.kyc_status}
           </Text>
         </View>
       </View>
