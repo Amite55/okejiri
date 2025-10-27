@@ -1,6 +1,7 @@
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import tw from "@/src/lib/tailwind";
-import { useGetServicesQuery } from "@/src/redux/apiSlices/userProvider/servicesSlices";
+import { useServicesQuery } from "@/src/redux/apiSlices/userProvider/homeSlices";
+
 import { BlurView } from "@react-native-community/blur";
 import { router } from "expo-router";
 import React from "react";
@@ -15,7 +16,7 @@ import {
 } from "react-native";
 
 const services = () => {
-  const { data: getServicesData, isLoading } = useGetServicesQuery({});
+  const { data: getServicesData, isLoading } = useServicesQuery({});
   console.log("getServicesData", getServicesData, "getServicesData");
   // const { image, name } = getServicesData?.data.services;
 
