@@ -64,9 +64,11 @@ export default function Index() {
         try {
           if (userProfileInfo?.data?.role === "USER") {
             router.push("/company/(Tabs)");
-            setTimeout(() => {
-              router.push("/kyc_completed_modal");
-            }, 500);
+            if (userProfileInfo?.data?.kyc_status === "Unverified") {
+              setTimeout(() => {
+                router.push("/kyc_completed_modal");
+              }, 500);
+            }
           } else if (userProfileInfo?.data?.role === "PROVIDER") {
             if (userProfileInfo?.data?.provider_type === "Individual") {
               router.replace("/service_provider/individual/(Tabs)/home");

@@ -28,8 +28,15 @@ const DisputesData = [
 ];
 
 const My_Disputes = () => {
-  // =========== render disputes item --------------------
+  // ====================== api ======================
+  // const {
+  //   data: myDisputes,
+  //   isLoading: myDisputesLoading,
+  //   isError: myDisputesError,
+  // } = useMyDisputeQuery({});
+  // console.log(myDisputes, "this is my disputes ------------>");
 
+  // =========== render disputes item --------------------
   const DisputesRenderData = ({ item }: { item: any }) => {
     let statusIcon;
 

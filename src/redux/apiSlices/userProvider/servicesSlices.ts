@@ -2,13 +2,6 @@ import { api } from "../../base/baseApi";
 
 export const servicesSlice = api.injectEndpoints({
   endpoints: (builder) => ({
-    getServices: builder.query({
-      query: () => ({
-        url: "/services",
-        method: "GET",
-      }),
-      providesTags: ["services"],
-    }),
     packagesByServiceId: builder.query({
       query: (id) => ({
         url: `/get-packages/${id}`,
@@ -55,7 +48,6 @@ export const servicesSlice = api.injectEndpoints({
 });
 
 export const {
-  useGetServicesQuery,
   usePackagesByServiceIdQuery,
   usePackageDetailsQuery,
   useProviderPortfolioQuery,

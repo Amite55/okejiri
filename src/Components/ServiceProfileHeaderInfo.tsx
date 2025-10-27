@@ -14,8 +14,7 @@ interface IProps {
 const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
   // ================== api end point ==================
   const { data: userProfileInfo, isLoading, error } = useProfileQuery({});
-  console.log(userProfileInfo?.data?.address, "this is get profile");
-  console.log(userProfileInfo?.data?.name, "this is get profile");
+
   return (
     <View
       style={tw`py-3 flex-1 bg-base_color flex-row items-center justify-between `}
