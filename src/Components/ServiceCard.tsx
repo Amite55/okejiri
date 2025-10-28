@@ -13,7 +13,7 @@ const ServiceCard = ({ item, onPress }: any) => {
       activeOpacity={0.8}
       onPress={onPress}
       style={tw`relative flex-row items-center rounded-xl bg-white p-1.5 gap-4`}
-      key={item?.Id}
+      key={item?.service_id}
     >
       {/* Image Section */}
       <Image
