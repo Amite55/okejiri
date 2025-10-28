@@ -5,13 +5,9 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
-interface IServiceCardProps {
-  onPress?: () => void;
-  item?: any;
-  index?: number;
-}
+const ServiceCard = ({ item, onPress }: any) => {
+  // console.log("item", item, "item");
 
-const ServiceCard = ({ item, index, onPress }: IServiceCardProps) => {
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -35,7 +31,7 @@ const ServiceCard = ({ item, index, onPress }: IServiceCardProps) => {
             ellipsizeMode="tail"
             style={tw`flex-1 font-DegularDisplayDemoRegular text-lg text-black pr-2`}
           >
-            {item?.title}
+            {item?.service?.name}
           </Text>
 
           <Text

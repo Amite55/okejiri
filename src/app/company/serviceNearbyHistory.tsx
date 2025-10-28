@@ -1,18 +1,19 @@
 import ServiceCard from "@/src/Components/ServiceCard";
-
-import CleaningData from "@/src/json/CleaningData.json";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { usePackagesByServiceIdQuery } from "@/src/redux/apiSlices/userProvider/servicesSlices";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { FlatList } from "react-native";
 
 const ServiceNearbyHistory = () => {
-  const { categoryService } = useLocalSearchParams();
+  const { categoryService, id } = useLocalSearchParams();
+  const { data: PackagesByServiceData, isLoading } =
+    usePackagesByServiceIdQuery(Number(1));
 
   return (
     <FlatList
-      data={CleaningData}
+      data={PackagesByServiceData?.data?.packages}
       renderItem={({ item, index }: any) => (
         <ServiceCard
           item={item}
@@ -21,24 +22,14 @@ const ServiceNearbyHistory = () => {
         />
       )}
       ListHeaderComponent={() => (
-        <>
-          {categoryService ? (
-            <BackTitleButton
-              pageName={"Booking"}
-              onPress={() => router.back()}
-              titleTextStyle={tw`text-xl`}
-            />
-          ) : (
-            <BackTitleButton
-              pageName={"Services nearby"}
-              onPress={() => router.back()}
-              titleTextStyle={tw`text-xl`}
-            />
-          )}
-        </>
+        <BackTitleButton
+          pageName={categoryService ? "Booking" : "Services nearby"}
+          onPress={() => router.back()}
+          titleTextStyle={tw`text-xl`}
+        />
       )}
-      keyExtractor={(item) => item.Id.toString()}
-      contentContainerStyle={tw`  bg-base_color px-5 gap-3 pb-10`}
+      keyExtractor={(item, index) => (item.id || item._id || index).toString()}
+      contentContainerStyle={tw`bg-base_color flex-1 px-5 gap-3 pb-10`}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
     />
