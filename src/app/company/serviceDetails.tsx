@@ -10,7 +10,6 @@ import {
   IconTick,
   IconWhishListSelected,
 } from "@/assets/icons";
-import { ImgCleaning } from "@/assets/images/image";
 import ServiceCard from "@/src/Components/ServiceCard";
 import tw from "@/src/lib/tailwind";
 import { usePackageDetailsQuery } from "@/src/redux/apiSlices/userProvider/servicesSlices";
@@ -27,6 +26,14 @@ const ServiceDetails = () => {
   const [tickmark, setTickMark] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [addWishlist, setAddWishList] = useState<boolean>(false);
+  const [itemDetails, setItemDetails] = useState<any>({});
+  const [addToCartState, setAddToCartState] = useState([]);
+
+  console.log(addToCartState, "this is add to cart state");
+
+  const filtered = addToCartState.filter(
+    (item) => item.package_id === service_id
+  );
 
   // ================== api end point ==================
   const { data: packageDetails, isLoading } =
@@ -48,23 +55,20 @@ const ServiceDetails = () => {
             >
               {item?.user?.name}
             </Text>
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-sm text-regularText`}
-            >
-              Company CEO
-            </Text>
+            {/* rating */}
+            <View style={tw`flex-row items-center gap-1`}>
+              <View style={tw`flex-row items-center gap-2`}>
+                <SvgXml xml={IconStar} />
+              </View>
+              <Text
+                style={tw`font-DegularDisplayDemoRegular text-base text-black`}
+              >
+                ({item?.rating})
+              </Text>
+            </View>
           </View>
         </View>
         <View style={tw`mt-2 gap-2`}>
-          {/* rating */}
-          <View style={tw`flex-row items-center gap-1`}>
-            <View style={tw`flex-row items-center gap-2`}>
-              <SvgXml xml={IconStar} />
-            </View>
-            <Text style={tw`font-DegularDisplayDemoRegular text-lg text-black`}>
-              ({item?.rating})
-            </Text>
-          </View>
           <Text style={tw`font-DegularDisplayDemoRegular text-base text-black`}>
             {item?.review?.length > 190
               ? `${item?.review?.slice(0, 190)}...`
@@ -135,7 +139,6 @@ const ServiceDetails = () => {
           0
             ? packageDetails?.data?.package_details?.package_detail_items.map(
                 (item) => {
-                  console.log(item);
                   return (
                     <View
                       key={item?.id}
@@ -164,10 +167,42 @@ const ServiceDetails = () => {
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.8}
-            // onPress={() => setTickMark(!tickmark)}
+            onPress={() => {
+              // setTickMark(!tickmark);
+              if (
+                addToCartState?.some(
+                  (cartItem: { package_id: number }) =>
+                    cartItem?.package_id ==
+                    packageDetails?.data?.package_details?.id
+                )
+              ) {
+                setAddToCartState(
+                  addToCartState.filter(
+                    (cartItem: { package_id: number }) =>
+                      cartItem?.package_id !==
+                      packageDetails?.data?.package_details?.id
+                  )
+                );
+              } else {
+                setAddToCartState([
+                  ...addToCartState,
+                  { package_id: packageDetails?.data?.package_details?.id },
+                ]);
+              }
+            }}
             style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
           >
-            <SvgXml xml={tickmark ? IconTick : IconPlus} />
+            <SvgXml
+              xml={
+                addToCartState?.some(
+                  (cartItem: { package_id: number }) =>
+                    cartItem?.package_id ===
+                    packageDetails?.data?.package_details?.id
+                )
+                  ? IconTick
+                  : IconPlus
+              }
+            />
           </TouchableOpacity>
         </View>
         {/* ---------------- distance part ---------------- */}
@@ -270,7 +305,6 @@ const ServiceDetails = () => {
           showsHorizontalScrollIndicator={false}
         />
         {/* ======================= more_services_from_this_provider ================ */}
-        {/* ---------------- More services from this provider =-=---------- */}
         <Text
           style={tw`font-DegularDisplayDemoMedium text-2xl text-black my-2 `}
         >
@@ -287,6 +321,11 @@ const ServiceDetails = () => {
           ) : (
             packageDetails?.data?.more_services_from_this_provider?.map(
               (item) => {
+                // console.log(
+                //   item,
+                //   "this is service from this provider ---------->"
+                // );
+                console.log(item?.package_id, item?.id);
                 return (
                   <Pressable
                     key={item?.id}
@@ -313,17 +352,51 @@ const ServiceDetails = () => {
 
                     <View style={tw`flex-row flex-none items-center gap-2`}>
                       <TouchableOpacity
-                        onPress={() => setModalVisible(true)}
+                        activeOpacity={0.8}
+                        onPress={() => {
+                          setModalVisible(true);
+                          setItemDetails(item);
+                        }}
                         style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
                       >
                         <Text>See details</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
-                        onPress={() => setTickMark(!tickmark)}
+                        activeOpacity={0.8}
+                        onPress={() => {
+                          if (
+                            addToCartState?.some(
+                              (cartItem: { package_id: number }) =>
+                                cartItem?.package_id == item?.id
+                            )
+                          ) {
+                            setAddToCartState(
+                              addToCartState.filter(
+                                (cartItem: { package_id: number }) =>
+                                  cartItem?.package_id !== item?.id
+                              )
+                            );
+                          } else {
+                            setAddToCartState([
+                              ...addToCartState,
+                              { package_id: item?.id },
+                            ]);
+                          }
+                          // setTickMark(!tickmark);
+                        }}
                         style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
                       >
-                        <SvgXml xml={tickmark ? IconTick : IconPlus} />
+                        <SvgXml
+                          xml={
+                            addToCartState?.some(
+                              (cartItem: { package_id: number }) =>
+                                cartItem?.package_id === item?.id
+                            )
+                              ? IconTick
+                              : IconPlus
+                          }
+                        />
                       </TouchableOpacity>
                     </View>
                   </Pressable>
@@ -418,7 +491,7 @@ const ServiceDetails = () => {
       )}
       {/* =================== see service details modal ===================== */}
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent
         onRequestClose={() => {
           setModalVisible(!modalVisible);
@@ -474,72 +547,44 @@ const ServiceDetails = () => {
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-black text-center my-4`}
               >
-                Room cleaning
+                {itemDetails?.title}
               </Text>
 
               <View style={tw`px-4 justify-center items-center`}>
                 <Image
-                  resizeMode="cover"
+                  contentFit="cover"
                   style={tw`w-full h-52 rounded-2xl`}
-                  source={ImgCleaning}
+                  source={itemDetails?.image}
                 />
               </View>
 
-              <View style={tw`px-4 ml-3 my-6 gap-3`}>
-                <View style={tw`flex-row items-center  gap-3`}>
-                  <View style={tw`w-2 h-2 bg-black`} />
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                  >
-                    Dusting of all surfaces
-                  </Text>
-                </View>
-                <View style={tw`flex-row items-center  gap-3`}>
-                  <View style={tw`w-2 h-2 bg-black`} />
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                  >
-                    Dusting of all surfaces
-                  </Text>
-                </View>
-                <View style={tw`flex-row items-center  gap-3`}>
-                  <View style={tw`w-2 h-2 bg-black`} />
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                  >
-                    Dusting of all surfaces
-                  </Text>
-                </View>
-                <View style={tw`flex-row items-center  gap-3`}>
-                  <View style={tw`w-2 h-2 bg-black`} />
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                  >
-                    Dusting of all surfaces
-                  </Text>
-                </View>
-                <View style={tw`flex-row items-center  gap-3`}>
-                  <View style={tw`w-2 h-2 bg-black`} />
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                  >
-                    Dusting of all surfaces
-                  </Text>
-                </View>
+              <View style={tw`p-4 gap-2`}>
+                {itemDetails?.package_detail_items?.map((item) => (
+                  <View key={item?.id} style={tw`flex-row items-center gap-2`}>
+                    <View style={tw`w-1.5 h-1.5 bg-black rounded-full`} />
+                    <Text
+                      style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                    >
+                      {item?.item}
+                    </Text>
+                  </View>
+                ))}
               </View>
 
               <View style={tw`flex-row items-center gap-3 px-4`}>
                 <TouchableOpacity
+                  disabled
                   style={tw`border flex-1 h-14 rounded-full justify-center items-center`}
                 >
                   <Text
                     style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
                   >
-                    ₦ 49.00
+                    ₦ {itemDetails?.price}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setTickMark(!tickmark)}
+                  activeOpacity={0.8}
+                  // onPress={() => setTickMark(!tickmark)}
                   style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
                 >
                   <SvgXml xml={tickmark ? IconTick : IconPlus} />
