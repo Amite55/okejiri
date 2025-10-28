@@ -34,11 +34,6 @@ const Company_Home_Index = () => {
     isLoading: servicesLoading,
     error,
   } = useServicesQuery({});
-  // console.log(servicesData?.data?.services, "this is servicesData");
-  console.log(
-    serviceNearbyData?.data?.data,
-    "this is near by service with data _---------------------->"
-  );
 
   const serviceItemRender = ({ item }) => {
     return (
@@ -158,7 +153,12 @@ const Company_Home_Index = () => {
                 key={index}
                 item={item}
                 index={index}
-                onPress={() => router.push("/company/serviceDetails")}
+                onPress={() =>
+                  router.push({
+                    pathname: "/company/serviceDetails",
+                    params: { service_id: item?.service_id },
+                  })
+                }
               />
             ))
           )}
