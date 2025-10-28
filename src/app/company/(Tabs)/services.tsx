@@ -6,6 +6,7 @@ import { BlurView } from "@react-native-community/blur";
 import { router } from "expo-router";
 import React from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Platform,
@@ -17,9 +18,18 @@ import {
 
 const services = () => {
   const { data: getServicesData, isLoading } = useServicesQuery({});
-  console.log("getServicesData", getServicesData, "getServicesData");
-  // const { image, name } = getServicesData?.data.services;
-
+  if (isLoading) {
+    return (
+      <SafeAreaView
+        style={tw`flex-1 bg-base_color justify-center items-center`}
+      >
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={tw`text-white mt-3 text-lg font-DegularDisplayDemoMedium`}>
+          Loading services...
+        </Text>
+      </SafeAreaView>
+    );
+  }
   const serviceItemRender = ({ item }: any) => {
     return (
       <View
@@ -53,7 +63,7 @@ const services = () => {
             onPress={() =>
               router.push({
                 pathname: "/company/serviceNearbyHistory",
-                params: { categoryService: "true" },
+                params: { id: item?.id },
               })
             }
             style={tw`flex-1 justify-center items-center`}
