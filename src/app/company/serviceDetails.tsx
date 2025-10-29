@@ -11,33 +11,145 @@ import {
   IconWhishListSelected,
 } from "@/assets/icons";
 import ServiceCard from "@/src/Components/ServiceCard";
+import PackageDetailsSkeleton from "@/src/Components/skeletons/PackageDetailsSkeleton";
 import tw from "@/src/lib/tailwind";
+import {
+  useAddFavoriteMutation,
+  useDeleteFavoriteMutation,
+  useGetFavoritesQuery,
+} from "@/src/redux/apiSlices/userProvider/account/favoritesSlices";
+import {
+  useDeleteCartItemMutation,
+  useGetCartItemQuery,
+  useStoreDeleteCartItemMutation,
+} from "@/src/redux/apiSlices/userProvider/cartSlices";
 import { usePackageDetailsQuery } from "@/src/redux/apiSlices/userProvider/servicesSlices";
-import { _HEIGHT } from "@/utils/utils";
+import { _HEIGHT, PrimaryColor } from "@/utils/utils";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
-import { FlatList, Modal, Text, TouchableOpacity, View } from "react-native";
+
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Modal,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Pressable, ScrollView } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const ServiceDetails = () => {
   const { service_id } = useLocalSearchParams();
-  const [tickmark, setTickMark] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [addWishlist, setAddWishList] = useState<boolean>(false);
   const [itemDetails, setItemDetails] = useState<any>({});
   const [addToCartState, setAddToCartState] = useState([]);
-
-  console.log(addToCartState, "this is add to cart state");
-
-  const filtered = addToCartState.filter(
-    (item) => item.package_id === service_id
-  );
+  const [loadingState, setLoadingState] = useState<number | null>(null);
 
   // ================== api end point ==================
-  const { data: packageDetails, isLoading } =
+  const { data: packageDetails, isLoading: packageDetailingLoading } =
     usePackageDetailsQuery(service_id);
+  const [cartResponse, { isLoading: isCartLoading }] =
+    useStoreDeleteCartItemMutation();
+  const [deleteCartResponse, { isLoading: deleteCartLoading }] =
+    useDeleteCartItemMutation();
+  const { data: getAddToCartItem, isLoading: getAddToCartLoading } =
+    useGetCartItemQuery({});
+  const { data: getFavorites, isLoading: isGetFavoritesLoading } =
+    useGetFavoritesQuery();
+  const [deleteFavorite, { isLoading: isDeleteFavoriteLoading }] =
+    useDeleteFavoriteMutation();
+  const [addFavorite, { isLoading: isAddFavoriteLoading }] =
+    useAddFavoriteMutation();
+
+  // ================== check favorite ==================
+  const checkFavorite = getFavorites?.data?.data.some(
+    (favorite: { package_id: number }) =>
+      favorite.package_id === Number(packageDetails?.data?.package_details?.id)
+  );
+
+  // ================= handle favorite ==================
+  const handleFavorite = async (packageId: number) => {
+    try {
+      console.log(packageId, "hare is package id ------>");
+      if (checkFavorite) {
+        const response = await deleteFavorite(packageId).unwrap();
+        if (response) {
+          router.push({
+            pathname: `/Toaster`,
+            params: { res: response?.message || response },
+          });
+        }
+      } else {
+        const response = await addFavorite(packageId).unwrap();
+        if (response) {
+          router.push({
+            pathname: `/Toaster`,
+            params: { res: response?.message || response },
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error, "favorite not added >>>>>>>");
+    }
+  };
+
+  // -------------- sum price of add to cart ------------
+  const cartReducePrice = getAddToCartItem?.data.reduce(
+    (total: number, item) => total + Number(item?.package?.price || 0),
+    0
+  );
+  // --------------------------- add to cart function delete and add this same function use for add to cart   ----------------
+  const handleDeleteStoreCartItem = async (packageId: number) => {
+    try {
+      setLoadingState(packageId);
+      const response = await cartResponse({ package_id: packageId }).unwrap();
+      if (response) {
+        if (
+          addToCartState?.some(
+            (cartItem: { package_id: number }) =>
+              cartItem?.package_id == packageId
+          )
+        ) {
+          setAddToCartState(
+            addToCartState.filter(
+              (cartItem: { package_id: number }) =>
+                cartItem?.package_id !== packageId
+            )
+          );
+        } else {
+          setAddToCartState([...addToCartState, { package_id: packageId }]);
+        }
+        router.push({
+          pathname: `/Toaster`,
+          params: { res: response?.message || response },
+        });
+      }
+    } catch (error) {
+      console.log(error, "Delete Add to cart Warring !");
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
+      });
+    } finally {
+      setLoadingState(null);
+    }
+  };
+
+  // ================== delete all added item to render this screen ------------
+  useEffect(() => {
+    const readFunc = async () => {
+      try {
+        setAddToCartState([]);
+        await deleteCartResponse({}).unwrap();
+      } catch (error) {
+        console.log(error, "not Delete all item !");
+      }
+    };
+    readFunc();
+  }, []);
 
   //  ranking profile item render  -------------------------------
   const RenderRankingItem = ({ item }) => {
@@ -91,6 +203,10 @@ const ServiceDetails = () => {
       </View>
     );
   };
+  // ---------------- this is skeleton loader ----------------
+  if (packageDetailingLoading) {
+    return <PackageDetailsSkeleton />;
+  }
 
   return (
     <View style={tw`flex-1 bg-base_color `}>
@@ -111,20 +227,32 @@ const ServiceDetails = () => {
           {/* ============ back button =-================ */}
           <TouchableOpacity
             onPress={() => router.back()}
-            style={tw`absolute top-2 left-2 w-14 h-14 bg-white rounded-full justify-center items-center`}
+            style={tw`absolute top-2 left-1 w-14 h-14 bg-white rounded-full justify-center items-center`}
           >
             <SvgXml xml={IconBackLeftArrow} />
           </TouchableOpacity>
 
           {/*  ================= add wish list fvt icon =========================== */}
-          <Pressable
-            onPress={() => setAddWishList(!addWishlist)}
-            style={tw`absolute bottom-4 right-2 w-14 h-14 bg-black bg-opacity-50 border border-white rounded-full justify-center items-center`}
-          >
-            <SvgXml
-              xml={addWishlist ? IconWhishListSelected : IconFavouriteWhite}
+          {isAddFavoriteLoading ||
+          isDeleteFavoriteLoading ||
+          isGetFavoritesLoading ? (
+            <ActivityIndicator
+              style={tw`absolute bottom-4 right-2`}
+              size="large"
+              color={PrimaryColor}
             />
-          </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                handleFavorite(packageDetails?.data?.package_details?.id);
+              }}
+              style={tw`absolute bottom-4 right-2 w-14 h-14 bg-black bg-opacity-50 border border-white rounded-full justify-center items-center`}
+            >
+              <SvgXml
+                xml={checkFavorite ? IconWhishListSelected : IconFavouriteWhite}
+              />
+            </Pressable>
+          )}
         </View>
 
         {/* --------------------- services details part ---------------- */}
@@ -165,45 +293,32 @@ const ServiceDetails = () => {
               ₦ {packageDetails?.data?.package_details?.price}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => {
-              // setTickMark(!tickmark);
-              if (
-                addToCartState?.some(
-                  (cartItem: { package_id: number }) =>
-                    cartItem?.package_id ==
-                    packageDetails?.data?.package_details?.id
-                )
-              ) {
-                setAddToCartState(
-                  addToCartState.filter(
+
+          {loadingState === packageDetails?.data?.package_details?.id ? (
+            <ActivityIndicator size="large" color={PrimaryColor} />
+          ) : (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => {
+                handleDeleteStoreCartItem(
+                  packageDetails?.data?.package_details?.id
+                );
+              }}
+              style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
+            >
+              <SvgXml
+                xml={
+                  addToCartState?.some(
                     (cartItem: { package_id: number }) =>
-                      cartItem?.package_id !==
+                      cartItem?.package_id ===
                       packageDetails?.data?.package_details?.id
                   )
-                );
-              } else {
-                setAddToCartState([
-                  ...addToCartState,
-                  { package_id: packageDetails?.data?.package_details?.id },
-                ]);
-              }
-            }}
-            style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
-          >
-            <SvgXml
-              xml={
-                addToCartState?.some(
-                  (cartItem: { package_id: number }) =>
-                    cartItem?.package_id ===
-                    packageDetails?.data?.package_details?.id
-                )
-                  ? IconTick
-                  : IconPlus
-              }
-            />
-          </TouchableOpacity>
+                    ? IconTick
+                    : IconPlus
+                }
+              />
+            </TouchableOpacity>
+          )}
         </View>
         {/* ---------------- distance part ---------------- */}
         <View
@@ -321,11 +436,6 @@ const ServiceDetails = () => {
           ) : (
             packageDetails?.data?.more_services_from_this_provider?.map(
               (item) => {
-                // console.log(
-                //   item,
-                //   "this is service from this provider ---------->"
-                // );
-                console.log(item?.package_id, item?.id);
                 return (
                   <Pressable
                     key={item?.id}
@@ -362,42 +472,28 @@ const ServiceDetails = () => {
                         <Text>See details</Text>
                       </TouchableOpacity>
 
-                      <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={() => {
-                          if (
-                            addToCartState?.some(
-                              (cartItem: { package_id: number }) =>
-                                cartItem?.package_id == item?.id
-                            )
-                          ) {
-                            setAddToCartState(
-                              addToCartState.filter(
+                      {loadingState === item?.id ? (
+                        <ActivityIndicator size="large" color={PrimaryColor} />
+                      ) : (
+                        <TouchableOpacity
+                          activeOpacity={0.8}
+                          onPress={() => {
+                            handleDeleteStoreCartItem(item?.id);
+                          }}
+                          style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
+                        >
+                          <SvgXml
+                            xml={
+                              addToCartState?.some(
                                 (cartItem: { package_id: number }) =>
-                                  cartItem?.package_id !== item?.id
+                                  cartItem?.package_id === item?.id
                               )
-                            );
-                          } else {
-                            setAddToCartState([
-                              ...addToCartState,
-                              { package_id: item?.id },
-                            ]);
-                          }
-                          // setTickMark(!tickmark);
-                        }}
-                        style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
-                      >
-                        <SvgXml
-                          xml={
-                            addToCartState?.some(
-                              (cartItem: { package_id: number }) =>
-                                cartItem?.package_id === item?.id
-                            )
-                              ? IconTick
-                              : IconPlus
-                          }
-                        />
-                      </TouchableOpacity>
+                                ? IconTick
+                                : IconPlus
+                            }
+                          />
+                        </TouchableOpacity>
+                      )}
                     </View>
                   </Pressable>
                 );
@@ -405,7 +501,6 @@ const ServiceDetails = () => {
             )
           )}
         </View>
-
         {/* ---------------- You might also like ---------- */}
         <Text
           style={tw`font-DegularDisplayDemoMedium text-2xl text-black mt-6 `}
@@ -421,21 +516,30 @@ const ServiceDetails = () => {
             </Text>
           ) : (
             packageDetails?.data?.you_might_also_like?.map(
-              (item: any, index: number) => (
-                <ServiceCard
-                  key={item?.id}
-                  item={item}
-                  index={index}
-                  onPress={() => router.push("/company/serviceDetails")}
-                />
-              )
+              (item: any, index: number) => {
+                return (
+                  <ServiceCard
+                    key={item?.id}
+                    item={item}
+                    index={index}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/company/serviceDetails",
+                        params: {
+                          service_id: item?.id,
+                        },
+                      })
+                    }
+                  />
+                );
+              }
             )
           )}
         </View>
       </ScrollView>
 
       {/*  ================= Static bottom tab =================== */}
-      {tickmark && (
+      {addToCartState?.length > 0 && (
         <View
           style={[
             tw`absolute bottom-0 left-0 right-0 bg-white px-5`,
@@ -451,42 +555,40 @@ const ServiceDetails = () => {
             },
           ]}
         >
-          <View style={tw`flex-row justify-between items-center h-28 px-5`}>
-            <View style={tw`flex-1`}>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}
-              >
-                ₦ 49.00
-              </Text>
-              <View style={tw`flex-row items-center gap-3`}>
+          {getAddToCartLoading ? (
+            <View style={tw`justify-center items-center`}>
+              <ActivityIndicator size="small" color="#0000ff" />
+            </View>
+          ) : (
+            <View style={tw`flex-row justify-between items-center h-28 px-5`}>
+              <View style={tw`flex-1`}>
                 <Text
-                  style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+                  style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}
                 >
-                  1 service
+                  ₦ {cartReducePrice?.toFixed(2)}
                 </Text>
-                <View style={tw`flex-row items-center gap-2`}>
-                  <View style={tw`w-2 h-2 rounded-full bg-regularText`} />
+                <View style={tw`flex-row items-center gap-3`}>
                   <Text
                     style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
                   >
-                    Est. 30 mins
+                    {addToCartState?.length} service
                   </Text>
                 </View>
               </View>
-            </View>
-            <TouchableOpacity
-              onPress={() =>
-                router.push("/company/serviceBookings/serviceBooking")
-              }
-              style={tw`w-28 h-12 justify-center items-center bg-primary rounded-lg`}
-            >
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-base text-white`}
+              <TouchableOpacity
+                onPress={() =>
+                  router.push("/company/serviceBookings/serviceBooking")
+                }
+                style={tw`w-28 h-12 justify-center items-center bg-primary rounded-lg`}
               >
-                Book now
-              </Text>
-            </TouchableOpacity>
-          </View>
+                <Text
+                  style={tw`font-DegularDisplayDemoMedium text-base text-white`}
+                >
+                  Book now
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       )}
       {/* =================== see service details modal ===================== */}
@@ -582,13 +684,13 @@ const ServiceDetails = () => {
                     ₦ {itemDetails?.price}
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   activeOpacity={0.8}
                   // onPress={() => setTickMark(!tickmark)}
                   style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
                 >
                   <SvgXml xml={tickmark ? IconTick : IconPlus} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             </ScrollView>
           </Pressable>
