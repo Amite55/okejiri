@@ -10,6 +10,7 @@ import {
   IconTick,
   IconWhishListSelected,
 } from "@/assets/icons";
+import ReviewerCard from "@/src/Components/ReviewerCard";
 import ServiceCard from "@/src/Components/ServiceCard";
 import PackageDetailsSkeleton from "@/src/Components/skeletons/PackageDetailsSkeleton";
 import tw from "@/src/lib/tailwind";
@@ -43,7 +44,6 @@ import { SvgXml } from "react-native-svg";
 const ServiceDetails = () => {
   const { service_id } = useLocalSearchParams();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [addWishlist, setAddWishList] = useState<boolean>(false);
   const [itemDetails, setItemDetails] = useState<any>({});
   const [addToCartState, setAddToCartState] = useState([]);
   const [loadingState, setLoadingState] = useState<number | null>(null);
@@ -69,11 +69,9 @@ const ServiceDetails = () => {
     (favorite: { package_id: number }) =>
       favorite.package_id === Number(packageDetails?.data?.package_details?.id)
   );
-
   // ================= handle favorite ==================
   const handleFavorite = async (packageId: number) => {
     try {
-      console.log(packageId, "hare is package id ------>");
       if (checkFavorite) {
         const response = await deleteFavorite(packageId).unwrap();
         if (response) {
@@ -83,7 +81,7 @@ const ServiceDetails = () => {
           });
         }
       } else {
-        const response = await addFavorite(packageId).unwrap();
+        const response = await addFavorite({ package_id: packageId }).unwrap();
         if (response) {
           router.push({
             pathname: `/Toaster`,
@@ -150,46 +148,6 @@ const ServiceDetails = () => {
     };
     readFunc();
   }, []);
-
-  //  ranking profile item render  -------------------------------
-  const RenderRankingItem = ({ item }) => {
-    return (
-      <View style={tw`bg-white shadow-md w-80 h-72 rounded-2xl p-4`}>
-        <View style={tw`flex-row items-center gap-3`}>
-          <Image
-            contentFit="contain"
-            style={tw`w-16 h-16 rounded-full `}
-            source={item?.user?.avatar}
-          />
-          <View>
-            <Text
-              style={tw`font-DegularDisplayDemoSemibold text-lg text-black`}
-            >
-              {item?.user?.name}
-            </Text>
-            {/* rating */}
-            <View style={tw`flex-row items-center gap-1`}>
-              <View style={tw`flex-row items-center gap-2`}>
-                <SvgXml xml={IconStar} />
-              </View>
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-              >
-                ({item?.rating})
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={tw`mt-2 gap-2`}>
-          <Text style={tw`font-DegularDisplayDemoRegular text-base text-black`}>
-            {item?.review?.length > 190
-              ? `${item?.review?.slice(0, 190)}...`
-              : item?.review}
-          </Text>
-        </View>
-      </View>
-    );
-  };
 
   //  ----------- portfolio item render ----------------------------------
   const RenderPortfolioRenderItem = ({ item }) => {
@@ -333,7 +291,15 @@ const ServiceDetails = () => {
         <View style={tw`flex-row flex-1 pb-3`}>
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => router.push("/company/provider_profile")}
+            onPress={() =>
+              router.push({
+                pathname: "/company/provider_profile",
+                params: {
+                  provider_id:
+                    packageDetails?.data?.package_details?.provider_id,
+                },
+              })
+            }
             style={tw`flex-1 flex-row items-center gap-3`}
           >
             <Image
@@ -348,7 +314,10 @@ const ServiceDetails = () => {
                 >
                   {packageDetails?.data?.package_details?.provider?.name}
                 </Text>
-                <SvgXml width={15} height={15} xml={IconProfileBadge} />
+                {packageDetails?.data?.package_details?.provider?.kyc_status ===
+                  "Verified" && (
+                  <SvgXml width={15} height={15} xml={IconProfileBadge} />
+                )}
               </View>
               <View style={tw`flex-row items-center gap-1`}>
                 <Text
@@ -391,7 +360,7 @@ const ServiceDetails = () => {
         {/* ============================== review profile =================================  */}
         <FlatList
           data={packageDetails?.data?.reviews}
-          renderItem={RenderRankingItem}
+          renderItem={(item) => <ReviewerCard item={item} />}
           keyExtractor={(item, index) => item?.id.toString()}
           contentContainerStyle={tw`py-2 px-2 gap-3 `}
           horizontal={true}
