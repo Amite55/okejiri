@@ -18,10 +18,13 @@ export const favoritesSlices = api.injectEndpoints({
       invalidatesTags: ["favorite"],
     }),
     deleteFavorite: builder.mutation({
-      query: (id) => ({
-        url: `/remove-favorite/${id}`,
-        method: "DELETE",
-      }),
+      query: (packageId: number) => {
+        console.log(packageId, "packageId end point--------> api");
+        return {
+          url: `/favorites/${packageId}`,
+          method: "DELETE",
+        };
+      },
       invalidatesTags: ["favorite"],
     }),
   }),

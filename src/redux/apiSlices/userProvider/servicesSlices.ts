@@ -30,14 +30,14 @@ export const servicesSlice = api.injectEndpoints({
       }),
       providesTags: ["provider"],
     }),
-    providerReviews: builder.query({
+    getProviderReviews: builder.query({
       query: (id) => ({
         url: `/get-provider-review/${id}`,
         method: "GET",
       }),
       providesTags: ["provider"],
     }),
-    providerServices: builder.query({
+    getProviderServices: builder.query({
       query: (id) => ({
         url: `/get-provider-services/${id}`,
         method: "GET",
@@ -52,6 +52,6 @@ export const {
   usePackageDetailsQuery,
   useProviderPortfolioQuery,
   useProviderProfileQuery,
-  useProviderReviewsQuery,
-  useProviderServicesQuery,
+  useGetProviderReviewsQuery,
+  useGetProviderServicesQuery,
 } = servicesSlice;
