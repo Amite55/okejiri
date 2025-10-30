@@ -3,8 +3,8 @@ import { api } from "@/src/redux/base/baseApi";
 export const myDisputesSlices = api.injectEndpoints({
   endpoints: (builder) => ({
     myDispute: builder.query({
-      query: (page = 10) => ({
-        url: `/my-dispute?per_page=${page}`,
+      query: (page) => ({
+        url: `/my-dispute?page=${page}`,
         method: "GET",
       }),
       providesTags: ["dispute"],
@@ -36,6 +36,7 @@ export const myDisputesSlices = api.injectEndpoints({
 
 export const {
   useMyDisputeQuery,
+  useLazyMyDisputeQuery,
   useDisputeDetailsQuery,
   useDisputeDeleteMutation,
   useAddDisputeAppealMutation,

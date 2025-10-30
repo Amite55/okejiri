@@ -3,12 +3,15 @@ import { ImgProfileImg } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
+import { useDisputeDetailsQuery } from "@/src/redux/apiSlices/userProvider/account/myDisputesSlices";
+import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { Image, ScrollView, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Disputes_Status = () => {
+  const { id } = useLocalSearchParams();
+  const {} = useDisputeDetailsQuery({ id });
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
