@@ -20,8 +20,7 @@ export const cartSlices = api.injectEndpoints({
     deleteCartItem: builder.mutation({
       query: () => ({
         url: `/delete-cart-items`,
-        method: "POST",
-        // body: package_id,
+        method: "DELETE",
       }),
       invalidatesTags: ["cart"],
     }),
