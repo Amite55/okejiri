@@ -3,6 +3,7 @@ import ServiceCard from "@/src/Components/ServiceCard";
 
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
+import UserHomeSkeleton from "@/src/Components/skeletons/UserHomeSkeleton";
 import UserCarousel from "@/src/Components/UserCarousel";
 import CleaningData from "@/src/json/CleaningData.json";
 import tw from "@/src/lib/tailwind";
@@ -81,7 +82,10 @@ const Company_Home_Index = () => {
       </View>
     );
   };
-
+  // ================ this is skeleton loader ===================
+  if (servicesLoading || serviceNearbyLoading) {
+    return <UserHomeSkeleton />;
+  }
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
