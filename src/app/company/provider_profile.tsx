@@ -25,13 +25,17 @@ import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetModalProvider,
-  BottomSheetView,
+  BottomSheetScrollView,
+  TouchableWithoutFeedback,
 } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useRef, useState } from "react";
 import {
   FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -44,12 +48,10 @@ import { SvgXml } from "react-native-svg";
 
 const Provider_Profile = () => {
   const { provider_id } = useLocalSearchParams();
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [reportReason, setReportReason] = useState<boolean>(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [selectedReport, setSelectedReport] = useState<string>("");
-
-  console.log(selectedReport, "this selected ");
+  const [reportDetails, setReportDetails] = useState<string>("");
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -57,12 +59,16 @@ const Provider_Profile = () => {
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-  }, []);
 
   const handleCloseModalPress = useCallback(() => {
     bottomSheetModalRef.current?.dismiss();
+  }, []);
+  const handleOnDismiss = useCallback(() => {
+    // modal close হলে সব state reset হবে
+    setReportDetails("");
+    setSelectedIndex(null);
+    setSelectedReport("");
+    setReportReason(false);
   }, []);
 
   // ============================== api end point ============================1
@@ -88,158 +94,235 @@ const Provider_Profile = () => {
     return <ProviderProfileSkeleton />;
   }
 
-  return (
-    <GestureHandlerRootView style={tw`flex-1`}>
-      <BottomSheetModalProvider>
-        <View style={tw`flex-1`}>
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            style={tw`flex-1  `}
-            contentContainerStyle={tw`pb-6  bg-base_color`}
-          >
-            <BackTitleButton
-              pageName={"Provider profile"}
-              onPress={() => router.back()}
-              titleTextStyle={tw`text-xl`}
-              contentStyle={tw`px-4`}
-            />
+  const handleReport = () => {
+    try {
+      const reportData = {
+        booking_id: 1212,
+        provider_id: 1212,
+        report_reason: selectedReport,
+        report_details: reportDetails,
+        attachments: [],
+      };
+      console.log(reportData, "report data to be sent");
+    } catch (error) {
+      console.log(error, "report not send this provider?");
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
+      });
+    }
+  };
 
-            <View style={tw`relative justify-center items-center mt-2`}>
-              <Image style={tw`w-full h-52 `} source={ImgCleaning} />
-              <View
-                style={tw`justify-center items-center absolute -bottom-28 `}
-              >
-                <Image
-                  contentFit="contain"
-                  style={tw`w-24 h-24 rounded-full   border-2 border-white`}
-                  source={getProviderProfileDataDetails?.data?.avatar}
-                />
-                {/*  profile name ----------- */}
-                <View style={tw`justify-center items-center my-1`}>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <Text style={tw`font-DegularDisplayDemoRegular text-xl`}>
-                      {getProviderProfileDataDetails?.data?.name}
-                    </Text>
-                    {getProviderProfileDataDetails?.data?.kyc_status ===
-                      "Verified" && <SvgXml xml={IconProfileBadge} />}
-                  </View>
-                  <View style={tw`flex-row items-center gap-1`}>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-primary text-lg `}
-                    >
-                      {getProviderProfileDataDetails?.data?.ratings_avg_rating}
-                    </Text>
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS/Android different behavior
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+    >
+      <GestureHandlerRootView style={tw`flex-1`}>
+        <BottomSheetModalProvider>
+          <View style={tw`flex-1`}>
+            <ScrollView
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              style={tw`flex-1  `}
+              contentContainerStyle={tw`pb-6  bg-base_color`}
+            >
+              <BackTitleButton
+                pageName={"Provider profile"}
+                onPress={() => router.back()}
+                titleTextStyle={tw`text-xl`}
+                contentStyle={tw`px-4`}
+              />
+
+              <View style={tw`relative justify-center items-center mt-2`}>
+                <Image style={tw`w-full h-52 `} source={ImgCleaning} />
+                <View
+                  style={tw`justify-center items-center absolute -bottom-28 `}
+                >
+                  <Image
+                    contentFit="contain"
+                    style={tw`w-24 h-24 rounded-full   border-2 border-white`}
+                    source={getProviderProfileDataDetails?.data?.avatar}
+                  />
+                  {/*  profile name ----------- */}
+                  <View style={tw`justify-center items-center my-1`}>
                     <View style={tw`flex-row items-center gap-2`}>
-                      <SvgXml xml={IconStar} />
+                      <Text style={tw`font-DegularDisplayDemoRegular text-xl`}>
+                        {getProviderProfileDataDetails?.data?.name}
+                      </Text>
+                      {getProviderProfileDataDetails?.data?.kyc_status ===
+                        "Verified" && <SvgXml xml={IconProfileBadge} />}
                     </View>
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-base text-regularText`}
-                    >
-                      ({getProviderProfileDataDetails?.data?.ratings_count})
-                    </Text>
+                    <View style={tw`flex-row items-center gap-1`}>
+                      <Text
+                        style={tw`font-DegularDisplayDemoRegular text-primary text-lg `}
+                      >
+                        {
+                          getProviderProfileDataDetails?.data
+                            ?.ratings_avg_rating
+                        }
+                      </Text>
+                      <View style={tw`flex-row items-center gap-2`}>
+                        <SvgXml xml={IconStar} />
+                      </View>
+                      <Text
+                        style={tw`font-DegularDisplayDemoMedium text-base text-regularText`}
+                      >
+                        ({getProviderProfileDataDetails?.data?.ratings_count})
+                      </Text>
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
 
-            {/* ----------------------------- report and message =---------------------- */}
+              {/* ----------------------------- report and message =---------------------- */}
 
-            <View
-              style={tw`flex-1 px-4 flex-row items-center gap-3 justify-center mt-32`}
-            >
-              <TouchableOpacity
-                // onPress={() => setModalVisible(true)}
-                onPress={() => handlePresentModalPress()}
-                style={tw`border border-gray-400 flex-1 rounded-2xl h-12 flex-row justify-center items-center gap-3`}
+              <View
+                style={tw`flex-1 px-4 flex-row items-center gap-3 justify-center mt-32`}
               >
-                <SvgXml xml={IconReportBlack} />
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-xl text-black `}
+                <TouchableOpacity
+                  // onPress={() => setModalVisible(true)}
+                  onPress={() => handlePresentModalPress()}
+                  style={tw`border border-gray-400 flex-1 rounded-2xl h-12 flex-row justify-center items-center gap-3`}
                 >
-                  Report
-                </Text>
-              </TouchableOpacity>
+                  <SvgXml xml={IconReportBlack} />
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-black `}
+                  >
+                    Report
+                  </Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => router.push("/company/messaging")}
-                style={tw`bg-primary flex-1 rounded-2xl h-12 flex-row justify-center items-center gap-3`}
+                <TouchableOpacity
+                  onPress={() => router.push("/company/messaging")}
+                  style={tw`bg-primary flex-1 rounded-2xl h-12 flex-row justify-center items-center gap-3`}
+                >
+                  <SvgXml xml={IconMessageWhite} />
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-white `}
+                  >
+                    Message
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/*  ---------- provider details info  ----------------- */}
+              <View
+                style={tw`border border-gray-300  mx-4 my-5 justify-center h-40 rounded-lg gap-2 p-3`}
               >
-                <SvgXml xml={IconMessageWhite} />
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-xl text-white `}
-                >
-                  Message
-                </Text>
-              </TouchableOpacity>
-            </View>
+                <View style={tw`flex-row gap-2 items-center`}>
+                  <SvgXml xml={IconEmailGray} />
+                  <Text
+                    numberOfLines={2}
+                    style={tw`flex-1 font-DegularDisplayDemoRegular text-lg text-black`}
+                  >
+                    {getProviderProfileDataDetails?.data?.email}
+                  </Text>
+                </View>
+                <View style={tw`flex-row gap-3 items-center`}>
+                  <SvgXml xml={IconPhoneGray} />
+                  <Text
+                    style={tw`font-DegularDisplayDemoRegular text-base text-black`}
+                  >
+                    {getProviderProfileDataDetails?.data?.phone}
+                  </Text>
+                </View>
+                <View style={tw`flex-row gap-2 items-start`}>
+                  <SvgXml xml={IconLocationGray} />
+                  <Text
+                    style={tw` flex-1 font-DegularDisplayDemoRegular text-base text-black`}
+                  >
+                    {getProviderProfileDataDetails?.data?.address
+                      ? getProviderProfileDataDetails?.data?.address.length > 45
+                        ? getProviderProfileDataDetails?.data?.address.slice(
+                            0,
+                            45
+                          ) + "..."
+                        : getProviderProfileDataDetails?.data?.address
+                      : "N/A"}
+                  </Text>
+                </View>
+              </View>
 
-            {/*  ---------- provider details info  ----------------- */}
-            <View
-              style={tw`border border-gray-300  mx-4 my-5 justify-center h-40 rounded-lg gap-2 p-3`}
-            >
-              <View style={tw`flex-row gap-2 items-center`}>
-                <SvgXml xml={IconEmailGray} />
+              <View style={tw`px-5`}>
+                {/* =========== provider Service by ================= */}
                 <Text
-                  numberOfLines={2}
-                  style={tw`flex-1 font-DegularDisplayDemoRegular text-lg text-black`}
+                  style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}
                 >
-                  {getProviderProfileDataDetails?.data?.email}
+                  Service By
                 </Text>
-              </View>
-              <View style={tw`flex-row gap-3 items-center`}>
-                <SvgXml xml={IconPhoneGray} />
-                <Text
-                  style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                >
-                  {getProviderProfileDataDetails?.data?.phone}
-                </Text>
-              </View>
-              <View style={tw`flex-row gap-2 items-start`}>
-                <SvgXml xml={IconLocationGray} />
-                <Text
-                  style={tw` flex-1 font-DegularDisplayDemoRegular text-base text-black`}
-                >
-                  {getProviderProfileDataDetails?.data?.address
-                    ? getProviderProfileDataDetails?.data?.address.length > 45
-                      ? getProviderProfileDataDetails?.data?.address.slice(
-                          0,
-                          45
-                        ) + "..."
-                      : getProviderProfileDataDetails?.data?.address
-                    : "N/A"}
-                </Text>
-              </View>
-            </View>
 
-            <View style={tw`px-5`}>
-              {/* =========== provider Service by ================= */}
+                <View style={tw`pb-4 pl-6`}>
+                  {getProviderProfileDataDetails?.data?.provider_services
+                    .length > 0 ? (
+                    getProviderProfileDataDetails?.data?.provider_services?.map(
+                      (item: any) => {
+                        return (
+                          <View
+                            key={item?.id}
+                            style={tw`flex-row gap-2 items-center `}
+                          >
+                            <View
+                              style={tw`w-1.5 h-1.5 rounded-full bg-black`}
+                            />
+                            <Text
+                              style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
+                            >
+                              {item?.service?.name}
+                            </Text>
+                          </View>
+                        );
+                      }
+                    )
+                  ) : (
+                    <Text
+                      style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
+                    >
+                      No Service by this provider
+                    </Text>
+                  )}
+                </View>
+
+                {/* --------------------- about us --------------------- */}
+                <Text
+                  style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
+                >
+                  About
+                </Text>
+
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                >
+                  {getProviderProfileDataDetails?.data?.about}
+                </Text>
+              </View>
+
+              {/* ---------------- provider Services =-=---------- */}
+
               <Text
-                style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}
+                style={tw`font-DegularDisplayDemoMedium text-2xl text-black mt-6 px-5`}
               >
-                Service By
+                Services
               </Text>
 
-              <View style={tw`pb-4 pl-6`}>
-                {getProviderProfileDataDetails?.data?.provider_services.length >
-                0 ? (
-                  getProviderProfileDataDetails?.data?.provider_services?.map(
-                    (item: any) => {
-                      return (
-                        <View
-                          key={item?.id}
-                          style={tw`flex-row gap-2 items-center `}
-                        >
-                          <View style={tw`w-1.5 h-1.5 rounded-full bg-black`} />
-                          <Text
-                            style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
-                          >
-                            {item?.service?.name}
-                          </Text>
-                        </View>
-                      );
-                    }
-                  )
+              <View style={tw`gap-3 mt-4 px-5`}>
+                {getProvidedServicesData?.data?.length > 0 ? (
+                  getProvidedServicesData?.data?.map((item: any) => {
+                    return (
+                      <ServiceCard
+                        key={item.id}
+                        item={item}
+                        index={item.id}
+                        onPress={() =>
+                          router.push({
+                            pathname: "/company/serviceDetails",
+                            params: { service_id: item?.id },
+                          })
+                        }
+                      />
+                    );
+                  })
                 ) : (
                   <Text
                     style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
@@ -249,261 +332,222 @@ const Provider_Profile = () => {
                 )}
               </View>
 
-              {/* --------------------- about us --------------------- */}
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
-              >
-                About
-              </Text>
+              {/* ============================== review profile j================================= */}
 
               <Text
-                style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                style={tw`font-DegularDisplayDemoMedium text-2xl text-black px-5 mt-6`}
               >
-                {getProviderProfileDataDetails?.data?.about}
+                Reviews
               </Text>
-            </View>
-
-            {/* ---------------- provider Services =-=---------- */}
-
-            <Text
-              style={tw`font-DegularDisplayDemoMedium text-2xl text-black mt-6 px-5`}
-            >
-              Services
-            </Text>
-
-            <View style={tw`gap-3 mt-4 px-5`}>
-              {getProvidedServicesData?.data?.length > 0 ? (
-                getProvidedServicesData?.data?.map((item: any) => {
-                  return (
-                    <ServiceCard
-                      key={item.id}
-                      item={item}
-                      index={item.id}
-                      onPress={() =>
-                        router.push({
-                          pathname: "/company/serviceDetails",
-                          params: { service_id: item?.id },
-                        })
-                      }
-                    />
-                  );
-                })
-              ) : (
-                <Text
-                  style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
-                >
-                  No Service by this provider
-                </Text>
-              )}
-            </View>
-
-            {/* ============================== review profile j================================= */}
-
-            <Text
-              style={tw`font-DegularDisplayDemoMedium text-2xl text-black px-5 mt-6`}
-            >
-              Reviews
-            </Text>
-            <FlatList
-              data={getProvidedReviewsData?.data}
-              renderItem={(item) => <ReviewerCard item={item} />}
-              keyExtractor={(item, index) => index.toString()}
-              contentContainerStyle={tw`mt-3 px-4 gap-3 pb-4 `}
-              horizontal={true}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-            />
-          </ScrollView>
-
-          {/* =================== see Report details modal ===================== */}
-        </View>
-
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          onChange={handleSheetChanges}
-          snapPoints={["70%"]}
-          enableDynamicSizing={false}
-          index={0}
-          containerStyle={tw`bg-gray-500 bg-opacity-20`}
-          backdropComponent={(props) => (
-            <BottomSheetBackdrop
-              {...props}
-              appearsOnIndex={0}
-              disappearsOnIndex={-1}
-              pressBehavior="close"
-            />
-          )}
-        >
-          <BottomSheetView style={tw`flex-1`}>
-            <View
-              style={[
-                tw`w-full flex-row justify-center items-center h-14  bg-primary px-4`,
-                { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
-              ]}
-            >
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
-              >
-                Service details
-              </Text>
-            </View>
-            <ScrollView
-              keyboardShouldPersistTaps="always"
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={tw`pb-20 flex-1 bg-base_color`}
-            >
-              {reportReason ? (
-                <View style={tw`px-6 mt-2 flex-1`}>
-                  {/*  issue details ----------------- */}
-                  <View style={tw``}>
-                    {/* -------- back button -------- */}
-                    <TouchableOpacity
-                      onPress={() => setReportReason(false)}
-                      style={tw`w-10 h-10 mb-4 border justify-center items-center rounded-full`}
-                    >
-                      <SvgXml xml={IconBackLeftArrow} />
-                    </TouchableOpacity>
-                    <TextInput
-                      style={[
-                        tw``,
-                        {
-                          borderWidth: 1,
-                          borderColor: "gray",
-                          paddingVertical: 18,
-                          paddingHorizontal: 20,
-
-                          minHeight: 280,
-                          maxHeight: 400,
-                          borderRadius: 30,
-                        },
-                      ]}
-                      multiline={true}
-                      numberOfLines={4}
-                      placeholder="Describe your issue..."
-                      onChangeText={(newText) => console.log(newText)}
-                      // value={}
-                      textAlignVertical="top"
-                    />
-
-                    <View style={tw`flex-row justify-end items-center my-1`}>
-                      <Text
-                        style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
-                      >
-                        1/1000
-                      </Text>
-                    </View>
-
-                    {/*  ------------ file uplod ----------------- */}
-                    <View
-                      style={tw`h-12 rounded-xl border justify-center items-center border-gray-300`}
-                    >
-                      <TouchableOpacity
-                        style={tw`flex-row items-center justify-center gap-3`}
-                      >
-                        <SvgXml xml={IconFileUpload} />
-                        <Text
-                          style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                        >
-                          Upload files
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-
-                    {/*  ----------- next button -------------- */}
-
-                    <View
-                      style={tw`flex-row justify-end items-center gap-6 mt-6`}
-                    >
-                      <TouchableOpacity onPress={() => setModalVisible(false)}>
-                        <Text
-                          style={tw`font-DegularDisplayDemoRegular text-2xl text-black p-2`}
-                        >
-                          Cancel
-                        </Text>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                        style={tw`p-2`}
-                        // onPress={() => setReportReason(true)}
-                      >
-                        <Text
-                          style={tw`font-DegularDisplayDemoMedium text-primary text-2xl `}
-                        >
-                          Report
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              ) : (
-                // --------------------------------  selected reason text-----------------
-                <View style={tw`  flex-grow justify-between  px-6`}>
-                  <View style={tw` gap-3 mt-6`}>
-                    {ReportData.map((item, index) => (
-                      <Pressable
-                        onPress={() => {
-                          setSelectedIndex(index);
-                          setSelectedReport(item.reportName);
-                        }}
-                        key={item.id}
-                        style={tw`flex-row gap-3 items-center rounded-none`}
-                      >
-                        <TouchableOpacity
-                          onPress={() => {
-                            setSelectedIndex(index);
-                            setSelectedReport(item.reportName);
-                          }}
-                          style={tw.style(
-                            `border w-5 h-5  justify-center items-center rounded-full`,
-                            selectedIndex === index
-                              ? `bg-primary border-white`
-                              : `bg-transparent`
-                          )}
-                        ></TouchableOpacity>
-                        <Text
-                          style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                        >
-                          {item.reportName}
-                        </Text>
-                      </Pressable>
-                    ))}
-                  </View>
-                  {/*  ----------- next button -------------- */}
-                  <View style={tw`flex-row justify-end items-center gap-6`}>
-                    <TouchableOpacity onPress={() => setModalVisible(false)}>
-                      <Text
-                        style={tw`font-DegularDisplayDemoRegular text-2xl text-black p-2`}
-                      >
-                        Cancel
-                      </Text>
-                    </TouchableOpacity>
-
-                    {selectedIndex ? (
-                      <TouchableOpacity
-                        style={tw`p-2`}
-                        onPress={() => setReportReason(true)}
-                      >
-                        <Text
-                          style={tw`font-DegularDisplayDemoMedium text-primary text-2xl `}
-                        >
-                          Next
-                        </Text>
-                      </TouchableOpacity>
-                    ) : (
-                      <Text
-                        style={tw`font-DegularDisplayDemoMedium text-regularText text-2xl p-2`}
-                      >
-                        Next
-                      </Text>
-                    )}
-                  </View>
-                </View>
-              )}
+              <FlatList
+                data={getProvidedReviewsData?.data}
+                renderItem={(item) => <ReviewerCard item={item} />}
+                keyExtractor={(item, index) => index.toString()}
+                contentContainerStyle={tw`mt-3 px-4 gap-3 pb-4 `}
+                horizontal={true}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+              />
             </ScrollView>
-          </BottomSheetView>
-        </BottomSheetModal>
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
+
+            {/* =================== see Report details modal ===================== */}
+          </View>
+
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            onDismiss={handleOnDismiss}
+            snapPoints={["70%"]}
+            enableDynamicSizing={false}
+            index={0}
+            containerStyle={tw`bg-gray-500 bg-opacity-20`}
+            backdropComponent={(props) => (
+              <BottomSheetBackdrop
+                {...props}
+                appearsOnIndex={0}
+                disappearsOnIndex={-1}
+                pressBehavior="close"
+              />
+            )}
+          >
+            <TouchableWithoutFeedback
+              onPress={Keyboard.dismiss}
+              accessible={false}
+            >
+              <BottomSheetScrollView>
+                <View
+                  style={[
+                    tw`flex-1 flex-row justify-center items-center h-14  bg-primary px-4`,
+                    { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
+                  ]}
+                >
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
+                  >
+                    Service details
+                  </Text>
+                </View>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {reportReason ? (
+                    <View style={tw`px-6 mt-4 `}>
+                      {/*  issue details ----------------- */}
+                      <View style={tw``}>
+                        {/* -------- back button -------- */}
+                        <TouchableOpacity
+                          onPress={() => setReportReason(false)}
+                          style={tw`w-10 h-10 mb-4 border justify-center items-center rounded-full`}
+                        >
+                          <SvgXml xml={IconBackLeftArrow} />
+                        </TouchableOpacity>
+                        <TextInput
+                          style={[
+                            tw``,
+                            {
+                              borderWidth: 1,
+                              borderColor: "gray",
+                              paddingVertical: 18,
+                              paddingHorizontal: 20,
+
+                              minHeight: 200,
+                              maxHeight: 400,
+                              borderRadius: 30,
+                            },
+                          ]}
+                          multiline={true}
+                          numberOfLines={4}
+                          placeholder="Describe your issue..."
+                          onChangeText={(newText) => setReportDetails(newText)}
+                          // value={}
+                          textAlignVertical="top"
+                        />
+
+                        <View
+                          style={tw`flex-row justify-end items-center py-1`}
+                        >
+                          <Text
+                            style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
+                          >
+                            1/1000
+                          </Text>
+                        </View>
+
+                        {/*  ------------ file uplod ----------------- */}
+                        <View
+                          style={tw`h-12 rounded-xl border justify-center items-center border-gray-300`}
+                        >
+                          <TouchableOpacity
+                            style={tw`flex-row items-center justify-center gap-3`}
+                          >
+                            <SvgXml xml={IconFileUpload} />
+                            <Text
+                              style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                            >
+                              Upload files
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+
+                        {/*  ----------- next button -------------- */}
+
+                        <View
+                          style={tw`flex-row justify-end items-center gap-6 mt-6`}
+                        >
+                          <TouchableOpacity
+                            onPress={() => handleCloseModalPress()}
+                          >
+                            <Text
+                              style={tw`font-DegularDisplayDemoRegular text-2xl text-black p-2`}
+                            >
+                              Cancel
+                            </Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            style={tw`p-2`}
+                            onPress={() => handleReport()}
+                          >
+                            <Text
+                              style={tw`font-DegularDisplayDemoMedium text-primary text-2xl `}
+                            >
+                              Report
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  ) : (
+                    // --------------------------------  selected reason text-----------------
+                    <View style={tw`flex-1 px-6`}>
+                      <View style={tw` gap-3 mt-6`}>
+                        {ReportData.map((item, index) => (
+                          <Pressable
+                            onPress={() => {
+                              setSelectedIndex(index);
+                              setSelectedReport(item.reportName);
+                            }}
+                            key={item.id}
+                            style={tw`flex-row gap-3 items-center rounded-none`}
+                          >
+                            <TouchableOpacity
+                              onPress={() => {
+                                setSelectedIndex(index);
+                                setSelectedReport(item.reportName);
+                              }}
+                              style={tw.style(
+                                `border w-5 h-5  justify-center items-center rounded-full`,
+                                selectedIndex === index
+                                  ? `bg-primary border-white`
+                                  : `bg-transparent`
+                              )}
+                            ></TouchableOpacity>
+                            <Text
+                              style={tw`font-DegularDisplayDemoRegular text-base text-black`}
+                            >
+                              {item.reportName}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+
+                      {/*  ----------- next button -------------- */}
+                      <View style={tw`flex-row justify-end items-center gap-6`}>
+                        <TouchableOpacity
+                          onPress={() => handleCloseModalPress()}
+                        >
+                          <Text
+                            style={tw`font-DegularDisplayDemoRegular text-2xl text-black p-2`}
+                          >
+                            Cancel
+                          </Text>
+                        </TouchableOpacity>
+
+                        {selectedIndex ? (
+                          <TouchableOpacity
+                            style={tw`p-2`}
+                            onPress={() => setReportReason(true)}
+                          >
+                            <Text
+                              style={tw`font-DegularDisplayDemoMedium text-primary text-2xl `}
+                            >
+                              Next
+                            </Text>
+                          </TouchableOpacity>
+                        ) : (
+                          <Text
+                            style={tw`font-DegularDisplayDemoMedium text-regularText text-2xl p-2`}
+                          >
+                            Next
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  )}
+                </ScrollView>
+              </BottomSheetScrollView>
+            </TouchableWithoutFeedback>
+          </BottomSheetModal>
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
+    </KeyboardAvoidingView>
   );
 };
 

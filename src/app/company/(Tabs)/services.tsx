@@ -1,4 +1,5 @@
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
+import ServicePageSkeleton from "@/src/Components/skeletons/ServicePageSkeleton ";
 import tw from "@/src/lib/tailwind";
 import { useServicesQuery } from "@/src/redux/apiSlices/userProvider/homeSlices";
 
@@ -6,7 +7,6 @@ import { BlurView } from "@react-native-community/blur";
 import { router } from "expo-router";
 import React from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Image,
   Platform,
@@ -17,19 +17,17 @@ import {
 } from "react-native";
 
 const services = () => {
-  const { data: getServicesData, isLoading } = useServicesQuery({});
-  if (isLoading) {
-    return (
-      <SafeAreaView
-        style={tw`flex-1 bg-base_color justify-center items-center`}
-      >
-        <ActivityIndicator size="large" color="#fff" />
-        <Text style={tw`text-white mt-3 text-lg font-DegularDisplayDemoMedium`}>
-          Loading services...
-        </Text>
-      </SafeAreaView>
-    );
+  // ------------------ api end point ------------------
+  const {
+    data: getServicesData,
+    isLoading: servicesLoading,
+    error,
+  } = useServicesQuery();
+
+  if (servicesLoading) {
+    return <ServicePageSkeleton />;
   }
+
   const serviceItemRender = ({ item }: any) => {
     return (
       <View
@@ -63,7 +61,7 @@ const services = () => {
             onPress={() =>
               router.push({
                 pathname: "/company/serviceNearbyHistory",
-                params: { id: item?.id },
+                params: { service_id: item?.id },
               })
             }
             style={tw`flex-1 justify-center items-center`}
