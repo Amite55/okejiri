@@ -96,7 +96,7 @@ const ServiceDetails = () => {
 
   // -------------- sum price of add to cart ------------
   const cartReducePrice = getAddToCartItem?.data.reduce(
-    (total: number, item) => total + Number(item?.package?.price || 0),
+    (total: number, item: any) => total + Number(item?.package?.price || 0),
     0
   );
   // --------------------------- add to cart function delete and add this same function use for add to cart   ----------------
@@ -150,7 +150,7 @@ const ServiceDetails = () => {
   }, []);
 
   //  ----------- portfolio item render ----------------------------------
-  const RenderPortfolioRenderItem = ({ item }) => {
+  const RenderPortfolioRenderItem = ({ item }: any) => {
     return (
       <View>
         <Image
@@ -165,6 +165,20 @@ const ServiceDetails = () => {
   if (packageDetailingLoading) {
     return <PackageDetailsSkeleton />;
   }
+
+  // ================== handle booking ==================
+  const handleBooking = () => {
+    try {
+      console.log("booking book");
+    } catch (error) {
+      // console.log(error, "Booking fail -------->");
+      router.push("/company/serviceBookings/serviceBooking");
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
+      });
+    }
+  };
 
   return (
     <View style={tw`flex-1 bg-base_color `}>
@@ -224,7 +238,7 @@ const ServiceDetails = () => {
           {packageDetails?.data?.package_details?.package_detail_items?.length >
           0
             ? packageDetails?.data?.package_details?.package_detail_items.map(
-                (item) => {
+                (item: any) => {
                   return (
                     <View
                       key={item?.id}
@@ -404,7 +418,7 @@ const ServiceDetails = () => {
             </Text>
           ) : (
             packageDetails?.data?.more_services_from_this_provider?.map(
-              (item) => {
+              (item: any) => {
                 return (
                   <Pressable
                     key={item?.id}
@@ -546,7 +560,8 @@ const ServiceDetails = () => {
               </View>
               <TouchableOpacity
                 onPress={() =>
-                  router.push("/company/serviceBookings/serviceBooking")
+                  // router.push("/company/serviceBookings/serviceBooking")
+                  handleBooking()
                 }
                 style={tw`w-28 h-12 justify-center items-center bg-primary rounded-lg`}
               >
@@ -630,7 +645,7 @@ const ServiceDetails = () => {
               </View>
 
               <View style={tw`p-4 gap-2`}>
-                {itemDetails?.package_detail_items?.map((item) => (
+                {itemDetails?.package_detail_items?.map((item: any) => (
                   <View key={item?.id} style={tw`flex-row items-center gap-2`}>
                     <View style={tw`w-1.5 h-1.5 bg-black rounded-full`} />
                     <Text
