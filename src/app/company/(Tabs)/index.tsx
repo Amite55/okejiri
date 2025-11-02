@@ -66,7 +66,7 @@ const Company_Home_Index = () => {
             onPress={() =>
               router.push({
                 pathname: "/company/serviceNearbyHistory",
-                params: { categoryService: "true" },
+                params: { categoryService: "true", service_id: item?.id },
               })
             }
             style={[tw`flex-1 justify-center items-center `]}

@@ -1,15 +1,31 @@
 import ServiceCard from "@/src/Components/ServiceCard";
+import ServiceCardSkeleton from "@/src/Components/skeletons/ServiceCardSkeleton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { usePackagesByServiceIdQuery } from "@/src/redux/apiSlices/userProvider/servicesSlices";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { FlatList } from "react-native";
+import { FlatList, Text, View } from "react-native";
 
 const ServiceNearbyHistory = () => {
-  const { categoryService, id } = useLocalSearchParams();
+  const { categoryService, service_id } = useLocalSearchParams();
+
+  // ------------------ api end point ------------------
   const { data: PackagesByServiceData, isLoading } =
-    usePackagesByServiceIdQuery(Number(1));
+    usePackagesByServiceIdQuery(Number(service_id));
+
+  // ------------------ loading skeleton ------------------
+  if (isLoading) {
+    return <ServiceCardSkeleton />;
+  }
+  // =================== no data found ==================
+  if (PackagesByServiceData?.data?.packages?.length === 0) {
+    return (
+      <View style={tw`flex-1 items-center justify-center`}>
+        <Text style={tw`text-lg text-primary`}>No data found</Text>
+      </View>
+    );
+  }
 
   return (
     <FlatList
@@ -18,7 +34,12 @@ const ServiceNearbyHistory = () => {
         <ServiceCard
           item={item}
           index={index}
-          onPress={() => router.push("/company/serviceDetails")}
+          onPress={() =>
+            router.push({
+              pathname: "/company/serviceDetails",
+              params: { service_id: item?.id },
+            })
+          }
         />
       )}
       ListHeaderComponent={() => (
