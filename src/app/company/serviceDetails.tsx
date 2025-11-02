@@ -10,6 +10,7 @@ import {
   IconTick,
   IconWhishListSelected,
 } from "@/assets/icons";
+import ReviewerCard from "@/src/Components/ReviewerCard";
 import ServiceCard from "@/src/Components/ServiceCard";
 import PackageDetailsSkeleton from "@/src/Components/skeletons/PackageDetailsSkeleton";
 import tw from "@/src/lib/tailwind";
@@ -43,7 +44,6 @@ import { SvgXml } from "react-native-svg";
 const ServiceDetails = () => {
   const { service_id } = useLocalSearchParams();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [addWishlist, setAddWishList] = useState<boolean>(false);
   const [itemDetails, setItemDetails] = useState<any>({});
   const [addToCartState, setAddToCartState] = useState([]);
   const [loadingState, setLoadingState] = useState<number | null>(null);
@@ -69,11 +69,9 @@ const ServiceDetails = () => {
     (favorite: { package_id: number }) =>
       favorite.package_id === Number(packageDetails?.data?.package_details?.id)
   );
-
   // ================= handle favorite ==================
   const handleFavorite = async (packageId: number) => {
     try {
-      console.log(packageId, "hare is package id ------>");
       if (checkFavorite) {
         const response = await deleteFavorite(packageId).unwrap();
         if (response) {
@@ -83,7 +81,7 @@ const ServiceDetails = () => {
           });
         }
       } else {
-        const response = await addFavorite(packageId).unwrap();
+        const response = await addFavorite({ package_id: packageId }).unwrap();
         if (response) {
           router.push({
             pathname: `/Toaster`,
@@ -98,7 +96,7 @@ const ServiceDetails = () => {
 
   // -------------- sum price of add to cart ------------
   const cartReducePrice = getAddToCartItem?.data.reduce(
-    (total: number, item) => total + Number(item?.package?.price || 0),
+    (total: number, item: any) => total + Number(item?.package?.price || 0),
     0
   );
   // --------------------------- add to cart function delete and add this same function use for add to cart   ----------------
@@ -151,48 +149,8 @@ const ServiceDetails = () => {
     readFunc();
   }, []);
 
-  //  ranking profile item render  -------------------------------
-  const RenderRankingItem = ({ item }) => {
-    return (
-      <View style={tw`bg-white shadow-md w-80 h-72 rounded-2xl p-4`}>
-        <View style={tw`flex-row items-center gap-3`}>
-          <Image
-            contentFit="contain"
-            style={tw`w-16 h-16 rounded-full `}
-            source={item?.user?.avatar}
-          />
-          <View>
-            <Text
-              style={tw`font-DegularDisplayDemoSemibold text-lg text-black`}
-            >
-              {item?.user?.name}
-            </Text>
-            {/* rating */}
-            <View style={tw`flex-row items-center gap-1`}>
-              <View style={tw`flex-row items-center gap-2`}>
-                <SvgXml xml={IconStar} />
-              </View>
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-              >
-                ({item?.rating})
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={tw`mt-2 gap-2`}>
-          <Text style={tw`font-DegularDisplayDemoRegular text-base text-black`}>
-            {item?.review?.length > 190
-              ? `${item?.review?.slice(0, 190)}...`
-              : item?.review}
-          </Text>
-        </View>
-      </View>
-    );
-  };
-
   //  ----------- portfolio item render ----------------------------------
-  const RenderPortfolioRenderItem = ({ item }) => {
+  const RenderPortfolioRenderItem = ({ item }: any) => {
     return (
       <View>
         <Image
@@ -207,6 +165,20 @@ const ServiceDetails = () => {
   if (packageDetailingLoading) {
     return <PackageDetailsSkeleton />;
   }
+
+  // ================== handle booking ==================
+  const handleBooking = () => {
+    try {
+      console.log("booking book");
+    } catch (error) {
+      // console.log(error, "Booking fail -------->");
+      router.push("/company/serviceBookings/serviceBooking");
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
+      });
+    }
+  };
 
   return (
     <View style={tw`flex-1 bg-base_color `}>
@@ -266,7 +238,7 @@ const ServiceDetails = () => {
           {packageDetails?.data?.package_details?.package_detail_items?.length >
           0
             ? packageDetails?.data?.package_details?.package_detail_items.map(
-                (item) => {
+                (item: any) => {
                   return (
                     <View
                       key={item?.id}
@@ -333,7 +305,15 @@ const ServiceDetails = () => {
         <View style={tw`flex-row flex-1 pb-3`}>
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => router.push("/company/provider_profile")}
+            onPress={() =>
+              router.push({
+                pathname: "/company/provider_profile",
+                params: {
+                  provider_id:
+                    packageDetails?.data?.package_details?.provider_id,
+                },
+              })
+            }
             style={tw`flex-1 flex-row items-center gap-3`}
           >
             <Image
@@ -348,7 +328,10 @@ const ServiceDetails = () => {
                 >
                   {packageDetails?.data?.package_details?.provider?.name}
                 </Text>
-                <SvgXml width={15} height={15} xml={IconProfileBadge} />
+                {packageDetails?.data?.package_details?.provider?.kyc_status ===
+                  "Verified" && (
+                  <SvgXml width={15} height={15} xml={IconProfileBadge} />
+                )}
               </View>
               <View style={tw`flex-row items-center gap-1`}>
                 <Text
@@ -391,7 +374,7 @@ const ServiceDetails = () => {
         {/* ============================== review profile =================================  */}
         <FlatList
           data={packageDetails?.data?.reviews}
-          renderItem={RenderRankingItem}
+          renderItem={(item) => <ReviewerCard item={item} />}
           keyExtractor={(item, index) => item?.id.toString()}
           contentContainerStyle={tw`py-2 px-2 gap-3 `}
           horizontal={true}
@@ -435,7 +418,7 @@ const ServiceDetails = () => {
             </Text>
           ) : (
             packageDetails?.data?.more_services_from_this_provider?.map(
-              (item) => {
+              (item: any) => {
                 return (
                   <Pressable
                     key={item?.id}
@@ -577,7 +560,8 @@ const ServiceDetails = () => {
               </View>
               <TouchableOpacity
                 onPress={() =>
-                  router.push("/company/serviceBookings/serviceBooking")
+                  // router.push("/company/serviceBookings/serviceBooking")
+                  handleBooking()
                 }
                 style={tw`w-28 h-12 justify-center items-center bg-primary rounded-lg`}
               >
@@ -661,7 +645,7 @@ const ServiceDetails = () => {
               </View>
 
               <View style={tw`p-4 gap-2`}>
-                {itemDetails?.package_detail_items?.map((item) => (
+                {itemDetails?.package_detail_items?.map((item: any) => (
                   <View key={item?.id} style={tw`flex-row items-center gap-2`}>
                     <View style={tw`w-1.5 h-1.5 bg-black rounded-full`} />
                     <Text

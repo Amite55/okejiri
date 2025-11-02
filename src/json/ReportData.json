@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "reportName": "Sexual content"
+  },
+  {
+    "id": 2,
+    "reportName": "Violent or repulsive content"
+  },
+  {
+    "id": 3,
+    "reportName": "Hateful or abusive content"
+  },
+  {
+    "id": 5,
+    "reportName": "Harmful or dangerous acts"
+  },
+  {
+    "id": 15,
+    "reportName": "Harassment or bullying.."
+  },
+  {
+    "id": 6,
+    "reportName": "Misinformation"
+  },
+  {
+    "id": 7,
+    "reportName": "Child abuse"
+  },
+  {
+    "id": 8,
+    "reportName": "Promotes terrorism"
+  },
+  {
+    "id": 9,
+    "reportName": "Spam or misleading"
+  },
+  {
+    "id": 11,
+    "reportName": "Legal issue"
+  },
+  {
+    "id": 12,
+    "reportName": "Captions issue"
+  }
+]
