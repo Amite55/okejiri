@@ -2,10 +2,12 @@ import { IconRightArrow } from "@/assets/icons";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import React, { useEffect } from "react";
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -16,14 +18,34 @@ import {
   View,
 } from "react-native";
 
+interface BillingDetailsProps {
+  address: string;
+  contactNumber: any;
+  email: string;
+  name: string;
+}
+
 const BillingDetails = () => {
   const { bookingDetails } = useLocalSearchParams();
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
-  console.log(bookingDetails, "this is booking details ------------->");
+  const perseBookingDetails = JSON.parse(bookingDetails as any);
 
-  const handleSubmit = (values) => {
+  // ------------------ api end point ----------------------
+  const { data: userProfileInfo, isLoading, error } = useProfileQuery({});
+
+  const handleSubmit = (values: BillingDetailsProps) => {
     try {
-      console.log(values, "this is values ------------->");
+      const billingDetails = {
+        ...perseBookingDetails,
+        billing_name: values.name,
+        billing_email: values.email,
+        billing_contact: values.contactNumber,
+        billing_address: values.address,
+      };
+      router.push({
+        pathname: "/company/serviceBookings/booking_confirmation",
+        params: { bookingInfoDetails: JSON.stringify(billingDetails) },
+      });
     } catch (error) {
       console.log(error, "this is error ------------>");
     }
@@ -62,6 +84,13 @@ const BillingDetails = () => {
       hide.remove();
     };
   }, []);
+  // ============ loading state ==================
+  if (isLoading)
+    return (
+      <View style={tw`flex-1 bg-base_color justify-center items-center`}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
 
   return (
     <KeyboardAvoidingView
@@ -87,11 +116,10 @@ const BillingDetails = () => {
             />
             <Formik
               initialValues={{
-                name: "",
-                email: "",
-                contactNumber: "",
-                address:
-                  "Rampura, Banasree, Block D, Road 8, House 8, Dhaka, Bangladesh.",
+                name: userProfileInfo?.data?.name || "",
+                email: userProfileInfo?.data?.email || "",
+                contactNumber: userProfileInfo?.data?.phone || "",
+                address: userProfileInfo?.data?.address || "" || "",
               }}
               onSubmit={(values) => {
                 handleSubmit(values);
@@ -126,6 +154,7 @@ const BillingDetails = () => {
                             value={values.name}
                             placeholder="Jone Doe"
                             placeholderTextColor={"#535353"}
+                            style={tw`text-black font-DegularDisplayDemoMedium text-base`}
                           />
                         </View>
                         {touched.name && errors.name && (
@@ -151,6 +180,7 @@ const BillingDetails = () => {
                             value={values.email}
                             placeholder="example@gmail.com"
                             placeholderTextColor={"#535353"}
+                            style={tw`text-black font-DegularDisplayDemoMedium text-base`}
                           />
                         </View>
                         {touched.email && errors.email && (
@@ -176,6 +206,7 @@ const BillingDetails = () => {
                             value={values.contactNumber}
                             placeholder="+2156985632"
                             placeholderTextColor={"#535353"}
+                            style={tw`text-black font-DegularDisplayDemoMedium text-base`}
                           />
                         </View>
                         {touched.contactNumber && errors.contactNumber && (
@@ -208,7 +239,7 @@ const BillingDetails = () => {
                         textAlign="left"
                         multiline={true}
                         numberOfLines={3}
-                        style={tw`text-black rounded-xl `}
+                        style={tw`text-black font-DegularDisplayDemoMedium text-base `}
                         placeholderTextColor={"#535353"}
                       />
                     </View>
@@ -221,9 +252,6 @@ const BillingDetails = () => {
 
                   {/* ------------------------ next button ------------------ */}
                   <PrimaryButton
-                    // onPress={() =>
-                    //   router.push("/company/serviceBookings/booking_confirmation")
-                    // }
                     onPress={() => handleSubmit()}
                     titleProps="Next  2/4"
                     IconProps={IconRightArrow}
