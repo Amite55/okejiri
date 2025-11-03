@@ -13,7 +13,7 @@ import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { _HEIGHT } from "@/utils/utils";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
@@ -28,6 +28,7 @@ import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const Booking_Confirmation = () => {
+  const { bookingInfoDetails } = useLocalSearchParams();
   const [editInfoModalVisible, setEditInfoModalVisible] =
     useState<boolean>(false);
   return (
