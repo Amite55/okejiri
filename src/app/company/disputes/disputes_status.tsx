@@ -1,17 +1,39 @@
-import { IconDeleteWhite, IconProfileBadge } from "@/assets/icons";
+import { IconDelete, IconDeleteWhite, IconProfileBadge } from "@/assets/icons";
 import { ImgProfileImg } from "@/assets/images/image";
+import DeleteModal from "@/src/Components/deleteModal";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useDisputeDetailsQuery } from "@/src/redux/apiSlices/userProvider/account/myDisputesSlices";
+import {
+  useDisputeDeleteMutation,
+  useDisputeDetailsQuery,
+} from "@/src/redux/apiSlices/userProvider/account/myDisputesSlices";
 import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
-import { Image, ScrollView, Text, View } from "react-native";
+import React, { useState } from "react";
+import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Disputes_Status = () => {
   const { id } = useLocalSearchParams();
-  const {} = useDisputeDetailsQuery({ id });
+  const { data: DisputeDetails, isLoading } = useDisputeDetailsQuery(id);
+  const [disputeDelete] = useDisputeDeleteMutation();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  if (isLoading) {
+    return (
+      <View style={tw`flex-1 justify-center items-center bg-white`}>
+        <ActivityIndicator size="large" color="#" />
+        <Text style={tw`text-gray-600 text-base mt-3 font-poppins`}>
+          Loading dispute details...
+        </Text>
+      </View>
+    );
+  }
+  console.log("DisputeDetails", DisputeDetails, "DisputeDetails");
+  const handelDeleted = async () => {
+    const res = await disputeDelete(id).unwrap();
+    // console.log(res);
+  };
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -32,7 +54,7 @@ const Disputes_Status = () => {
           >
             <View style={tw`w-2 h-2 rounded-full bg-white`} />
             <Text style={tw`font-DegularDisplayDemoMedium text-xl text-white`}>
-              Pending
+              {DisputeDetails?.data?.status}
             </Text>
           </View>
         </View>
@@ -41,12 +63,12 @@ const Disputes_Status = () => {
           <Text
             style={tw`font-DegularDisplayDemoMedium text-2xl text-redWhite mb-2`}
           >
-            Provider
+            {DisputeDetails?.data.raised_by_role}
           </Text>
           <View style={tw`flex-row items-center gap-1 mb-5`}>
             <Image style={tw`w-12 h-12 rounded-full `} source={ImgProfileImg} />
             <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-              Profile Name
+              {DisputeDetails?.data?.opposite_party?.name}
             </Text>
             <SvgXml xml={IconProfileBadge} />
           </View>
@@ -54,7 +76,7 @@ const Disputes_Status = () => {
           <Text
             style={tw`font-DegularDisplayDemoMedium text-2xl text-redWhite mb-1`}
           >
-            Reason
+            {DisputeDetails?.data?.reason}
           </Text>
           <Text
             style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
@@ -70,24 +92,26 @@ const Disputes_Status = () => {
           <Text
             style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
           >
-            Lorem ipsum dolor sit amet consectetur. Id in tempor varius arcu
-            aliquet habitasse tristique vitae sapien. Tincidunt purus morbi
-            nascetur id. Aliquam risus magna eu diam aliquam faucibus duis.
-            Vitae eu consectetur urna eget. Habitant at gravida cras eu gravida
-            mauris pellentesque. Nunc rutrum nunc augue vitae dapibus hendrerit.
-            In at id amet odio dui elit a. Integer ultrices ac ut eu non
-            suspendisse ac aenean tristique. Amet at tempor sed neque sem
-            egestas in.
+            {DisputeDetails?.data?.details}
           </Text>
         </View>
       </View>
-
       {/*  ------------- next button -------------------- */}
       <PrimaryButton
-        onPress={() => router.push("/company/(Tabs)")}
+        onPress={() => setModalVisible(true)}
         titleProps="Delete dispute"
         IconProps={IconDeleteWhite}
         contentStyle={tw`mt-4 bg-redDeep`}
+      />
+      <DeleteModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        deleteIcon={IconDelete}
+        buttonTitle="Yes, Log out"
+        modalTitle="Are you sure you want to delete this dispute?"
+        onPress={() => {
+          handelDeleted();
+        }}
       />
     </ScrollView>
   );

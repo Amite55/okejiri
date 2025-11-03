@@ -371,6 +371,11 @@ export const IconDeleteWhite = `<svg width="15" height="18" viewBox="0 0 15 18" 
 </svg>
 
 `;
+export const IconDelete = `<svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21.08 0L0 21.08V50.92L21.08 72H50.92L72 50.92V21.08L50.92 0M21.64 16L36 30.36L50.36 16L56 21.64L41.64 36L56 50.36L50.36 56L36 41.64L21.64 56L16 50.36L30.36 36L16 21.64" fill="#FF4D4D"/>
+</svg>
+
+`;
 export const IconEditPenBlack = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M19.675 4.49104C20.1083 4.05777 20.1083 3.33565 19.675 2.92459L17.0754 0.324955C16.6644 -0.108318 15.9422 -0.108318 15.509 0.324955L13.4648 2.35801L17.6309 6.52409M0 15.8339V20H4.16609L16.4533 7.70171L12.2872 3.53562L0 15.8339Z" fill="black"/>
 </svg>
