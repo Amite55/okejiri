@@ -64,7 +64,6 @@ const ServiceBooking = () => {
           : selectedTime,
       }),
     };
-    console.log(bookingDetails, "this is booking details ---------------->");
 
     // ========== navigate to next route ============== with come to edit check
     if (cameFromEdit) {

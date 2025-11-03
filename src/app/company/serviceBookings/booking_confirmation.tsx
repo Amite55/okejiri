@@ -1,36 +1,34 @@
 import {
   IconCardProfile,
-  IconCross,
   IconEditPen,
   IconLocation,
   IconMailYellow,
   IconPhoneYellow,
-  IconPlusYellow,
   IconRightArrow,
 } from "@/assets/icons";
 import { ImgProfileImg } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { _HEIGHT } from "@/utils/utils";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
   Image,
-  Modal,
   Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const Booking_Confirmation = () => {
   const { bookingInfoDetails } = useLocalSearchParams();
-  const [editInfoModalVisible, setEditInfoModalVisible] =
-    useState<boolean>(false);
+  const perseBookingInfoDetails = JSON.parse(bookingInfoDetails as any);
+  console.log(perseBookingInfoDetails, "this ----------->");
+
+  // ====================== api end point ==================================
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -46,7 +44,6 @@ const Booking_Confirmation = () => {
         />
 
         {/*  ---------- single item  ------------  */}
-
         <Pressable
           //   onPress={() => router.push("/company/serviceDetails")}
           style={tw`flex-row justify-between items-center rounded-xl bg-white mt-2 p-1.5`}
@@ -89,24 +86,16 @@ const Booking_Confirmation = () => {
           </View>
         </Pressable>
 
-        <View style={tw`flex-row items-center justify-end my-4`}>
-          <Text
-            style={tw`font-DegularDisplayDemoRegular text-xl text-secondary `}
-          >
-            See package details
-          </Text>
-        </View>
-
         {/* ============== personal info ---------------------------------------- */}
 
-        <View style={tw`bg-white rounded-2xl px-7 py-5`}>
+        <View style={tw`bg-white rounded-2xl px-7 py-5 mt-6`}>
           <View style={tw`flex-row justify-between items-center`}>
             <Text
               style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}
             >
               Personal details
             </Text>
-            <TouchableOpacity onPress={() => setEditInfoModalVisible(true)}>
+            <TouchableOpacity onPress={() => router.back()}>
               <SvgXml xml={IconEditPen} />
             </TouchableOpacity>
           </View>
@@ -115,25 +104,25 @@ const Booking_Confirmation = () => {
             <View style={tw`flex-row items-center gap-3`}>
               <SvgXml xml={IconCardProfile} />
               <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-                Madhob Mozumder
+                {perseBookingInfoDetails?.billing_name}
               </Text>
             </View>
             <View style={tw`flex-row items-center gap-3`}>
               <SvgXml xml={IconMailYellow} />
               <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-                example@gmail.com
+                {perseBookingInfoDetails?.billing_email}
               </Text>
             </View>
             <View style={tw`flex-row items-center gap-3`}>
               <SvgXml xml={IconPhoneYellow} />
               <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-                +65982365458
+                {perseBookingInfoDetails?.billing_contact}
               </Text>
             </View>
             <View style={tw`flex-row items-center gap-3`}>
               <SvgXml xml={IconLocation} />
               <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-                Location 1
+                {perseBookingInfoDetails?.billing_address}
               </Text>
             </View>
           </View>
@@ -152,7 +141,9 @@ const Booking_Confirmation = () => {
               onPress={() =>
                 router.push({
                   pathname: "/company/serviceBookings/serviceBooking",
-                  params: { cameFromEdit: "true" },
+                  params: {
+                    cameFromEditData: JSON.stringify(perseBookingInfoDetails),
+                  },
                 })
               }
             >
@@ -165,10 +156,10 @@ const Booking_Confirmation = () => {
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
               >
-                Time selection:
+                Booking Process:
               </Text>
               <Text style={tw`font-DegularDisplayDemoLight text-xl `}>
-                Scheduled
+                {perseBookingInfoDetails?.booking_process}
               </Text>
             </View>
             <View style={tw`flex-row justify-between`}>
@@ -178,7 +169,7 @@ const Booking_Confirmation = () => {
                 Booking Type:
               </Text>
               <Text style={tw`font-DegularDisplayDemoLight text-xl `}>
-                Scheduled
+                {perseBookingInfoDetails?.booking_type}
               </Text>
             </View>
             <View style={tw`flex-row justify-between`}>
@@ -188,7 +179,7 @@ const Booking_Confirmation = () => {
                 Date:
               </Text>
               <Text style={tw`font-DegularDisplayDemoLight text-xl `}>
-                05-02-2025
+                {perseBookingInfoDetails?.schedule_date}
               </Text>
             </View>
             <View style={tw`flex-row justify-between`}>
@@ -198,21 +189,11 @@ const Booking_Confirmation = () => {
                 Time slot:
               </Text>
               <Text style={tw`font-DegularDisplayDemoLight text-xl `}>
-                02:00 PM - 04:00 PM
+                {perseBookingInfoDetails?.schedule_time_slot}
               </Text>
             </View>
           </View>
         </View>
-
-        <TouchableOpacity
-          onPress={() => router.push("/company/(Tabs)/services")}
-          style={tw`flex-row justify-end items-center gap-2 mt-6`}
-        >
-          <SvgXml xml={IconPlusYellow} />
-          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-primary`}>
-            Add more service
-          </Text>
-        </TouchableOpacity>
       </View>
       {/*  ------------- next button -------------------- */}
       <PrimaryButton
@@ -221,118 +202,6 @@ const Booking_Confirmation = () => {
         IconProps={IconRightArrow}
         contentStyle={tw`mt-4`}
       />
-
-      {/* =================== edit user info  details modal ===================== */}
-      <Modal
-        animationType="slide"
-        transparent
-        onRequestClose={() => {
-          setEditInfoModalVisible(!editInfoModalVisible);
-        }}
-        visible={editInfoModalVisible}
-        onDismiss={() => setEditInfoModalVisible(false)}
-      >
-        <Pressable
-          onPress={() => {
-            setEditInfoModalVisible(false);
-          }}
-          style={[
-            {
-              height: _HEIGHT,
-            },
-            tw`justify-end items-end bg-black bg-opacity-15  `,
-          ]}
-        >
-          <Pressable
-            style={[
-              {
-                height: _HEIGHT * 0.65,
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 10,
-              },
-              tw`bg-gray-50 `,
-            ]}
-          >
-            <View
-              style={[
-                tw`w-full flex-row justify-between items-center h-14  bg-primary px-4`,
-                { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
-              ]}
-            >
-              <Text></Text>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
-              >
-                Service details
-              </Text>
-              <TouchableOpacity
-                onPress={() => setEditInfoModalVisible(false)}
-                style={tw`border-2 border-white bg-white rounded-full shadow-lg`}
-              >
-                <SvgXml xml={IconCross} />
-              </TouchableOpacity>
-            </View>
-            <ScrollView
-              keyboardShouldPersistTaps="always"
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={tw`pb-20 px-5 flex-grow justify-between `}
-            >
-              <View style={tw`my-4 gap-3`}>
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-base text-black ml-2`}
-                  >
-                    Name
-                  </Text>
-                  <TextInput
-                    defaultValue="Jon doe"
-                    style={tw`border border-gray-300 h-12 rounded-full px-4`}
-                  />
-                </View>
-
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-base text-black ml-2`}
-                  >
-                    Email
-                  </Text>
-                  <TextInput
-                    defaultValue="example@gmail.com"
-                    keyboardType="email-address"
-                    style={tw`border border-gray-300 h-12 rounded-full px-4`}
-                  />
-                </View>
-
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-base text-black ml-2`}
-                  >
-                    Contact Number
-                  </Text>
-                  <TextInput
-                    defaultValue="+2156985632"
-                    style={tw`border border-gray-300 h-12 rounded-full px-4`}
-                  />
-                </View>
-
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-base text-black ml-2`}
-                  >
-                    Location
-                  </Text>
-                  <TextInput
-                    defaultValue="Location"
-                    style={tw`border border-gray-300 h-12 rounded-full px-4`}
-                  />
-                </View>
-              </View>
-
-              <PrimaryButton titleProps="Save" />
-            </ScrollView>
-          </Pressable>
-        </Pressable>
-      </Modal>
     </ScrollView>
   );
 };
