@@ -96,6 +96,8 @@ const LoginIndex = () => {
     }
     if (!values.password) {
       errors.password = "Password is required";
+    } else if (values.password && values.password.length < 8) {
+      errors.password = "Password must be at least 8 characters";
     }
     return errors;
   };
@@ -260,7 +262,7 @@ const LoginIndex = () => {
           </Formik>
           <View style={tw`justify-end items-center my-2`}>
             <Text style={tw` text-sm font-DegularDisplayDemoRegular`}>
-              Don’t have an account?{" "}
+              Don’t have an account?
               <Link
                 style={tw`text-primary font-bold underline`}
                 href={"/auth/singUp"}
