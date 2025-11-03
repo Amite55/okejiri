@@ -49,7 +49,7 @@ const BillingDetails = () => {
     return errors;
   };
 
-  // --------------------- dynamic keyboard avoiding view -------------------
+  // --------------------- dynamic keyboard avoiding view useEffect -------------------
   useEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
       setKeyboardVisible(true)
