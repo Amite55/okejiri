@@ -16,7 +16,7 @@ const bookings = () => {
       style={tw`flex-1 bg-base_color px-5 `}
       contentContainerStyle={tw`pb-28`}
     >
-      {/* ================== profile header component =========== */}
+      {/* ============= profile header component =========== */}
       <ServiceProfileHeaderInfo
         onPress={() => router.push("/company/(Tabs)/profile")}
         onPressNotification={() =>
@@ -28,7 +28,7 @@ const bookings = () => {
         My Bookings
       </Text>
       <View style={tw`gap-3`}>
-        {/* --------------------------------- My Bookings item ------------------------ */}
+        {/* --------------------------- My Bookings item ------------------------ */}
 
         {CleaningData?.length === 0 ? (
           <Text

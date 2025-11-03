@@ -37,13 +37,7 @@ const My_Disputes = () => {
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
       const currentPage = responseData?.current_page || 1;
-      const lastPage = responseData?.last_page || currentPage; // যদি last_page না থাকে
-
-      // 🧠 Debug log
-      console.log("✅ Pagination Info:");
-      console.log("Current Page:", currentPage);
-      console.log("Loaded Data Count:", newData.length);
-      console.log("Total Pages (if available):", lastPage);
+      const lastPage = responseData?.last_page || currentPage;
 
       if (isRefresh) {
         setDisputes(newData);
@@ -94,7 +88,12 @@ const My_Disputes = () => {
 
     return (
       <TouchableOpacity
-        onPress={() => router.push("/company/disputes/disputes_status")}
+        onPress={() =>
+          router.push({
+            pathname: "/company/disputes/disputes_status",
+            params: { id: item.id },
+          })
+        }
         style={[
           tw`  h-28 px-4 py-2 rounded-3xl w-full bg-white border-b border-red-400`,
         ]}
