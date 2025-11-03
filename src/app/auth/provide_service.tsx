@@ -9,10 +9,8 @@ import AuthComponents from "@/src/Components/AuthComponents";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import {
-  useCompletePersonalizationMutation,
-  useGetServicesQuery,
-} from "@/src/redux/apiSlices/personalizationSlice";
+import { useCompletePersonalizationMutation } from "@/src/redux/apiSlices/personalizationSlice";
+import { useServicesQuery } from "@/src/redux/apiSlices/userProvider/homeSlices";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -29,15 +27,6 @@ import {
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
 
-// ------------------ static dropdown value -----------------
-const dropdownData = [
-  { label: "Cleaning", value: "1" },
-  { label: "Barbing", value: "2" },
-  { label: "Cooking", value: "3" },
-  { label: "Plumbing", value: "4" },
-  { label: "Designing", value: "5" },
-];
-
 const Provide_Service = () => {
   const { jsonContactInfo } = useLocalSearchParams();
   const contactInfo = JSON.parse(jsonContactInfo as any);
@@ -50,7 +39,7 @@ const Provide_Service = () => {
   // -------------------- api end point ---------------------
   const [information, { isLoading: isLoadingPersonalization }] =
     useCompletePersonalizationMutation();
-  const { data: getServiceData } = useGetServicesQuery({});
+  const { data: getServiceData } = useServicesQuery({});
   console.log(value, "this is get service ");
 
   const handleScreenInfo = async () => {
