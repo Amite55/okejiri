@@ -17,8 +17,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Calendar } from "react-native-calendars";
 import { SvgXml } from "react-native-svg";
-
+// ========================= booking time slot data =========================
 const bookingTimeData = [
   {
     id: 1,
@@ -39,17 +40,40 @@ const bookingTimeData = [
 ];
 
 const ServiceBooking = () => {
-  const { cameFromEdit } = useLocalSearchParams();
-  const [isBookingSchedule, setIsBookingSchedule] = useState<boolean>(false);
-  const [isGroup, setIsGroup] = useState<boolean>(false);
-
-  const [selectedTime, setSelectedTime] = useState<number>(0);
+  const { cameFromEdit, provider_id, cost } = useLocalSearchParams();
+  const [isBookingSchedule, setIsBookingSchedule] =
+    useState<string>("Instant booking");
+  const [isGroup, setIsGroup] = useState<string>("Single");
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(0);
+  const [numberOfPeople, setNumberOfPeople] = useState<number>(2);
+  const today = new Date().toISOString().split("T")[0];
 
   const handleNextRoute = () => {
+    const bookingDetails = {
+      provider_id: provider_id,
+      booking_process: isBookingSchedule,
+      booking_type: isGroup,
+      price: cost,
+      ...(isGroup === "Group" && { number_of_people: numberOfPeople }),
+      ...(isBookingSchedule === "Schedule booking" && {
+        schedule_date: !selectedDate ? today : selectedDate,
+        schedule_time_slot: !selectedTime
+          ? bookingTimeData[0].time
+          : selectedTime,
+      }),
+    };
+    console.log(bookingDetails, "this is booking details ---------------->");
+
+    // ========== navigate to next route ============== with come to edit check
     if (cameFromEdit) {
       router.push("/company/serviceBookings/booking_confirmation");
     } else {
-      router.push("/company/serviceBookings/billing_details");
+      router.push({
+        pathname: "/company/serviceBookings/billing_details",
+        params: { bookingDetails: JSON.stringify(bookingDetails) },
+      });
     }
   };
 
@@ -69,17 +93,22 @@ const ServiceBooking = () => {
 
         <View style={tw`flex-row justify-between items-center gap-4 my-5`}>
           <TouchableOpacity
-            onPress={() => setIsBookingSchedule(false)}
+            activeOpacity={0.8}
+            onPress={() => setIsBookingSchedule("Instant booking")}
             style={[
               tw`border  rounded-2xl h-12 flex-1 justify-center items-center font-DegularDisplayDemoRegular text-xl ${
-                !isBookingSchedule ? `bg-primary border-0` : `border-white200 `
+                isBookingSchedule === "Instant booking"
+                  ? `bg-primary border-0`
+                  : `border-white200 `
               }`,
             ]}
           >
             <Text
               style={[
                 tw`font-DegularDisplayDemoRegular text-xl ${
-                  !isBookingSchedule ? `text-white` : `text-black`
+                  isBookingSchedule === "Instant booking"
+                    ? `text-white`
+                    : `text-black`
                 }`,
               ]}
             >
@@ -88,17 +117,22 @@ const ServiceBooking = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => setIsBookingSchedule(true)}
+            activeOpacity={0.8}
+            onPress={() => setIsBookingSchedule("Schedule booking")}
             style={[
               tw`border  rounded-2xl h-12 flex-1 justify-center items-center font-DegularDisplayDemoRegular text-xl ${
-                isBookingSchedule ? `bg-primary  border-0` : `border-white200 `
+                isBookingSchedule === "Schedule booking"
+                  ? `bg-primary  border-0`
+                  : `border-white200 `
               }`,
             ]}
           >
             <Text
               style={[
                 tw`font-DegularDisplayDemoRegular text-xl ${
-                  isBookingSchedule ? `text-white` : `text-black`
+                  isBookingSchedule === "Schedule booking"
+                    ? `text-white`
+                    : `text-black`
                 }`,
               ]}
             >
@@ -109,7 +143,7 @@ const ServiceBooking = () => {
 
         <View style={tw`border-b border-white200 my-4`} />
 
-        {isGroup ? (
+        {isGroup === "Group" ? (
           <View
             style={tw`justify-center items-center my-2 w-full rounded-full h-12 bg-green50`}
           >
@@ -128,17 +162,20 @@ const ServiceBooking = () => {
         </Text>
         <View style={tw`flex-row items-center gap-5`}>
           <TouchableOpacity
-            onPress={() => setIsGroup(false)}
+            activeOpacity={0.8}
+            onPress={() => setIsGroup("Single")}
             style={[
               tw`border  rounded-2xl h-12 flex-1 justify-center items-center font-DegularDisplayDemoRegular text-xl ${
-                !isGroup ? `bg-primary  border-0` : `border-white200 `
+                isGroup === "Single"
+                  ? `bg-primary  border-0`
+                  : `border-white200 `
               }`,
             ]}
           >
             <Text
               style={[
                 tw`font-DegularDisplayDemoRegular text-xl ${
-                  !isGroup ? `text-white` : `text-black`
+                  isGroup === "Single" ? `text-white` : `text-black`
                 }`,
               ]}
             >
@@ -147,17 +184,20 @@ const ServiceBooking = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => setIsGroup(true)}
+            activeOpacity={0.8}
+            onPress={() => setIsGroup("Group")}
             style={[
               tw`border  rounded-2xl h-12 flex-1 justify-center items-center font-DegularDisplayDemoRegular text-xl ${
-                isGroup ? `bg-primary  border-0` : `border-white200 `
+                isGroup === "Group"
+                  ? `bg-primary  border-0`
+                  : `border-white200 `
               }`,
             ]}
           >
             <Text
               style={[
                 tw`font-DegularDisplayDemoRegular text-xl ${
-                  isGroup ? `text-white` : `text-black`
+                  isGroup === "Group" ? `text-white` : `text-black`
                 }`,
               ]}
             >
@@ -166,7 +206,7 @@ const ServiceBooking = () => {
           </TouchableOpacity>
         </View>
         {/* ------------------------ ------------------------- */}
-        {isBookingSchedule || !isGroup ? (
+        {isBookingSchedule === "Schedule booking" || isGroup === "Single" ? (
           <View
             style={tw`flex-row justify-between items-center bg-white h-14 rounded-2xl px-5 mt-7`}
           >
@@ -178,12 +218,12 @@ const ServiceBooking = () => {
             <Text
               style={tw`font-DegularDisplayDemoMedium  text-2xl text-primary`}
             >
-              ₦10.00
+              ₦ {cost}
             </Text>
           </View>
         ) : null}
 
-        {isGroup ? (
+        {isGroup === "Group" ? (
           <View style={tw`justify-center items-center my-5`}>
             <Text
               style={tw`text-black my-4 text-center font-DegularDisplayDemoMedium text-2xl`}
@@ -192,6 +232,10 @@ const ServiceBooking = () => {
             </Text>
             <View style={tw`flex-row justify-center items-center gap-7 mt-2`}>
               <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() =>
+                  numberOfPeople > 2 && setNumberOfPeople(numberOfPeople - 1)
+                }
                 style={tw`w-16 h-16 rounded-full justify-center items-center bg-white`}
               >
                 <SvgXml xml={IconMinus} />
@@ -199,9 +243,11 @@ const ServiceBooking = () => {
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
               >
-                0
+                {numberOfPeople}
               </Text>
               <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() => setNumberOfPeople(numberOfPeople + 1)}
                 style={tw`w-16 h-16 rounded-full justify-center items-center bg-white`}
               >
                 <SvgXml xml={IconPlusBlack} />
@@ -211,10 +257,12 @@ const ServiceBooking = () => {
         ) : null}
 
         {/* *********************************************************** */}
-        {isBookingSchedule ? (
+        {isBookingSchedule === "Schedule booking" ? (
           <View>
+            {/* ======================= this is date slot ================ */}
             <Pressable
-              style={tw`flex-row justify-between items-center bg-white h-14 rounded-2xl px-5 mt-7 `}
+              disabled
+              style={tw`flex-row  gap-3  items-center  h-14 rounded-2xl  mt-5 `}
             >
               <Text
                 style={tw`font-DegularDisplayDemoMedium  text-2xl text-black`}
@@ -224,6 +272,37 @@ const ServiceBooking = () => {
               <SvgXml xml={IconCalender} />
             </Pressable>
 
+            <Calendar
+              style={tw` p-2 rounded-3xl gap-2 text-black`}
+              theme={{
+                calendarBackground: "#fff",
+                textSectionTitleColor: "#111",
+                selectedDayBackgroundColor: "#183E9F",
+                selectedDayTextColor: "#fff",
+                todayTextColor: "white",
+                todayBackgroundColor: "orange",
+                dayTextColor: "#111",
+                textDisabledColor: "#A4A4A4",
+                arrowColor: "orange",
+                monthTextColor: "#111",
+              }}
+              defa
+              onDayPress={(day) => {
+                setSelectedDate(day.dateString);
+              }}
+              markedDates={{
+                [selectedDate]: {
+                  selected: true,
+                  disableTouchEvent: true,
+                  selectedDotColor: "orange",
+                },
+              }}
+              current={today}
+              minDate={today}
+            />
+
+            {/* ======================== this is time slot ================ */}
+
             <Text
               style={tw`font-DegularDisplayDemoMedium text-xl text-black mt-5 mb-2`}
             >
@@ -232,11 +311,15 @@ const ServiceBooking = () => {
             <View style={tw`flex-row flex-wrap justify-between gap-3`}>
               {bookingTimeData.map((item, index) => (
                 <TouchableOpacity
-                  onPress={() => setSelectedTime(index)}
+                  activeOpacity={0.8}
+                  onPress={() => {
+                    setSelectedTimeIndex(index);
+                    setSelectedTime(item?.time);
+                  }}
                   key={item?.id}
                   style={[
                     tw`w-[48%] h-12 rounded-2xl border border-black200 justify-center items-center ${
-                      selectedTime === index
+                      selectedTimeIndex === index
                         ? "bg-primary border-0"
                         : "bg-transparent"
                     }`,
@@ -244,8 +327,10 @@ const ServiceBooking = () => {
                 >
                   <Text
                     style={[
-                      tw`font-DegularDisplayDemoRegular text-xl ${
-                        selectedTime === index ? "text-white" : "text-black"
+                      tw`font-DegularDisplayDemoRegular text-base ${
+                        selectedTimeIndex === index
+                          ? "text-white"
+                          : "text-black"
                       }`,
                     ]}
                   >
@@ -258,7 +343,7 @@ const ServiceBooking = () => {
         ) : null}
 
         {/* ===================================================================== */}
-        {isBookingSchedule || isGroup ? (
+        {isBookingSchedule === "Schedule booking" || isGroup === "Group" ? (
           <View
             style={tw`flex-row justify-between items-center bg-white h-14 rounded-2xl px-5 mt-4`}
           >

@@ -169,10 +169,15 @@ const ServiceDetails = () => {
   // ================== handle booking ==================
   const handleBooking = () => {
     try {
-      console.log("booking book");
+      router.push({
+        pathname: "/company/serviceBookings/serviceBooking",
+        params: {
+          provider_id: packageDetails?.data?.package_details?.provider_id,
+          cost: cartReducePrice?.toFixed(2),
+        },
+      });
     } catch (error) {
-      // console.log(error, "Booking fail -------->");
-      router.push("/company/serviceBookings/serviceBooking");
+      console.log(error, "Booking fail -------->");
       router.push({
         pathname: `/Toaster`,
         params: { res: error?.message || error },
@@ -185,7 +190,7 @@ const ServiceDetails = () => {
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
-        style={tw`flex-1 px-5 `}
+        style={tw`flex-1 px-5`}
         contentContainerStyle={tw`pb-6`}
       >
         {/* -------------------- banner part ---------------- */}
