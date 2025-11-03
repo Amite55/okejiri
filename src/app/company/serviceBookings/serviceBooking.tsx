@@ -58,18 +58,23 @@ const ServiceBooking = () => {
       price: cost,
       ...(isGroup === "Group" && { number_of_people: numberOfPeople }),
       ...(isBookingSchedule === "Schedule booking" && {
-        schedule_date: selectedDate,
-        schedule_time_slot: selectedTime,
+        schedule_date: !selectedDate ? today : selectedDate,
+        schedule_time_slot: !selectedTime
+          ? bookingTimeData[0].time
+          : selectedTime,
       }),
     };
     console.log(bookingDetails, "this is booking details ---------------->");
 
     // ========== navigate to next route ============== with come to edit check
-    // if (cameFromEdit) {
-    //   router.push("/company/serviceBookings/booking_confirmation");
-    // } else {
-    //   router.push("/company/serviceBookings/billing_details");
-    // }
+    if (cameFromEdit) {
+      router.push("/company/serviceBookings/booking_confirmation");
+    } else {
+      router.push({
+        pathname: "/company/serviceBookings/billing_details",
+        params: { bookingDetails: JSON.stringify(bookingDetails) },
+      });
+    }
   };
 
   return (
