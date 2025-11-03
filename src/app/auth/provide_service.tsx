@@ -29,7 +29,7 @@ import { SvgXml } from "react-native-svg";
 
 const Provide_Service = () => {
   const { jsonContactInfo } = useLocalSearchParams();
-  const contactInfo = JSON.parse(jsonContactInfo as any);
+  const contactInfo = JSON.parse(jsonContactInfo);
   const [value, setValue] = useState([]);
   const [error, setError] = useState("");
   const [isFocus, setIsFocus] = useState(false);
@@ -40,7 +40,6 @@ const Provide_Service = () => {
   const [information, { isLoading: isLoadingPersonalization }] =
     useCompletePersonalizationMutation();
   const { data: getServiceData } = useServicesQuery({});
-  console.log(value, "this is get service ");
 
   const handleScreenInfo = async () => {
     try {
