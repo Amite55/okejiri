@@ -63,8 +63,8 @@ export default function Index() {
       const render = async () => {
         try {
           if (userProfileInfo?.data?.role === "USER") {
-            // router.push("/company/(Tabs)");
-            router.push("/company/disputes/my_disputes");
+            router.push("/company/(Tabs)");
+            // router.push("/company/disputes/my_disputes");
             if (userProfileInfo?.data?.kyc_status === "Unverified") {
               setTimeout(() => {
                 router.push("/kyc_completed_modal");

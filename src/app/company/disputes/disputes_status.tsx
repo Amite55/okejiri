@@ -1,6 +1,6 @@
 import { IconDelete, IconDeleteWhite, IconProfileBadge } from "@/assets/icons";
 import { ImgProfileImg } from "@/assets/images/image";
-import DeleteModal from "@/src/Components/deleteModal";
+import DeleteModal from "@/src/Components/DeleteModal";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
