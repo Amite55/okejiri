@@ -12,4 +12,4 @@ export const bookingHistory = api.injectEndpoints({
   }),
 });
 
-export const { useBookingHistoryQuery } = bookingHistory;
+export const { useLazyBookingHistoryQuery } = bookingHistory;
