@@ -51,11 +51,6 @@ export default function Index() {
       // await SplashScreen.hideAsync();
     };
     AppLoader();
-    setTimeout(() => {
-      router.push("/company/(Tabs)");
-      // router.push("/auth/provide_service");
-      //   router.push("/chose_roll");
-    }, 3000);
   }, []);
 
   useEffect(() => {
