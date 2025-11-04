@@ -8,7 +8,8 @@ import { ImgLoadingSuccess } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
@@ -22,14 +23,22 @@ import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const Make_Payment = () => {
+  const { bookingInfoDetails } = useLocalSearchParams();
   const [isMakePayment, setIsMakePayment] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const perseBookingInfoDetails = JSON.parse(bookingInfoDetails as any);
+
+  // ----------- api end point ----------
+  const { data: getProfileData } = useProfileQuery({});
+
+  console.log(perseBookingInfoDetails.price, "thshshsh");
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       style={tw`flex-1 px-5 bg-base_color `}
-      contentContainerStyle={tw`pb-8 justify-between flex-grow`}
+      contentContainerStyle={tw`pb-1 justify-between flex-grow`}
     >
       <View>
         <BackTitleButton
@@ -95,7 +104,7 @@ const Make_Payment = () => {
                 <Text
                   style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}
                 >
-                  ₦ 1000.50
+                  ₦ {getProfileData?.data?.wallet_balance}
                 </Text>
               </View>
 
@@ -117,9 +126,9 @@ const Make_Payment = () => {
                 Cost
               </Text>
               <Text
-                style={tw`font-DegularDisplayDemoMedium text-2xl text-primary`}
+                style={tw`font-DegularDisplayDemoMedium text-xl text-primary`}
               >
-                ₦50.00
+                ₦{perseBookingInfoDetails?.price}
               </Text>
             </View>
 
@@ -133,9 +142,13 @@ const Make_Payment = () => {
                 Remaining balance will be:
               </Text>
               <Text
-                style={tw`font-DegularDisplayDemoMedium text-2xl text-primary`}
+                style={tw`font-DegularDisplayDemoMedium text-xl text-primary`}
               >
-                ₦950.50
+                ₦
+                {Number(getProfileData?.data?.wallet_balance) > 0
+                  ? Number(getProfileData?.data?.wallet_balance) -
+                    Number(perseBookingInfoDetails?.price)
+                  : Number(getProfileData?.data?.wallet_balance)}
               </Text>
             </View>
           </View>
@@ -217,12 +230,34 @@ const Make_Payment = () => {
       </View>
 
       {/*  ------------- next button -------------------- */}
-      <PrimaryButton
-        onPress={() => setModalVisible(true)}
-        titleProps="Next "
-        IconProps={IconRightArrow}
-        contentStyle={tw`mt-4`}
-      />
+      {!isMakePayment ? (
+        Number(getProfileData?.data?.wallet_balance) >
+        Number(perseBookingInfoDetails?.price) ? (
+          <PrimaryButton
+            onPress={() => setModalVisible(true)}
+            titleProps="Next "
+            IconProps={IconRightArrow}
+            contentStyle={tw`mt-4`}
+          />
+        ) : (
+          <PrimaryButton
+            onPress={() =>
+              router.push({
+                pathname: "/Toaster",
+                params: { res: "Insufficient balance" },
+              })
+            }
+            titleProps="Next"
+            contentStyle={tw`mt-4 bg-slate-500`}
+          />
+        )
+      ) : (
+        <PrimaryButton
+          onPress={() => setModalVisible(true)}
+          titleProps="Place Order "
+          contentStyle={tw`mt-4`}
+        />
+      )}
 
       {/*  ========================== successful modal ======================= */}
       <Modal
