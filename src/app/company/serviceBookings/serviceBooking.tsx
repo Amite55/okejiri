@@ -7,6 +7,7 @@ import {
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useProviderProfileQuery } from "@/src/redux/apiSlices/userProvider/servicesSlices";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import React, { useState } from "react";
@@ -49,6 +50,11 @@ const ServiceBooking = () => {
   const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(0);
   const [numberOfPeople, setNumberOfPeople] = useState<number>(2);
   const today = new Date().toISOString().split("T")[0];
+
+  // ---------------- api end point call ----------------------
+  const { data: getProviderProfile, isLoading } =
+    useProviderProfileQuery(provider_id);
+  // console.log(getProviderProfile?.data?.discount, "this is profile provider");
 
   const handleNextRoute = () => {
     const bookingDetails = {
@@ -142,14 +148,15 @@ const ServiceBooking = () => {
 
         <View style={tw`border-b border-white200 my-4`} />
 
-        {isGroup === "Group" ? (
+        {getProviderProfile?.data?.discount > 0 && isGroup === "Group" ? (
           <View
             style={tw`justify-center items-center my-2 w-full rounded-full h-12 bg-green50`}
           >
             <Text
               style={tw`font-DegularDisplayDemoMedium text-xl text-darkGreen text-center`}
             >
-              Get 10% discount for group bookings
+              Get {getProviderProfile?.data?.discount}% discount for group
+              bookings
             </Text>
           </View>
         ) : null}
