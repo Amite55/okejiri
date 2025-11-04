@@ -54,14 +54,28 @@ const ServiceBooking = () => {
   // ---------------- api end point call ----------------------
   const { data: getProviderProfile, isLoading } =
     useProviderProfileQuery(provider_id);
-  // console.log(getProviderProfile?.data?.discount, "this is profile provider");
 
+  // ================= check discount amount ================
+  const decimalDiscountCost = Math.round(
+    Number(getProviderProfile?.data?.discount)
+  );
+  const discountAmount =
+    getProviderProfile?.data?.discount > 0
+      ? (Number(cost) * decimalDiscountCost) / 100
+      : Number(cost);
+
+  const totalCost =
+    isGroup === "Group"
+      ? Number(discountAmount) * numberOfPeople
+      : Number(cost);
+
+  // ================== handle next route ==================
   const handleNextRoute = () => {
     const bookingDetails = {
       provider_id: provider_id,
       booking_process: isBookingSchedule,
       booking_type: isGroup,
-      price: cost,
+      price: totalCost,
       ...(isGroup === "Group" && { number_of_people: numberOfPeople }),
       ...(isBookingSchedule === "Schedule booking" && {
         schedule_date: !selectedDate ? today : selectedDate,
@@ -72,9 +86,7 @@ const ServiceBooking = () => {
     };
 
     // ========== navigate to next route ============== with come to edit check
-    if (cameFromEdit) {
-      router.push("/company/serviceBookings/booking_confirmation");
-    } else {
+    if (bookingDetails) {
       router.push({
         pathname: "/company/serviceBookings/billing_details",
         params: { bookingDetails: JSON.stringify(bookingDetails) },
@@ -87,7 +99,7 @@ const ServiceBooking = () => {
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       style={tw`flex-1 px-5 bg-base_color `}
-      contentContainerStyle={tw`pb-8 justify-between flex-grow`}
+      contentContainerStyle={tw`pb-2 justify-between flex-grow`}
     >
       <View>
         <BackTitleButton
@@ -147,7 +159,6 @@ const ServiceBooking = () => {
         </View>
 
         <View style={tw`border-b border-white200 my-4`} />
-
         {getProviderProfile?.data?.discount > 0 && isGroup === "Group" ? (
           <View
             style={tw`justify-center items-center my-2 w-full rounded-full h-12 bg-green50`}
@@ -155,8 +166,7 @@ const ServiceBooking = () => {
             <Text
               style={tw`font-DegularDisplayDemoMedium text-xl text-darkGreen text-center`}
             >
-              Get {getProviderProfile?.data?.discount}% discount for group
-              bookings
+              Get {decimalDiscountCost}% discount for group bookings
             </Text>
           </View>
         ) : null}
@@ -212,7 +222,7 @@ const ServiceBooking = () => {
           </TouchableOpacity>
         </View>
         {/* ------------------------ ------------------------- */}
-        {isBookingSchedule === "Schedule booking" || isGroup === "Single" ? (
+        {
           <View
             style={tw`flex-row justify-between items-center bg-white h-14 rounded-2xl px-5 mt-7`}
           >
@@ -224,10 +234,15 @@ const ServiceBooking = () => {
             <Text
               style={tw`font-DegularDisplayDemoMedium  text-2xl text-primary`}
             >
-              ₦ {cost}
+              ₦ {Number(totalCost).toFixed(2)}
+              {/* {isGroup === "Group"
+                ? getProviderProfile?.data?.discount > 0
+                  ? (decimalDiscountCost * Number(cost)) / 100
+                  : cost
+                : cost} */}
             </Text>
           </View>
-        ) : null}
+        }
 
         {isGroup === "Group" ? (
           <View style={tw`justify-center items-center my-5`}>
@@ -239,9 +254,11 @@ const ServiceBooking = () => {
             <View style={tw`flex-row justify-center items-center gap-7 mt-2`}>
               <TouchableOpacity
                 activeOpacity={0.6}
-                onPress={() =>
-                  numberOfPeople > 2 && setNumberOfPeople(numberOfPeople - 1)
-                }
+                onPress={() => {
+                  setNumberOfPeople((prev) =>
+                    prev > 2 ? Number(prev) - 1 : prev
+                  );
+                }}
                 style={tw`w-16 h-16 rounded-full justify-center items-center bg-white`}
               >
                 <SvgXml xml={IconMinus} />
@@ -253,7 +270,9 @@ const ServiceBooking = () => {
               </Text>
               <TouchableOpacity
                 activeOpacity={0.6}
-                onPress={() => setNumberOfPeople(numberOfPeople + 1)}
+                onPress={() => {
+                  setNumberOfPeople((prev) => Number(prev) + 1);
+                }}
                 style={tw`w-16 h-16 rounded-full justify-center items-center bg-white`}
               >
                 <SvgXml xml={IconPlusBlack} />
@@ -292,7 +311,6 @@ const ServiceBooking = () => {
                 arrowColor: "orange",
                 monthTextColor: "#111",
               }}
-              defa
               onDayPress={(day) => {
                 setSelectedDate(day.dateString);
               }}
@@ -349,7 +367,7 @@ const ServiceBooking = () => {
         ) : null}
 
         {/* ===================================================================== */}
-        {isBookingSchedule === "Schedule booking" || isGroup === "Group" ? (
+        {/* {isBookingSchedule === "Schedule booking" || isGroup === "Group" ? (
           <View
             style={tw`flex-row justify-between items-center bg-white h-14 rounded-2xl px-5 mt-4`}
           >
@@ -364,7 +382,7 @@ const ServiceBooking = () => {
               ₦20.00
             </Text>
           </View>
-        ) : null}
+        ) : null} */}
       </View>
       {/* ----------------- next button ------------------- */}
 
