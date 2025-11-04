@@ -20,7 +20,6 @@ const DeleteModal = ({
   deleteIcon,
   modalVisible,
   setModalVisible,
-  buttonTitle,
   subTitle,
 }: IModalProps) => {
   return (
@@ -71,7 +70,7 @@ const DeleteModal = ({
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-center p-3 text-white`}
               >
-                {buttonTitle}
+                Yes
               </Text>
             </TouchableOpacity>
           </View>
