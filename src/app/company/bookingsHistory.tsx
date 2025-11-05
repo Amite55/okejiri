@@ -24,18 +24,11 @@ const BookingsHistory = () => {
     try {
       if ((isLoading || isFetching || isLoadingMore) && !isRefresh) return;
       if (!isRefresh) setIsLoadingMore(true);
-
       setApiError(null);
-
-      console.log("Fetching bookings page:", pageNum);
-
       const res = await fetchBookingHistoryQuery({
         page: pageNum,
-        // Add per_page parameter if needed by your API
         per_page: 10,
       }).unwrap();
-
-      console.log("API Response:", res);
 
       // Handle different response structures
       let responseData, newBookings, pagination;
@@ -51,10 +44,6 @@ const BookingsHistory = () => {
         newBookings = res?.data || res?.bookings || [];
         pagination = res;
       }
-
-      console.log("New bookings:", newBookings);
-      console.log("Pagination data:", pagination);
-
       setBookings((prev) => {
         if (isRefresh) return newBookings;
         const existingIds = new Set(prev.map((booking) => booking.id));
@@ -67,24 +56,11 @@ const BookingsHistory = () => {
       // Safe pagination handling
       const current = parseInt(pagination?.current_page) || pageNum;
       const last = parseInt(pagination?.last_page) || 1;
-      const total = parseInt(pagination?.total) || 0;
-      const perPage = parseInt(pagination?.per_page) || 10;
-
-      console.log(
-        "Pagination - current:",
-        current,
-        "last:",
-        last,
-        "total:",
-        total
-      );
 
       setHasMorePages(current < last);
       setCurrentPage(current + 1);
     } catch (err: any) {
-      console.error("Error fetching bookings:", err);
       setApiError(err?.data?.message || "Failed to load bookings");
-
       // Show alert for backend errors
       if (err?.data?.message?.includes("Unsupported operand types")) {
         Alert.alert(
