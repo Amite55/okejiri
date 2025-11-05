@@ -229,7 +229,7 @@ const Booking_Confirmation = () => {
                 After Discount amount:
               </Text>
               <Text style={tw`font-DegularDisplayDemoLight text-xl `}>
-                ₦ {perseBookingInfoDetails?.price}
+                ₦ {perseBookingInfoDetails?.price.toFixed(2)}
               </Text>
             </View>
           </View>

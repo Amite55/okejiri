@@ -7,6 +7,7 @@ import {
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useGetCartItemQuery } from "@/src/redux/apiSlices/userProvider/cartSlices";
 import { useProviderProfileQuery } from "@/src/redux/apiSlices/userProvider/servicesSlices";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
@@ -41,7 +42,7 @@ const bookingTimeData = [
 ];
 
 const ServiceBooking = () => {
-  const { cameFromEdit, provider_id, cost } = useLocalSearchParams();
+  const { provider_id, cost } = useLocalSearchParams();
   const [isBookingSchedule, setIsBookingSchedule] =
     useState<string>("Instant booking");
   const [isGroup, setIsGroup] = useState<string>("Single");
@@ -54,6 +55,10 @@ const ServiceBooking = () => {
   // ---------------- api end point call ----------------------
   const { data: getProviderProfile, isLoading } =
     useProviderProfileQuery(provider_id);
+  const { data: getCartData, isLoading: isCartDataLoading } =
+    useGetCartItemQuery({});
+
+  const TimeThisItem = getCartData?.data[0]?.package?.available_time;
 
   // ================= check discount amount ================
   const decimalDiscountCost = Math.round(
@@ -80,11 +85,12 @@ const ServiceBooking = () => {
       ...(isBookingSchedule === "Schedule booking" && {
         schedule_date: !selectedDate ? today : selectedDate,
         schedule_time_slot: !selectedTime
-          ? bookingTimeData[0].time
+          ? TimeThisItem[0].available_time_from +
+            " - " +
+            TimeThisItem[0].available_time_to
           : selectedTime,
       }),
     };
-
     // ========== navigate to next route ============== with come to edit check
     if (bookingDetails) {
       router.push({
@@ -326,42 +332,75 @@ const ServiceBooking = () => {
             />
 
             {/* ======================== this is time slot ================ */}
-
             <Text
               style={tw`font-DegularDisplayDemoMedium text-xl text-black mt-5 mb-2`}
             >
               Select time slot
             </Text>
             <View style={tw`flex-row flex-wrap justify-between gap-3`}>
-              {bookingTimeData.map((item, index) => (
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => {
-                    setSelectedTimeIndex(index);
-                    setSelectedTime(item?.time);
-                  }}
-                  key={item?.id}
-                  style={[
-                    tw`w-[48%] h-12 rounded-2xl border border-black200 justify-center items-center ${
-                      selectedTimeIndex === index
-                        ? "bg-primary border-0"
-                        : "bg-transparent"
-                    }`,
-                  ]}
-                >
-                  <Text
+              {getCartData?.data[0]?.package?.available_time?.length > 0 ? (
+                TimeThisItem.map((item, index) => (
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => {
+                      setSelectedTimeIndex(index);
+                      setSelectedTime(
+                        item?.available_time_from +
+                          " - " +
+                          item?.available_time_to
+                      );
+                    }}
+                    key={item?.id}
                     style={[
-                      tw`font-DegularDisplayDemoRegular text-base ${
+                      tw`w-[48%] h-12 rounded-2xl border flex-row border-black200 justify-center items-center gap-2 ${
                         selectedTimeIndex === index
-                          ? "text-white"
-                          : "text-black"
+                          ? "bg-primary border-0"
+                          : "bg-transparent"
                       }`,
                     ]}
                   >
-                    {item?.time}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      style={[
+                        tw`font-DegularDisplayDemoRegular text-base ${
+                          selectedTimeIndex === index
+                            ? "text-white"
+                            : "text-black"
+                        }`,
+                      ]}
+                    >
+                      {item?.available_time_from}
+                    </Text>
+                    <Text
+                      style={[
+                        tw`text-white text-2xl font-DegularDisplayDemoSemibold ${
+                          selectedTimeIndex === index
+                            ? "text-white"
+                            : "text-black"
+                        }`,
+                      ]}
+                    >
+                      -
+                    </Text>
+                    <Text
+                      style={[
+                        tw`font-DegularDisplayDemoRegular text-base ${
+                          selectedTimeIndex === index
+                            ? "text-white"
+                            : "text-black"
+                        }`,
+                      ]}
+                    >
+                      {item?.available_time_to}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-base items-center justify-center text-black`}
+                >
+                  No Time Available
+                </Text>
+              )}
             </View>
           </View>
         ) : null}
@@ -385,13 +424,30 @@ const ServiceBooking = () => {
         ) : null} */}
       </View>
       {/* ----------------- next button ------------------- */}
-
-      <PrimaryButton
-        onPress={() => handleNextRoute()}
-        titleProps="Next  1/4"
-        IconProps={IconRightArrow}
-        contentStyle={tw`mt-4`}
-      />
+      {isBookingSchedule === "Schedule booking" ? (
+        !TimeThisItem ? (
+          <PrimaryButton
+            // onPress={() => handleNextRoute()}
+            titleProps="Next  2/4"
+            IconProps={IconRightArrow}
+            contentStyle={tw`mt-4 bg-slate-300`}
+          />
+        ) : (
+          <PrimaryButton
+            onPress={() => handleNextRoute()}
+            titleProps="Next  2/4"
+            IconProps={IconRightArrow}
+            contentStyle={tw`mt-4`}
+          />
+        )
+      ) : (
+        <PrimaryButton
+          onPress={() => handleNextRoute()}
+          titleProps="Next  1/4"
+          IconProps={IconRightArrow}
+          contentStyle={tw`mt-4`}
+        />
+      )}
     </ScrollView>
   );
 };

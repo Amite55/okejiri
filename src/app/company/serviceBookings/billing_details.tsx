@@ -235,7 +235,7 @@ const BillingDetails = () => {
                         onChangeText={handleChange("address")}
                         onBlur={handleBlur("address")}
                         value={values.address}
-                        // placeholder="+2156985632"
+                        placeholder="Address"
                         textAlign="left"
                         textAlignVertical="top"
                         multiline={true}

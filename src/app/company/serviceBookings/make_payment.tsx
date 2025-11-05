@@ -9,9 +9,11 @@ import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
+import { useBookingSuccessMutation } from "@/src/redux/apiSlices/userProvider/bookingsSlices";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Modal,
   ScrollView,
@@ -30,8 +32,58 @@ const Make_Payment = () => {
 
   // ----------- api end point ----------
   const { data: getProfileData } = useProfileQuery({});
+  const [bookingItem, { isLoading, error }] = useBookingSuccessMutation();
 
-  console.log(perseBookingInfoDetails.price, "thshshsh");
+  const handelPayment = async () => {
+    try {
+      const bookingInfo = {
+        provider_id: perseBookingInfoDetails?.provider_id,
+        booking_process:
+          perseBookingInfoDetails?.booking_process === "Instant booking"
+            ? "instant"
+            : "schedule",
+        booking_type:
+          perseBookingInfoDetails?.booking_type === "Single"
+            ? "single"
+            : "group",
+        payment_type: isMakePayment ? "make_payment" : "from_balance ",
+        price: perseBookingInfoDetails?.price,
+        name: perseBookingInfoDetails?.billing_name,
+        email: perseBookingInfoDetails?.billing_email,
+        phone: perseBookingInfoDetails?.billing_contact,
+        address: perseBookingInfoDetails?.billing_address,
+
+        ...(perseBookingInfoDetails?.booking_type === "Group" && {
+          number_of_people: perseBookingInfoDetails?.number_of_people,
+        }),
+        ...(perseBookingInfoDetails?.booking_process === "Schedule booking" && {
+          schedule_date: perseBookingInfoDetails?.schedule_date,
+          schedule_time_slot: perseBookingInfoDetails?.schedule_time_slot,
+        }),
+        ...(isMakePayment && {
+          payment_type: perseBookingInfoDetails?.service_duration,
+          payment_intent_id: perseBookingInfoDetails?.service_duration,
+        }),
+      };
+      // ------------- if you payment to your wallet ------------------------
+      if (!isMakePayment) {
+        const res = await bookingItem(bookingInfo).unwrap();
+        if (res) {
+          setModalVisible(true);
+          setTimeout(() => {
+            setModalVisible(false);
+            router.push("/company/(Tabs)");
+          }, 1500);
+        }
+      }
+    } catch (error) {
+      console.log(error, "Payment not successful");
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
+      });
+    }
+  };
 
   return (
     <ScrollView
@@ -47,7 +99,6 @@ const Make_Payment = () => {
           titleTextStyle={tw`text-xl`}
         />
         {/* ----------------- hare is make payment and not make payment ------------- */}
-
         <View
           style={[
             tw`border border-slate-300 rounded-full h-12 flex-row justify-between items-center my-7`,
@@ -128,7 +179,7 @@ const Make_Payment = () => {
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-primary`}
               >
-                ₦{perseBookingInfoDetails?.price}
+                ₦{perseBookingInfoDetails?.price.toFixed(2)}
               </Text>
             </View>
 
@@ -147,8 +198,8 @@ const Make_Payment = () => {
                 ₦
                 {Number(getProfileData?.data?.wallet_balance) > 0
                   ? Number(getProfileData?.data?.wallet_balance) -
-                    Number(perseBookingInfoDetails?.price)
-                  : Number(getProfileData?.data?.wallet_balance)}
+                    Number(perseBookingInfoDetails?.price.toFixed(2))
+                  : Number(getProfileData?.data?.wallet_balance.toFixed(2))}
               </Text>
             </View>
           </View>
@@ -233,12 +284,19 @@ const Make_Payment = () => {
       {!isMakePayment ? (
         Number(getProfileData?.data?.wallet_balance) >
         Number(perseBookingInfoDetails?.price) ? (
-          <PrimaryButton
-            onPress={() => setModalVisible(true)}
-            titleProps="Next "
-            IconProps={IconRightArrow}
-            contentStyle={tw`mt-4`}
-          />
+          isLoading ? (
+            <ActivityIndicator size="large" color="primary" />
+          ) : (
+            <PrimaryButton
+              onPress={() => {
+                // setModalVisible(true);
+                handelPayment();
+              }}
+              titleProps="Next "
+              IconProps={IconRightArrow}
+              contentStyle={tw`mt-4`}
+            />
+          )
         ) : (
           <PrimaryButton
             onPress={() =>
@@ -253,7 +311,10 @@ const Make_Payment = () => {
         )
       ) : (
         <PrimaryButton
-          onPress={() => setModalVisible(true)}
+          onPress={() => {
+            // setModalVisible(true);
+            handelPayment();
+          }}
           titleProps="Place Order "
           contentStyle={tw`mt-4`}
         />
@@ -286,7 +347,7 @@ const Make_Payment = () => {
             </Text>
 
             {/* Close Button */}
-            <PrimaryButton
+            {/* <PrimaryButton
               onPress={() => {
                 setModalVisible(false);
                 router.push("/company/(Tabs)");
@@ -294,7 +355,7 @@ const Make_Payment = () => {
               titleProps="Go to home"
               IconProps={IconRightArrow}
               contentStyle={tw`mt-4`}
-            />
+            /> */}
           </View>
         </View>
       </Modal>
