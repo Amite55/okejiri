@@ -34,6 +34,10 @@ const Make_Payment = () => {
   const { data: getProfileData } = useProfileQuery({});
   const [bookingItem, { isLoading, error }] = useBookingSuccessMutation();
 
+  // convert to number -------------
+  const walletBalance = Number(getProfileData?.data?.wallet_balance ?? 0);
+  const bookingPrice = Number(perseBookingInfoDetails?.price ?? 0);
+
   const handelPayment = async () => {
     try {
       const bookingInfo = {
@@ -66,15 +70,20 @@ const Make_Payment = () => {
         }),
       };
       // ------------- if you payment to your wallet ------------------------
-      if (!isMakePayment) {
+      console.log(isMakePayment, "this is ");
+      if (isMakePayment) {
         const res = await bookingItem(bookingInfo).unwrap();
-        if (res) {
-          setModalVisible(true);
-          setTimeout(() => {
-            setModalVisible(false);
-            router.push("/company/(Tabs)");
-          }, 1500);
-        }
+        console.log(res?.data, "this is make payment system");
+      } else if (!isMakePayment) {
+        // const res = await bookingItem(bookingInfo).unwrap();
+        // if (res) {
+        //   setModalVisible(true);
+        //   setTimeout(() => {
+        //     setModalVisible(false);
+        //     router.push("/company/(Tabs)");
+        //   }, 1500);
+        // }
+        console.log("!ismakepayment --------->");
       }
     } catch (error) {
       console.log(error, "Payment not successful");
@@ -107,7 +116,7 @@ const Make_Payment = () => {
           <TouchableOpacity
             onPress={() => setIsMakePayment(false)}
             style={[
-              tw`w-48 h-full rounded-full justify-center items-center`,
+              tw`w-44 h-full rounded-full justify-center items-center`,
               !isMakePayment ? tw`bg-primary` : tw`bg-transparent`,
             ]}
           >
@@ -122,9 +131,12 @@ const Make_Payment = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => setIsMakePayment(true)}
+            onPress={() => {
+              setIsMakePayment(true);
+              handelPayment();
+            }}
             style={[
-              tw`w-48 h-full rounded-full justify-center items-center`,
+              tw`w-44 h-full rounded-full justify-center items-center`,
               isMakePayment ? tw`bg-primary` : tw`bg-transparent`,
             ]}
           >
@@ -144,7 +156,7 @@ const Make_Payment = () => {
         {!isMakePayment && (
           <View style={tw`gap-3`}>
             <View
-              style={tw`bg-white h-40 rounded-3xl flex-row justify-between items-center px-8`}
+              style={tw`bg-white h-40 rounded-3xl flex-row justify-between items-center px-6`}
             >
               <View style={tw`gap-2`}>
                 <Text
@@ -155,7 +167,7 @@ const Make_Payment = () => {
                 <Text
                   style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}
                 >
-                  ₦ {getProfileData?.data?.wallet_balance}
+                  ₦ {walletBalance.toFixed(2)}
                 </Text>
               </View>
 
@@ -169,7 +181,7 @@ const Make_Payment = () => {
             {/* --------------------- Cost -=----------------- */}
 
             <View
-              style={tw`bg-white h-14 rounded-2xl flex-row justify-between items-center px-8`}
+              style={tw`bg-white h-14 rounded-2xl flex-row justify-between items-center px-5`}
             >
               <Text
                 style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
@@ -179,13 +191,13 @@ const Make_Payment = () => {
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-primary`}
               >
-                ₦{perseBookingInfoDetails?.price.toFixed(2)}
+                ₦{bookingPrice.toFixed(2)}
               </Text>
             </View>
 
             {/* -------------------Remaining balance will be: ---------------------- */}
             <View
-              style={tw`bg-white h-14 rounded-2xl flex-row justify-between items-center px-8`}
+              style={tw`bg-white h-14 rounded-2xl flex-row justify-between items-center px-5`}
             >
               <Text
                 style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
@@ -196,10 +208,9 @@ const Make_Payment = () => {
                 style={tw`font-DegularDisplayDemoMedium text-xl text-primary`}
               >
                 ₦
-                {Number(getProfileData?.data?.wallet_balance) > 0
-                  ? Number(getProfileData?.data?.wallet_balance) -
-                    Number(perseBookingInfoDetails?.price.toFixed(2))
-                  : Number(getProfileData?.data?.wallet_balance.toFixed(2))}
+                {walletBalance > 0
+                  ? (walletBalance - bookingPrice).toFixed(2)
+                  : walletBalance.toFixed(2)}
               </Text>
             </View>
           </View>
@@ -282,8 +293,7 @@ const Make_Payment = () => {
 
       {/*  ------------- next button -------------------- */}
       {!isMakePayment ? (
-        Number(getProfileData?.data?.wallet_balance) >
-        Number(perseBookingInfoDetails?.price) ? (
+        walletBalance > bookingPrice ? (
           isLoading ? (
             <ActivityIndicator size="large" color="primary" />
           ) : (
