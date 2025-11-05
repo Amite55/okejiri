@@ -6,7 +6,7 @@ import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
 const ServiceCard = ({ item, onPress }: any) => {
-  // console.log("item", item, "item");
+  console.log("relative", item, "relative");
 
   return (
     <TouchableOpacity
