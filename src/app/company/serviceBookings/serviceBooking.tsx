@@ -7,6 +7,7 @@ import {
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useGetCartItemQuery } from "@/src/redux/apiSlices/userProvider/cartSlices";
 import { useProviderProfileQuery } from "@/src/redux/apiSlices/userProvider/servicesSlices";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
@@ -41,7 +42,7 @@ const bookingTimeData = [
 ];
 
 const ServiceBooking = () => {
-  const { cameFromEdit, provider_id, cost } = useLocalSearchParams();
+  const { provider_id, cost } = useLocalSearchParams();
   const [isBookingSchedule, setIsBookingSchedule] =
     useState<string>("Instant booking");
   const [isGroup, setIsGroup] = useState<string>("Single");
@@ -54,27 +55,44 @@ const ServiceBooking = () => {
   // ---------------- api end point call ----------------------
   const { data: getProviderProfile, isLoading } =
     useProviderProfileQuery(provider_id);
-  // console.log(getProviderProfile?.data?.discount, "this is profile provider");
+  const { data: getCartData, isLoading: isCartDataLoading } =
+    useGetCartItemQuery({});
 
+  const TimeThisItem = getCartData?.data[0]?.package?.available_time;
+
+  // ================= check discount amount ================
+  const decimalDiscountCost = Math.round(
+    Number(getProviderProfile?.data?.discount)
+  );
+  const discountAmount =
+    getProviderProfile?.data?.discount > 0
+      ? (Number(cost) * decimalDiscountCost) / 100
+      : Number(cost);
+
+  const totalCost =
+    isGroup === "Group"
+      ? Number(discountAmount) * numberOfPeople
+      : Number(cost);
+
+  // ================== handle next route ==================
   const handleNextRoute = () => {
     const bookingDetails = {
       provider_id: provider_id,
       booking_process: isBookingSchedule,
       booking_type: isGroup,
-      price: cost,
+      price: totalCost,
       ...(isGroup === "Group" && { number_of_people: numberOfPeople }),
       ...(isBookingSchedule === "Schedule booking" && {
         schedule_date: !selectedDate ? today : selectedDate,
         schedule_time_slot: !selectedTime
-          ? bookingTimeData[0].time
+          ? TimeThisItem[0].available_time_from +
+            " - " +
+            TimeThisItem[0].available_time_to
           : selectedTime,
       }),
     };
-
     // ========== navigate to next route ============== with come to edit check
-    if (cameFromEdit) {
-      router.push("/company/serviceBookings/booking_confirmation");
-    } else {
+    if (bookingDetails) {
       router.push({
         pathname: "/company/serviceBookings/billing_details",
         params: { bookingDetails: JSON.stringify(bookingDetails) },
@@ -87,7 +105,7 @@ const ServiceBooking = () => {
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       style={tw`flex-1 px-5 bg-base_color `}
-      contentContainerStyle={tw`pb-8 justify-between flex-grow`}
+      contentContainerStyle={tw`pb-2 justify-between flex-grow`}
     >
       <View>
         <BackTitleButton
@@ -147,7 +165,6 @@ const ServiceBooking = () => {
         </View>
 
         <View style={tw`border-b border-white200 my-4`} />
-
         {getProviderProfile?.data?.discount > 0 && isGroup === "Group" ? (
           <View
             style={tw`justify-center items-center my-2 w-full rounded-full h-12 bg-green50`}
@@ -155,8 +172,7 @@ const ServiceBooking = () => {
             <Text
               style={tw`font-DegularDisplayDemoMedium text-xl text-darkGreen text-center`}
             >
-              Get {getProviderProfile?.data?.discount}% discount for group
-              bookings
+              Get {decimalDiscountCost}% discount for group bookings
             </Text>
           </View>
         ) : null}
@@ -212,7 +228,7 @@ const ServiceBooking = () => {
           </TouchableOpacity>
         </View>
         {/* ------------------------ ------------------------- */}
-        {isBookingSchedule === "Schedule booking" || isGroup === "Single" ? (
+        {
           <View
             style={tw`flex-row justify-between items-center bg-white h-14 rounded-2xl px-5 mt-7`}
           >
@@ -224,10 +240,15 @@ const ServiceBooking = () => {
             <Text
               style={tw`font-DegularDisplayDemoMedium  text-2xl text-primary`}
             >
-              ₦ {cost}
+              ₦ {Number(totalCost).toFixed(2)}
+              {/* {isGroup === "Group"
+                ? getProviderProfile?.data?.discount > 0
+                  ? (decimalDiscountCost * Number(cost)) / 100
+                  : cost
+                : cost} */}
             </Text>
           </View>
-        ) : null}
+        }
 
         {isGroup === "Group" ? (
           <View style={tw`justify-center items-center my-5`}>
@@ -239,9 +260,11 @@ const ServiceBooking = () => {
             <View style={tw`flex-row justify-center items-center gap-7 mt-2`}>
               <TouchableOpacity
                 activeOpacity={0.6}
-                onPress={() =>
-                  numberOfPeople > 2 && setNumberOfPeople(numberOfPeople - 1)
-                }
+                onPress={() => {
+                  setNumberOfPeople((prev) =>
+                    prev > 2 ? Number(prev) - 1 : prev
+                  );
+                }}
                 style={tw`w-16 h-16 rounded-full justify-center items-center bg-white`}
               >
                 <SvgXml xml={IconMinus} />
@@ -253,7 +276,9 @@ const ServiceBooking = () => {
               </Text>
               <TouchableOpacity
                 activeOpacity={0.6}
-                onPress={() => setNumberOfPeople(numberOfPeople + 1)}
+                onPress={() => {
+                  setNumberOfPeople((prev) => Number(prev) + 1);
+                }}
                 style={tw`w-16 h-16 rounded-full justify-center items-center bg-white`}
               >
                 <SvgXml xml={IconPlusBlack} />
@@ -292,7 +317,6 @@ const ServiceBooking = () => {
                 arrowColor: "orange",
                 monthTextColor: "#111",
               }}
-              defa
               onDayPress={(day) => {
                 setSelectedDate(day.dateString);
               }}
@@ -308,48 +332,81 @@ const ServiceBooking = () => {
             />
 
             {/* ======================== this is time slot ================ */}
-
             <Text
               style={tw`font-DegularDisplayDemoMedium text-xl text-black mt-5 mb-2`}
             >
               Select time slot
             </Text>
             <View style={tw`flex-row flex-wrap justify-between gap-3`}>
-              {bookingTimeData.map((item, index) => (
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => {
-                    setSelectedTimeIndex(index);
-                    setSelectedTime(item?.time);
-                  }}
-                  key={item?.id}
-                  style={[
-                    tw`w-[48%] h-12 rounded-2xl border border-black200 justify-center items-center ${
-                      selectedTimeIndex === index
-                        ? "bg-primary border-0"
-                        : "bg-transparent"
-                    }`,
-                  ]}
-                >
-                  <Text
+              {getCartData?.data[0]?.package?.available_time?.length > 0 ? (
+                TimeThisItem.map((item, index) => (
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => {
+                      setSelectedTimeIndex(index);
+                      setSelectedTime(
+                        item?.available_time_from +
+                          " - " +
+                          item?.available_time_to
+                      );
+                    }}
+                    key={item?.id}
                     style={[
-                      tw`font-DegularDisplayDemoRegular text-base ${
+                      tw`w-[48%] h-12 rounded-2xl border flex-row border-black200 justify-center items-center gap-2 ${
                         selectedTimeIndex === index
-                          ? "text-white"
-                          : "text-black"
+                          ? "bg-primary border-0"
+                          : "bg-transparent"
                       }`,
                     ]}
                   >
-                    {item?.time}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      style={[
+                        tw`font-DegularDisplayDemoRegular text-base ${
+                          selectedTimeIndex === index
+                            ? "text-white"
+                            : "text-black"
+                        }`,
+                      ]}
+                    >
+                      {item?.available_time_from}
+                    </Text>
+                    <Text
+                      style={[
+                        tw`text-white text-2xl font-DegularDisplayDemoSemibold ${
+                          selectedTimeIndex === index
+                            ? "text-white"
+                            : "text-black"
+                        }`,
+                      ]}
+                    >
+                      -
+                    </Text>
+                    <Text
+                      style={[
+                        tw`font-DegularDisplayDemoRegular text-base ${
+                          selectedTimeIndex === index
+                            ? "text-white"
+                            : "text-black"
+                        }`,
+                      ]}
+                    >
+                      {item?.available_time_to}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-base items-center justify-center text-black`}
+                >
+                  No Time Available
+                </Text>
+              )}
             </View>
           </View>
         ) : null}
 
         {/* ===================================================================== */}
-        {isBookingSchedule === "Schedule booking" || isGroup === "Group" ? (
+        {/* {isBookingSchedule === "Schedule booking" || isGroup === "Group" ? (
           <View
             style={tw`flex-row justify-between items-center bg-white h-14 rounded-2xl px-5 mt-4`}
           >
@@ -364,16 +421,33 @@ const ServiceBooking = () => {
               ₦20.00
             </Text>
           </View>
-        ) : null}
+        ) : null} */}
       </View>
       {/* ----------------- next button ------------------- */}
-
-      <PrimaryButton
-        onPress={() => handleNextRoute()}
-        titleProps="Next  1/4"
-        IconProps={IconRightArrow}
-        contentStyle={tw`mt-4`}
-      />
+      {isBookingSchedule === "Schedule booking" ? (
+        !TimeThisItem ? (
+          <PrimaryButton
+            // onPress={() => handleNextRoute()}
+            titleProps="Next  2/4"
+            IconProps={IconRightArrow}
+            contentStyle={tw`mt-4 bg-slate-300`}
+          />
+        ) : (
+          <PrimaryButton
+            onPress={() => handleNextRoute()}
+            titleProps="Next  2/4"
+            IconProps={IconRightArrow}
+            contentStyle={tw`mt-4`}
+          />
+        )
+      ) : (
+        <PrimaryButton
+          onPress={() => handleNextRoute()}
+          titleProps="Next  1/4"
+          IconProps={IconRightArrow}
+          contentStyle={tw`mt-4`}
+        />
+      )}
     </ScrollView>
   );
 };

@@ -229,17 +229,18 @@ const BillingDetails = () => {
                     </View>
 
                     <View
-                      style={tw`justify-center px-4 py-2  rounded-xl bg-white  mt-4`}
+                      style={tw`border border-gray-300 justify-center  w-full rounded-3xl  px-4 `}
                     >
                       <TextInput
                         onChangeText={handleChange("address")}
                         onBlur={handleBlur("address")}
                         value={values.address}
-                        // placeholder="+2156985632"
+                        placeholder="Address"
                         textAlign="left"
+                        textAlignVertical="top"
                         multiline={true}
                         numberOfLines={3}
-                        style={tw`text-black font-DegularDisplayDemoMedium text-base `}
+                        style={tw`text-black font-DegularDisplayDemoMedium text-base h-20`}
                         placeholderTextColor={"#535353"}
                       />
                     </View>
