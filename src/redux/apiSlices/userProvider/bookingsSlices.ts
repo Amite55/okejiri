@@ -18,10 +18,10 @@ export const bookingsSlice = api.injectEndpoints({
       providesTags: ["provider"],
     }),
     bookingSuccess: builder.mutation({
-      query: (bookings) => ({
+      query: (bookingInfo) => ({
         url: "/booking",
         method: "POST",
-        body: bookings,
+        body: bookingInfo,
       }),
       invalidatesTags: ["booking"],
     }),
@@ -88,14 +88,7 @@ export const bookingsSlice = api.injectEndpoints({
       }),
       providesTags: ["booking"],
     }),
-    addDisputeAppeal: builder.mutation({
-      query: (disputes) => ({
-        url: `/add-dispute-appeal`,
-        method: "POST",
-        body: disputes,
-      }),
-      invalidatesTags: ["dispute"],
-    }),
+
     addDispute: builder.mutation({
       query: (disputes) => {
         return {
@@ -122,6 +115,5 @@ export const {
   useOrderCancelMutation,
   useMyBookingsQuery,
   useBookingsHistoryQuery,
-  useAddDisputeAppealMutation,
   useAddDisputeMutation,
 } = bookingsSlice;
