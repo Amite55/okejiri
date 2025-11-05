@@ -13,7 +13,7 @@ import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { _HEIGHT } from "@/utils/utils";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
@@ -29,6 +29,7 @@ import { SvgXml } from "react-native-svg";
 
 const Previous_Booking_Confirmation = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const { id } = useLocalSearchParams();
 
   return (
     <ScrollView
@@ -43,8 +44,13 @@ const Previous_Booking_Confirmation = () => {
           onPress={() => router.back()}
           titleTextStyle={tw`text-xl`}
         />
-        <Pressable
-          //   onPress={() => router.push("/company/serviceDetails")}
+        <TouchableOpacity
+          // onPress={() =>
+          // router.push(
+          //   // `/company/previous_item_Book/previous_booking_confirmation/${id}`
+          //   `/company/previous_item_Book/previous_booking_confirmation/${id}`
+          // )
+          // }
           style={tw`flex-row justify-between items-center rounded-xl bg-white mt-2 p-1.5`}
         >
           <View style={tw`flex-row gap-3 items-center`}>
@@ -83,7 +89,7 @@ const Previous_Booking_Confirmation = () => {
               </Text>
             </View>
           </View>
-        </Pressable>
+        </TouchableOpacity>
 
         {/* ------------------ see service details --------- button  */}
         <TouchableOpacity

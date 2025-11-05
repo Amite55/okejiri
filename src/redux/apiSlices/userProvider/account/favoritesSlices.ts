@@ -3,8 +3,8 @@ import { api } from "@/src/redux/base/baseApi";
 export const favoritesSlices = api.injectEndpoints({
   endpoints: (builder) => ({
     getFavorites: builder.query({
-      query: (page = 10) => ({
-        url: `/favorites?per_page=${page}`,
+      query: (page) => ({
+        url: `/favorites?page=${page}`,
         method: "GET",
       }),
       providesTags: ["favorite"],
@@ -32,6 +32,7 @@ export const favoritesSlices = api.injectEndpoints({
 
 export const {
   useGetFavoritesQuery,
+  useLazyGetFavoritesQuery,
   useAddFavoriteMutation,
   useDeleteFavoriteMutation,
 } = favoritesSlices;
