@@ -94,6 +94,9 @@ export const bookingsSlice = api.injectEndpoints({
         return {
           url: `/add-dispute`,
           method: "POST",
+          // headers: {
+          //   "Content-Type": "multipart/form-data",
+          // },
           body: disputes,
         };
       },

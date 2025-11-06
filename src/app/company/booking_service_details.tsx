@@ -32,7 +32,6 @@ const Booking_Service_Details = () => {
 
   const renderServiceCard = ({ item }: any) => {
     const pkg = item.package;
-
     return (
       <Pressable
         style={tw`flex-row justify-between items-center px-4 py-3 rounded-3xl bg-white mb-2`}
@@ -81,13 +80,11 @@ const Booking_Service_Details = () => {
           onPress={() => router.back()}
           titleTextStyle={tw`text-xl`}
         />
-
         <Text
           style={tw`font-DegularDisplayDemoRegular text-xl text-regularText text-center px-10 my-2`}
         >
           Your previous services with this provider will be shown here.
         </Text>
-
         <FlatList
           data={OrderDetailsData?.data?.booking_items}
           keyExtractor={(item) => item.id.toString()}
@@ -97,7 +94,12 @@ const Booking_Service_Details = () => {
         />
 
         <TouchableOpacity
-          onPress={() => router.push("/company/dispute_process")}
+          onPress={() =>
+            router.push({
+              pathname: "/company/dispute_process",
+              params: { id: id },
+            })
+          }
           style={tw`flex-row justify-center items-center gap-3 py-4 my-10`}
         >
           <SvgXml xml={IconDisputeRequest} />
@@ -162,8 +164,7 @@ const Booking_Service_Details = () => {
           </View>
         </View>
       )}
-
-      {/* 🔽 Service Details Modal (Dynamic) */}
+      {/* Service Details Modal (Dynamic) */}
       <Modal
         animationType="slide"
         transparent
