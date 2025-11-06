@@ -49,6 +49,7 @@ const NotificationCard = ({
   return (
     <TouchableOpacity
       onPress={onPress}
+      activeOpacity={0.8}
       style={tw`flex-row  items-center gap-5 bg-white rounded-3xl py-4 px-5 relative shadow-md`}
     >
       {/* ----------------------- notification icon ------------------------------ */}
@@ -91,16 +92,6 @@ const NotificationCard = ({
             Tap to see details
           </Text>
         )}
-      </View>
-      <View
-        style={[
-          tw`bg-primary absolute  bottom-0 right-0 w-20 h-9 justify-center items-center`,
-          { borderTopLeftRadius: 12, borderBottomRightRadius: 12 },
-        ]}
-      >
-        <Text style={tw`font-DegularDisplayDemoMedium text-base text-white`}>
-          Cleaning
-        </Text>
       </View>
     </TouchableOpacity>
   );
