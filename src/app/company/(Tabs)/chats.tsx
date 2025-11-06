@@ -20,6 +20,9 @@ const chats = () => {
       {/* ================== profile header component =========== */}
       <ServiceProfileHeaderInfo
         onPress={() => router.push("/company/(Tabs)/profile")}
+        onPressNotification={() =>
+          router.push("/company/userNotifications/userNotification")
+        }
       />
 
       <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>
