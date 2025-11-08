@@ -91,6 +91,7 @@ export const api = createApi({
     "message",
     "search",
     "payment",
+    "notifications",
   ],
 });
 export const imageUrl = "http://10.10.10.63:8001/api";
