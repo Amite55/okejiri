@@ -1,5 +1,4 @@
 import BookingCard from "@/src/Components/BookingCard";
-import ServiceCardSkeleton from "@/src/Components/skeletons/ServiceCardSkeleton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useLazyBookingHistoryQuery } from "@/src/redux/apiSlices/userProvider/account/bookingHistory";
@@ -119,15 +118,6 @@ const BookingsHistory = () => {
     );
   };
 
-  // --- Render Skeleton Loader ---
-  const renderSkeleton = () => (
-    <View style={tw`bg-base_color px-5 gap-3 pb-10`}>
-      {Array.from({ length: 6 }).map((_, index) => (
-        <ServiceCardSkeleton key={index} />
-      ))}
-    </View>
-  );
-
   // --- Render Empty State ---
   const renderEmpty = () => (
     <View style={tw`flex-1 justify-center items-center mt-10`}>
@@ -160,10 +150,10 @@ const BookingsHistory = () => {
           onPress={() => router.back()}
           titleTextStyle={tw`text-xl`}
         />
-        {renderSkeleton()}
       </View>
     );
   }
+  console.log(bookings, "bookings");
 
   return (
     <FlatList
