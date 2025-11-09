@@ -39,7 +39,7 @@ const Booking_Confirmation = () => {
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       style={tw`flex-1 px-5 bg-base_color `}
-      contentContainerStyle={tw`pb-2 justify-between flex-grow`}
+      contentContainerStyle={tw`pb-1 justify-between flex-grow`}
     >
       <View style={tw``}>
         <BackTitleButton
