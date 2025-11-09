@@ -6,7 +6,6 @@ import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
 const BookingCard = ({ item, onPress }: any) => {
-  console.log("relative", item, "relative");
   return (
     <TouchableOpacity
       activeOpacity={0.8}
