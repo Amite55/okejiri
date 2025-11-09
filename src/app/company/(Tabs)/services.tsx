@@ -86,7 +86,7 @@ const services = () => {
         <ServiceProfileHeaderInfo
           onPress={() => router.push("/company/(Tabs)/profile")}
           onPressNotification={() =>
-            router.push("/notification_Global/notifications")
+            router.push("/company/userNotifications/userNotification")
           }
         />
         <Text
