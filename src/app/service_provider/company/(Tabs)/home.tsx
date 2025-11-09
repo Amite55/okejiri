@@ -4,31 +4,81 @@ import {
   IconMultipleUserBlack,
   IconNewOrderPrimary,
   IconPendingBlue,
-  IconRightArrowCornerPrimaryColor,
-  IconRightCornerArrow,
+  IconRightArrowCornerPrimaryColor
 } from "@/assets/icons";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import TransactionsCard from "@/src/Components/TransactionsCard";
 import UserCard from "@/src/Components/UserCard";
 import tw from "@/src/lib/tailwind";
+import { useHomeDataQuery, useRecentOrderQuery, useRecentTransactionsQuery } from "@/src/redux/apiSlices/companyProvider/homeSlices";
+import { useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/orderSlices";
 import { _WIDTH } from "@/utils/utils";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
 
 // ------------------ static dropdown value -----------------
 const dropdownData = [
-  { label: "This week", value: "1" },
-  { label: "This month", value: "2" },
-  { label: "This year", value: "3" },
+  { label: "This week", value: "this_week" },
+  { label: "This month", value: "this_month" },
+  { label: "This year", value: "this_year" },
 ];
 
 const Home_Index_Company = () => {
-  const [value, setValue] = useState(null);
+
+
+
+
+  const [value, setValue] = useState("this_week");
   const [isFocus, setIsFocus] = useState(false);
+
+
+  // data fetch - START
+  const { data: homeData, isLoading: homeDataLoading } = useHomeDataQuery(value);
+
+  const { data: recentOrder, isLoading: recentOrderLoading } = useRecentOrderQuery({});
+  const { data: recentTransaction, isLoading: recentTransactionLoading } = useRecentTransactionsQuery({});
+  // if()
+  console.log("++++++++++ recent order data =================== ", recentOrder);
+  console.log("++++++++++ recent transaction order data inside =================== ", recentTransaction);
+  // data fetch - END
+  const [fetchOrderItem] = useLazyOrderDetailsQuery();
+
+  // state for fetch data;
+  const formateDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const options = { weekday: "short", day: "2-digit", month: "short", year: "numeric" };
+    const parts = date.toLocaleDateString("en-US", options).split(" ");
+    console.log(date.toLocaleDateString("en-US", options))
+    const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${parts[3]}`;
+    return formatted;
+  }
+
+  const [descriptions, setDescriptions] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    if (recentOrder?.data?.data?.length) {
+      const fetchDescriptions = async () => {
+        for (const item of recentOrder.data.data) {
+          try {
+            const response = await fetchOrderItem(item.id).unwrap();
+            const count = response?.data?.provider?.provider_services?.length ?? 0;
+            setDescriptions(prev => ({ ...prev, [item.id]: `${count} ${count === 1 ? "service" : "services"}` }));
+          } catch (err) {
+            setDescriptions(prev => ({ ...prev, [item.id]: "N/A" }));
+          }
+        }
+      };
+      fetchDescriptions();
+    }
+  }, [recentOrder]);
+
+
+
+  // return: ==========================
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -58,7 +108,7 @@ const Home_Index_Company = () => {
             Total earnings
           </Text>
           <Text style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}>
-            ₦ 100,000
+            ₦ {homeData?.data?.total_earnings ?? 0}
           </Text>
         </View>
         <View style={tw`w-44`}>
@@ -89,10 +139,10 @@ const Home_Index_Company = () => {
         <View
           style={tw`flex-1 border border-gray-300 rounded-2xl h-40 p-5 gap-2`}
         >
-          <View style={tw`flex-row justify-between items-center`}>
+          <View style={tw` justify-between items-center`}>
             <View />
             <SvgXml xml={IconMultipleUserBlack} />
-            <SvgXml xml={IconRightCornerArrow} />
+            
           </View>
           <Text
             style={tw`font-DegularDisplayDemoRegular text-base text-regularText text-center`}
@@ -103,12 +153,12 @@ const Home_Index_Company = () => {
           <Text
             style={tw`font-DegularDisplayDemoMedium text-4xl text-black text-center `}
           >
-            15
+            {homeData?.data?.total_employee ?? 0}
           </Text>
         </View>
 
         {/*  ---------- total active  employee -------------- */}
-        <View
+        {/* <View
           style={tw`flex-1 border border-gray-300 rounded-2xl h-40 p-5 gap-2`}
         >
           <View style={tw`flex-row justify-between items-center`}>
@@ -128,9 +178,9 @@ const Home_Index_Company = () => {
           <Text
             style={tw`font-DegularDisplayDemoMedium text-4xl text-black text-center `}
           >
-            10
+            {homeData?.data?.total_employee ?? 0}
           </Text>
-        </View>
+        </View> */}
       </View>
 
       {/* ------------ new order and regrading order -------------- */}
@@ -139,13 +189,13 @@ const Home_Index_Company = () => {
         <View style={tw`relative `}>
           <SvgXml xml={IconNewOrderPrimary} width={_WIDTH - _WIDTH * 0.09} />
           <View style={tw`absolute top-6 left-30 justify-center items-center`}>
-            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
-              Pending order
+            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white `}>
+              New order
             </Text>
             <Text
               style={tw`font-DegularDisplayDemoSemibold text-4xl text-white`}
             >
-              15
+              {homeData?.data?.new_order ?? 0}
             </Text>
           </View>
         </View>
@@ -160,7 +210,7 @@ const Home_Index_Company = () => {
             <Text
               style={tw`font-DegularDisplayDemoSemibold text-4xl text-white`}
             >
-              15
+              {homeData?.data?.pending_order ?? 0}
             </Text>
           </View>
         </View>
@@ -169,13 +219,13 @@ const Home_Index_Company = () => {
         <View style={tw`relative `}>
           <SvgXml xml={IconCompleteOrder} width={_WIDTH - _WIDTH * 0.09} />
           <View style={tw`absolute top-6 left-30 justify-center items-center`}>
-            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
-              Pending order
+            <Text style={tw`font-DegularDisplayDemoRegular text-2xl text-white`}>
+              Completed order
             </Text>
             <Text
               style={tw`font-DegularDisplayDemoSemibold text-4xl text-white`}
             >
-              15
+              {homeData?.data?.completed_order ?? 0}
             </Text>
           </View>
         </View>
@@ -193,15 +243,17 @@ const Home_Index_Company = () => {
       />
       {/*  resent order */}
       <View style={tw`gap-3 my-4`}>
-        {[1, 2, 3, 4, 5].map((item, index) => {
+        {recentOrder?.data?.data.map((item: any, index: any) => {
+
           return (
             <UserCard
               key={index}
-              ProfileName="John Doe"
+              ProfileName={item.user.name}
               isProfileBadge
-              Date="Mon, 12 Des 2025"
-              Description="Service title goes here"
-              // onPress={() => router.push("")}
+              Date={formateDate(item.created_at)}
+              Description={descriptions[item.id]}
+              ImgProfileImg={item.user.avatar}
+            // onPress={() => router.push("")}
             />
           );
         })}
@@ -215,12 +267,14 @@ const Home_Index_Company = () => {
         </Text>
 
         <View style={tw`gap-6 my-4`}>
-          {[1, 2, 3, 4, 5, 6, 7].map((index) => {
+          {recentTransaction?.data.data.map((item: any, index: any) => {
             return (
               <TransactionsCard
                 key={index}
-                price={200}
+                price={item.amount}
                 profileBadge
+                type={item.direction}
+                varient={item.transaction_type}
                 title="Service title goes here"
                 transactionIcon={IconRightArrowCornerPrimaryColor}
                 userName="User Name"
