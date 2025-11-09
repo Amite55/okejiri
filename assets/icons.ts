@@ -811,3 +811,7 @@ export const IconTransactionDebit = `<svg width="16" height="16" viewBox="0 0 16
 <path d="M-0.000300213 13.2249L10.6297 2.59489L2.37232 2.59489L2.37232 0.000239437H15.0593V12.6872L12.4647 12.6872L12.4647 4.42986L1.83467 15.0599L-0.000300213 13.2249Z" fill="#FF3A00"/>
 </svg>
 `
+export const IconWhiteDot = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="6" cy="6" r="6" fill="white"/>
+</svg>
+`
