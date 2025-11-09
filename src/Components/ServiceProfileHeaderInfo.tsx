@@ -5,6 +5,7 @@ import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 import { useProfileQuery } from "../redux/apiSlices/authSlices";
+import { useGetNotificationsQuery } from "../redux/apiSlices/notificationsSlices";
 
 interface IProps {
   onPress?: () => void;
@@ -14,6 +15,11 @@ interface IProps {
 const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
   // ================== api end point ==================
   const { data: userProfileInfo, isLoading, error } = useProfileQuery({});
+  const { data: notificationData, isLoading: isNotificationLoading } =
+    useGetNotificationsQuery(1000);
+
+  const notificationCounter =
+    notificationData?.data?.unread_notifications_count;
 
   return (
     <View
@@ -50,10 +56,18 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
 
       <TouchableOpacity
         onPress={onPressNotification}
-        style={tw`w-14 h-14 p-3 text-center bg-white rounded-3xl justify-center items-center`}
+        style={tw`w-14 h-14 p-3 text-center bg-white rounded-full justify-center items-center`}
       >
         <SvgXml xml={IconNotificationDark} />
-        {/* <SvgXml xml={IconNotificationDark} /> */}
+        {notificationCounter > 0 && (
+          <View
+            style={tw`absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center`}
+          >
+            <Text style={tw`text-white text-xs font-bold`}>
+              {notificationCounter?.length > 9 ? "9+" : notificationCounter}
+            </Text>
+          </View>
+        )}
       </TouchableOpacity>
     </View>
   );

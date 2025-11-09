@@ -5,9 +5,23 @@ import React from "react";
 import { ScrollView, View } from "react-native";
 
 import NotificationCard from "@/src/Components/NotificationCard";
-import NotificationData from "@/src/json/NotificationData.json";
+import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
+import {
+  useGetNotificationsQuery,
+  useSingleMarkMutation,
+} from "@/src/redux/apiSlices/notificationsSlices";
 
 const UserNotification = () => {
+  // -------------------- api end point ---------------------
+  const { data: notificationData, isLoading: isNotificationLoading } =
+    useGetNotificationsQuery(10);
+  const [markAsReadNotification] = useSingleMarkMutation();
+
+  // ==================== loading skeleton ====================
+  if (isNotificationLoading) {
+    return <NotificationSkeleton />;
+  }
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -23,12 +37,13 @@ const UserNotification = () => {
       />
 
       <View style={tw`gap-3`}>
-        {NotificationData.map((item) => {
+        {notificationData?.data?.notifications?.data?.map((item) => {
           return (
             <NotificationCard
               key={item.id}
               item={item}
-              onPress={() => {
+              onPress={async () => {
+                await markAsReadNotification(item.id);
                 if (item.type === "new_order") {
                   router.push(
                     "/service_provider/individual/order_details_profile"
