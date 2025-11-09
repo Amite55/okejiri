@@ -63,7 +63,7 @@ const Terms_And_Condition = () => {
         </View>
       </View>
 
-      {/* ✅ Render backend HTML here */}
+      {/*  Render backend HTML here */}
       <RenderHtml contentWidth={width} source={{ html: data?.data?.text }} />
     </ScrollView>
   );
