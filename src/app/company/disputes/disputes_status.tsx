@@ -31,11 +31,8 @@ const Disputes_Status = () => {
   console.log("DisputeDetails", DisputeDetails, "DisputeDetails");
   const handelDeleted = async () => {
     const res = await disputeDelete(id).unwrap();
-    // console.log(res, "gug");
-
     if (res.status === "") {
     }
-    // console.log(res);
   };
 
   return (

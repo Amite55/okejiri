@@ -70,6 +70,9 @@ const authSlices = api.injectEndpoints({
         query: (credentials) => ({
           url: "/edit-profile-picture",
           method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
           body: credentials,
         }),
         invalidatesTags: ["profile"],
