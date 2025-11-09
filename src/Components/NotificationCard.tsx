@@ -18,7 +18,7 @@ import tw from "../lib/tailwind";
 const iconMap = {
   new_order: IconNewOrder,
   request_approved: IconDeliveryApproved,
-  KYC_complete: IconKYCComplete,
+  complete_kyc: IconKYCComplete,
   warning: IconWaring,
   cancelled: IconCancel,
   new_dispute: IconDispute,
@@ -28,7 +28,7 @@ const iconMap = {
 const textColorMap = {
   new_order: "#FF6600",
   request_approved: "#008100",
-  KYC_complete: "#9747FF",
+  complete_kyc: "#9747FF",
   warning: "#FF3A00",
   cancelled: "#FF3A00",
   new_dispute: "#C88C00",
@@ -44,23 +44,28 @@ const NotificationCard = ({
   item: any;
   onPress: () => void;
 }) => {
-  const Icon = iconMap[item.icon];
-  const textColor = textColorMap[item.type] || "#000000";
+  const Icon = iconMap[item?.data?.type];
+  const textColor = textColorMap[item?.data?.type] || "#000000";
+
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={tw`flex-row  items-center gap-5 bg-white rounded-3xl py-4 px-5 relative shadow-md`}
+      activeOpacity={0.8}
+      style={[
+        tw`flex-row  items-center gap-2 rounded-2xl py-2 px-2 relative shadow-md`,
+        item?.read_at ? tw`bg-white` : tw`bg-gray-200`,
+      ]}
     >
       {/* ----------------------- notification icon ------------------------------ */}
       {Icon ? (
         <View
-          style={tw`w-16 h-16 rounded-full border-2  border-white shadow-xl shadow-slate-900 bg-base_color justify-center items-center`}
+          style={tw`w-14 h-14 rounded-full border-2  border-white shadow-xl shadow-slate-900 bg-base_color justify-center items-center`}
         >
           <SvgXml xml={Icon} />
         </View>
       ) : (
         <Image
-          style={tw`w-16 h-16 rounded-full border border-white`}
+          style={tw`w-14 h-14 rounded-full border border-white`}
           source={ImgCleaning}
         />
       )}
@@ -69,16 +74,16 @@ const NotificationCard = ({
         <Text
           numberOfLines={2}
           style={[
-            tw`flex-1 font-DegularDisplayDemoMedium text-success600  text-2xl mb-2`,
+            tw`flex-1 font-DegularDisplayDemoMedium  text-xl mb-1`,
             { color: textColor },
           ]}
         >
-          {item?.notification_title}
+          {item?.data?.title}
         </Text>
         {item.profile_name ? (
           <View style={tw`flex-row items-center gap-2`}>
             <Text
-              style={tw`font-DegularDisplayDemoSemibold text-xl text-black`}
+              style={tw`font-DegularDisplayDemoSemibold text-sm text-black`}
             >
               Jone don
             </Text>
@@ -86,21 +91,11 @@ const NotificationCard = ({
           </View>
         ) : (
           <Text
-            style={tw`font-DegularDisplayDemoRegular text-xl text-gray-700`}
+            style={tw`font-DegularDisplayDemoRegular text-sm text-gray-700`}
           >
             Tap to see details
           </Text>
         )}
-      </View>
-      <View
-        style={[
-          tw`bg-primary absolute  bottom-0 right-0 w-20 h-9 justify-center items-center`,
-          { borderTopLeftRadius: 12, borderBottomRightRadius: 12 },
-        ]}
-      >
-        <Text style={tw`font-DegularDisplayDemoMedium text-base text-white`}>
-          Cleaning
-        </Text>
       </View>
     </TouchableOpacity>
   );
