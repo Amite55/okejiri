@@ -16,6 +16,7 @@ const Company_Layout = () => {
         <Stack.Screen name="company_wallets" />
         <Stack.Screen name="company_services" />
         <Stack.Screen name="my_employees" />
+        <Stack.Screen name="order_details_profile" />
       </Stack>
     </View>
   );

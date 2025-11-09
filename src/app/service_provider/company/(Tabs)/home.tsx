@@ -39,20 +39,24 @@ const Home_Index_Company = () => {
   // data fetch - START
   const { data: homeData, isLoading: homeDataLoading } = useHomeDataQuery(value);
 
-  const { data: recentOrder, isLoading: recentOrderLoading } = useRecentOrderQuery({});
+  const { data: recentOrder, isLoading: recentOrderLoading } = useRecentOrderQuery("New");
   const { data: recentTransaction, isLoading: recentTransactionLoading } = useRecentTransactionsQuery({});
-  // if()
-  console.log("++++++++++ recent order data =================== ", recentOrder);
-  console.log("++++++++++ recent transaction order data inside =================== ", recentTransaction);
-  // data fetch - END
+  
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
+
+
+  // if()
+  // console.log("++++++++++ recent order data =================== ", recentOrder);
+  // console.log("++++++++++ recent transaction order data inside =================== ", recentTransaction?.data.data);
+  // data fetch - END
+  
 
   // state for fetch data;
   const formateDate = (dateStr: string) => {
     const date = new Date(dateStr);
     const options = { weekday: "short", day: "2-digit", month: "short", year: "numeric" };
     const parts = date.toLocaleDateString("en-US", options).split(" ");
-    console.log(date.toLocaleDateString("en-US", options))
+    // console.log(date.toLocaleDateString("en-US", options))
     const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${parts[3]}`;
     return formatted;
   }
@@ -277,7 +281,7 @@ const Home_Index_Company = () => {
                 varient={item.transaction_type}
                 title="Service title goes here"
                 transactionIcon={IconRightArrowCornerPrimaryColor}
-                userName="User Name"
+                userName={item.sender.name}
               />
             );
           })}
