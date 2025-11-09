@@ -38,7 +38,6 @@ interface FormErrors {
     message?: string;
   };
 }
-
 // Interface for component props
 interface EditProfileProps {}
 
@@ -279,11 +278,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
       <PrimaryButton
         onPress={handleSubmit(onSubmit)}
         titleProps={isLoading ? "Updating..." : "Submit"}
-        disabled={isLoading}
         contentStyle={tw`mt-4`}
-        accessibilityLabel={
-          isLoading ? "Updating profile" : "Submit profile changes"
-        }
       />
 
       {/* Success Modal */}
@@ -322,7 +317,6 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
               onPress={handleModalClose}
               titleProps="Go Back"
               contentStyle={tw`w-full`}
-              accessibilityLabel="Go back to settings"
             />
           </View>
         </View>

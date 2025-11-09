@@ -2,24 +2,49 @@ import { IconDownArrow, IconUpArrow } from "@/assets/icons";
 import { ImgFAQ } from "@/assets/images/image";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useGetFAQQuery } from "@/src/redux/apiSlices/userProvider/account/settingsSlices";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Collapsible from "react-native-collapsible";
 import { SvgXml } from "react-native-svg";
 
 const FAQ = () => {
-  const [qnsOne, setQnsOne] = useState<boolean>(false);
-  const [qnsTwo, setQnsTwo] = useState<boolean>(false);
+  const [openId, setOpenId] = useState<number | null>(null);
+  const { data, isLoading, isError } = useGetFAQQuery({});
+
+  const faqs = data?.data || [];
+
+  if (isLoading) {
+    return (
+      <View style={tw`flex-1 justify-center items-center bg-base_color`}>
+        <ActivityIndicator size="large" color="#FF0000" />
+        <Text style={tw`mt-3 text-lg text-black`}>Loading FAQs...</Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={tw`flex-1 justify-center items-center bg-base_color`}>
+        <Text style={tw`text-lg text-red-600`}>Failed to load FAQs 😔</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
-      keyboardDismissMode="interactive"
       style={tw`flex-1 bg-base_color px-5 `}
       contentContainerStyle={tw`pb-6`}
-      //   keyboardShouldPersistTaps="handled"
     >
       <BackTitleButton
         onPress={() => router.back()}
@@ -29,6 +54,7 @@ const FAQ = () => {
       <View style={tw`justify-center items-center -mt-10`}>
         <Image source={ImgFAQ} />
       </View>
+
       <View style={tw`justify-center items-center`}>
         <View
           style={tw`w-full h-16 justify-center items-center bg-white rounded-full`}
@@ -39,52 +65,39 @@ const FAQ = () => {
         </View>
       </View>
 
-      {/* -=-------------------- FAq ---------------- */}
-
+      {/* ------------------ Dynamic FAQ List ------------------ */}
       <View style={tw`mt-10 gap-3`}>
-        <TouchableOpacity
-          onPress={() => setQnsOne(!qnsOne)}
-          style={tw`flex-row justify-between items-center bg-white h-14 rounded-full px-6`}
-        >
-          <Text style={tw`font-DegularDisplayDemoMedium text-base text-black`}>
-            Question 1
-          </Text>
-          <SvgXml xml={qnsOne ? IconUpArrow : IconDownArrow} />
-        </TouchableOpacity>
+        {faqs.length > 0 ? (
+          faqs.map((item: any) => (
+            <View key={item.id}>
+              <TouchableOpacity
+                onPress={() => setOpenId(openId === item.id ? null : item.id)}
+                style={tw`flex-row justify-between items-center bg-white h-14 rounded-full px-6`}
+              >
+                <Text
+                  style={tw`font-DegularDisplayDemoMedium text-base text-black`}
+                >
+                  {item.question}
+                </Text>
+                <SvgXml
+                  xml={openId === item.id ? IconUpArrow : IconDownArrow}
+                />
+              </TouchableOpacity>
 
-        <Collapsible collapsed={!qnsOne}>
-          <Text
-            style={tw` px-5 py-4 text-black rounded-lg font-PoppinsRegular text-sm`}
-          >
-            Placing an order is easy! Simply browse through our categories, add
-            items to your cart, and proceed to checkout. Select your delivery
-            address, choose a payment method, and confirm your order. We’ll take
-            care of the rest!
+              <Collapsible collapsed={openId !== item.id}>
+                <Text
+                  style={tw`px-5 py-4 text-black rounded-lg font-PoppinsRegular text-sm`}
+                >
+                  {item.answer}
+                </Text>
+              </Collapsible>
+            </View>
+          ))
+        ) : (
+          <Text style={tw`text-center text-lg text-gray-500 mt-6`}>
+            No FAQs available
           </Text>
-        </Collapsible>
-
-        {/* -=----------------------------Question 1 --------------- */}
-
-        <TouchableOpacity
-          onPress={() => setQnsTwo(!qnsTwo)}
-          style={tw`flex-row justify-between items-center bg-white h-14 rounded-full px-6`}
-        >
-          <Text style={tw`font-DegularDisplayDemoMedium text-base text-black`}>
-            Question 2
-          </Text>
-          <SvgXml xml={qnsTwo ? IconUpArrow : IconDownArrow} />
-        </TouchableOpacity>
-
-        <Collapsible collapsed={!qnsTwo}>
-          <Text
-            style={tw` px-5 py-4 text-black rounded-lg font-PoppinsRegular text-sm`}
-          >
-            Placing an order is easy! Simply browse through our categories, add
-            items to your cart, and proceed to checkout. Select your delivery
-            address, choose a payment method, and confirm your order. We’ll take
-            care of the rest!
-          </Text>
-        </Collapsible>
+        )}
       </View>
     </ScrollView>
   );
