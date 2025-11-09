@@ -806,3 +806,12 @@ export const IconSettingsPrimary = `<svg width="80" height="80" viewBox="0 0 80 
 </svg>
 
 `;
+
+export const IconTransactionCredit = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.0599 1.83517L4.42987 12.4652L12.6873 12.4652L12.6873 15.0598H0.000248844V2.37282L2.5949 2.37282L2.5949 10.6302L13.2249 0.0001968L15.0599 1.83517Z" fill="#00B230"/>
+</svg>
+`;
+export const IconTransactionDebit = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M-0.000300213 13.2249L10.6297 2.59489L2.37232 2.59489L2.37232 0.000239437H15.0593V12.6872L12.4647 12.6872L12.4647 4.42986L1.83467 15.0599L-0.000300213 13.2249Z" fill="#FF3A00"/>
+</svg>
+`
