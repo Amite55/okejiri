@@ -24,6 +24,7 @@ const _layout = () => {
       <Stack.Screen name="wallets" />
       <Stack.Screen name="my_booking" />
       <Stack.Screen name="booking_service_details" />
+      <Stack.Screen name="userNotifications" />
     </Stack>
   );
 };
