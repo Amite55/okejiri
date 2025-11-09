@@ -144,7 +144,7 @@ const Previous_Booking_Confirmation = () => {
 
       {/*  ------------- next button -------------------- */}
       <PrimaryButton
-        onPress={() => router.push("/company/serviceBookings/make_payment")}
+        // onPress={() => router.push("/company/serviceBookings/make_payment")}
         titleProps="Reorder  1/2"
         IconProps={IconRightArrow}
         contentStyle={tw`mt-4`}

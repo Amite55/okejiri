@@ -1,5 +1,4 @@
 import ServiceCard from "@/src/Components/ServiceCard";
-import ServiceCardSkeleton from "@/src/Components/skeletons/ServiceCardSkeleton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useLazyGetFavoritesQuery } from "@/src/redux/apiSlices/userProvider/account/favoritesSlices";
@@ -81,14 +80,6 @@ const Favorites_Item = () => {
       </View>
     );
   };
-  // --- Render Skeleton Loader ---
-  const renderSkeleton = () => (
-    <View style={tw`bg-base_color px-5 gap-3 pb-10`}>
-      {Array.from({ length: 6 }).map((_, index) => (
-        <ServiceCardSkeleton key={index} />
-      ))}
-    </View>
-  );
   // --- Render Empty State ---
   const renderEmpty = () => (
     <View style={tw`flex-1 justify-center items-center mt-10`}>
@@ -98,55 +89,55 @@ const Favorites_Item = () => {
       </Text>
     </View>
   );
-  console.log(favorites, "favorites");
-  // Show skeleton during initial load
+
   if (isLoading && favorites.length === 0) {
     return (
-      <View style={tw`flex-1 bg-base_color`}>
+      <View style={tw` bg-base_color`}>
         <BackTitleButton
           pageName={"Favorites"}
           onPress={() => router.back()}
           titleTextStyle={tw`text-xl`}
         />
-        {renderSkeleton()}
       </View>
     );
   }
 
   return (
-    <FlatList
-      data={favorites}
-      renderItem={({ item }: any) => (
-        <ServiceCard
-          item={item?.package}
-          index={item?.id}
-          onPress={() =>
-            router.push({
-              pathname:
-                "/company/previous_item_Book/previous_booking_confirmation",
-              params: { id: item?.id },
-            })
-          }
-        />
-      )}
-      ListHeaderComponent={() => (
-        <BackTitleButton
-          pageName={"Favorites"}
-          onPress={() => router.back()}
-          titleTextStyle={tw`text-xl`}
-        />
-      )}
-      ListFooterComponent={renderFooter}
-      ListEmptyComponent={!isLoading ? renderEmpty : null}
-      keyExtractor={(item) => item.id.toString()}
-      contentContainerStyle={tw`bg-base_color flex-1 px-5 gap-3 pb-10 `}
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-      refreshing={isRefreshing}
-      onRefresh={handleRefresh}
-      onEndReached={handleLoadMore}
-      onEndReachedThreshold={0.5}
-    />
+    <View style={tw`flex-1 bg-base_color`}>
+      <FlatList
+        data={favorites}
+        renderItem={({ item }: any) => (
+          <ServiceCard
+            item={item?.package}
+            index={item?.id}
+            onPress={() =>
+              router.push({
+                pathname:
+                  "/company/previous_item_Book/previous_booking_confirmation",
+                params: { id: item?.id },
+              })
+            }
+          />
+        )}
+        ListHeaderComponent={() => (
+          <BackTitleButton
+            pageName={"Favorites"}
+            onPress={() => router.back()}
+            titleTextStyle={tw`text-xl`}
+          />
+        )}
+        ListFooterComponent={renderFooter}
+        ListEmptyComponent={!isLoading ? renderEmpty : null}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={tw`bg-base_color flex-1 px-5 gap-3 pb-10 `}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        refreshing={isRefreshing}
+        onRefresh={handleRefresh}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+      />
+    </View>
   );
 };
 

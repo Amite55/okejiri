@@ -1,14 +1,19 @@
 import { IconCameraProfile, IconPlusBlackSmall } from "@/assets/icons";
-import { ImgProfileImg, ImgSuccessGIF } from "@/assets/images/image";
+import { ImgSuccessGIF } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useEditProfileMutation } from "@/src/redux/apiSlices/authSlices";
+import {
+  useEditProfileMutation,
+  useEditProfilePictureMutation,
+  useProfileQuery,
+} from "@/src/redux/apiSlices/authSlices";
+import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import {
-  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -50,7 +55,11 @@ interface BackTitleButtonProps {
 
 const Edit_Profile: React.FC<EditProfileProps> = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [editProfile, { isLoading }] = useEditProfileMutation();
+  const [editProfile] = useEditProfileMutation();
+  const [editProfilePicture] = useEditProfilePictureMutation();
+  const { data: userProfileInfo, isLoading, error } = useProfileQuery({});
+  const [imageAsset, setImageAsset] =
+    React.useState<ImagePicker.ImagePickerAsset | null>(null);
 
   const {
     control,
@@ -71,10 +80,8 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
     try {
       // Call your edit profile API with proper typing
       const result = await editProfile(data).unwrap();
-      console.log("Profile updated successfully:", result);
       setModalVisible(true);
     } catch (error: unknown) {
-      console.error("Failed to update profile:", error);
       // You can add error handling UI here
     }
   };
@@ -91,6 +98,48 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
   // Helper function to get border color based on errors
   const getBorderColor = (fieldName: keyof FormErrors): string => {
     return errors[fieldName] ? "border-red-500" : "border-gray-300";
+  };
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      const selectedImage = result.assets[0];
+      setImageAsset(selectedImage);
+
+      const form = new FormData();
+      const filename =
+        selectedImage.fileName ??
+        selectedImage.uri.split("/").pop() ??
+        `photo_${Date.now()}.jpg`;
+
+      const extMatch = /\.(\w+)$/.exec(filename);
+      const mime = extMatch ? `image/${extMatch[1]}` : "image/jpeg";
+
+      form.append("photo", {
+        uri: selectedImage.uri,
+        name: filename,
+        type: mime,
+      } as any);
+
+      try {
+        const response = await editProfilePicture(form).unwrap();
+        console.log("✅ Profile picture upload success:", response);
+      } catch (err) {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: err?.errors?.photo },
+        });
+        console.log("❌ Profile picture upload failed:", err);
+      }
+    } else {
+      console.log("❌ Image selection cancelled");
+    }
   };
 
   return (
@@ -113,13 +162,14 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
         <View style={tw`relative justify-center items-center my-4`}>
           <Image
             style={tw`w-24 h-24 rounded-full`}
-            source={ImgProfileImg}
-            accessibilityLabel="Profile image"
+            source={imageAsset || userProfileInfo?.data?.avatar}
           />
+
           <TouchableOpacity
             style={tw`absolute right-38 -bottom-2 w-12 h-12 rounded-full bg-primary justify-center items-center`}
             accessibilityLabel="Change profile picture"
             accessibilityRole="button"
+            onPress={pickImage}
           >
             <SvgXml xml={IconCameraProfile} />
             <Pressable
