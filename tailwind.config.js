@@ -64,7 +64,7 @@ module.exports = {
         redDeep: "#FF5151",
         redWhite: "#FF8585",
         redWhite100: "#FFF4ED",
-
+        blueMagenta: "#9747FF",
         deepBlue50: "#E8EAED",
         deepBlue75: "#A0A8B6",
         deepBlue100: "#788498",
