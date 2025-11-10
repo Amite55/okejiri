@@ -18,8 +18,8 @@ export const companyProviderHomeSlice = api.injectEndpoints({
             providesTags:["order"]
         }),
         recentOrder: builder.query({
-            query:()=>({
-                url: `get-provider-orders`,
+            query:(status)=>({
+                url: status ? `get-provider-orders?status=${status}` : `get-provider-orders` ,
                 method: "GET"
             }),
             providesTags: ["order"]
