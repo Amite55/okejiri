@@ -38,6 +38,7 @@ const dropdownData = [
 const Individual_Service_Provider_Index = () => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
