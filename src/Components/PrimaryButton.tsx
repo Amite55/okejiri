@@ -23,7 +23,7 @@ const PrimaryButton = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      activeOpacity={0.8}
+      activeOpacity={0.7}
       style={[
         tw`w-full h-14 bg-primary rounded-full flex-row justify-center items-center gap-3`,
         contentStyle,
