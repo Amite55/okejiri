@@ -1,19 +1,24 @@
 import {
+  IconChatsYellow,
   IconCross,
-  IconDisputeRequest,
+  IconCrossSolidRed,
   IconPlus,
+  IconProfileBadge,
+  IconReportBlack,
+  IconStar,
   IconTick,
 } from "@/assets/icons";
+import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useOrderDetailsQuery } from "@/src/redux/apiSlices/userProvider/bookingsSlices";
 import { _HEIGHT } from "@/utils/utils";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import React, { useState } from "react";
 import {
-  FlatList,
-  Image,
+  ActivityIndicator,
   Modal,
   Pressable,
   ScrollView,
@@ -28,85 +33,168 @@ const Booking_Service_Details = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
   const { id } = useLocalSearchParams();
-  const { data: OrderDetailsData } = useOrderDetailsQuery(id);
+  const { data: OrderDetailsData, isLoading: isOrderDetailsLoading } =
+    useOrderDetailsQuery(id, { skip: !id });
+  console.log(OrderDetailsData?.data?.status, "this is item ---------->");
 
-  const renderServiceCard = ({ item }: any) => {
-    const pkg = item.package;
+  if (isOrderDetailsLoading) {
     return (
-      <Pressable
-        style={tw`flex-row justify-between items-center px-4 py-3 rounded-3xl bg-white mb-2`}
-      >
-        <View>
-          <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-            {pkg.title.split(" ").slice(0, 2).join(" ")}
-          </Text>
-          <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
-            ₦ {pkg.price}
-          </Text>
-          <Text
-            style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
-          >
-            Est. time : {pkg.delivery_time} hours
-          </Text>
-        </View>
-
-        <View style={tw`flex-row items-center gap-4`}>
-          <TouchableOpacity
-            onPress={() => {
-              setSelectedPackage(pkg);
-              setModalVisible(true);
-            }}
-            style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
-          >
-            <Text style={tw`text-redWhite `}>See details</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setTickMark(!tickmark)}
-            style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
-          >
-            <SvgXml xml={tickmark ? IconTick : IconPlus} />
-          </TouchableOpacity>
-        </View>
-      </Pressable>
+      <View>
+        <ActivityIndicator size="large" color={"#1111"} />
+      </View>
     );
-  };
+  }
 
   return (
-    <View style={tw`flex-1 bg-base_color`}>
+    <ScrollView
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+      style={tw`flex-1 bg-base_color`}
+    >
       <View style={tw`px-5`}>
         <BackTitleButton
           pageName={"Previous services"}
           onPress={() => router.back()}
           titleTextStyle={tw`text-xl`}
         />
-        <Text
-          style={tw`font-DegularDisplayDemoRegular text-xl text-regularText text-center px-10 my-2`}
-        >
-          Your previous services with this provider will be shown here.
-        </Text>
-        <FlatList
-          data={OrderDetailsData?.data?.booking_items}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderServiceCard}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={tw`pb-10`}
-        />
 
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "/company/dispute_process",
-              params: { id: id },
-            })
-          }
-          style={tw`flex-row justify-center items-center gap-3 py-4 my-10`}
-        >
-          <SvgXml xml={IconDisputeRequest} />
-          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-            Request for dispute
+        {/* [======= provider profile info =======] */}
+        <View style={tw`flex-row flex-1 py-3`}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            disabled
+            style={tw`flex-1 flex-row items-center gap-3`}
+          >
+            <Image
+              style={tw`w-11 h-11 rounded-full`}
+              source={OrderDetailsData?.data?.provider?.avatar}
+              contentFit="contain"
+            />
+            <View>
+              <View style={tw`flex-row gap-1 items-center`}>
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-base text-black`}
+                >
+                  {OrderDetailsData?.data?.provider?.name}
+                </Text>
+                {OrderDetailsData?.data?.provider?.kyc_status ===
+                  "Verified" && (
+                  <SvgXml width={15} height={15} xml={IconProfileBadge} />
+                )}
+              </View>
+              <View style={tw`flex-row items-center gap-1`}>
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-primary text-lg `}
+                >
+                  {OrderDetailsData?.data?.provider?.ratings_avg_rating}
+                </Text>
+                <View style={tw`flex-row items-center gap-2`}>
+                  <SvgXml xml={IconStar} />
+                </View>
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
+                >
+                  ({OrderDetailsData?.data?.provider?.ratings_count})
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+          {/* --------------  message button ---------------- */}
+          {(OrderDetailsData?.data?.status === "New" ||
+            OrderDetailsData?.data?.status === "Pending") && (
+            <TouchableOpacity
+              style={tw`border border-gray-300 flex-row items-center rounded-2xl gap-2 px-2 h-11`}
+            >
+              <SvgXml xml={IconChatsYellow} />
+              <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
+                Message
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {OrderDetailsData?.data?.status === "Completed" && (
+          <Text
+            style={tw`font-DegularDisplayDemoRegular text-xl text-regularText text-center px-10 my-2`}
+          >
+            Your previous services with this provider will be shown here.
           </Text>
-        </TouchableOpacity>
+        )}
+
+        <View>
+          {OrderDetailsData?.data?.booking_items?.map((item) => {
+            const pkg = item.package;
+            return (
+              <Pressable
+                key={item?.id}
+                style={tw`flex-row justify-between items-center px-4 py-3 rounded-3xl bg-white mb-2`}
+              >
+                <View>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
+                  >
+                    {pkg.title.split(" ").slice(0, 2).join(" ")}
+                  </Text>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
+                  >
+                    ₦ {pkg.price}
+                  </Text>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-lg text-regularText`}
+                  >
+                    Est. time : {pkg.delivery_time} hours
+                  </Text>
+                </View>
+
+                <View style={tw`flex-row items-center gap-4`}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSelectedPackage(pkg);
+                      setModalVisible(true);
+                    }}
+                    style={tw`w-24 h-9 rounded-lg justify-center items-center bg-redWhite100`}
+                  >
+                    <Text style={tw`text-redWhite `}>See details</Text>
+                  </TouchableOpacity>
+
+                  {OrderDetailsData?.data?.status === "Completed" && (
+                    <TouchableOpacity
+                      onPress={() => setTickMark(!tickmark)}
+                      style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
+                    >
+                      <SvgXml xml={tickmark ? IconTick : IconPlus} />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {/* ----------------- if this user is new order ---------------- */}
+        {(OrderDetailsData?.data?.status === "New" ||
+          OrderDetailsData?.data?.status === "Pending") && (
+          <View style={tw`flex-1 justify-center items-center my-4 gap-3 `}>
+            <Text style={tw`font-PoppinsMedium text-xl text-black text-center`}>
+              Service provider hasn’t responded yet. Please wait.
+            </Text>
+
+            {/* ----------------- if you cancel and report ---------------- */}
+            <PrimaryButton
+              IconFastProps={IconCrossSolidRed}
+              titleProps="Cancel order"
+              contentStyle={tw`bg-transparent border border-red-700 gap-1 h-12`}
+              textStyle={tw`text-red-600`}
+            />
+            <PrimaryButton
+              IconFastProps={IconReportBlack}
+              titleProps="Report provider"
+              contentStyle={tw`bg-transparent border border-red-700 gap-1 h-12`}
+              textStyle={tw`text-black`}
+            />
+          </View>
+        )}
       </View>
 
       {tickmark && (
@@ -217,7 +305,7 @@ const Booking_Service_Details = () => {
 
               <View style={tw`px-4 justify-center items-center`}>
                 <Image
-                  resizeMode="cover"
+                  contentFit="cover"
                   style={tw`w-full h-52 rounded-2xl`}
                   source={{
                     uri:
@@ -252,18 +340,12 @@ const Booking_Service_Details = () => {
                     ₦ {selectedPackage?.price}
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setTickMark(!tickmark)}
-                  style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
-                >
-                  <SvgXml xml={tickmark ? IconTick : IconPlus} />
-                </TouchableOpacity>
               </View>
             </ScrollView>
           </Pressable>
         </Pressable>
       </Modal>
-    </View>
+    </ScrollView>
   );
 };
 

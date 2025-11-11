@@ -75,15 +75,15 @@ export const bookingsSlice = api.injectEndpoints({
       invalidatesTags: ["order"],
     }),
     myBookings: builder.query({
-      query: (page = 10) => ({
-        url: `/my-bookings?per_page=${page}`,
+      query: ({ page, per_page }) => ({
+        url: `/my-bookings?per_page=${per_page}&page=${page}`,
         method: "GET",
       }),
       providesTags: ["booking"],
     }),
     bookingsHistory: builder.query({
-      query: (page = 10) => ({
-        url: `/bookings-history?per_page=${page}`,
+      query: ({ page, per_page }) => ({
+        url: `/bookings-history?per_page=${per_page}&page=${page}`,
         method: "GET",
       }),
       providesTags: ["booking"],

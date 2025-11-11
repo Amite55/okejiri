@@ -135,6 +135,11 @@ export const IconSearch = `<svg width="22" height="22" viewBox="0 0 22 22" fill=
 </svg>
 
 `;
+export const IconCrossSolidRed = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M1.4 14L0 12.6L5.6 7L0 1.4L1.4 0L7 5.6L12.6 0L14 1.4L8.4 7L14 12.6L12.6 14L7 8.4L1.4 14Z" fill="#FF3A00"/>
+</svg>
+
+`;
 export const IconRightArrowCornerPrimaryColor = `<svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M0.504532 10.2425L8.69707 2.05001L2.33311 2.05001L2.33311 0.0503132H12.111L12.111 9.82818L10.1113 9.82818L10.1113 3.46422L1.91875 11.6568L0.504532 10.2425Z" fill="#FF6600"/>
 </svg>

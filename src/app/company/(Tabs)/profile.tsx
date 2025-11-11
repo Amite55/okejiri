@@ -37,7 +37,6 @@ const Profile = () => {
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
   const { data: userProfileInfo } = useProfileQuery({});
-  console.log(userProfileInfo?.data?.name, "this is profile info");
 
   // -------------- handle logout --------------
   const handleLogoutUser = async () => {
@@ -151,7 +150,7 @@ const Profile = () => {
           fastIcon={IconDisputes}
         />
         <SettingsCard
-          title="   Services nearby"
+          title="Services nearby"
           onPress={() => router.push("/company/serviceNearbyHistory")}
           fastIcon={IconLocationBlack}
         />
