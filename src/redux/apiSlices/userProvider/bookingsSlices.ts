@@ -7,6 +7,10 @@ export const bookingsSlice = api.injectEndpoints({
         url: "/report-provider",
         method: "POST",
         body: reports,
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Accept: "application/json",
+        },
       }),
       invalidatesTags: ["provider"],
     }),
