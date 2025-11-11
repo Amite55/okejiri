@@ -1,24 +1,39 @@
 import {
     IconCardProfile,
+    IconDisputes,
     IconLocation,
     IconMailYellow,
     IconPhoneYellow,
+    IconRightCornerArrowWhite,
+    IconStar,
     IconWhiteDot
 } from "@/assets/icons";
+import AcceptedModal from "@/src/Components/AcceptedModal";
+import UserReviewCard from "@/src/Components/UserReviewCard";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/orderSlices";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
-import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, Image, Pressable, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Order_Details_Profile = () => {
     // screen state
+    const [approvedModalShown, setApprovedModalShown] = useState(false)
+
+    const handleAssignPress = ()=>{
+        setApprovedModalShown(false);
+
+        setTimeout(()=>{
+            router.push("/service_provider/company/my_employees/assign_provider")
+        }, 200)
+    }
+
+
 
     const { id } = useLocalSearchParams();
-
-
+    //     
     // api state
     const [fetchOrderItem, {
         data: fetchOrderData,
@@ -60,7 +75,10 @@ const Order_Details_Profile = () => {
     //     console.log("Item details ============ ", JSON.stringify(fetchOrderData?.data, null, 2))
     // }, [fetchOrderData?.data])
     const order = fetchOrderData?.data;
-    console.log("Order id: ===========", JSON.stringify(order, null, 2));
+    // console.log("provider avatar image, ", order?.provider.avatar)
+    console.log("Order id: ===========", id);
+
+
     return (
         <ScrollView
             showsHorizontalScrollIndicator={false}
@@ -203,7 +221,7 @@ const Order_Details_Profile = () => {
                         {order.booking_items?.map((bookingItem: any) => {
                             const packageItems = bookingItem.package?.package_detail_items || [];
                             return (
-                                <View key={bookingItem.id} style={tw`bg-white rounded-2xl p-4 mb-4 shadow-sm`}>
+                                <View key={bookingItem.id} style={tw`bg-white rounded-2xl p-4 mb-4 `}>
                                     <Text style={tw`font-bold text-lg mb-2`}>
                                         {bookingItem.package?.title || "Service title goes here."}
                                     </Text>
@@ -251,23 +269,151 @@ const Order_Details_Profile = () => {
                     </View>
 
                     {/* Action Buttons */}
-                    <View style={tw`flex-row justify-between`}>
-                        <TouchableOpacity
-                            style={tw`flex-1 bg-red-500 py-4 rounded-full items-center mr-2`}
-                        >
-                            <Text style={tw`text-white font-DegularDisplayDemoMedium text-2xl `}>
-                                Reject
-                            </Text>
-                        </TouchableOpacity>
+                    {/* active when New order type */}
+                    {order.status === "New" &&
+                        <View style={tw`flex-row justify-between`}>
+                            <TouchableOpacity
+                                style={tw`flex-1 bg-red-500 py-4 rounded-full items-center mr-2`}
+                            >
+                                <Text style={tw`text-white font-DegularDisplayDemoMedium text-2xl `}>
+                                    Reject
+                                </Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={tw`flex-1 bg-success600 py-4 rounded-full items-center ml-2`}
-                        >
-                            <Text style={tw`text-white font-DegularDisplayDemoMedium text-2xl`}>
-                                Approve
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
+                            <TouchableOpacity
+                                onPress={()=> setApprovedModalShown(true)}
+                                style={tw`flex-1 bg-success600 py-4 rounded-full items-center ml-2`}
+                            >
+                                <Text style={tw`text-white font-DegularDisplayDemoMedium text-2xl`}>
+                                    Approve
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+
+                    }
+
+
+                    {/* active when Pending order type */}
+                    {order.status === "Pending" &&
+                        <View style={tw`gap-4`}>
+                            <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>Assign Provider</Text>
+
+                            <View style={tw`flex-row justify-between w-full bg-white rounded-lg py-2 px-2`}>
+                                <View style={tw`flex-row gap-2 items-center `}>
+                                    <View style={tw``}>
+                                        <Image style={tw`w-24 h-24 rounded-lg `} source={{ uri: order?.provider?.avatar || order?.provider?.company?.company_logo }} />
+                                    </View>
+                                    <View>
+                                        <Text style={tw`font-DegularDisplayDemoMedium text-xl`}>{order?.provider?.name}</Text>
+                                        <View style={tw`flex-row gap-2 items-center`}>
+                                            <Text style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}>{order?.provider?.ratings_avg_rating}</Text>
+                                            <SvgXml xml={IconStar} />
+                                        </View>
+
+                                    </View>
+                                </View>
+
+                                <View>
+                                    <TouchableOpacity
+                                        onPress={() => router.push("/service_provider/company/my_employees/employees_details")}
+                                        style={tw`w-12 h-12 rounded-2xl  bg-secondary justify-center items-center `}
+                                    >
+                                        <SvgXml xml={IconRightCornerArrowWhite} />
+                                    </TouchableOpacity>
+                                </View>
+
+                            </View>
+
+                            <View style={tw`gap-2`}>
+                                <Pressable
+                                    style={tw`py-4 border border-black/20 rounded-full`}
+                                ><Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-black`}>Extend delivery time</Text></Pressable>
+                                <Pressable
+                                    style={tw`py-4  bg-primary rounded-full`}
+                                ><Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}>Request for delivery</Text></Pressable>
+                                <Pressable
+                                    style={tw`py-4 `}
+                                >
+                                    <View style={tw`flex-row justify-center gap-2`}>
+                                        <SvgXml xml={IconDisputes} />
+                                        <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-black`}>Request for dispute</Text>
+                                    </View>
+                                </Pressable>
+                            </View>
+                        </View>
+                    }
+
+
+                    {/* active when Completed order type */}
+                    {order.status === "Completed" &&
+                        <View>
+                            <View style={tw`gap-4 py-2`}>
+                                <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>Assign Provider</Text>
+
+                                <View style={tw`flex-row justify-between w-full bg-white rounded-lg py-2 px-2`}>
+                                    <View style={tw`flex-row gap-2 items-center `}>
+                                        <View style={tw``}>
+                                            <Image style={tw`w-24 h-24 rounded-lg `} source={{ uri: order?.provider?.avatar || order?.provider?.company?.company_logo }} />
+                                        </View>
+                                        <View>
+                                            <Text style={tw`font-DegularDisplayDemoMedium text-xl`}>{order?.provider?.name}</Text>
+                                            <View style={tw`flex-row gap-2 items-center`}>
+                                                <Text style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}>{order?.provider?.ratings_avg_rating}</Text>
+                                                <SvgXml xml={IconStar} />
+                                            </View>
+
+                                        </View>
+                                    </View>
+
+                                    <View>
+                                        <TouchableOpacity
+                                            onPress={() => router.push("/service_provider/company/my_employees/employees_details")}
+                                            style={tw`w-12 h-12 rounded-2xl  bg-secondary justify-center items-center `}
+                                        >
+                                            <SvgXml xml={IconRightCornerArrowWhite} />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                </View>
+
+
+
+                            </View>
+
+                            <View style={tw`gap-4`}>
+                                <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>User Review</Text>
+                                {
+                                    order?.review && order.review.length > 0
+                                        ? (
+                                            <FlatList
+                                                data={order.review}
+                                                keyExtractor={(item) => item.id.toString()}
+                                                horizontal
+                                                showsHorizontalScrollIndicator={false}
+                                                contentContainerStyle={tw`gap-2 `}
+                                                renderItem={({ item }) => <UserReviewCard item={item} />}
+                                            />
+                                        ) : (
+                                            <View>
+                                                <Text style={tw`font-DegularDisplayDemoRegular text-base text-black`}>No reviews yet.</Text>
+                                            </View>
+                                        )
+                                }
+
+                            </View>
+                        </View>
+                    }
+
+                    <AcceptedModal 
+                        visible={approvedModalShown}
+                        title="Request accepted"
+                        subtitle="Assign a available service provider"
+                        btnText="Assign"
+                        onPress={handleAssignPress}
+                        onClose={()=> setApprovedModalShown(false)}
+                    />
+
+
                 </View>
             ) : null
 

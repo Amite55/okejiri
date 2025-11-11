@@ -1,6 +1,6 @@
 import UserCard from "@/src/Components/UserCard";
 import tw from "@/src/lib/tailwind";
-import { useLazyGetOrdersQuery, useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/orderSlices";
+import { useGetAllProviderOrdersQuery, useLazyGetProviderOrdersQuery, useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/orderSlices";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
@@ -37,10 +37,10 @@ const Order = () => {
     isLoading: isLoadingfetchOrderItems,
     isFetching: isFetchingOrderItems,
     error: isErrorFetchOrderItems
-  }] = useLazyGetOrdersQuery();
+  }] = useLazyGetProviderOrdersQuery();
 
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
-
+  const {data: allProvderOrdersDetail, isLoading: isLoadingAllProvderOrdersDetail, isError: isErrorAllProvderOrdersDetail} = useGetAllProviderOrdersQuery({});
 
   useEffect(() => {
     fetchOrderItems({ status, booking_process: bookingProcess })
@@ -206,7 +206,7 @@ const Order = () => {
             <UserCard
               key={index}
               ProfileName={item.user.name}
-              isProfileBadge
+              isProfileBadge={item.user.kyc_status === "Verified"? true: false}
               Date={formateDate(item.created_at)}
               Description={descriptions[item.id]}
               ImgProfileImg={item.user.avatar}
