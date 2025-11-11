@@ -10,13 +10,13 @@ const BookingCard = ({ item, onPress }: any) => {
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={onPress}
-      style={tw`relative flex-row items-center rounded-xl bg-white p-3 gap-4`}
+      style={tw`relative flex-row items-center rounded-3xl bg-white p-3 gap-4`}
       // key={item?.service_id}
     >
       {/* Image Section */}
       <Image
         contentFit="cover"
-        style={tw`w-20 h-20 rounded-xl`}
+        style={tw`w-14 h-14 rounded-xl`}
         source={item?.provider?.avatar}
       />
 
@@ -40,7 +40,7 @@ const BookingCard = ({ item, onPress }: any) => {
         </View>
 
         {/* Provider Name */}
-        <View style={tw`flex-row items-center gap-2 mt-1`}>
+        <View style={tw`flex-row items-center`}>
           <Text
             style={tw`font-DegularDisplayDemoRegular text-lg text-darkWhite`}
           >
@@ -49,7 +49,7 @@ const BookingCard = ({ item, onPress }: any) => {
         </View>
 
         {/* Ratings */}
-        <View style={tw`flex-row justify-between items-center gap-1 mt-1`}>
+        <View style={tw`flex-row justify-between items-center gap-1 `}>
           <View style={tw`flex-row items-center justify-center`}>
             <SvgXml xml={IconStar} />
             <Text
@@ -58,17 +58,26 @@ const BookingCard = ({ item, onPress }: any) => {
               {item?.provider?.ratings_avg_rating}
             </Text>
           </View>
-
-          {/* <View>
+          {item?.status ? (
             <View
-              style={tw` bg-primary  w-28 h-7 justify-center rounded-full items-center`}
+              style={[
+                tw` justify-center items-center py-0.5 px-2 rounded-full`,
+                item?.status === "Completed"
+                  ? tw`bg-success600`
+                  : item?.status === "New"
+                  ? tw`bg-primary`
+                  : tw`bg-blue-700`,
+              ]}
             >
               <Text
-                style={tw`font-DegularDisplayDemoMedium text-sm text-white`}
-              ></Text>
+                style={tw`text-white font-PoppinsRegular text-sm text-center`}
+              >
+                {item?.status}
+              </Text>
             </View>
-          </View> */}
-          <SvgXml xml={IconErow} />
+          ) : (
+            <SvgXml xml={IconErow} />
+          )}
         </View>
       </View>
     </TouchableOpacity>
