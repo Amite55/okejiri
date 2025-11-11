@@ -28,7 +28,6 @@ const BookingsHistory = () => {
         page: pageNum,
         per_page: 10,
       }).unwrap();
-
       // Handle different response structures
       let responseData, newBookings, pagination;
 
@@ -153,7 +152,6 @@ const BookingsHistory = () => {
       </View>
     );
   }
-  console.log(bookings, "bookings");
 
   return (
     <FlatList
