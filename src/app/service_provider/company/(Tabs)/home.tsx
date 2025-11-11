@@ -248,12 +248,12 @@ const Home_Index_Company = () => {
       {/*  resent order */}
       <View style={tw`gap-3 my-4`}>
         {recentOrder?.data?.data.map((item: any, index: any) => {
-
+          
           return (
             <UserCard
               key={index}
               ProfileName={item.user.name}
-              isProfileBadge
+              isProfileBadge={item.user.kyc_status === "Verified"? true: false}
               Date={formateDate(item.created_at)}
               Description={descriptions[item.id]}
               ImgProfileImg={item.user.avatar}
@@ -276,7 +276,7 @@ const Home_Index_Company = () => {
               <TransactionsCard
                 key={index}
                 price={item.amount}
-                profileBadge
+                profileBadge={item.sender.kyc_status === "Verified"? true: false}
                 type={item.direction}
                 varient={item.transaction_type}
                 title="Service title goes here"
