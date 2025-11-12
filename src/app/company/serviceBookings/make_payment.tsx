@@ -62,9 +62,6 @@ const Make_Payment = () => {
           schedule_date: perseBookingInfoDetails?.schedule_date,
           schedule_time_slot: perseBookingInfoDetails?.schedule_time_slot,
         }),
-        // ...(isMakePayment && {
-        //   payment_intent_id: perseBookingInfoDetails?.service_duration,
-        // }),
       };
       // ------------- if you payment to your wallet ------------------------
       if (isMakePayment) {

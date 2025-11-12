@@ -21,25 +21,6 @@ import {
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { SvgXml } from "react-native-svg";
-// ========================= booking time slot data =========================
-const bookingTimeData = [
-  {
-    id: 1,
-    time: "10:00 AM - 12:00 AM",
-  },
-  {
-    id: 2,
-    time: "12:00 AM - 02:00 PM",
-  },
-  {
-    id: 3,
-    time: "02:00 PM - 04:00 PM",
-  },
-  {
-    id: 4,
-    time: "04:00 PM - 06:00 PM",
-  },
-];
 
 const ServiceBooking = () => {
   const { provider_id, cost } = useLocalSearchParams();

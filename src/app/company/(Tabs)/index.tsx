@@ -18,22 +18,30 @@ import React from "react";
 import {
   FlatList,
   Platform,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+
 import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const Company_Home_Index = () => {
+  const [refreshing, setRefreshing] = React.useState(false);
+
   // ------------------ api end point ------------------
-  const { data: serviceNearbyData, isLoading: serviceNearbyLoading } =
-    useServiceNearbyQuery({});
+  const {
+    data: serviceNearbyData,
+    isLoading: serviceNearbyLoading,
+    refetch: nearByServiceRefetch,
+  } = useServiceNearbyQuery({});
   const {
     data: servicesData,
     isLoading: servicesLoading,
     error,
+    refetch: serviceRefetch,
   } = useServicesQuery({});
 
   const serviceItemRender = ({ item }) => {
@@ -86,8 +94,29 @@ const Company_Home_Index = () => {
   if (servicesLoading || serviceNearbyLoading) {
     return <UserHomeSkeleton />;
   }
+
+  // [----------------- refresh function ----------------]
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([
+        nearByServiceRefetch,
+        serviceRefetch,
+        serviceNearbyData,
+        servicesData,
+      ]);
+    } catch (error) {
+      console.log(error, "refresh error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       keyboardDismissMode="interactive"
