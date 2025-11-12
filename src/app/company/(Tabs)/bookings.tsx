@@ -49,6 +49,12 @@ const Bookings = () => {
                 key={item?.id}
                 item={item}
                 index={item?.id}
+                // onPress={() =>
+                //   router.push({
+                //     pathname: "/company/my_booking",
+                //     params: { status: "booking_request_pending" },
+                //   })
+                // }
                 onPress={() =>
                   router.push({
                     pathname: "/company/booking_service_details",
@@ -89,7 +95,7 @@ const Bookings = () => {
       data={getMyServiceBookingsData?.data?.data}
       keyExtractor={(_, index) => index.toString()}
       style={tw`flex-1 bg-base_color`}
-      renderItem={(item, index) => {
+      renderItem={({ item }) => {
         return (
           <BookingCard
             key={item?.id}

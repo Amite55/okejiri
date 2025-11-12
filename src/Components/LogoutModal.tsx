@@ -54,6 +54,7 @@ const LogoutModal = ({
 
           <View style={tw`flex-row  justify-between items-center gap-3`}>
             <TouchableOpacity
+              activeOpacity={0.8}
               onPress={() => setModalVisible(!modalVisible)}
               style={tw`flex-1 rounded-full bg-black`}
             >
@@ -65,6 +66,7 @@ const LogoutModal = ({
             </TouchableOpacity>
 
             <TouchableOpacity
+              activeOpacity={0.8}
               onPress={onPress}
               style={tw`flex-1 rounded-full bg-redDeep`}
             >
