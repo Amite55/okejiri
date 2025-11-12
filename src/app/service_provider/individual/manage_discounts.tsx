@@ -2,8 +2,9 @@ import { ImgManageDiscount } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useManage_discountseMutation } from "@/src/redux/apiSlices/IndividualProvider/account/manageDiscountsSlice";
 import { router } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   Keyboard,
@@ -16,6 +17,38 @@ import {
 } from "react-native";
 
 const Manage_Discounts = () => {
+  const [manage_discountse, { isLoading }] = useManage_discountseMutation();
+  const [discountAmount, setDiscountAmount] = useState("10");
+
+  const handleSubmit = async () => {
+    if (!discountAmount || isNaN(Number(discountAmount))) {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: "Please enter a valid discount amount" },
+      });
+      return;
+    }
+
+    try {
+      const res = await manage_discountse({
+        discount_amount: Number(discountAmount),
+      }).unwrap();
+
+      if (res.status === "success") {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: "Please enter a valid discount amount" },
+        });
+      }
+      router.back();
+    } catch (error: any) {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: error.massage },
+      });
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
@@ -31,7 +64,7 @@ const Manage_Discounts = () => {
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
             />
-            <View style={tw`justify-center items-center `}>
+            <View style={tw`justify-center items-center`}>
               <Image
                 style={tw`w-72 h-64`}
                 resizeMode="contain"
@@ -44,21 +77,20 @@ const Manage_Discounts = () => {
               This discount is for group bookings. When an user select your
               service and want group bookings then they will get this discount.
             </Text>
-            <View style={tw``}>
+            <View>
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-black mb-2 ml-2`}
               >
                 Give discount for
               </Text>
               <View
-                style={tw`border  border-gray-300 h-14 rounded-full px-4 flex-row justify-between items-center`}
+                style={tw`border border-gray-300 h-14 rounded-full px-4 flex-row justify-between items-center`}
               >
                 <TextInput
                   style={tw`flex-1`}
-                  //   placeholder="10"
-                  defaultValue="10"
-                  onChangeText={(newText) => console.log(newText)}
-                  // value={}
+                  keyboardType="numeric"
+                  value={discountAmount}
+                  onChangeText={setDiscountAmount}
                   textAlignVertical="top"
                 />
                 <Text
@@ -70,12 +102,10 @@ const Manage_Discounts = () => {
             </View>
           </View>
 
-          {/* ----------------------- submit password -------------- */}
+          {/* ----------------------- submit button -------------- */}
           <PrimaryButton
-            // onPress={() => handleSubmit()}
-            onPress={() => router.back()}
-            titleProps="Save"
-            // IconProps={IconRightArrow}
+            onPress={handleSubmit}
+            titleProps={isLoading ? "Saving..." : "Save"}
             contentStyle={tw`mt-4`}
           />
         </View>

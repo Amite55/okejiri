@@ -14,6 +14,7 @@ import {
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import tw from "@/src/lib/tailwind";
+import { useHomeProviderQuery } from "@/src/redux/apiSlices/IndividualProvider/homeSlices";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -28,7 +29,7 @@ import {
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
 
-// ------------------ static dropdown value -----------------
+// ------------------ static dropdown value --------------------//
 const dropdownData = [
   { label: "This week", value: "1" },
   { label: "This month", value: "2" },
@@ -36,8 +37,10 @@ const dropdownData = [
 ];
 
 const Individual_Service_Provider_Index = () => {
+  const { data: homeProviderData, isLoading } = useHomeProviderQuery({});
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+  console.log("homeProviderData", homeProviderData);
 
   return (
     <ScrollView
@@ -47,7 +50,7 @@ const Individual_Service_Provider_Index = () => {
       style={tw`flex-1 bg-base_color px-5 `}
       contentContainerStyle={tw`pb-28`}
     >
-      {/* ----------------------- Profile header parts -=------------  */}
+      {/* ----------------------- Profile header parts --------------  */}
       <ServiceProfileHeaderInfo
         onPress={() => router.push("/service_provider/individual/account")}
         onPressNotification={() =>
@@ -152,7 +155,7 @@ const Individual_Service_Provider_Index = () => {
         </View>
       </View>
 
-      {/* -------------Recent orders --------------- */}
+      {/* -------------Recent orders--------------- */}
 
       <ShortDataTitle
         FastTitle="Recent orders"
