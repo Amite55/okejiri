@@ -74,6 +74,8 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
     mode: "onBlur",
   });
 
+  console.log();
+
   const onSubmit: SubmitHandler<EditProfileFormData> = async (
     data: EditProfileFormData
   ): Promise<void> => {
@@ -129,18 +131,23 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
 
       try {
         const response = await editProfilePicture(form).unwrap();
-        console.log("✅ Profile picture upload success:", response);
-      } catch (err) {
+        if (response.status === "success") {
+          router.push({
+            pathname: "/Toaster",
+            params: { res: response?.message },
+          });
+        }
+      } catch (err: any) {
         router.push({
           pathname: "/Toaster",
           params: { res: err?.errors?.photo },
         });
-        console.log("❌ Profile picture upload failed:", err);
       }
     } else {
       console.log("❌ Image selection cancelled");
     }
   };
+  console.log(userProfileInfo, "userProfileInfo");
 
   return (
     <ScrollView
@@ -162,7 +169,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
         <View style={tw`relative justify-center items-center my-4`}>
           <Image
             style={tw`w-24 h-24 rounded-full`}
-            source={imageAsset || userProfileInfo?.data?.avatar}
+            source={userProfileInfo?.data?.avatar || imageAsset}
           />
 
           <TouchableOpacity
