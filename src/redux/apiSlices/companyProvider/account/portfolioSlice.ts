@@ -37,6 +37,7 @@ export const companyPortfolioSlice = api.injectEndpoints({
 
 export const {
   useGetPortfoliosQuery,
+  useLazyGetPortfoliosQuery,
   useAddPortfolioMutation,
   useUpdatePortfolioMutation,
   useDeletePortfoliosMutation,
