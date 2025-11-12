@@ -55,7 +55,8 @@ const My_Services = () => {
       name: "Manicure",
     },
   ];
-  const serviceItemRender = ({ item }) => {
+
+  const serviceItemRender = ({ item }: any) => {
     return (
       <View
         style={tw`relative justify-center items-center px-2`}

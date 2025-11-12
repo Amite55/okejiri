@@ -7,7 +7,7 @@ export const companyPortfolioSlice = api.injectEndpoints({
         url: `/portfolios?page=${page}`,
         method: "GET",
       }),
-      providesTags: ["settings"],
+      providesTags: ["portfolio"],
     }),
     addPortfolio: builder.mutation({
       query: (requestBody) => ({
@@ -15,22 +15,25 @@ export const companyPortfolioSlice = api.injectEndpoints({
         method: "POST",
         body: requestBody,
       }),
-      invalidatesTags: ["settings"],
+      invalidatesTags: ["portfolio"],
     }),
     updatePortfolio: builder.mutation({
       query: ({ id, requestBody }) => ({
         url: `/portfolios/${id}`,
         method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
         body: requestBody,
       }),
-      invalidatesTags: ["settings"],
+      invalidatesTags: ["portfolio"],
     }),
     deletePortfolios: builder.mutation({
       query: (id) => ({
-        url: `/porfolios/${id}`,
+        url: `/portfolios/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["settings"],
+      invalidatesTags: ["portfolio"],
     }),
   }),
 });
