@@ -41,18 +41,14 @@ const Setting_Index = () => {
         {/* ----------------------FAQ-=--------------- */}
         <SettingsCard
           title="FAQ"
-          onPress={() =>
-            router.push("/service_provider/individual/settings/FAQ")
-          }
+          onPress={() => router.push("/company/settings/FAQ")}
           fastIcon={IconFAQ}
         />
 
         {/* ---------------------- About us -=--------------- */}
         <SettingsCard
           title="About us"
-          onPress={() =>
-            router.push("/service_provider/individual/settings/about")
-          }
+          onPress={() => router.push("/company/settings/about")}
           fastIcon={IconAboutBlack}
         />
 
@@ -60,11 +56,7 @@ const Setting_Index = () => {
 
         <SettingsCard
           title="Terms & conditions"
-          onPress={() =>
-            router.push(
-              "/service_provider/individual/settings/terms_and_condition"
-            )
-          }
+          onPress={() => router.push("/company/settings/terms_and_condition")}
           fastIcon={IconTermsAndCondition}
         />
 

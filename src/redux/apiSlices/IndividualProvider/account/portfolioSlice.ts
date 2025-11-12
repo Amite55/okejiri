@@ -1,6 +1,6 @@
-import { api } from "../../base/baseApi";
+import { api } from "../../../base/baseApi";
 
-export const IndividualProvider = api.injectEndpoints({
+export const portfolioSlice = api.injectEndpoints({
   endpoints: (builder) => ({
     homeProvider: builder.query({
       query: (filter = "this_week") => ({
@@ -27,8 +27,5 @@ export const IndividualProvider = api.injectEndpoints({
   overrideExisting: true,
 });
 
-export const {
-  useRecentTransactionsQuery,
-  useRecentOrderQuery,
-  useHomeProviderQuery,
-} = IndividualProvider;
+export const { useRecentTransactionsQuery, useRecentOrderQuery } =
+  portfolioSlice;

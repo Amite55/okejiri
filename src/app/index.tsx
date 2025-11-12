@@ -55,6 +55,12 @@ export default function Index() {
 
   useEffect(() => {
     setTimeout(() => {
+      router.replace("/service_provider/individual/(Tabs)/home");
+    }, 2000);
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
       const render = async () => {
         try {
           if (userProfileInfo?.data?.role === "USER") {
