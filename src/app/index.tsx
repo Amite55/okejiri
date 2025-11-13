@@ -53,11 +53,11 @@ export default function Index() {
     AppLoader();
   }, []);
 
-  useEffect(() => {
-    setTimeout(() => {
-      router.replace("/service_provider/individual/account");
-    }, 2000);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     router.replace("/service_provider/individual/(Tabs)/home");
+  //   }, 2000);
+  // }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -65,7 +65,6 @@ export default function Index() {
         try {
           if (userProfileInfo?.data?.role === "USER") {
             router.push("/company/(Tabs)");
-            // router.push("/company/disputes/my_disputes");
             if (userProfileInfo?.data?.kyc_status === "Unverified") {
               setTimeout(() => {
                 router.push("/kyc_completed_modal");

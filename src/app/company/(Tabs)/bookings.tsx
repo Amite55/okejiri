@@ -9,16 +9,30 @@ import {
 } from "@/src/redux/apiSlices/userProvider/bookingsSlices";
 import { router } from "expo-router";
 import React from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
 import { SvgXml } from "react-native-svg";
 
 const Bookings = () => {
+  const [refreshing, setRefreshing] = React.useState(false);
+
   // =================== api endpoint ===================
-  const { data: getMyBookingsData, isLoading: isMyBookingsLoading } =
-    useMyBookingsQuery({ page: 1, per_page: 10 });
+  const {
+    data: getMyBookingsData,
+    isLoading: isMyBookingsLoading,
+    refetch,
+  } = useMyBookingsQuery({ page: 1, per_page: 10 });
   const {
     data: getMyServiceBookingsData,
     isLoading: isMyServiceBookingsLoading,
+    refetch: refetchBookingsHistory,
   } = useBookingsHistoryQuery({ page: 1, per_page: 10 });
 
   const renderHeader = () => (
@@ -90,8 +104,38 @@ const Bookings = () => {
     </>
   );
 
+  // [----------------- refresh function ----------------]
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([
+        refetch,
+        refetchBookingsHistory,
+        getMyBookingsData,
+        getMyServiceBookingsData,
+      ]);
+    } catch (error) {
+      console.log(error, "refresh error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  // ------------ is loading component state ------------
+
+  if (isMyBookingsLoading || isMyServiceBookingsLoading) {
+    return (
+      <View style={tw`flex-1 bg-base_color justify-center items-center`}>
+        <ActivityIndicator size="large" color={"blue"} />
+      </View>
+    );
+  }
+
   return (
     <FlatList
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       data={getMyServiceBookingsData?.data?.data}
       keyExtractor={(_, index) => index.toString()}
       style={tw`flex-1 bg-base_color`}
