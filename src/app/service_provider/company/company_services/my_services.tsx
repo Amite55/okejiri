@@ -1,16 +1,19 @@
 import { IconCross, IconDeleteRed, IconPlusYellow } from "@/assets/icons";
+import { ImgEmptyService } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
-import ServicesData from "@/src/json/ServiceData.json";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useLazyMy_servicesQuery } from "@/src/redux/apiSlices/IndividualProvider/account/MyServices/myServicesSlicel";
 import { _HEIGHT } from "@/utils/utils";
 import { router } from "expo-router";
-import React, { JSX, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Modal,
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -20,43 +23,74 @@ import { SvgXml } from "react-native-svg";
 
 const My_Services = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isChecked, setIsChecked] = useState<boolean>(false);
-  const [selectedIndex, setSelectedIndex] = useState(null);
 
-  const [deleteModalVisibla, setDeleteModalVisible] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [services, setServices] = useState<any[]>([]);
 
-  const handleCheckBox = async () => {
-    setIsChecked(!isChecked);
+  const [fetchMyServices, { isFetching }] = useLazyMy_servicesQuery();
+
+  const handleCheckBox = (index: number) => {
+    setSelectedIndex(index);
+    setIsChecked((prev) => !prev);
   };
 
-  const setviceItem = [
-    {
-      id: 1,
-      name: "Barbing",
-    },
-    {
-      id: 2,
-      name: "Cleaning",
-    },
-    {
-      id: 3,
-      name: "Cooking",
-    },
-    {
-      id: 4,
-      name: "Painting",
-    },
-    {
-      id: 5,
-      name: "Spa",
-    },
-    {
-      id: 6,
-      name: "Manicure",
-    },
-  ];
+  // ======================== LOAD SERVICES ==========================
+  const loadServices = async (pageNum = 1, isRefresh = false) => {
+    try {
+      if ((isFetching || loadingMore) && !isRefresh) return;
+      if (!isRefresh) setLoadingMore(true);
 
-  const serviceItemRender = ({ item }: any) => {
+      const res = await fetchMyServices(pageNum).unwrap();
+      const responseData = res?.data || {};
+      const newData = responseData?.data || [];
+      const currentPage = responseData?.current_page || 1;
+      const lastPage = responseData?.last_page || currentPage;
+
+      if (isRefresh) {
+        setServices(newData);
+      } else {
+        const existingIds = new Set(services.map((s) => s.id));
+        const uniqueNew = newData.filter((s: any) => !existingIds.has(s.id));
+        setServices((prev) => [...prev, ...uniqueNew]);
+      }
+
+      setHasMore(newData.length > 0 && currentPage < lastPage);
+      setPage(currentPage + 1);
+    } catch (err) {
+      console.log("❌ My Services fetch error:", err);
+    } finally {
+      setRefreshing(false);
+      setLoadingMore(false);
+    }
+  };
+
+  // ======================== REFRESH ==========================
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setPage(1);
+    setHasMore(true);
+    loadServices(1, true);
+  };
+
+  // ======================== LOAD MORE ==========================
+  const handleLoadMore = () => {
+    if (!loadingMore && hasMore && !isFetching) {
+      loadServices(page);
+    }
+  };
+
+  useEffect(() => {
+    loadServices(1, true);
+  }, []);
+
+  // ======================== RENDER EACH ITEM ==========================
+  const renderServiceItem = ({ item }: any) => {
     return (
       <View
         style={tw`relative justify-center items-center px-2`}
@@ -64,25 +98,19 @@ const My_Services = () => {
       >
         <Image
           resizeMode="cover"
-          style={tw`w-44 h-48 rounded-lg `}
-          source={{ uri: item?.image }}
+          style={tw`w-44 h-48 rounded-lg`}
+          source={{ uri: item?.service?.image }}
         />
 
         <View
           style={tw`absolute bottom-2 justify-center items-center w-38 h-10 rounded-xl border border-white60 overflow-hidden`}
         >
-          {/* Background Blur */}
-          {/* <BlurView
-            style={tw`absolute inset-0`}
-            blurType="dark"
-            blurAmount={5}
-            reducedTransparencyFallbackColor="white"
-          /> */}
-
-          {/* Foreground content (Text) */}
           <TouchableOpacity
             onPress={() =>
-              router.push("/service_provider/individual/my_services/my_service")
+              router.push({
+                pathname: "/service_provider/individual/my_services/my_service",
+                params: { id: item.id },
+              })
             }
             style={tw`flex-1 justify-center items-center`}
             activeOpacity={0.7}
@@ -90,7 +118,7 @@ const My_Services = () => {
             <Text
               style={tw`font-DegularDisplayDemoMedium text-center text-xl text-white`}
             >
-              {item?.name}
+              {item?.service?.name}
             </Text>
           </TouchableOpacity>
         </View>
@@ -105,11 +133,31 @@ const My_Services = () => {
     );
   };
 
+  // ======================== SERVICE SELECT MODAL ========================== //
+
+  const setviceItem = [
+    { id: 1, name: "Barbing" },
+    { id: 2, name: "Cleaning" },
+    { id: 3, name: "Cooking" },
+    { id: 4, name: "Painting" },
+    { id: 5, name: "Spa" },
+    { id: 6, name: "Manicure" },
+  ];
+
   return (
-    <View style={tw`flex-1`}>
+    <View style={tw`flex-1 bg-base_color`}>
       <FlatList
-        data={ServicesData}
-        renderItem={serviceItemRender}
+        data={services}
+        numColumns={2}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderServiceItem}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        contentContainerStyle={tw`px-5 pb-10 items-center`}
+        showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => (
           <View>
             <BackTitleButton
@@ -117,7 +165,6 @@ const My_Services = () => {
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
             />
-
             <View style={tw`items-end mb-2`}>
               <TouchableOpacity
                 onPress={() => setModalVisible(true)}
@@ -128,35 +175,45 @@ const My_Services = () => {
             </View>
           </View>
         )}
-        numColumns={2}
-        keyExtractor={(item) => item.id.toString()}
-        ListHeaderComponentStyle={tw`w-full`}
-        style={tw`flex-1`}
-        contentContainerStyle={tw`flex-1  items-center bg-base_color px-5 gap-3 `}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
+        ListFooterComponent={
+          loadingMore ? (
+            <View style={tw`mt-4 mb-8 justify-center items-center`}>
+              <ActivityIndicator size="small" color="#000" />
+              <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
+            </View>
+          ) : !hasMore && services.length > 0 ? (
+            <Text style={tw`text-gray-500 text-center my-4 text-lg`}>
+              No more services
+            </Text>
+          ) : null
+        }
+        ListEmptyComponent={() => (
+          <View style={tw`flex-1 justify-center items-center gap-3`}>
+            <Image style={tw`w-full h-80`} source={ImgEmptyService} />
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-3xl text-black`}
+            >
+              Nothing to show here
+            </Text>
+            <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+              Please add a service to see them here.
+            </Text>
+          </View>
+        )}
       />
 
-      {/* ============= add new service  modal ====================== */}
+      {/* ============= add new service modal ====================== */}
       <Modal
         animationType="slide"
         transparent
-        onRequestClose={() => {
-          // Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}
         visible={modalVisible}
-        onDismiss={() => setModalVisible(false)}
+        onRequestClose={() => setModalVisible(false)}
       >
         <Pressable
-          onPress={() => {
-            setModalVisible(false);
-          }}
+          onPress={() => setModalVisible(false)}
           style={[
-            {
-              height: _HEIGHT,
-            },
-            tw`justify-end items-end bg-black bg-opacity-15  `,
+            { height: _HEIGHT },
+            tw`justify-end items-end bg-black bg-opacity-15`,
           ]}
         >
           <Pressable
@@ -166,37 +223,25 @@ const My_Services = () => {
                 borderTopLeftRadius: 10,
                 borderTopRightRadius: 10,
               },
-              tw`bg-gray-50 `,
+              tw`bg-gray-50`,
             ]}
           >
             <ScrollView
               keyboardShouldPersistTaps="always"
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={tw`pb-14 flex-grow justify-between `}
+              contentContainerStyle={tw`pb-14 flex-grow justify-between`}
             >
               <View>
                 <View
-                  style={[
-                    tw`w-full flex-1 flex-row justify-between items-center h-14  bg-primary px-4`,
-                    { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
-                  ]}
+                  style={tw`w-full flex-row justify-between items-center h-14 bg-primary px-4 rounded-t-lg`}
                 >
-                  <View
-                    style={tw`flex-row w-full justify-between items-center my-2 `}
+                  <Text style={tw`text-white text-xl`}>Add more services</Text>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={tw`w-8 h-8 rounded-full bg-slate-200 justify-center items-center`}
                   >
-                    <Text> </Text>
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium  text-white text-xl mt-2`}
-                    >
-                      Add more services
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => setModalVisible(false)}
-                      style={tw`w-8 h-8 rounded-full bg-slate-200 justify-center items-center`}
-                    >
-                      <SvgXml xml={IconCross} />
-                    </TouchableOpacity>
-                  </View>
+                    <SvgXml xml={IconCross} />
+                  </TouchableOpacity>
                 </View>
 
                 <View style={tw`mt-5 gap-2`}>
@@ -204,25 +249,21 @@ const My_Services = () => {
                     (item, index): JSX.Element => (
                       <View key={item.id}>
                         <Pressable
-                          onPress={() => {
-                            setSelectedIndex(index), handleCheckBox();
-                          }}
+                          onPress={() => handleCheckBox(index)}
                           style={tw`flex-row items-center gap-2 px-5`}
                         >
                           <TouchableOpacity
-                            onPress={() => {
-                              setSelectedIndex(index), handleCheckBox();
-                            }}
+                            onPress={() => handleCheckBox(index)}
                             style={tw.style(
-                              `border w-5 h-5  justify-center items-center rounded-sm`,
+                              `border w-5 h-5 justify-center items-center rounded-sm`,
                               selectedIndex === index
                                 ? `bg-primary border-0`
                                 : `bg-transparent`
                             )}
                           >
-                            {selectedIndex === index ? (
+                            {selectedIndex === index && (
                               <Text style={tw`text-white text-sm`}>✔</Text>
-                            ) : null}
+                            )}
                           </TouchableOpacity>
                           <Text
                             style={tw`font-DegularDisplayDemoRegular text-lg text-regularText`}
@@ -231,14 +272,14 @@ const My_Services = () => {
                           </Text>
                         </Pressable>
 
-                        <View style={tw` border-b border-gray-500 mt-2`} />
+                        <View style={tw`border-b border-gray-500 mt-2`} />
                       </View>
                     )
                   )}
                 </View>
               </View>
 
-              <View style={tw`px-4 `}>
+              <View style={tw`px-4`}>
                 <PrimaryButton titleProps="Add" />
               </View>
             </ScrollView>
@@ -246,11 +287,11 @@ const My_Services = () => {
         </Pressable>
       </Modal>
 
-      {/* ========= selected modal ============= */}
+      {/* ========= delete confirm modal ============= */}
       <Modal
         animationType="none"
         transparent={true}
-        visible={deleteModalVisibla}
+        visible={deleteModalVisible}
         onRequestClose={() => setDeleteModalVisible(false)}
       >
         <View
