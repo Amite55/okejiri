@@ -53,11 +53,11 @@ export default function Index() {
     AppLoader();
   }, []);
 
-  useEffect(() => {
-    setTimeout(() => {
-      router.replace("/service_provider/individual/account");
-    }, 2000);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     router.replace("/service_provider/individual/account");
+  //   }, 2000);
+  // }, []);
 
   useEffect(() => {
     setTimeout(() => {

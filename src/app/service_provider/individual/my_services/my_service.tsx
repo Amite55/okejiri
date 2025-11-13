@@ -3,9 +3,9 @@ import { ImgEmptyService } from "@/assets/images/image";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
-import { useLazyMyServicesQuery } from "@/src/redux/apiSlices/companyProvider/account/services/servicesSlice";
+import { useLazyMy_service_packagesQuery } from "@/src/redux/apiSlices/IndividualProvider/account/MyServices/myServicesSlicel";
 import { useCreateConnectAccountMutation } from "@/src/redux/apiSlices/stripeSlices";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -25,7 +25,8 @@ const My_Service = () => {
     userProfileInfo?.data || {};
 
   const [createConnectAccount] = useCreateConnectAccountMutation();
-  const [fetchMyServices, { isFetching }] = useLazyMyServicesQuery();
+  const [fetchMyServicePackages, { isFetching }] =
+    useLazyMy_service_packagesQuery();
 
   const [OnboardingUrl, setOnboardingUrl] = useState<string | null>(null);
   const [services, setServices] = useState<any[]>([]);
@@ -33,14 +34,18 @@ const My_Service = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const { id } = useLocalSearchParams();
+  console.log(id, "id");
 
-  // ======================== LOAD SERVICES ==========================
+  // ======================== LOAD SERVICE PACKAGES ==========================
   const loadServices = async (pageNum = 1, isRefresh = false) => {
     try {
       if ((isFetching || loadingMore) && !isRefresh) return;
       if (!isRefresh) setLoadingMore(true);
 
-      const res = await fetchMyServices(pageNum).unwrap();
+      const res = await fetchMyServicePackages({ pageNum, id }).unwrap();
+      console.log(res, "respos...........");
+
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
       const currentPage = responseData?.current_page || 1;
@@ -57,7 +62,7 @@ const My_Service = () => {
       setHasMore(newData.length > 0 && currentPage < lastPage);
       setPage(currentPage + 1);
     } catch (err) {
-      console.log("❌ Services fetch error:", err);
+      console.log("❌ My Service Packages fetch error:", err);
     } finally {
       setRefreshing(false);
       setLoadingMore(false);
@@ -98,19 +103,21 @@ const My_Service = () => {
     }
   };
 
-  // ======================== SERVICE RENDER ITEM ==========================
+  // ======================== RENDER SERVICE ITEM ==========================
   const renderServiceItem = ({ item }: any) => (
     <View style={tw`bg-white p-4 rounded-2xl mb-4`}>
+      {/* Image */}
       <View style={tw`justify-center items-center`}>
         <Image
           style={tw`h-44 w-[98%] rounded-2xl`}
-          source={{ uri: item?.service?.image }}
+          source={{ uri: item?.image }}
         />
       </View>
 
+      {/* Title + Edit */}
       <View style={tw`flex-row justify-between items-center my-4`}>
         <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-          {item?.service?.name}
+          {item?.title}
         </Text>
         <TouchableOpacity
           onPress={() =>
@@ -122,22 +129,40 @@ const My_Service = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Example static details */}
-      <View style={tw`pl-8 gap-2`}>
-        {[
-          "Dusting of all surfaces",
-          "Sweeping and mopping floors",
-          "Trash removal",
-        ].map((text, idx) => (
-          <View key={idx} style={tw`flex-row items-center gap-2`}>
-            <View style={tw`w-2 h-2 bg-black`} />
-            <Text style={tw`font-DegularDisplayDemoRegular text-black text-xl`}>
-              {text}
-            </Text>
-          </View>
-        ))}
-      </View>
+      {/* Package Detail Items */}
+      {item?.package_detail_items?.length > 0 && (
+        <View style={tw`pl-8 gap-2`}>
+          {item.package_detail_items.map((detail: any, index: number) => (
+            <View key={index} style={tw`flex-row items-center gap-2`}>
+              <View style={tw`w-2 h-2 bg-black`} />
+              <Text
+                style={tw`font-DegularDisplayDemoRegular text-black text-xl`}
+              >
+                {detail?.item}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
 
+      {/* Delivery Time */}
+      <TouchableOpacity
+        onPress={() =>
+          router.push(
+            "/service_provider/individual/my_services/delivery_extension"
+          )
+        }
+        style={tw`flex-row justify-between items-center px-3 my-3`}
+      >
+        <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+          Expected delivery time
+        </Text>
+        <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
+          {item?.delivery_time} hours
+        </Text>
+      </TouchableOpacity>
+
+      {/* Price */}
       <View
         style={tw`bg-primary w-full h-14 rounded-full flex-row justify-between items-center px-4 my-2`}
       >
@@ -145,7 +170,7 @@ const My_Service = () => {
           Cost:
         </Text>
         <Text style={tw`text-white font-DegularDisplayDemoMedium text-3xl`}>
-          ₦ 49.00
+          ₦ {item?.price}
         </Text>
       </View>
     </View>

@@ -23,6 +23,7 @@ import {
 } from "@/assets/icons";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import {
+  useAddPortfolioMutation,
   useDeletePortfoliosMutation,
   useLazyGetPortfoliosQuery,
   useUpdatePortfolioMutation,
@@ -45,6 +46,7 @@ const Portfolio = () => {
     useLazyGetPortfoliosQuery();
   const [deletePortfolios] = useDeletePortfoliosMutation();
   const [updatePortfolio] = useUpdatePortfolioMutation();
+  const [addPortfolio] = useAddPortfolioMutation();
 
   // === Load data from API ===
   const loadPortfolios = async (pageNum = 1, isRefresh = false) => {
@@ -65,8 +67,8 @@ const Portfolio = () => {
         const uniqueNew = newData.filter((p: any) => !existingIds.has(p.id));
         setPortfolios((prev) => [...prev, ...uniqueNew]);
       }
+      setHasMore(currentPage < lastPage);
 
-      setHasMore(newData.length > 0);
       setPage(currentPage + 1);
     } catch (err) {
       console.log("Portfolio fetch error:", err);
@@ -75,7 +77,6 @@ const Portfolio = () => {
       setLoadingMore(false);
     }
   };
-
   // === Refresh ===
   const handleRefresh = () => {
     setRefreshing(true);
@@ -161,7 +162,7 @@ const Portfolio = () => {
       });
       setSelectModalVisible(false);
     } catch (err) {
-      console.log("❌ Delete error:", err);
+      console.log(" Delete error:", err);
     }
   };
 
@@ -188,7 +189,7 @@ const Portfolio = () => {
               <Text style={tw`text-gray-500`}>No more items</Text>
             ) : null}
             <PrimaryButton
-              titleProps="Send"
+              titleProps="Add_More"
               IconProps={IconPlus}
               contentStyle={tw`mt-4`}
             />

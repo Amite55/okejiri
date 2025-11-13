@@ -10,11 +10,11 @@ export const myServicesSlice = api.injectEndpoints({
       providesTags: ["services"],
     }),
 
-    // ................pakages all slice.............//
+    //................pakages all slice ...............//
 
     my_service_packages: builder.query({
-      query: (page) => ({
-        url: `my-services?page=${page}`,
+      query: ({ page, service_id }) => ({
+        url: `/my-service-package?page=${page}&service_id=${service_id}`,
         method: "GET",
       }),
       providesTags: ["servicePackages"],
@@ -80,7 +80,9 @@ export const myServicesSlice = api.injectEndpoints({
 
 export const {
   useMy_servicesQuery,
+  useLazyMy_servicesQuery,
   useMy_service_packagesQuery,
+  useLazyMy_service_packagesQuery,
   useMy_service_package_detailsQuery,
   useMy_service_package_postMutation,
   useUpdate_service_available_timeMutation,
