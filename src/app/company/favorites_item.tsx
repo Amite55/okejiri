@@ -106,19 +106,27 @@ const Favorites_Item = () => {
     <View style={tw`flex-1 bg-base_color`}>
       <FlatList
         data={favorites}
-        renderItem={({ item }: any) => (
-          <ServiceCard
-            item={item?.package}
-            index={item?.id}
-            onPress={() =>
-              router.push({
-                pathname:
-                  "/company/previous_item_Book/previous_booking_confirmation",
-                params: { id: item?.id },
-              })
-            }
-          />
-        )}
+        renderItem={({ item }: any) => {
+          // console.log(item?.package?.service?.id, "this is item ------------");
+          return (
+            <ServiceCard
+              item={item?.package}
+              index={item?.id}
+              onPress={
+                () =>
+                  router.push({
+                    pathname: "/company/serviceDetails",
+                    params: { service_id: item?.package?.service?.id },
+                  })
+                // router.push({
+                //   pathname:
+                //     "/company/previous_item_Book/previous_booking_confirmation",
+                //   params: { id: item?.id },
+                // })
+              }
+            />
+          );
+        }}
         ListHeaderComponent={() => (
           <BackTitleButton
             pageName={"Favorites"}
