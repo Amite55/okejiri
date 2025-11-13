@@ -7,7 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-  Alert,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -16,7 +16,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  TouchableWithoutFeedback,
+  View
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
@@ -36,7 +37,7 @@ const dropdownData: DropdownItem[] = [
 
 interface ImageAsset {
   uri: string;
-  fileName?: string;
+  filename?: string;
   type?: string;
 }
 
@@ -44,153 +45,85 @@ const Dispute_Process: React.FC = () => {
   const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [reason, setReason] = useState<string>("");
-  const [image, setImage] = useState<ImageAsset | null>(null);
+  const [images, setImages] = useState<any>(null);
   const [explanation, setExplanation] = useState<string>("");
-  const [addDispute, { isLoading }] = useAddDisputeMutation();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const pickImage = async (): Promise<void> => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permissionResult.granted) {
-      alert("Permission to access media library is required!");
+  //    ============== api end point -------------------------
+  const [addDispute, { isLoading, }] = useAddDisputeMutation();
+// =================== sei na image picker --------------->
+  const pickImages = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      alert("Permission to access gallery is required!");
       return;
     }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [16, 9],
+      allowsMultipleSelection: true,
+      allowsEditing: false,
       quality: 1,
     });
-
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      setImage(result.assets[0] as any);
-      console.log("Selected Image:", result.assets[0].uri);
+    if (!result.canceled) {
+      setImages(result.assets.map((item) => item.uri));
     }
   };
 
-  const handleDispute = async (): Promise<void> => {
-    // Validation
-    if (!reason) {
-      Alert.alert("Error", "Please select a reason for the dispute");
-      return;
-    }
-
-    if (!explanation.trim()) {
-      Alert.alert("Error", "Please provide an explanation");
+  const submitDispute = async () => {
+    // ------------ check all field required  --------------
+    if (!id || !reason || !explanation || !images) {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: "Please fill all the fields" }
+      })
       return;
     }
 
     try {
-      const formData = new FormData();
-
-      // Append the dispute data - FIXED: Use correct field names
-      formData.append("reason", reason);
-      formData.append("details", explanation);
+      let formData = new FormData();
       formData.append("booking_id", id);
-
-      // FIXED: Simplified image upload - remove array complexity
-      if (image) {
-        // Get proper file extension and MIME type
-        const fileExtension =
-          image.uri.split(".").pop()?.toLowerCase() || "jpg";
-        const mimeType = getMimeType(fileExtension);
-        const fileName =
-          image.fileName || `dispute_${Date.now()}.${fileExtension}`;
-
-        // Append single file - let backend handle array conversion if needed
-        formData.append("attachments", {
-          uri: image.uri,
-          type: mimeType,
-          name: fileName,
-        } as any);
-      }
-
-      console.log("FormData prepared for submission");
-
-      // Call the mutation with FormData
-      const response = await addDispute(formData).unwrap();
-
-      console.log("Dispute submitted successfully:", response);
-      Alert.alert("Success", "Your dispute has been submitted successfully");
-
-      // Navigate back
-      router.back();
-    } catch (error: any) {
-      console.error("Full error object:", error);
-
-      // More detailed error handling
-      if (error.status === 500) {
-        Alert.alert(
-          "Server Error",
-          "There was a problem with the server. Please try again later."
-        );
-      } else if (error.data?.errors) {
-        const errorMessages = Object.values(error.data.errors).flat();
-        Alert.alert("Validation Error", errorMessages.join("\n"));
-      } else if (error.data?.message) {
-        Alert.alert("Error", error.data.message);
-      } else if (error.status === "FETCH_ERROR") {
-        Alert.alert(
-          "Network Error",
-          "Please check your internet connection and try again."
-        );
-      } else {
-        Alert.alert("Error", "Failed to submit dispute. Please try again.");
-      }
-    }
-  };
-
-  // Helper function to get MIME type
-  const getMimeType = (extension: string): string => {
-    const mimeTypes: { [key: string]: string } = {
-      jpg: "image/jpeg",
-      jpeg: "image/jpeg",
-      png: "image/png",
-      gif: "image/gif",
-      webp: "image/webp",
-    };
-    return mimeTypes[extension] || "image/jpeg";
-  };
-
-  // Alternative method without image if server keeps failing
-  const handleDisputeWithoutImage = async (): Promise<void> => {
-    if (!reason || !explanation.trim()) {
-      Alert.alert("Error", "Please fill all required fields");
-      return;
-    }
-
-    try {
-      const formData = new FormData();
       formData.append("reason", reason);
       formData.append("details", explanation);
-      formData.append("booking_id", id as string);
-
-      // Don't send any image
-      console.log("Submitting without image");
-
+      // ✅ Append multiple images properly
+      images.forEach((uri: any, index: any) => {
+        formData.append("attachments[]", {
+          uri,
+          name: `attachment_${index}.jpg`,
+          type: "image/jpeg",
+        });
+      });
       const response = await addDispute(formData).unwrap();
-      console.log("Dispute submitted successfully without image:", response);
-      Alert.alert("Success", "Your dispute has been submitted successfully");
-      router.back();
-    } catch (error: any) {
-      console.error("Error without image:", error);
-      Alert.alert("Error", "Please try without uploading an image");
+      console.log(response, "thi this new form dtaa------------->")
+      if (response) {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: response?.message || "Report sent successfully!" },
+        })
+        setTimeout(() => {
+          router.back()
+        }, 1000);
+      }
+    } catch (err: any) {
+      console.error("Full error object: ----------------------->", err,);
     }
   };
+
+
 
   return (
     <KeyboardAvoidingView
-      style={tw`flex-1 bg-base_color`}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={tw`flex-1`}
+      behavior={Platform.OS === "ios" ? "padding" : "position"} // iOS/Android different behavior
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -120}
     >
+      <TouchableWithoutFeedback
+         onPress={Keyboard.dismiss} accessible={false}
+      >
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
-        style={tw`flex-1 px-5`}
-        contentContainerStyle={tw`pb-28`}
+        style={tw`flex-grow px-5`}
+        contentContainerStyle={tw`pb-6`}
         keyboardShouldPersistTaps="handled"
       >
         <BackTitleButton
@@ -262,9 +195,9 @@ const Dispute_Process: React.FC = () => {
             >
               Upload images or videos
             </Text>
-            <TouchableOpacity
+            {(!images || images.length === 0) ? <TouchableOpacity
               style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
-              onPress={pickImage}
+              onPress={pickImages}
             >
               <Text
                 style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
@@ -272,25 +205,45 @@ const Dispute_Process: React.FC = () => {
                 Browse
               </Text>
             </TouchableOpacity>
-            {image && (
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-sm text-green-600 mt-2`}
-              >
-                Image selected: {image?.fileName || "image"}
-              </Text>
-            )}
+              :
+              (
+                <View style={tw`w-full mt-3`}>
+                  <Text
+                    style={tw`font-DegularDisplayDemoRegular text-sm text-green-600 mt-2 py-2`}
+                  >
+                    {images.length} {images.length === 1 ? "file selected" : "files selected"}
+                  </Text>
+
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {images.map((img, index) => (
+                      <View key={index} style={tw`flex-row`}>
+
+                        <Text numberOfLines={1} ellipsizeMode="clip" style={tw`text-xs text-gray-400`}>
+                          {img.filename}
+                        </Text>
+                      </View>
+                    ))
+
+                    }
+                  </ScrollView>
+                </View>
+
+              )
+            }
+
           </Pressable>
         </View>
 
         {/* ------------- submit buttons -------------------- */}
         <View style={tw`mt-8 gap-3`}>
           <PrimaryButton
-            onPress={handleDispute}
+            onPress={() => submitDispute()}
             titleProps={isLoading ? "Submitting..." : "Submit with Image"}
-            disabled={isLoading}
+          // disabled={isLoading}
           />
         </View>
       </ScrollView>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };

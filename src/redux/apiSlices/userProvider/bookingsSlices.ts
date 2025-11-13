@@ -90,19 +90,22 @@ export const bookingsSlice = api.injectEndpoints({
     }),
 
     addDispute: builder.mutation({
-      query: (disputes) => {
+      query: (formData) => {
         return {
           url: `/add-dispute`,
           method: "POST",
+
+          body: formData,
           headers: {
             "Content-Type": "multipart/form-data",
+            Accept: "application/json",
           },
-          body: disputes,
         };
       },
       invalidatesTags: ["dispute"],
     }),
   }),
+  overrideExisting: true
 });
 
 export const {
