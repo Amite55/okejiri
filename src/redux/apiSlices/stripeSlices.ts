@@ -6,6 +6,9 @@ export const stripeSlice = api.injectEndpoints({
       query: (data) => ({
         url: "/stripe/connected/account-create",
         method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
         body: data,
       }),
       invalidatesTags: ["payment"],
