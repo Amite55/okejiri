@@ -2,8 +2,8 @@ import UserCard from "@/src/Components/UserCard";
 import tw from "@/src/lib/tailwind";
 import { useGetAllProviderOrdersQuery, useLazyGetProviderOrdersQuery, useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/orderSlices";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 const Order = () => {
   const [isNew, setIsNew] = useState<boolean>(true);
@@ -40,7 +40,18 @@ const Order = () => {
   }] = useLazyGetProviderOrdersQuery();
 
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
-  const {data: allProvderOrdersDetail, isLoading: isLoadingAllProvderOrdersDetail, isError: isErrorAllProvderOrdersDetail} = useGetAllProviderOrdersQuery({});
+  const { data: allProvderOrdersDetail, isLoading: isLoadingAllProvderOrdersDetail, isError: isErrorAllProvderOrdersDetail } = useGetAllProviderOrdersQuery({});
+
+  const orders = allProvderOrdersDetail?.data?.data || [];
+  const { instantCount, scheduleCount } = useMemo(() => {
+    const filtered = orders.filter((value: any) => value.status === status)
+    const instant = filtered.filter((value: any) => value.booking_process === "instant").length;
+    const schedule = filtered.filter((value: any) => value.booking_process === "schedule").length;
+    console.log("======= instant count, ", instant, " schedule ", schedule, " status ", status, " booking_process ", bookingProcess)
+    return { instantCount: instant, scheduleCount: schedule }
+  }, [orders, status])
+
+
 
   useEffect(() => {
     fetchOrderItems({ status, booking_process: bookingProcess })
@@ -72,7 +83,7 @@ const Order = () => {
     }
   }, [fetchOrderItemsData]);
 
- 
+
 
   // API END
 
@@ -170,7 +181,7 @@ const Order = () => {
           style={[tw`gap-1`]}
         >
           <Text style={[tw`font-DegularDisplayDemoMedium text-xl text-black`]}>
-            Instant (20)
+            Instant ({isLoadingAllProvderOrdersDetail ? "..." : instantCount})
           </Text>
           {bookingProcess === "instant" ? (
             <View style={tw`border-b-4 border-primary shadow-2xl `} />
@@ -183,7 +194,7 @@ const Order = () => {
           style={[tw`gap-1`]}
         >
           <Text style={[tw`font-DegularDisplayDemoMedium text-xl text-black`]}>
-            Schedule (10)
+            Schedule ({isLoadingAllProvderOrdersDetail ? "..." : scheduleCount})
           </Text>
           {bookingProcess === "schedule" ? (
             <View style={tw`border-b-4 border-primary shadow-2xl `} />
@@ -196,28 +207,23 @@ const Order = () => {
       {/* -------------- order content ---------------- */}
 
       <View style={tw`gap-3 mt-4`}>
-        {isLoadingfetchOrderItems || isFetchingOrderItems ? (
-          <View>
-            <ActivityIndicator size={"small"} color="#ff6600" />
+        {fetchOrderItemsData?.data?.data ? (fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
 
-          </View>
-        ) : fetchOrderItemsData?.data?.data ? (fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
-          
-            <UserCard
-              key={index}
-              ProfileName={item.user.name}
-              isProfileBadge={item.user.kyc_status === "Verified"? true: false}
-              Date={formateDate(item.created_at)}
-              Description={descriptions[item.id]}
-              ImgProfileImg={item.user.avatar}
-              onPress={() => router.push({
-                pathname: "/service_provider/company/order_details_profile",
-                params: {
-                  id: item.id
-                }
-              })}
-            />
-          
+          <UserCard
+            key={index}
+            ProfileName={item.user.name}
+            isProfileBadge={item.user.kyc_status === "Verified" ? true : false}
+            Date={formateDate(item.created_at)}
+            Description={descriptions[item.id]}
+            ImgProfileImg={item.user.avatar}
+            onPress={() => router.push({
+              pathname: "/service_provider/company/order_details_profile",
+              params: {
+                id: item.id
+              }
+            })}
+          />
+
 
         )))
 

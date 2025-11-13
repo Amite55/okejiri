@@ -12,7 +12,7 @@ export const companyEmployeesSlice = api.injectEndpoints({
         }),
         assignEmployee: builder.mutation({
             query: (requestBody)=>({
-                url: "/assign-Employee",
+                url: "/assign-employee",
                 method: "POST",
                 body: requestBody,
             }),
@@ -41,7 +41,8 @@ export const companyEmployeesSlice = api.injectEndpoints({
             }),
             providesTags: ["settings"]
         })
-    })
+    }),
+    overrideExisting: true
 })
 
 export const {
