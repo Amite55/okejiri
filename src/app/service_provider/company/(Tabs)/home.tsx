@@ -95,7 +95,12 @@ const Home_Index_Company = () => {
       <ServiceProfileHeaderInfo
         onPress={() => router.push("/service_provider/company/(Tabs)/account")}
         onPressNotification={() =>
-          router.push("/notification_Global/notifications")
+          router.push({
+            pathname: "/notification_Global/notifications",
+            params: {
+              provider_type: "company"
+            }
+          })
         }
       />
 
