@@ -55,7 +55,7 @@ export default function Index() {
 
   useEffect(() => {
     setTimeout(() => {
-      router.replace("/service_provider/individual/(Tabs)/home");
+      router.replace("/service_provider/individual/account");
     }, 2000);
   }, []);
 
