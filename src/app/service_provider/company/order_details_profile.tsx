@@ -12,27 +12,32 @@ import AcceptedModal from "@/src/Components/AcceptedModal";
 import UserReviewCard from "@/src/Components/UserReviewCard";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/orderSlices";
+import { useLazyOrderDetailsQuery, useOrderApproveMutation, useRequestForDeliveryMutation } from "@/src/redux/apiSlices/companyProvider/orderSlices";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Image, Pressable, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, FlatList, Image, Pressable, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Order_Details_Profile = () => {
     // screen state
     const [approvedModalShown, setApprovedModalShown] = useState(false)
 
-    const handleAssignPress = ()=>{
-        setApprovedModalShown(false);
 
-        setTimeout(()=>{
-            router.push("/service_provider/company/my_employees/assign_provider")
-        }, 200)
-    }
 
 
 
     const { id } = useLocalSearchParams();
+
+    const handleAssignPress = () => {
+        setApprovedModalShown(false);
+
+        setTimeout(() => {
+            router.push({
+                pathname: "/service_provider/company/my_employees/assign_provider",
+                params: { id: id }
+            })
+        }, 200)
+    }
     //     
     // api state
     const [fetchOrderItem, {
@@ -42,6 +47,19 @@ const Order_Details_Profile = () => {
         error: isErrorFetchOrder
     }] = useLazyOrderDetailsQuery();
 
+    const [orderApprove, {
+        data: orderApproveData,
+        isLoading: isLoadingOrderApprove,
+        isError: isErrorOrderApprove,
+        error: errorOrderApproved
+    }] = useOrderApproveMutation();
+
+    const [requestForDelivery, {
+        data: requestForDeliveryData,
+        isLoading: isLoadingRequestForDelivery,
+        isError: isErrorRequestForDelivery,
+        error: errorRequestForDelivery
+    }] = useRequestForDeliveryMutation();
 
     // api function
     const formatDate = (dateStr: string) => {
@@ -76,8 +94,48 @@ const Order_Details_Profile = () => {
     // }, [fetchOrderData?.data])
     const order = fetchOrderData?.data;
     // console.log("provider avatar image, ", order?.provider.avatar)
-    console.log("Order id: ===========", id);
+    // console.log("Order id: ===========", id);
 
+
+    // handlers:
+    const handleOrderApprove = async (orderId: any) => {
+        if (!orderId) {
+            return;
+        }
+        try {
+            const response = await orderApprove(orderId).unwrap();
+            console.log("======== order approve ", response);
+
+            setApprovedModalShown(true)
+        } catch (err) {
+            Alert.alert("Order approve failed!");
+            console.log("Order approve order failed ", err, " ", errorOrderApproved)
+        }
+    }
+    const handleRequestForDelivery = async (orderId: any) => {
+        if (!orderId) return;
+
+        try {
+            const response = await requestForDelivery(orderId).unwrap();
+            router.push({
+                pathname: "/Toaster",
+                params: { res: response?.message || "Request for delivery send" },
+            });
+            setTimeout(() => {
+                router.back();
+            }, 2000);
+        }
+        catch (err) {
+            router.push({
+                pathname: "/Toaster",
+                params: { res: "Delivery request send failed" },
+            });
+            console.log("Extension order error  ", err, " error ", errorRequestForDelivery)
+            setTimeout(() => {
+                router.back();
+            }, 2000);
+        }
+    }
 
     return (
         <ScrollView
@@ -134,7 +192,7 @@ const Order_Details_Profile = () => {
                     {/* ------------------- user datails --------------- */}
                     <View style={tw`bg-white rounded-2xl p-5 mb-4 shadow-sm gap-3 my-4`}>
                         <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-                            Booking details
+                            User details
                         </Text>
 
                         <View style={tw`flex-row gap-3 items-center`}>
@@ -217,11 +275,11 @@ const Order_Details_Profile = () => {
                     </View>
 
                     {/*======================== Service Details ============ */}
-                    <View style={tw`bg-white rounded-2xl p-4 mb-4 shadow-sm`}>
+                    <View style={tw` `}>
                         {order.booking_items?.map((bookingItem: any) => {
                             const packageItems = bookingItem.package?.package_detail_items || [];
                             return (
-                                <View key={bookingItem.id} style={tw`bg-white rounded-2xl p-4 mb-4 `}>
+                                <View key={bookingItem.id} style={tw`bg-white rounded-2xl p-4 mb-4 gap-4`}>
                                     <Text style={tw`font-bold text-lg mb-2`}>
                                         {bookingItem.package?.title || "Service title goes here."}
                                     </Text>
@@ -281,7 +339,7 @@ const Order_Details_Profile = () => {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={()=> setApprovedModalShown(true)}
+                                onPress={() => handleOrderApprove(order.id)}
                                 style={tw`flex-1 bg-success600 py-4 rounded-full items-center ml-2`}
                             >
                                 <Text style={tw`text-white font-DegularDisplayDemoMedium text-2xl`}>
@@ -327,11 +385,32 @@ const Order_Details_Profile = () => {
                             <View style={tw`gap-2`}>
                                 <Pressable
                                     style={tw`py-4 border border-black/20 rounded-full`}
-                                ><Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-black`}>Extend delivery time</Text></Pressable>
+                                    onPress={() => router.push({
+                                        pathname: "/service_provider/individual/my_services/delivery_extension",
+                                        params: {
+                                            id: order.id
+                                        }
+                                    })}
+                                >
+                                    <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-black`}>
+                                        Extend delivery time
+                                    </Text>
+                                </Pressable>
                                 <Pressable
+                                    onPress={()=>handleRequestForDelivery(order.id)}
                                     style={tw`py-4  bg-primary rounded-full`}
-                                ><Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}>Request for delivery</Text></Pressable>
+                                >
+                                    <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}>
+                                        Request for delivery
+                                    </Text>
+                                </Pressable>
                                 <Pressable
+                                    onPress={()=> router.push({
+                                        pathname: "/company/dispute_process",
+                                        params: {
+                                            id: order?.id
+                                        }
+                                    })}
                                     style={tw`py-4 `}
                                 >
                                     <View style={tw`flex-row justify-center gap-2`}>
@@ -404,13 +483,13 @@ const Order_Details_Profile = () => {
                         </View>
                     }
 
-                    <AcceptedModal 
+                    <AcceptedModal
                         visible={approvedModalShown}
                         title="Request accepted"
                         subtitle="Assign a available service provider"
                         btnText="Assign"
                         onPress={handleAssignPress}
-                        onClose={()=> setApprovedModalShown(false)}
+                        onClose={() => setApprovedModalShown(false)}
                     />
 
 

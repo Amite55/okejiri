@@ -17,13 +17,13 @@ export const companyProviderOrderSlice = api.injectEndpoints({
             providesTags: ["order"]
         }),
         getProviderOrders: builder.query({
-            query: ({status, booking_process}) => {
+            query: ({status, booking_process="instant"}) => {
                 let queryString;
                 if(status && booking_process){
                     queryString = `status=${status}&booking_process=${booking_process}`;
                 }
                 else if(status){
-                    queryString = `status=${status}`;
+                    queryString = `status=${status}&booking_process=${booking_process}`;
                 }
                 
                 // const queryString = new URLSearchParams(params).toString();
