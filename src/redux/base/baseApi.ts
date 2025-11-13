@@ -109,6 +109,10 @@ export const api = createApi({
     "updateServiceAvailable",
     "servicePackageDetails",
     "servicePackages",
+    "addPortfolio",
+    "updatePortfolio",
+    "deletePortfolios",
+    "portfolio",
   ],
 });
 export const imageUrl = "http://10.10.10.63:8001/api";
