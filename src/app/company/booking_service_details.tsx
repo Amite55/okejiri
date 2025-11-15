@@ -21,7 +21,7 @@ import {
   useOrderDetailsQuery,
   useReportProviderMutation,
 } from "@/src/redux/apiSlices/userProvider/bookingsSlices";
-import { _HEIGHT } from "@/utils/utils";
+import { _HEIGHT, PrimaryColor } from "@/utils/utils";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -31,7 +31,7 @@ import {
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Keyboard,
@@ -39,6 +39,7 @@ import {
   Modal,
   Platform,
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   TextInput,
@@ -47,6 +48,11 @@ import {
   View,
 } from "react-native";
 
+import {
+  useDeleteCartItemMutation,
+  useGetCartItemQuery,
+  useStoreDeleteCartItemMutation,
+} from "@/src/redux/apiSlices/userProvider/cartSlices";
 import * as ImagePicker from "expo-image-picker";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
@@ -59,7 +65,10 @@ const Booking_Service_Details = () => {
   const [reportReason, setReportReason] = useState<boolean>(false);
   const [selectedReport, setSelectedReport] = useState<string>("");
   const [reportDetails, setReportDetails] = useState<string>("");
+  const [addToCartState, setAddToCartState] = useState([]);
+  const [loadingState, setLoadingState] = useState<number | null>(null);
   const [images, setImages] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = React.useState(false);
   const { id } = useLocalSearchParams();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -78,11 +87,20 @@ const Booking_Service_Details = () => {
   }, []);
 
   // ---------------- api end point ----------------
-  const { data: OrderDetailsData, isLoading: isOrderDetailsLoading } =
-    useOrderDetailsQuery(id, { skip: !id });
+  const {
+    data: OrderDetailsData,
+    isLoading: isOrderDetailsLoading,
+    refetch,
+  } = useOrderDetailsQuery(id, { skip: !id });
   const [cancelOrder] = useOrderCancelMutation();
   const [reportProvider, { isLoading: isReportLoading }] =
     useReportProviderMutation();
+  const [deleteCartResponse, { isLoading: deleteCartLoading }] =
+    useDeleteCartItemMutation();
+  const { data: getAddToCartItem, isLoading: getAddToCartLoading } =
+    useGetCartItemQuery({});
+  const [cartResponse, { isLoading: isCartLoading }] =
+    useStoreDeleteCartItemMutation();
 
   // [================= handel report =================]
   const handleReport = async () => {
@@ -148,15 +166,61 @@ const Booking_Service_Details = () => {
       console.log(error, "this ___________________");
     }
   };
-  // ===================== if is loading =====================
-  if (isOrderDetailsLoading) {
-    return (
-      <View>
-        <ActivityIndicator size="large" color={"#1111"} />
-      </View>
-    );
-  }
-  // ==================== image pickers with expo image picker  ====================
+  // ================== delete all added item to render this screen ------------
+  useEffect(() => {
+    const readFunc = async () => {
+      try {
+        setAddToCartState([]);
+        await deleteCartResponse({}).unwrap();
+      } catch (error) {
+        console.log(error, "not Delete all item !");
+      }
+    };
+    readFunc();
+  }, []);
+  // -------------- sum price of add to cart ------------
+  const cartReducePrice = getAddToCartItem?.data.reduce(
+    (total: number, item: any) => total + Number(item?.package?.price || 0),
+    0
+  );
+  // --------------------------- add to cart function delete and add this same function use for add to cart   ----------------
+  const handleDeleteStoreCartItem = async (packageId: number) => {
+    try {
+      setLoadingState(packageId);
+      const response = await cartResponse({ package_id: packageId }).unwrap();
+      if (response) {
+        if (
+          addToCartState?.some(
+            (cartItem: { package_id: number }) =>
+              cartItem?.package_id === packageId
+          )
+        ) {
+          setAddToCartState(
+            addToCartState.filter(
+              (cartItem: { package_id: number }) =>
+                cartItem?.package_id !== packageId
+            )
+          );
+        } else {
+          setAddToCartState([...addToCartState, { package_id: packageId }]);
+        }
+        router.push({
+          pathname: `/Toaster`,
+          params: { res: response?.message || response },
+        });
+      }
+    } catch (error) {
+      console.log(error, "Delete Add to cart Warring !");
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
+      });
+    } finally {
+      setLoadingState(null);
+    }
+  };
+
+  // {==================== image pickers with expo image picker  ====================}
   const pickImages = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -174,6 +238,57 @@ const Booking_Service_Details = () => {
     }
   };
 
+  // [----------------- refresh function ----------------]
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([refetch, OrderDetailsData]);
+    } catch (error) {
+      console.log(error, "refresh error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+  // ===================== if is loading =====================
+  if (isOrderDetailsLoading) {
+    return (
+      <View>
+        <ActivityIndicator size="large" color={"#1111"} />
+      </View>
+    );
+  }
+
+  // ==================== handle reorder function ====================
+  const handleBooking = async () => {
+    const bookingData = {
+      provider_id: OrderDetailsData?.data?.provider_id,
+      booking_process:
+        OrderDetailsData?.data?.booking_process === "instant"
+          ? "Instant booking"
+          : "Schedule booking",
+      booking_type:
+        OrderDetailsData?.data?.booking_type === "single" ? "Single" : "Group",
+      price: cartReducePrice,
+      ...(OrderDetailsData?.data?.booking_process === "schedule" && {
+        schedule_date: OrderDetailsData?.data?.schedule_date,
+        schedule_time_slot: OrderDetailsData?.data?.schedule_time_slot,
+      }),
+      ...(OrderDetailsData?.data?.booking_type === "group" && {
+        number_of_people: OrderDetailsData?.data?.number_of_people,
+      }),
+    };
+    try {
+      // ========== navigate to next route ============== with come to edit check
+      if (bookingData) {
+        router.push({
+          pathname: "/company/serviceBookings/billing_details",
+          params: { bookingDetails: JSON.stringify(bookingData) },
+        });
+      }
+    } catch (error) {
+      console.log(error, "Booking fail --------");
+    }
+  };
   return (
     <KeyboardAvoidingView
       style={tw`flex-1`}
@@ -184,6 +299,9 @@ const Booking_Service_Details = () => {
         <BottomSheetModalProvider>
           <View style={tw`flex-1`}>
             <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
               style={tw`flex-1  bg-base_color`}
@@ -291,13 +409,13 @@ const Booking_Service_Details = () => {
                           <Text
                             style={tw`font-DegularDisplayDemoRegular text-base text-black`}
                           >
-                            ₦ {pkg.price}
+                            ₦ {pkg?.price}
                           </Text>
 
                           <Text
                             style={tw`font-DegularDisplayDemoMedium text-base text-regularText`}
                           >
-                            Est. time : {pkg.delivery_time} hours
+                            Est. time : {item?.package?.delivery_time} hours
                           </Text>
                         </View>
 
@@ -313,15 +431,32 @@ const Booking_Service_Details = () => {
                             <Text style={tw`text-redWhite`}>See details</Text>
                           </TouchableOpacity>
 
-                          {OrderDetailsData?.data?.status === "Completed" && (
-                            <TouchableOpacity
-                              activeOpacity={0.8}
-                              onPress={() => setTickMark(!tickmark)}
-                              style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
-                            >
-                              <SvgXml xml={tickmark ? IconTick : IconPlus} />
-                            </TouchableOpacity>
-                          )}
+                          {OrderDetailsData?.data?.status === "Completed" &&
+                            (loadingState === pkg?.id ? (
+                              <ActivityIndicator
+                                size="large"
+                                color={PrimaryColor}
+                              />
+                            ) : (
+                              <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={() => {
+                                  handleDeleteStoreCartItem(pkg?.id);
+                                }}
+                                style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
+                              >
+                                <SvgXml
+                                  xml={
+                                    addToCartState?.some(
+                                      (cartItem: { package_id: number }) =>
+                                        cartItem?.package_id === pkg?.id
+                                    )
+                                      ? IconTick
+                                      : IconPlus
+                                  }
+                                />
+                              </TouchableOpacity>
+                            ))}
                         </View>
                       </Pressable>
                     );
@@ -469,7 +604,8 @@ const Booking_Service_Details = () => {
                 }}
               />
             </ScrollView>
-            {tickmark && (
+            {/* [------------- if this order complete then add to cart and tickmark show =============] */}
+            {addToCartState?.length > 0 && (
               <View
                 style={[
                   tw`absolute bottom-0 left-0 right-0 bg-white px-5 `,
@@ -491,30 +627,24 @@ const Booking_Service_Details = () => {
                     <Text
                       style={tw`font-DegularDisplayDemoMedium text-2xl text-black `}
                     >
-                      ₦ 49.00
+                      ₦ {cartReducePrice?.toFixed(2)}
                     </Text>
                     <View style={tw`flex-row items-center gap-3`}>
                       <Text
                         style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
                       >
-                        1 service
+                        {addToCartState?.length} service
                       </Text>
-                      <View style={tw`flex-row items-center gap-2`}>
-                        <View style={tw`w-2 h-2 rounded-full bg-regularText`} />
-                        <Text
-                          style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
-                        >
-                          Est. 30 mins
-                        </Text>
-                      </View>
                     </View>
                   </View>
                   <TouchableOpacity
-                    onPress={() =>
-                      router.push(
-                        "/company/previous_item_Book/previous_booking_confirmation"
-                      )
-                    }
+                    onPress={() => handleBooking()}
+                    // onPress={() =>
+                    //   router.push(
+                    //     "/company/previous_item_Book/previous_booking_confirmation"
+                    //   )
+                    // }
+                    activeOpacity={0.8}
                     style={tw`w-28 h-12 justify-center items-center bg-primary rounded-lg`}
                   >
                     <Text
