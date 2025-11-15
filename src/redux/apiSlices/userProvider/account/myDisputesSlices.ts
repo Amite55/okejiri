@@ -1,11 +1,10 @@
 import { api } from "@/src/redux/base/baseApi";
-
+// "http://103.186.20.114:8005/api/my-dispute?per_page=10&page=1"
 export const myDisputesSlices = api.injectEndpoints({
   endpoints: (builder) => ({
     myDispute: builder.query({
       query: (page) => ({
-        url: `/my-dispute?page=${page}`,
-        method: "GET",
+        url: `/my-dispute`,
       }),
       providesTags: ["dispute"],
     }),
