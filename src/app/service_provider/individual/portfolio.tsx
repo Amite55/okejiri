@@ -155,7 +155,8 @@ const Portfolio = () => {
       quality: 1,
     });
 
-    if (!result.canceled && result.assets.length > 0 && selectedId) {
+    if (!result.canceled && result.assets.length > 0) {
+      // selectedId remove
       const selectedImage = result.assets[0];
       setImageAsset(selectedImage);
 
@@ -164,29 +165,36 @@ const Portfolio = () => {
         selectedImage.fileName ??
         selectedImage.uri.split("/").pop() ??
         `image_${Date.now()}.jpg`;
+
       const extMatch = /\.(\w+)$/.exec(filename);
       const mime = extMatch ? `image/${extMatch[1]}` : "image/jpeg";
+
       form.append("image", {
         uri: selectedImage.uri,
         name: filename,
         type: mime,
-      } as any);
+      });
 
       try {
         const res = await addPortfolio(form).unwrap();
+
         if (res?.status === "success") {
-          setSelectModalVisible(false);
+          router.push({
+            pathname: "/Toaster",
+            params: { res: res.message },
+          });
+          router.push("/service_provider/individual/(Tabs)/account");
           handleRefresh();
         }
       } catch (err) {
-        console.log("❌ Update error:", err);
+        console.log("❌ Add error:", err);
       }
     } else {
-      console.log("❌ Image selection cancelled");
+      console.log("❌ Image selection cancelled pickImageAddMore");
     }
   };
 
-  // === delete portfolio item ===
+  // === delete portfolio item ===//
   const handleDelete = async () => {
     if (!selectedId) return;
     console.log(selectedId);
