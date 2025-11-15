@@ -6,7 +6,11 @@ export const companyEmployeesSlice = api.injectEndpoints({
             query: (requestBody)=>({
                 url: "/add-employee",
                 method: "POST",
-                body: requestBody
+                body: requestBody,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    "Accept": "application/json",
+                }
             }),
             invalidatesTags:["settings"]
         }),
@@ -19,10 +23,14 @@ export const companyEmployeesSlice = api.injectEndpoints({
             invalidatesTags: ["settings"]
         }),
         editEmployee: builder.mutation({
-            query: ({id, requestBody})=>({
+            query: ({id, formData})=>({
                 url: `/edit-employee/${id}`,
                 method: "POST",
-                body: requestBody,
+                body: formData,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    "Accept": "application/json",
+                }
             }),
             invalidatesTags: ["settings"]
         }),
@@ -35,8 +43,8 @@ export const companyEmployeesSlice = api.injectEndpoints({
             providesTags: ["settings"]
         }),
         myEmployee: builder.query({
-            query: (per_page = 10)=>({
-                url: `/my-employee?per_page=${per_page}`,
+            query: (page = 1)=>({
+                url: `/my-employee?page=${page}`,
                 method: "GET"
             }),
             providesTags: ["settings"]
@@ -51,4 +59,5 @@ export const {
     useEditEmployeeMutation,
     useEmployeeDetailsQuery,
     useMyEmployeeQuery,
+    useLazyMyEmployeeQuery
 } = companyEmployeesSlice;

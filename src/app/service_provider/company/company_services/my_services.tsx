@@ -20,6 +20,7 @@ import {
   View,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
+import { WebView } from "react-native-webview";
 
 const My_Services = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -101,9 +102,17 @@ const My_Services = () => {
           style={tw`w-44 h-48 rounded-lg`}
           source={{ uri: item?.service?.image }}
         />
+      </View>
 
-        <View
-          style={tw`absolute bottom-2 justify-center items-center w-38 h-10 rounded-xl border border-white60 overflow-hidden`}
+      <View style={tw`flex-row justify-between items-center my-4`}>
+        <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
+          {item?.service?.name}
+        </Text>
+        <TouchableOpacity
+          onPress={() =>
+            router.push("/service_provider/individual/my_services/edit_package")
+          }
+          style={tw`p-2`}
         >
           <TouchableOpacity
             onPress={() =>
@@ -120,18 +129,42 @@ const My_Services = () => {
             >
               {item?.service?.name}
             </Text>
-          </TouchableOpacity>
-        </View>
+          </View>
+        ))}
+      </View>
 
-        <TouchableOpacity
-          onPress={() => setDeleteModalVisible(true)}
-          style={tw`absolute top-3 right-5 h-9 w-8 rounded-lg border border-white justify-center items-center`}
-        >
-          <SvgXml xml={IconDeleteRed} />
-        </TouchableOpacity>
+      <View
+        style={tw`bg-primary w-full h-14 rounded-full flex-row justify-between items-center px-4 my-2`}
+      >
+        <Text style={tw`text-white font-DegularDisplayDemoMedium text-3xl`}>
+          Cost:
+        </Text>
+        <Text style={tw`text-white font-DegularDisplayDemoMedium text-3xl`}>
+          ₦ 49.00
+        </Text>
+      </View>
+    </View>
+  );
+
+  // ======================== WEBVIEW ==========================
+  if (OnboardingUrl) {
+    return (
+      <View style={{ flex: 1 }}>
+        <WebView
+          source={{ uri: OnboardingUrl }}
+          startInLoadingState={true}
+          renderLoading={() => (
+            <ActivityIndicator size="large" color="#000" style={tw`mt-10`} />
+          )}
+          onError={(e) => {
+            console.log("WebView error:", e.nativeEvent);
+            setOnboardingUrl(null);
+          }}
+          style={{ flex: 1 }}
+        />
       </View>
     );
-  };
+  }
 
   // ======================== SERVICE SELECT MODAL ========================== //
 
@@ -161,7 +194,7 @@ const My_Services = () => {
         ListHeaderComponent={() => (
           <View>
             <BackTitleButton
-              pageName={"My services"}
+              pageName="My services"
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
             />
@@ -308,25 +341,56 @@ const My_Services = () => {
                 <Text
                   style={tw`font-DegularDisplayDemoMedium text-lg text-black`}
                 >
-                  Cancel
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                // onPress={handlePhotoDelete}
-                style={tw`flex-row justify-center items-center border border-redDeep w-full p-1 rounded-lg gap-2`}
-              >
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-lg text-redDeep`}
+                  <SvgXml xml={IconPlus} />
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
+                  >
+                    Add more
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={handelCannact}
+                  style={tw`flex-row justify-center items-center gap-2 w-40 h-14 bg-primary rounded-full`}
                 >
-                  Delete
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
+                  >
+                    Connect
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
-        </View>
-      </Modal>
+        )}
+        ListFooterComponent={
+          loadingMore ? (
+            <View style={tw`mt-4 mb-8 justify-center items-center`}>
+              <ActivityIndicator size="small" color="#000" />
+              <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
+            </View>
+          ) : !hasMore && services.length > 0 ? (
+            <Text style={tw`text-gray-500 text-center my-4 text-lg`}>
+              No more services
+            </Text>
+          ) : null
+        }
+        ListEmptyComponent={() => (
+          <View style={tw`flex-1 justify-center items-center gap-3`}>
+            <Image style={tw`w-full h-80`} source={ImgEmptyService} />
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-3xl text-black`}
+            >
+              Nothing to show here
+            </Text>
+            <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+              Please add a service to see them here.
+            </Text>
+          </View>
+        )}
+      />
     </View>
   );
 };
 
-export default My_Services;
+export default My_Service;

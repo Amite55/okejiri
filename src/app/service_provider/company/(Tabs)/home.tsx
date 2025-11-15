@@ -41,6 +41,7 @@ const Home_Index_Company = () => {
 
   const { data: recentOrder, isLoading: recentOrderLoading } = useRecentOrderQuery("New");
   const { data: recentTransaction, isLoading: recentTransactionLoading } = useRecentTransactionsQuery({});
+  // const recentOrder = recentOrderData?.data?.data.slice(0,3) || [];
   
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
 
@@ -252,7 +253,7 @@ const Home_Index_Company = () => {
       />
       {/*  resent order */}
       <View style={tw`gap-3 my-4`}>
-        {recentOrder?.data?.data.map((item: any, index: any) => {
+        {recentOrder?.data?.data.slice(0,3).map((item: any, index: any) => {
           
           return (
             <UserCard
