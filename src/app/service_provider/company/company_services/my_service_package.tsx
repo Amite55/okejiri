@@ -8,13 +8,13 @@ import { useCreateConnectAccountMutation } from "@/src/redux/apiSlices/stripeSli
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    RefreshControl,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { WebView } from "react-native-webview";

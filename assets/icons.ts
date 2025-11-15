@@ -1026,3 +1026,16 @@ export const IconDustBin=`<svg width="14" height="18" viewBox="0 0 14 18" fill="
 <path d="M14 1H10.5L9.5 0H4.5L3.5 1H0V3H14M1 16C1 16.5304 1.21071 17.0391 1.58579 17.4142C1.96086 17.7893 2.46957 18 3 18H11C11.5304 18 12.0391 17.7893 12.4142 17.4142C12.7893 17.0391 13 16.5304 13 16V4H1V16Z" fill="#FF5345"/>
 </svg>
 `
+export const IconCheckBoxUnChecked = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="0.5" y="0.5" width="19" height="19" rx="1.5" stroke="black"/>
+</svg>
+`
+export const IconCheckBoxChecked= `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_1363_7392" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="30" height="30">
+<rect width="30" height="30" rx="6" fill="#D9D9D9"/>
+</mask>
+<g mask="url(#mask0_1363_7392)">
+<path d="M1.66667 0H28.3333C28.7754 0 29.1993 0.175595 29.5118 0.488155C29.8244 0.800716 30 1.22464 30 1.66667V28.3333C30 28.7754 29.8244 29.1993 29.5118 29.5118C29.1993 29.8244 28.7754 30 28.3333 30H1.66667C1.22464 30 0.800716 29.8244 0.488155 29.5118C0.175595 29.1993 0 28.7754 0 28.3333V1.66667C0 1.22464 0.175595 0.800716 0.488155 0.488155C0.800716 0.175595 1.22464 0 1.66667 0ZM13.3383 21.6667L25.1217 9.88167L22.7667 7.525L13.3383 16.9533L8.62333 12.2383L6.26667 14.595L13.3383 21.6667Z" fill="black"/>
+</g>
+</svg>
+`
