@@ -2,9 +2,9 @@ import { api } from "@/src/redux/base/baseApi";
 
 export const availableBalanceSlices = api.injectEndpoints({
   endpoints: (builder) => ({
-    recentTransactions: builder.query({
-      query: (page) => ({
-        url: `/my-transactions?per_page=${page}`,
+    getRecentTransactions: builder.query({
+      query: ({ page, per_page }) => ({
+        url: `/my-transactions?per_page=${per_page}&page=${page}`,
         method: "GET",
       }),
       providesTags: ["balance"],
@@ -29,7 +29,7 @@ export const availableBalanceSlices = api.injectEndpoints({
 });
 
 export const {
-  useRecentTransactionsQuery,
+  useGetRecentTransactionsQuery,
   useDepositSuccessMutation,
   useTransferBalanceMutation,
 } = availableBalanceSlices;
