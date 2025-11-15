@@ -3,7 +3,7 @@ import { api } from "../base/baseApi";
 export const notificationsSlices = api.injectEndpoints({
   endpoints: (builder) => ({
     getNotifications: builder.query({
-      query: (page=1) => ({
+      query: (page) => ({
         url: `/notifications?page=${page}`,
         method: "GET",
       }),
@@ -24,7 +24,7 @@ export const notificationsSlices = api.injectEndpoints({
       invalidatesTags: ["notifications"],
     }),
   }),
-  overrideExisting: true
+  overrideExisting: true,
 });
 
 export const {

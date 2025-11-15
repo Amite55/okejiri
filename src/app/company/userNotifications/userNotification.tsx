@@ -14,7 +14,8 @@ import {
 const UserNotification = () => {
   // -------------------- api end point ---------------------
   const { data: notificationData, isLoading: isNotificationLoading } =
-    useGetNotificationsQuery(10);
+    useGetNotificationsQuery({ page: 1 });
+
   const [markAsReadNotification] = useSingleMarkMutation();
 
   // ==================== loading skeleton ====================
