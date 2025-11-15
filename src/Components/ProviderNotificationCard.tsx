@@ -1,13 +1,13 @@
 import {
-    IconCancel,
-    IconDeliveryApproved,
-    IconDispute,
-    IconExtension,
-    IconKYCComplete,
-    IconNewOrder,
-    IconProfileBadge,
-    IconWaring,
-    IconWithdrawalPending,
+  IconCompleteKycNotification,
+  IconDeliveryApprovedNotification,
+  IconNewDisputeNotification,
+  IconNewOrderNotification,
+  IconOrderRejectedNotification,
+  IconPayoutRequestNotification,
+  IconProfileBadge,
+  IconRequestForDelivery,
+  IconWaringNotification
 } from "@/assets/icons";
 import { ImgCleaning } from "@/assets/images/image";
 import React from "react";
@@ -16,40 +16,69 @@ import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
 const iconMap = {
-  new_order: IconNewOrder,
-  delivery_request_approved: IconDeliveryApproved,
-  complete_kyc: IconKYCComplete,
-  warning: IconWaring,
-  cancelled: IconCancel,
-  new_dispute: IconDispute,
-  withdrawal_request_pending: IconWithdrawalPending,
-  delivery_extension: IconExtension,
+  payout_request: IconPayoutRequestNotification,
+  order_rejected: IconOrderRejectedNotification,
+  new_order: IconNewOrderNotification,
+  delivery_request_approved: IconDeliveryApprovedNotification,
+  delivery_request_decline: IconOrderRejectedNotification,
+  complete_kyc: IconCompleteKycNotification,
+  order_cancelled: IconOrderRejectedNotification,
+  new_dispute: IconNewDisputeNotification,
+  warning: IconWaringNotification,
+  order_approved: IconDeliveryApprovedNotification,
+  new_report: IconWaringNotification,
+  delivery_request_sent: IconRequestForDelivery,
+  extend_delivery_time: IconDeliveryApprovedNotification,
+  accept_extend_delivery_time: IconDeliveryApprovedNotification,
+  report: IconWaringNotification
 };
 const textColorMap = {
+  payout_request: "#4285F4",
+  order_rejected: "#FF3A00",
   new_order: "#FF6600",
   delivery_request_approved: "#008100",
+  delivery_request_decline: "#FF3A00",
   complete_kyc: "#9747FF",
-  warning: "#FF3A00",
-  cancelled: "#FF3A00",
+  order_cancelled: "#FF3A00",
   new_dispute: "#C88C00",
-  withdrawal_request_pending: "#4285F4",
-  delivery_extension: "#2577FF",
-  delivery_request: "#4F52FF",
+  warning: "#FF3A00",
+  order_approved:  "#008100",
+  new_report: "#FF3A00",
+  delivery_request_sent: "#4285F4",
+  extend_delivery_time:  "#008100",
+  accept_extend_delivery_time: "#008100",
+  report: "#FF3A00"
 };
 
 const ProviderNotificationCard = ({
   item,
   onPress,
-  
- 
+
+
 }: {
   item: any;
   onPress: () => void;
-  
- 
-}) => {
 
-  console.log("============= item =========", JSON.stringify(item, null, 2));
+
+}) => {
+  // Define allowed notification types for company/individual providers
+  const allowedProviderTypes = [
+    "payout_request",
+    "order_rejected",
+    "new_order",
+    "delivery_request_decline",
+    "delivery_request_approved",
+    "complete_kyc",
+    "order_cancel",
+    "new_dispute",
+    "warning",
+  ];
+
+  // const isAllowed = allowedProviderTypes.includes(item?.data?.type);
+  // if (!isAllowed) return null;
+
+ 
+  // console.log("============= item =========", JSON.stringify(item, null, 2));
   const Icon = iconMap[item?.data?.type];
   const textColor = textColorMap[item?.data?.type] || "#000000";
 
@@ -58,14 +87,14 @@ const ProviderNotificationCard = ({
       onPress={onPress}
       activeOpacity={0.8}
       style={[
-        tw`flex-row  items-center gap-2 rounded-2xl py-6 px-2 relative shadow-md`,
+        tw`flex-row  items-center gap-4 rounded-2xl py-6  px-4 relative shadow-md`,
         item?.read_at ? tw`bg-white` : tw`bg-gray-200`,
       ]}
     >
       {/* ----------------------- notification icon ------------------------------ */}
       {Icon ? (
         <View
-          style={tw`w-14 h-14 rounded-full border-2  border-white shadow-xl shadow-slate-900 bg-base_color justify-center items-center`}
+          style={tw`w-14 h-14 rounded-full border-2  border-white shadow-sm shadow-slate-900 bg-base_color justify-center items-center`}
         >
           <SvgXml xml={Icon} />
         </View>
@@ -79,6 +108,7 @@ const ProviderNotificationCard = ({
       <View style={tw`flex-1`}>
         <Text
           numberOfLines={2}
+          ellipsizeMode="clip"
           style={[
             tw`flex-1 font-DegularDisplayDemoMedium  text-xl mb-1`,
             { color: textColor },
@@ -86,14 +116,15 @@ const ProviderNotificationCard = ({
         >
           {item?.data?.title}
         </Text>
-        {item.profile_name ? (
+        {item?.data?.provider?.name ? (
           <View style={tw`flex-row items-center gap-2`}>
             <Text
-              style={tw`font-DegularDisplayDemoSemibold text-sm text-black`}
+              style={tw`font-DegularDisplayDemoSemibold text-base text-black`}
             >
-              Jone don
+              {item?.data?.provider?.name || item?.data?.user?.name}
             </Text>
-            <SvgXml xml={IconProfileBadge} />
+            {item?.data?.provider?.kyc_status === "Verified" || item?.data?.user?.kyc_status === "Verified"? <SvgXml xml={IconProfileBadge} /> : null}
+            
           </View>
         ) : (
           <Text
