@@ -1,4 +1,5 @@
 import { IconRightArrowCornerPrimaryColor, IconSearch } from "@/assets/icons";
+import BookingCard from "@/src/Components/BookingCard";
 import ServiceCard from "@/src/Components/ServiceCard";
 
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
@@ -7,6 +8,7 @@ import UserHomeSkeleton from "@/src/Components/skeletons/UserHomeSkeleton";
 import UserCarousel from "@/src/Components/UserCarousel";
 import CleaningData from "@/src/json/CleaningData.json";
 import tw from "@/src/lib/tailwind";
+import { useBookingsHistoryQuery } from "@/src/redux/apiSlices/userProvider/bookingsSlices";
 import {
   useServiceNearbyQuery,
   useServicesQuery,
@@ -43,6 +45,10 @@ const Company_Home_Index = () => {
     error,
     refetch: serviceRefetch,
   } = useServicesQuery({});
+  const {
+    data: getMyServiceBookingsData,
+    isLoading: isMyServiceBookingsLoading,
+  } = useBookingsHistoryQuery({ page: 1, per_page: 10 });
 
   const serviceItemRender = ({ item }) => {
     return (
@@ -91,7 +97,7 @@ const Company_Home_Index = () => {
     );
   };
   // ================ this is skeleton loader ===================
-  if (servicesLoading || serviceNearbyLoading) {
+  if (servicesLoading || serviceNearbyLoading || isMyServiceBookingsLoading) {
     return <UserHomeSkeleton />;
   }
 
@@ -207,19 +213,24 @@ const Company_Home_Index = () => {
         />
 
         <View style={tw`gap-3 mt-3`}>
-          {CleaningData?.length === 0 ? (
+          {getMyServiceBookingsData?.data?.data?.length === 0 ? (
             <Text
               style={tw`font-DegularDisplayDemoMedium text-xl text-deepBlue100 text-center`}
             >
               Your ServiCe No Data
             </Text>
           ) : (
-            CleaningData.slice(0, 2).map((item, index) => (
-              <ServiceCard
-                key={index}
+            getMyServiceBookingsData?.data?.data.map((item, index) => (
+              <BookingCard
+                key={item?.id}
                 item={item}
-                index={index}
-                onPress={() => router.push("/company/serviceDetails")}
+                index={item?.id}
+                onPress={() =>
+                  router.push({
+                    pathname: "/company/booking_service_details",
+                    params: { id: item?.id },
+                  })
+                }
               />
             ))
           )}

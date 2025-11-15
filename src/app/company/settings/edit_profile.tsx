@@ -74,8 +74,6 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
     mode: "onBlur",
   });
 
-  console.log();
-
   const onSubmit: SubmitHandler<EditProfileFormData> = async (
     data: EditProfileFormData
   ): Promise<void> => {
@@ -140,14 +138,13 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
       } catch (err: any) {
         router.push({
           pathname: "/Toaster",
-          params: { res: err?.errors?.photo },
+          params: { res: err?.message || "Something went wrong" || err },
         });
       }
     } else {
       console.log("❌ Image selection cancelled");
     }
   };
-  console.log(userProfileInfo, "userProfileInfo");
 
   return (
     <ScrollView
@@ -173,7 +170,8 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
           />
 
           <TouchableOpacity
-            style={tw`absolute right-38 -bottom-2 w-12 h-12 rounded-full bg-primary justify-center items-center`}
+            activeOpacity={0.8}
+            style={tw`absolute right-38 -bottom-2 w-10 h-10 rounded-full bg-primary justify-center items-center`}
             accessibilityLabel="Change profile picture"
             accessibilityRole="button"
             onPress={pickImage}
