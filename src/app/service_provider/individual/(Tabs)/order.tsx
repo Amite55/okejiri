@@ -1,21 +1,14 @@
-import {
-  IconDate,
-  IconProfileBadge,
-  IconRightArrowCornerPrimaryColor,
-} from "@/assets/icons";
-import { ImgProfileImg } from "@/assets/images/image";
+import UserCard from "@/src/Components/UserCard";
 import tw from "@/src/lib/tailwind";
+import { useGetAllProviderOrdersQuery, useLazyGetProviderOrdersQuery, useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/orderSlices";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  Image,
   Pressable,
   ScrollView,
   Text,
-  TouchableOpacity,
-  View,
+  View
 } from "react-native";
-import { SvgXml } from "react-native-svg";
 
 const Order = () => {
   const [isNew, setIsNew] = useState<boolean>(true);
@@ -24,6 +17,77 @@ const Order = () => {
 
   const [isOnTime, setIsOnTime] = useState<boolean>(true);
   const [isInstant, setInstant] = useState<boolean>(false);
+  const [status, setStatus] = useState<"New" | "Pending" | "Completed">("New");
+  const [bookingProcess, setBookingProcess] = useState<"instant" | "schedule">("instant");
+
+  // state for fetch data;
+  const formateDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const options = { weekday: "short", day: "2-digit", month: "short", year: "numeric" };
+    const parts = date.toLocaleDateString("en-US", options).split(" ");
+    // console.log(date.toLocaleDateString("en-US", options))
+    const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${parts[3]}`;
+    return formatted;
+  }
+
+  // API State
+  // const [activeFilter, setActiveFilter] = useState({ status: "New", booking_process: "instant" });
+
+
+
+  // API START
+
+  const [fetchOrderItems, {
+    data: fetchOrderItemsData,
+    isLoading: isLoadingfetchOrderItems,
+    isFetching: isFetchingOrderItems,
+    error: isErrorFetchOrderItems
+  }] = useLazyGetProviderOrdersQuery();
+
+  const [fetchOrderItem] = useLazyOrderDetailsQuery();
+  const { data: allProvderOrdersDetail, isLoading: isLoadingAllProvderOrdersDetail, isError: isErrorAllProvderOrdersDetail } = useGetAllProviderOrdersQuery({});
+
+  const orders = allProvderOrdersDetail?.data?.data || [];
+  const { instantCount, scheduleCount } = useMemo(() => {
+    const filtered = orders.filter((value: any) => value.status === status)
+    const instant = filtered.filter((value: any) => value.booking_process === "instant").length;
+    const schedule = filtered.filter((value: any) => value.booking_process === "schedule").length;
+    console.log("======= instant count, ", instant, " schedule ", schedule, " status ", status, " booking_process ", bookingProcess)
+    return { instantCount: instant, scheduleCount: schedule }
+  }, [orders, status])
+
+
+
+  useEffect(() => {
+    fetchOrderItems({ status, booking_process: bookingProcess })
+    // console.log("fetch item screen render ===================== ", fetchOrderItemsData?.data?.data)
+  }, [])
+
+  useEffect(() => {
+    fetchOrderItems({ status: status, booking_process: bookingProcess })
+    // console.log("fetch item refetch ===================== ", fetchOrderItemsData?.data?.data)
+  }, [status, bookingProcess])
+
+
+  const [descriptions, setDescriptions] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    if (fetchOrderItemsData?.data?.data?.length) {
+      const fetchDescriptions = async () => {
+        for (const item of fetchOrderItemsData.data.data) {
+          try {
+            const response = await fetchOrderItem(item.id).unwrap();
+            const count = response?.data?.provider?.provider_services?.length ?? 0;
+            setDescriptions(prev => ({ ...prev, [item.id]: `${count} ${count === 1 ? "service" : "services"}` }));
+          } catch (err) {
+            setDescriptions(prev => ({ ...prev, [item.id]: "N/A" }));
+          }
+        }
+      };
+      fetchDescriptions();
+    }
+  }, [fetchOrderItemsData]);
+
 
   return (
     <ScrollView
@@ -46,21 +110,18 @@ const Order = () => {
       >
         <Pressable
           onPress={() => {
-            setIsNew(true);
-            setIspending(false);
-            setIsCompleted(false);
+            setStatus("New")
+            setBookingProcess("instant")
           }}
           style={[
-            tw`flex-1 justify-center items-center h-12  rounded-xl ${
-              isNew ? `bg-primary` : `bg-transparent`
-            }`,
+            tw`flex-1 justify-center items-center h-12  rounded-xl ${status === "New" ? `bg-primary` : `bg-transparent`
+              }`,
           ]}
         >
           <Text
             style={[
-              tw`font-DegularDisplayDemoMedium text-xl ${
-                isNew ? `text-white` : `text-black`
-              } `,
+              tw`font-DegularDisplayDemoMedium text-xl ${status === "New" ? `text-white` : `text-black`
+                } `,
             ]}
           >
             New
@@ -69,21 +130,18 @@ const Order = () => {
 
         <Pressable
           onPress={() => {
-            setIspending(true);
-            setIsCompleted(false);
-            setIsNew(false);
+            setStatus("Pending")
+            setBookingProcess("instant")
           }}
           style={[
-            tw`flex-1 justify-center h-12 items-center   rounded-xl ${
-              isPending ? `bg-violet` : `bg-transparent`
-            }`,
+            tw`flex-1 justify-center h-12 items-center   rounded-xl ${status === "Pending" ? `bg-violet` : `bg-transparent`
+              }`,
           ]}
         >
           <Text
             style={[
-              tw`font-DegularDisplayDemoMedium text-xl  ${
-                isPending ? `text-white` : `text-black`
-              } `,
+              tw`font-DegularDisplayDemoMedium text-xl  ${status === "Pending" ? `text-white` : `text-black`
+                } `,
             ]}
           >
             Pending
@@ -92,21 +150,18 @@ const Order = () => {
 
         <Pressable
           onPress={() => {
-            setIsCompleted(true);
-            setIsNew(false);
-            setIspending(false);
+            setStatus("Completed")
+            setBookingProcess("instant")
           }}
           style={[
-            tw`flex-1 justify-center h-12 items-center   rounded-xl ${
-              isCompleted ? `bg-success600` : `bg-transparent`
-            } `,
+            tw`flex-1 justify-center h-12 items-center   rounded-xl ${status === "Completed" ? `bg-success600` : `bg-transparent`
+              } `,
           ]}
         >
           <Text
             style={[
-              tw`font-DegularDisplayDemoMedium text-xl ${
-                isCompleted ? `text-white` : `text-black`
-              } `,
+              tw`font-DegularDisplayDemoMedium text-xl ${status === "Completed" ? `text-white` : `text-black`
+                } `,
             ]}
           >
             Completed
@@ -120,74 +175,71 @@ const Order = () => {
       >
         <Pressable
           onPress={() => {
-            setIsOnTime(true);
-            setInstant(false);
+            setBookingProcess("instant")
           }}
           style={[tw`gap-1`]}
         >
           <Text style={[tw`font-DegularDisplayDemoMedium text-xl text-black`]}>
-            On time (10)
+            Instant ({isLoadingAllProvderOrdersDetail ? "..." : instantCount})
           </Text>
-          {isOnTime ? (
+          {bookingProcess === "instant" ? (
+            <View style={tw`border-b-4 border-primary shadow-2xl `} />
+          ) : null}
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            setBookingProcess("schedule")
+          }}
+          style={[tw`gap-1`]}
+        >
+          <Text style={[tw`font-DegularDisplayDemoMedium text-xl text-black`]}>
+            Schedule ({isLoadingAllProvderOrdersDetail ? "..." : scheduleCount})
+          </Text>
+          {bookingProcess === "schedule" ? (
             <View style={tw`border-b-4 border-primary shadow-2xl `} />
           ) : null}
         </Pressable>
 
-        <Pressable
-          onPress={() => {
-            setInstant(true);
-            setIsOnTime(false);
-          }}
-          style={[tw`gap-1`]}
-        >
-          <Text style={[tw`font-DegularDisplayDemoMedium text-xl text-black`]}>
-            Instant (20)
-          </Text>
-          {isInstant ? (
-            <View style={tw`border-b-4 border-primary shadow-2xl `} />
-          ) : null}
-        </Pressable>
+
       </View>
 
       {/* -------------- order content ---------------- */}
 
       <View style={tw`gap-3 mt-4`}>
-        {[1, 2, 3, 4].map((index) => {
-          return (
-            <Pressable
-              onPress={() =>
-                router.push(
-                  "/service_provider/individual/order_details_profile"
-                )
+        {fetchOrderItemsData?.data?.data ? (fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
+
+          <UserCard
+            key={index}
+            ProfileName={item.user.name}
+            isProfileBadge={item.user.kyc_status === "Verified" ? true : false}
+            Date={formateDate(item.created_at)}
+            Description={descriptions[item.id]}
+            ImgProfileImg={item.user.avatar}
+            onPress={() => router.push({
+              pathname: "/service_provider/individual/order_details_profile",
+              params: {
+                id: item.id
               }
-              style={tw`h-32 px-5 rounded-2xl bg-white flex-row justify-between items-center`}
+            })}
+          />
+
+
+        )))
+
+
+          : null}
+        {/* {[1, 2, 3, 4].map((index) => {
+          return (
+            <UserCard
               key={index}
-            >
-              <View style={tw`flex-row items-center gap-3`}>
-                <Image
-                  style={tw`w-16 h-16 rounded-full `}
-                  source={ImgProfileImg}
-                />
-                <View style={tw`gap-1.5`}>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <Text>Profile Name</Text>
-                    <SvgXml xml={IconProfileBadge} />
-                  </View>
-                  <Text>Service title goes here</Text>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <SvgXml xml={IconDate} />
-                    <Text>Mon, June 2</Text>
-                  </View>
-                </View>
-              </View>
-              <TouchableOpacity
-                style={tw`w-12 h-12 rounded-2xl border border-primary justify-center items-center `}
-              >
-                <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-              </TouchableOpacity>
-            </Pressable>
+              ProfileName="John Doe"
+              isProfileBadge
+              Date="Mon, 12 Des 2025"
+              Description="Service title goes here"
+            // onPress={() => router.push("")}
+            />
           );
-        })}
+        })} */}
       </View>
     </ScrollView>
   );

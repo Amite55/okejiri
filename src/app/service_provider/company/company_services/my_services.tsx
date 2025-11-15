@@ -1,291 +1,265 @@
-import { IconCross, IconDeleteRed, IconPlusYellow } from "@/assets/icons";
-import PrimaryButton from "@/src/Components/PrimaryButton";
-import ServicesData from "@/src/json/ServiceData.json";
+import { IconEditPen, IconPlus } from "@/assets/icons";
+import { ImgEmptyService } from "@/assets/images/image";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { _HEIGHT } from "@/utils/utils";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
+import { useLazyMyServicesQuery } from "@/src/redux/apiSlices/companyProvider/account/services/servicesSlice";
+import { useCreateConnectAccountMutation } from "@/src/redux/apiSlices/stripeSlices";
 import { router } from "expo-router";
-import React, { JSX, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Image,
-  Modal,
-  Pressable,
-  ScrollView,
+  RefreshControl,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
+import { WebView } from "react-native-webview";
 
-const My_Services = () => {
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [isChecked, setIsChecked] = useState<boolean>(false);
-  const [selectedIndex, setSelectedIndex] = useState(null);
+const My_Service = () => {
+  const { data: userProfileInfo } = useProfileQuery({});
+  const { stripe_account_id, stripe_payouts_enabled } =
+    userProfileInfo?.data || {};
 
-  const [deleteModalVisibla, setDeleteModalVisible] = useState<boolean>(false);
+  const [createConnectAccount] = useCreateConnectAccountMutation();
+  const [fetchMyServices, { isFetching }] = useLazyMyServicesQuery();
 
-  const handleCheckBox = async () => {
-    setIsChecked(!isChecked);
+  const [OnboardingUrl, setOnboardingUrl] = useState<string | null>(null);
+  const [services, setServices] = useState<any[]>([]);
+  const [page, setPage] = useState<number>(1);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+
+  // ======================== LOAD SERVICES ==========================
+  const loadServices = async (pageNum = 1, isRefresh = false) => {
+    try {
+      if ((isFetching || loadingMore) && !isRefresh) return;
+      if (!isRefresh) setLoadingMore(true);
+
+      const res = await fetchMyServices(pageNum).unwrap();
+      const responseData = res?.data || {};
+      const newData = responseData?.data || [];
+      const currentPage = responseData?.current_page || 1;
+      const lastPage = responseData?.last_page || currentPage;
+
+      if (isRefresh) {
+        setServices(newData);
+      } else {
+        const existingIds = new Set(services.map((s) => s.id));
+        const uniqueNew = newData.filter((s: any) => !existingIds.has(s.id));
+        setServices((prev) => [...prev, ...uniqueNew]);
+      }
+
+      setHasMore(newData.length > 0 && currentPage < lastPage);
+      setPage(currentPage + 1);
+    } catch (err) {
+      console.log("❌ Services fetch error:", err);
+    } finally {
+      setRefreshing(false);
+      setLoadingMore(false);
+    }
   };
 
-  const setviceItem = [
-    {
-      id: 1,
-      name: "Barbing",
-    },
-    {
-      id: 2,
-      name: "Cleaning",
-    },
-    {
-      id: 3,
-      name: "Cooking",
-    },
-    {
-      id: 4,
-      name: "Painting",
-    },
-    {
-      id: 5,
-      name: "Spa",
-    },
-    {
-      id: 6,
-      name: "Manicure",
-    },
-  ];
+  // ======================== REFRESH ==========================
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setPage(1);
+    setHasMore(true);
+    loadServices(1, true);
+  };
 
-  const serviceItemRender = ({ item }: any) => {
-    return (
-      <View
-        style={tw`relative justify-center items-center px-2`}
-        key={item?.id}
-      >
+  // ======================== LOAD MORE ==========================
+  const handleLoadMore = () => {
+    if (!loadingMore && hasMore && !isFetching) {
+      loadServices(page);
+    }
+  };
+
+  useEffect(() => {
+    loadServices(1, true);
+  }, []);
+
+  // ======================== STRIPE CONNECT ==========================
+  // ============== TODO : understand
+  const handelCannact = async () => {
+    const formData = new FormData();
+    formData.append("country", "NG");
+    formData.append("return_url", "https://translate?success=true");
+    formData.append("refresh_url", "https://translate?success=false");
+
+    try {
+      const res = await createConnectAccount(formData);
+      setOnboardingUrl(res.data.data.onboarding_url);
+    } catch (error) {
+      console.log("Stripe connect error:", error);
+    }
+  };
+
+  // ======================== SERVICE RENDER ITEM ==========================
+  const renderServiceItem = ({ item }: any) => (
+    <View style={tw`bg-white p-4 rounded-2xl mb-4`}>
+      <View style={tw`justify-center items-center`}>
         <Image
-          resizeMode="cover"
-          style={tw`w-44 h-48 rounded-lg `}
-          source={{ uri: item?.image }}
+          style={tw`h-44 w-[98%] rounded-2xl`}
+          source={{ uri: item?.service?.image }}
         />
+      </View>
 
-        <View
-          style={tw`absolute bottom-2 justify-center items-center w-38 h-10 rounded-xl border border-white60 overflow-hidden`}
-        >
-          {/* Background Blur */}
-          {/* <BlurView
-            style={tw`absolute inset-0`}
-            blurType="dark"
-            blurAmount={5}
-            reducedTransparencyFallbackColor="white"
-          /> */}
-
-          {/* Foreground content (Text) */}
-          <TouchableOpacity
-            onPress={() =>
-              router.push("/service_provider/individual/my_services/my_service")
-            }
-            style={tw`flex-1 justify-center items-center`}
-            activeOpacity={0.7}
-          >
-            <Text
-              style={tw`font-DegularDisplayDemoMedium text-center text-xl text-white`}
-            >
-              {item?.name}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
+      <View style={tw`flex-row justify-between items-center my-4`}>
+        <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
+          {item?.service?.name}
+        </Text>
         <TouchableOpacity
-          onPress={() => setDeleteModalVisible(true)}
-          style={tw`absolute top-3 right-5 h-9 w-8 rounded-lg border border-white justify-center items-center`}
+          onPress={() =>
+            router.push("/service_provider/individual/my_services/edit_package")
+          }
+          style={tw`p-2`}
         >
-          <SvgXml xml={IconDeleteRed} />
+          <SvgXml xml={IconEditPen} />
         </TouchableOpacity>
       </View>
-    );
-  };
 
+      {/* Example static details */}
+      <View style={tw`pl-8 gap-2`}>
+        {[
+          "Dusting of all surfaces",
+          "Sweeping and mopping floors",
+          "Trash removal",
+        ].map((text, idx) => (
+          <View key={idx} style={tw`flex-row items-center gap-2`}>
+            <View style={tw`w-2 h-2 bg-black`} />
+            <Text style={tw`font-DegularDisplayDemoRegular text-black text-xl`}>
+              {text}
+            </Text>
+          </View>
+        ))}
+      </View>
+
+      <View
+        style={tw`bg-primary w-full h-14 rounded-full flex-row justify-between items-center px-4 my-2`}
+      >
+        <Text style={tw`text-white font-DegularDisplayDemoMedium text-3xl`}>
+          Cost:
+        </Text>
+        <Text style={tw`text-white font-DegularDisplayDemoMedium text-3xl`}>
+          ₦ 49.00
+        </Text>
+      </View>
+    </View>
+  );
+
+  // ======================== WEBVIEW ==========================
+  if (OnboardingUrl) {
+    return (
+      <View style={{ flex: 1 }}>
+        <WebView
+          source={{ uri: OnboardingUrl }}
+          startInLoadingState={true}
+          renderLoading={() => (
+            <ActivityIndicator size="large" color="#000" style={tw`mt-10`} />
+          )}
+          onError={(e) => {
+            console.log("WebView error:", e.nativeEvent);
+            setOnboardingUrl(null);
+          }}
+          style={{ flex: 1 }}
+        />
+      </View>
+    );
+  }
+
+  // ======================== MAIN RETURN ==========================
   return (
-    <View style={tw`flex-1`}>
+    <View style={tw`flex-1 bg-base_color`}>
       <FlatList
-        data={ServicesData}
-        renderItem={serviceItemRender}
+        data={services}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderServiceItem}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        contentContainerStyle={tw`px-5 pb-10`}
+        showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => (
           <View>
             <BackTitleButton
-              pageName={"My services"}
+              pageName="My services"
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
             />
 
-            <View style={tw`items-end mb-2`}>
-              <TouchableOpacity
-                onPress={() => setModalVisible(true)}
-                style={tw`w-12 h-11 rounded-lg bg-white justify-center items-center`}
+            <View style={tw`flex-row justify-between py-2 items-center px-2`}>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
               >
-                <SvgXml xml={IconPlusYellow} />
-              </TouchableOpacity>
+                {services.length} services
+              </Text>
+
+              {stripe_account_id && stripe_payouts_enabled === 1 ? (
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push(
+                      "/service_provider/company/company_services/add_package"
+                    )
+                  }
+                  style={tw`flex-row justify-center items-center gap-2 w-40 h-14 bg-primary rounded-full`}
+                >
+                  <SvgXml xml={IconPlus} />
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
+                  >
+                    Add more
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={handelCannact}
+                  style={tw`flex-row justify-center items-center gap-2 w-40 h-14 bg-primary rounded-full`}
+                >
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
+                  >
+                    Connect
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         )}
-        numColumns={2}
-        keyExtractor={(item) => item.id.toString()}
-        ListHeaderComponentStyle={tw`w-full`}
-        style={tw`flex-1`}
-        contentContainerStyle={tw`flex-1  items-center bg-base_color px-5 gap-3 `}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-      />
-
-      {/* ============= add new service  modal ====================== */}
-      <Modal
-        animationType="slide"
-        transparent
-        onRequestClose={() => {
-          // Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}
-        visible={modalVisible}
-        onDismiss={() => setModalVisible(false)}
-      >
-        <Pressable
-          onPress={() => {
-            setModalVisible(false);
-          }}
-          style={[
-            {
-              height: _HEIGHT,
-            },
-            tw`justify-end items-end bg-black bg-opacity-15  `,
-          ]}
-        >
-          <Pressable
-            style={[
-              {
-                height: _HEIGHT * 0.55,
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 10,
-              },
-              tw`bg-gray-50 `,
-            ]}
-          >
-            <ScrollView
-              keyboardShouldPersistTaps="always"
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={tw`pb-14 flex-grow justify-between `}
-            >
-              <View>
-                <View
-                  style={[
-                    tw`w-full flex-1 flex-row justify-between items-center h-14  bg-primary px-4`,
-                    { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
-                  ]}
-                >
-                  <View
-                    style={tw`flex-row w-full justify-between items-center my-2 `}
-                  >
-                    <Text> </Text>
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium  text-white text-xl mt-2`}
-                    >
-                      Add more services
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => setModalVisible(false)}
-                      style={tw`w-8 h-8 rounded-full bg-slate-200 justify-center items-center`}
-                    >
-                      <SvgXml xml={IconCross} />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                <View style={tw`mt-5 gap-2`}>
-                  {setviceItem.map(
-                    (item, index): JSX.Element => (
-                      <View key={item.id}>
-                        <Pressable
-                          onPress={() => {
-                            setSelectedIndex(index), handleCheckBox();
-                          }}
-                          style={tw`flex-row items-center gap-2 px-5`}
-                        >
-                          <TouchableOpacity
-                            onPress={() => {
-                              setSelectedIndex(index), handleCheckBox();
-                            }}
-                            style={tw.style(
-                              `border w-5 h-5  justify-center items-center rounded-sm`,
-                              selectedIndex === index
-                                ? `bg-primary border-0`
-                                : `bg-transparent`
-                            )}
-                          >
-                            {selectedIndex === index ? (
-                              <Text style={tw`text-white text-sm`}>✔</Text>
-                            ) : null}
-                          </TouchableOpacity>
-                          <Text
-                            style={tw`font-DegularDisplayDemoRegular text-lg text-regularText`}
-                          >
-                            {item.name}
-                          </Text>
-                        </Pressable>
-
-                        <View style={tw` border-b border-gray-500 mt-2`} />
-                      </View>
-                    )
-                  )}
-                </View>
-              </View>
-
-              <View style={tw`px-4 `}>
-                <PrimaryButton titleProps="Add" />
-              </View>
-            </ScrollView>
-          </Pressable>
-        </Pressable>
-      </Modal>
-
-      {/* ========= selected modal ============= */}
-      <Modal
-        animationType="none"
-        transparent={true}
-        visible={deleteModalVisibla}
-        onRequestClose={() => setDeleteModalVisible(false)}
-      >
-        <View
-          style={tw`flex-1 bg-black bg-opacity-50 justify-center items-center`}
-        >
-          <View
-            style={tw`w-7/8 bg-white p-5 rounded-2xl items-center shadow-lg`}
-          >
-            <View style={tw`w-full m-4`}>
-              <TouchableOpacity
-                onPress={() => setDeleteModalVisible(false)}
-                style={tw`flex-row justify-center items-center border border-black w-full p-1 rounded-lg gap-2 mb-2`}
-              >
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-lg text-black`}
-                >
-                  Cancel
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                // onPress={handlePhotoDelete}
-                style={tw`flex-row justify-center items-center border border-redDeep w-full p-1 rounded-lg gap-2`}
-              >
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-lg text-redDeep`}
-                >
-                  Delete
-                </Text>
-              </TouchableOpacity>
+        ListFooterComponent={
+          loadingMore ? (
+            <View style={tw`mt-4 mb-8 justify-center items-center`}>
+              <ActivityIndicator size="small" color="#000" />
+              <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
             </View>
+          ) : !hasMore && services.length > 0 ? (
+            <Text style={tw`text-gray-500 text-center my-4 text-lg`}>
+              No more services
+            </Text>
+          ) : null
+        }
+        ListEmptyComponent={() => (
+          <View style={tw`flex-1 justify-center items-center gap-3`}>
+            <Image style={tw`w-full h-80`} source={ImgEmptyService} />
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-3xl text-black`}
+            >
+              Nothing to show here
+            </Text>
+            <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+              Please add a service to see them here.
+            </Text>
           </View>
-        </View>
-      </Modal>
+        )}
+      />
     </View>
   );
 };
 
-export default My_Services;
+export default My_Service;
