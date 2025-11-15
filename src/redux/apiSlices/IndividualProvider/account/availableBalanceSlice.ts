@@ -11,11 +11,11 @@ export const availableBalanceSlice = api.injectEndpoints({
     }),
     transfer_balance: builder.mutation({
       query: (data) => ({
-        url: "/transfer_balance",
+        url: "/transfer-balance",
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["transfer_balance"],
+      invalidatesTags: ["balance"],
     }),
     withdraw: builder.mutation({
       query: (data) => ({
