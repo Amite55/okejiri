@@ -17,8 +17,8 @@ export const userProviderHomeSlice = api.injectEndpoints({
       providesTags: ["services"],
     }),
     serviceNearby: builder.query({
-      query: () => ({
-        url: "/services-nearby?per_page=10&radius=500",
+      query: ({ per_page, page }) => ({
+        url: `/services-nearby?per_page=${per_page}&page=${page}&radius=500`,
         method: "GET",
       }),
       providesTags: ["services"],

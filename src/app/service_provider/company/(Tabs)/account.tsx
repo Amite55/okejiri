@@ -18,16 +18,10 @@ import SettingsCard from "@/src/Components/SettingsCard";
 import tw from "@/src/lib/tailwind";
 import { useLogoutMutation, useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Account = () => {
@@ -95,11 +89,16 @@ const Account = () => {
         </View>
       </View>
 
-      <Pressable
+      <TouchableOpacity
+        activeOpacity={0.8}
         onPress={() =>
-          router.push(
-            "/service_provider/company/company_wallets/company_wallet"
-          )
+          router.push({
+            pathname: "/company/wallets/wallet",
+            params: {
+              wallet_balance: userProfileInfo?.data?.wallet_balance,
+              wallet_address: userProfileInfo?.data?.wallet_address,
+            },
+          })
         }
         style={tw`flex-row justify-between items-center my-4 bg-white p-4 rounded-2xl`}
       >
@@ -115,21 +114,25 @@ const Account = () => {
               Available balance
             </Text>
             <Text style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}>
-              ₦1000.50
+              ₦
+              {userProfileInfo?.data?.wallet_balance
+                ? userProfileInfo?.data?.wallet_balance
+                : 0}
             </Text>
           </View>
         </View>
         <TouchableOpacity
-          onPress={() =>
-            router.push(
-              "/service_provider/individual/individual_user_wallet/wallet"
-            )
-          }
+          disabled
+          // onPress={() =>
+          //   router.push(
+          //     "/service_provider/individual/individual_user_wallet/wallet"
+          //   )
+          // }
           style={tw`w-14 h-14 rounded-full border border-gray-500 justify-center items-center`}
         >
           <SvgXml xml={IconRightCornerArrow} />
         </TouchableOpacity>
-      </Pressable>
+      </TouchableOpacity>
 
       {/* ------------ settings menu ---------------- */}
 
