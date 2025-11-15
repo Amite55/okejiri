@@ -45,7 +45,6 @@ const Disputes_Status = () => {
       </View>
     );
   }
-  console.log("DisputeDetails", DisputeDetails, "DisputeDetails");
   const disputeGallary = [
     {
       id: 1,
