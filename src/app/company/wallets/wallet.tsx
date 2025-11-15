@@ -1,21 +1,35 @@
 import {
   IconBalance,
   IconCopy,
+  IconCrossWhite,
   IconDownloadBlack,
   IconProfileBadge,
   IconRightArrowCornerPrimaryColor,
   IconTransfer,
 } from "@/assets/icons";
+import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useGetRecentTransactionsQuery } from "@/src/redux/apiSlices/userProvider/account/availableBalanceSlices";
+import { useCreatePaymentIntentMutation } from "@/src/redux/apiSlices/stripeSlices";
+import {
+  useDepositSuccessMutation,
+  useGetRecentTransactionsQuery,
+} from "@/src/redux/apiSlices/userProvider/account/availableBalanceSlices";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetScrollView,
+} from "@gorhom/bottom-sheet";
+import { useStripe } from "@stripe/stripe-react-native";
 import * as Clipboard from "expo-clipboard";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -24,6 +38,17 @@ import { SvgXml } from "react-native-svg";
 
 const Wallet_Index = () => {
   const { wallet_address, wallet_balance } = useLocalSearchParams();
+  const [balance, setBalance] = useState<number | null>(null);
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  const handleCloseModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.dismiss();
+  }, []);
 
   // === pagination states ===
   const [page, setPage] = useState(1);
@@ -34,6 +59,10 @@ const Wallet_Index = () => {
   const { data: recentTransactions, isLoading } = useGetRecentTransactionsQuery(
     { per_page: 10, page }
   );
+  const [createPaymentIntent, { isLoading: paymentLoading }] =
+    useCreatePaymentIntentMutation();
+  const [depositAmount, { isLoading: depositLoading }] =
+    useDepositSuccessMutation();
 
   // === Load data ===
   useEffect(() => {
@@ -47,6 +76,74 @@ const Wallet_Index = () => {
       }
     }
   }, [recentTransactions]);
+
+  // ------------------ deposit function handler ====================
+  const handleDeposit = async () => {
+    try {
+      const intentInfo = {
+        amount: Number(balance),
+        currency: "NGN",
+      };
+      const res = await createPaymentIntent(intentInfo).unwrap();
+      if (res) {
+        bottomSheetModalRef.current?.dismiss();
+        const clientSecret = res?.data?.client_secret;
+        if (!clientSecret) {
+          router.push({
+            pathname: "/Toaster",
+            params: {
+              res: "Could not initialize payment sheet. Please try again.",
+            },
+          });
+          return;
+        }
+        // 1️⃣ Stripe sheet initialize with client secret
+        const { error: intError } = await initPaymentSheet({
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName: "Okejiri Services",
+        });
+        // if when show error
+        if (intError) {
+          // handle error
+          router.push({
+            pathname: "/Toaster",
+            params: { res: intError?.message || intError },
+          });
+          return;
+        } else {
+          const { error } = await presentPaymentSheet();
+          if (
+            error?.code === "Canceled" ||
+            error?.code === "CanceledError" ||
+            error
+          ) {
+            router.push({
+              pathname: "/Toaster",
+              params: { res: error?.message || error },
+            });
+          } else {
+            const res = await depositAmount({
+              deposit_amount: Number(balance),
+            }).unwrap();
+            if (res) {
+              // ==================== stripe payment success ====================
+              if (res) {
+                setTimeout(() => {
+                  router.replace("/company/(Tabs)/profile");
+                }, 1500);
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error, "Deposit not success =======>");
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
+      });
+    }
+  };
 
   // === Copy text ===
   const copyToClipboard = async (text: string) => {
@@ -142,6 +239,8 @@ const Wallet_Index = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={handlePresentModalPress}
           style={tw`flex-row justify-center items-center gap-3 flex-1 h-12 border border-gray-300 rounded-2xl`}
         >
           <SvgXml xml={IconDownloadBlack} />
@@ -159,31 +258,113 @@ const Wallet_Index = () => {
   );
 
   return (
-    <FlatList
-      data={listData}
-      renderItem={renderTransaction}
-      keyExtractor={(item, index) => index.toString()}
-      onEndReachedThreshold={0.3}
-      onEndReached={() => {
-        if (!isLoading && hasMore) {
-          setPage((prev) => prev + 1);
+    <>
+      <FlatList
+        data={listData}
+        renderItem={renderTransaction}
+        keyExtractor={(item, index) => index.toString()}
+        onEndReachedThreshold={0.3}
+        onEndReached={() => {
+          if (!isLoading && hasMore) {
+            setPage((prev) => prev + 1);
+          }
+        }}
+        ListFooterComponent={
+          isLoading ? (
+            <View style={tw`py-5`}>
+              <ActivityIndicator size="large" />
+            </View>
+          ) : !hasMore ? (
+            <View style={tw`py-4 items-center`}>
+              <Text style={tw`text-gray-500 text-base`}>No more data</Text>
+            </View>
+          ) : null
         }
-      }}
-      ListFooterComponent={
-        isLoading ? (
-          <View style={tw`py-5`}>
-            <ActivityIndicator size="large" />
-          </View>
-        ) : !hasMore ? (
-          <View style={tw`py-4 items-center`}>
-            <Text style={tw`text-gray-500 text-base`}>No more data</Text>
-          </View>
-        ) : null
-      }
-      ListHeaderComponent={<ListHeader />}
-      contentContainerStyle={tw`bg-base_color pb-10 px-5 gap-4`}
-      showsVerticalScrollIndicator={false}
-    />
+        ListHeaderComponent={<ListHeader />}
+        contentContainerStyle={tw`bg-base_color pb-10 px-5 gap-4`}
+        showsVerticalScrollIndicator={false}
+        style={tw`flex-1 bg-base_color`}
+      />
+
+      {/* -0---------------------------- order address edit modal --------------------------- */}
+
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          snapPoints={["95%"]}
+          containerStyle={tw`bg-gray-500 bg-opacity-20`}
+          backdropComponent={(props) => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+              pressBehavior="close"
+            />
+          )}
+        >
+          <BottomSheetScrollView
+            style={tw``}
+            contentContainerStyle={tw`flex-1  bg-white flex-grow justify-between`}
+          >
+            {/* ----------------- header title part ---------------- */}
+            <View>
+              <View
+                style={tw`flex-row items-center justify-between bg-primary py-2 px-4 rounded-t-2xl`}
+              >
+                <View />
+                <Text style={tw`font-PoppinsSemiBold text-base text-white`}>
+                  Enter Deposit Balance
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => bottomSheetModalRef.current?.close()}
+                  style={tw`bg-slate-300 rounded-full p-2`}
+                >
+                  <SvgXml xml={IconCrossWhite} />
+                </TouchableOpacity>
+              </View>
+
+              <View style={tw`px-4 pt-6`}>
+                <Text
+                  style={tw`font-DegularDisplayDemoSemibold text-lg text-black pb-1`}
+                >
+                  Amount
+                </Text>
+                <View
+                  style={tw`h-12 px-4 rounded-full border border-gray-300 flex-row justify-between items-center`}
+                >
+                  <TextInput
+                    keyboardType="number-pad"
+                    style={tw`flex-1 text-black text-lg font-DegularDisplayDemoMedium`}
+                    placeholder="0.00"
+                    placeholderTextColor={"#535353"}
+                    onChangeText={(value: any) => setBalance(value)}
+                  />
+
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
+                  >
+                    ₦
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={tw`px-4`}>
+              {paymentLoading ? (
+                <ActivityIndicator color={tw.color("primary")} size="large" />
+              ) : (
+                <PrimaryButton
+                  titleProps="Deposit"
+                  onPress={handleDeposit}
+                  contentStyle={tw`h-12 mt-6`}
+                />
+              )}
+            </View>
+          </BottomSheetScrollView>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
+    </>
   );
 };
 

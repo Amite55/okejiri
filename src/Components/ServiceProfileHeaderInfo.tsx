@@ -14,12 +14,13 @@ interface IProps {
 
 const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
   // ================== api end point ==================
-  const { data: userProfileInfo, isLoading, error } = useProfileQuery(
-    {},
-     { refetchOnMountOrArgChange: true }
-  );
+  const {
+    data: userProfileInfo,
+    isLoading,
+    error,
+  } = useProfileQuery({}, { refetchOnMountOrArgChange: true });
   const { data: notificationData, isLoading: isNotificationLoading } =
-    useGetNotificationsQuery(1000);
+    useGetNotificationsQuery({ page: 1 });
 
   const notificationCounter =
     notificationData?.data?.unread_notifications_count;
@@ -35,10 +36,12 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
         <View style={tw` `}>
           <Image
             style={tw`w-14 h-14 rounded-full `}
-            source={userProfileInfo?.data?.role === "PROVIDER" && userProfileInfo?.data?.provider_type === "Company" ?
-              {uri: userProfileInfo?.data?.company?.company_logo}
-
-              : { uri: userProfileInfo?.data?.avatar }}
+            source={
+              userProfileInfo?.data?.role === "PROVIDER" &&
+              userProfileInfo?.data?.provider_type === "Company"
+                ? { uri: userProfileInfo?.data?.company?.company_logo }
+                : { uri: userProfileInfo?.data?.avatar }
+            }
             contentFit="contain"
           />
         </View>
@@ -47,9 +50,9 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
           <Text
             style={tw`font-DegularDisplayDemoSemibold flex-row items-center text-black text-xl`}
           >
-            {userProfileInfo?.data?.role === "PROVIDER" && userProfileInfo?.data?.provider_type === "Company" ?
-              userProfileInfo?.data?.company?.company_name
-
+            {userProfileInfo?.data?.role === "PROVIDER" &&
+            userProfileInfo?.data?.provider_type === "Company"
+              ? userProfileInfo?.data?.company?.company_name
               : userProfileInfo?.data?.name}
           </Text>
           <View style={tw`flex-row justify-start items-center gap-1`}>
@@ -59,9 +62,9 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
               ellipsizeMode="clip"
               style={tw`font-DegularDisplayDemoRegular text-base text-black`}
             >
-              {userProfileInfo?.data?.role === "PROVIDER" && userProfileInfo?.data?.provider_type === "Company" ?
-                userProfileInfo?.data?.company?.company_location
-
+              {userProfileInfo?.data?.role === "PROVIDER" &&
+              userProfileInfo?.data?.provider_type === "Company"
+                ? userProfileInfo?.data?.company?.company_location
                 : userProfileInfo?.data?.address}
             </Text>
           </View>
