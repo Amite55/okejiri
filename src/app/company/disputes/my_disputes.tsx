@@ -33,23 +33,27 @@ const My_Disputes = () => {
       if ((isLoading || isFetching || loadingMore) && !isRefresh) return;
       if (!isRefresh) setLoadingMore(true);
 
-      const res = await fetchDisputes({ page: pageNum }).unwrap();
-      const responseData = res?.data || {};
-      const newData = responseData?.data || [];
-      const currentPage = responseData?.current_page || 1;
-      const lastPage = responseData?.last_page || currentPage;
+      const res = await fetchDisputes({ page: pageNum });
+
+      const full = res?.data;
+      const pagination = full?.data || {};
+      const newData = pagination?.data || [];
+
+      const currentPage = pagination?.current_page || 1;
+      const lastPage = pagination?.last_page || currentPage;
 
       if (isRefresh) {
         setDisputes(newData);
       } else {
         const existingIds = new Set(disputes.map((d) => d.id));
-        const uniqueNew = newData.filter((d: any) => !existingIds.has(d.id));
+        const uniqueNew = newData.filter((d) => !existingIds.has(d.id));
         setDisputes((prev) => [...prev, ...uniqueNew]);
       }
 
-      setHasMore(newData.length > 0);
+      setHasMore(currentPage < lastPage);
       setPage(currentPage + 1);
     } catch (err) {
+      console.log("❌ Load error:", err);
     } finally {
       setRefreshing(false);
       setLoadingMore(false);
