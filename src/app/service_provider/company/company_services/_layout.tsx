@@ -15,6 +15,7 @@ const _layout = () => {
         <Stack.Screen name="my_services" />
                 <Stack.Screen name="add_package" />
                 <Stack.Screen name="edit_package" />
+                <Stack.Screen name="my_service_package" />
       </Stack>
     </View>
   );
