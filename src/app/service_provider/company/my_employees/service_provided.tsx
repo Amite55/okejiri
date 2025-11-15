@@ -1,7 +1,8 @@
-import { IconProfileBadge, IconStar } from "@/assets/icons";
+import { IconStar } from "@/assets/icons";
 import { ImgProfileImg } from "@/assets/images/image";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useEmployeeDetailsQuery } from "@/src/redux/apiSlices/companyProvider/account/employeesSlice";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
@@ -38,39 +39,44 @@ const providedServicesData = [
   },
 ];
 
-const renderServiceProvided = ({ item }) => {
+const renderServiceProvided = ({item, name} : {item: any, name: string}) => {
+  console.log("============= item =============== ", JSON.stringify(item, null, 2))
   let statusStyle = "";
 
   if (item.status === "Pending") {
     statusStyle = "bg-blue-500";
   } else if (item.status === "Completed") {
     statusStyle = "bg-green-600";
+  }else if (item.status === "Cancelled") {
+    statusStyle = "bg-red-600 ";
   }
 
   return (
     <TouchableOpacity
+    disabled={true}
+    // key={item?.booking_items.id}
       style={tw`flex-row justify-between bg-white px-2 py-3 rounded-xl`}
     >
       <View style={tw`flex-1 flex-row gap-3`}>
         <Image style={tw`w-20 h-20 rounded-xl`} source={ImgProfileImg} />
-        <View>
-          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-            Service title goes here
+        <View style={tw`w-[65%]`}>
+          <Text numberOfLines={1} ellipsizeMode="clip" style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+            {item?.booking_items[0].package?.title}
           </Text>
           <View style={tw`flex-row items-center gap-2`}>
             <Text
               style={tw`font-DegularDisplayDemoRegular text-regularText text-xl`}
             >
-              Provider Name
+              {name}
             </Text>
-            <SvgXml xml={IconProfileBadge} />
+            {/* <SvgXml xml={IconProfileBadge} /> */}
           </View>
           <View style={tw`flex-row items-center`}>
             <SvgXml xml={IconStar} />
             <Text
               style={tw`font-DegularDisplayDemoMedium text-xl text-primary`}
             >
-              5.0
+              {item?.review?.rating === 0 || item?.review=== null  ? "0.0" : Number(item?.review?.rating).toFixed(1) }
             </Text>
           </View>
         </View>
@@ -80,7 +86,7 @@ const renderServiceProvided = ({ item }) => {
         <Text
           style={tw`flex-1 font-DegularDisplayDemoMedium text-xl text-primary`}
         >
-          ₦10.50
+          ₦ {item?.booking_items[0].package?.price}
         </Text>
         <View
           style={[
@@ -97,23 +103,25 @@ const renderServiceProvided = ({ item }) => {
 };
 
 const Service_Provided = () => {
-  const {id} = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
+  const { data: employeeDetailsData, isLoading: isLoadingEmployeeDetails, isError: isErrorEmployeeDetails } = useEmployeeDetailsQuery(id)
+  const employee = employeeDetailsData?.data;
+  console.log(" ============= employee id ============== ", id)
+  console.log(" =========================== employee id ===================== ", JSON.stringify(employee, null, 2));
 
-  console.log(" =========================== employee id ===================== ", id);
-  
   return (
     <FlatList
       style={tw`flex-1 bg-base_color`}
       contentContainerStyle={tw`px-5 gap-3 pb-4`}
-      data={providedServicesData}
-      keyExtractor={(i) => i.id.toLocaleString()}
-      renderItem={renderServiceProvided}
+      data={employee?.services_provided??[]}
+      keyExtractor={(item, index) => `${item.id}-${index}`}
+      renderItem={({item})=> renderServiceProvided({item, name: employee?.name})}
       ListHeaderComponent={() => (
         <BackTitleButton
           pageName={"Employee details"}
           onPress={() => router.back()}
           titleTextStyle={tw`text-xl`}
-          // contentStyle={tw`px-5`}
+        // contentStyle={tw`px-5`}
         />
       )}
     />

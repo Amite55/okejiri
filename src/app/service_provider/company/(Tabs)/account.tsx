@@ -32,11 +32,9 @@ const Account = () => {
 
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
-  const {
-    data: profileData,
-    isLoading: isLoadingProfile,
-    isError: isErrorProfile,
-  } = useProfileQuery({});
+ 
+  const { data: profileData, isLoading: isLoadingProfile, isError: isErrorProfile } = useProfileQuery({});
+
 
   const profile = profileData?.data;
   // -------------- handle logout --------------
