@@ -24,7 +24,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
 
 // ---------------------------------------------------
@@ -35,7 +34,7 @@ const Edit_Profile = () => {
     React.useState<ImagePicker.ImagePickerAsset | null>(null);
   const [isFocus, setIsFocus] = useState(false);
   const [selectedServices, setSelectedServices] = useState<any[]>([]);
-
+  const [loading, setLoading] = useState(false);
   const [editProfilePicture] = useEditProfilePictureMutation();
   const { data: userProfileInfo } = useProfileQuery({});
   const [editProfile] = useEditProfileMutation();
@@ -83,6 +82,7 @@ const Edit_Profile = () => {
       } as any);
 
       try {
+        setLoading(true);
         const response = await editProfilePicture(form).unwrap();
         if (response.status === "success") {
           router.push({
@@ -106,19 +106,17 @@ const Edit_Profile = () => {
     formData.append("address", data.address);
     formData.append("phone", data.phone);
     formData.append("about", data.about);
-    selectedServices.forEach((id, index) => {
-      formData.append(`service_id[${index}]`, selectedServices as any);
-    });
-    selectedServices.forEach((id, index) => {
-      formData.append(`service_id[${index}]`, id);
-    });
     try {
       const response = await editProfile(formData).unwrap();
+      console.log("response", response, "response");
+
       if (response.status === "success") {
         setModalVisible(true);
       }
     } catch (error) {
       console.log("❌ Edit Profile Error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -248,34 +246,13 @@ const Edit_Profile = () => {
               />
             )}
           />
-
-          {/* Dropdown (Services) */}
-          <View style={tw`mt-5`}>
-            <Dropdown
-              style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              data={services?.data?.services || []}
-              maxHeight={300}
-              labelField="name"
-              valueField="id"
-              placeholder={!isFocus ? "Select Service" : "..."}
-              value={selectedServices[0]}
-              onFocus={() => setIsFocus(true)}
-              onBlur={() => setIsFocus(false)}
-              onChange={(item) => {
-                setSelectedServices(item.id);
-                setIsFocus(false);
-              }}
-            />
-          </View>
         </View>
       </View>
 
       {/* ------------- Submit Button ------------- */}
       <PrimaryButton
         onPress={handleSubmit(onSubmit)}
-        titleProps="Save changes"
+        titleProps={loading ? "Saving changes..." : "Save changes"}
         contentStyle={tw`mt-4`}
       />
 

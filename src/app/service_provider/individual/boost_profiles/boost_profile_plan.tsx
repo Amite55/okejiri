@@ -24,7 +24,7 @@ const Boost_Profile_Plan = () => {
     <ScrollView
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
-      style={tw`flex-1   px-5 bg-base_color`}
+      style={tw`flex-1 px-5 bg-base_color`}
       contentContainerStyle={tw`pb-6 flex-grow justify-between`}
     >
       <View>

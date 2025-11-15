@@ -29,7 +29,8 @@ import { SvgXml } from "react-native-svg";
 const Account = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-  // ============================ api end point ==============================
+  // ============================ api end point ==============================//
+
   const [logout] = useLogoutMutation({});
   const { data: userProfileInfo } = useProfileQuery({});
 
@@ -147,7 +148,10 @@ const Account = () => {
         <SettingsCard
           title=" My services"
           onPress={() =>
-            router.push("/service_provider/individual/my_services/my_service")
+            // router.push("/service_provider/individual/my_services/my_service")
+            router.push(
+              "/service_provider/company/company_services/my_services"
+            )
           }
           fastIcon={IconMyService}
         />
