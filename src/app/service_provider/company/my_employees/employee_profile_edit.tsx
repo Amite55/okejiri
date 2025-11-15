@@ -1,22 +1,30 @@
-import { IconLocationGray, IconPhoneGray, IconReplace } from "@/assets/icons";
-import { ImgProfileImg, ImgSuccessGIF } from "@/assets/images/image";
+import { IconLocationGray, IconPhoneGray, IconProfileImageEdit } from "@/assets/icons";
+import { ImgSuccessGIF } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import SuccessModal from "@/src/Components/SuccessModal";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
+import { useEditEmployeeMutation, useEmployeeDetailsQuery } from "@/src/redux/apiSlices/companyProvider/account/employeesSlice";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  TouchableWithoutFeedback,
+  View
 } from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
+
+import * as ImagePicker from "expo-image-picker";
+import { Formik } from "formik";
 
 // ------------------ static dropdown value -----------------
 const dropdownData = [
@@ -25,133 +33,325 @@ const dropdownData = [
 ];
 
 const Employee_Profile_Edit = () => {
+  const { id } = useLocalSearchParams();
+
+  // ========================== API 
+  const { data: employeeDetailsData, isLoading: isLoadingEmployeeDetails, isError: isErrorEmployeeDetails } = useEmployeeDetailsQuery(id)
+  const employee = employeeDetailsData?.data;
+
+  const [editEmployee, { isLoading: isLoadingEditEmployee }] = useEditEmployeeMutation();
+  // console.log(" ==================== employee details =============== ", JSON.stringify(employeeDetailsData, null, 2))
+
+
+
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [successModalVisible, setSuccessModal] = useState<boolean>(false);
+
+
+
+  const validation = (values: any) => {
+    const errors: any = {};
+
+    if (!values.image) errors.image = "Employee image is required";
+    if (!values.name) errors.name = "Name is required";
+    else if (values.name < 3) errors.name = "Name must be at least 3 letters";
+
+    if (!values.phone) errors.phone = "Phone number is required";
+    else if (!/^[0-9]{10,15}$/.test(values.phone)) {
+      errors.phone = "Enter a valid phone number";
+    }
+    if (!values.location) {
+      errors.location = "Location is required"
+    }
+    return errors;
+  }
+
+  // ---------------------- IMAGE PICKER -------------------------
+  const pickImage = async (setFieldValue: any, setFieldTouched: any) => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permission.granted) {
+      alert("Permission needed to access gallery");
+      return;
+    }
+
+    const result: any = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      const picked = result.assets[0];
+
+      // Extract file extension from URI
+      const uriParts = picked.uri.split(".");
+      const fileExt = uriParts[uriParts.length - 1]; // e.g., "jpeg", "png"
+
+      // Set name dynamically: user + timestamp + extension
+      const fileName = `employee_${Date.now()}.${fileExt}`;
+
+      // Set MIME type dynamically
+      const fileType = `image/${fileExt === "jpg" ? "jpeg" : fileExt}`;
+      // console.log(" picker uri ======== ", picked?.uri)
+      // console.log(" file name ========== ", fileName);
+      // console.log(" type ================", fileType)
+      // Set Formik field
+      setFieldValue("image", {
+        uri: picked.uri,
+        name: fileName,
+        type: fileType,
+      });
+      setFieldTouched("image", true);
+    }
+  };
+
+
+
+
+
   return (
-    <ScrollView
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-      keyboardDismissMode="interactive"
-      style={tw`flex-1 bg-base_color px-5 `}
-      contentContainerStyle={tw`pb-4 flex-grow justify-between`}
+    <KeyboardAvoidingView
+      style={tw`flex-1 bg-base_color`}
+      behavior={Platform.OS === "ios" ? "padding" : "position"} // iOS/Android different behavior
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -120}
     >
-      <View>
-        <BackTitleButton
-          pageName={"Edit employee"}
-          onPress={() => router.back()}
-          titleTextStyle={tw`text-xl`}
-          // contentStyle={tw`px-5`}
-        />
-
-        <View
-          style={tw`relative bg-white h-48 rounded-xl justify-center items-center gap-2`}
-        >
-          <Image style={tw`w-24 h-24 rounded-full `} source={ImgProfileImg} />
-
-          <TouchableOpacity
-            style={tw`absolute top-4 right-4 border border-deepBlue200 p-2 rounded-md`}
-          >
-            <SvgXml xml={IconReplace} />
-          </TouchableOpacity>
-        </View>
-
-        {/* ----------- employee name ------------ */}
-
-        <View style={tw`gap-1 mt-6 mb-3`}>
-          <Text
-            style={tw`font-DegularDisplayDemoMedium text-xl text-black  ml-2`}
-          >
-            Name
-          </Text>
-
-          <View style={tw`border border-gray-300 rounded-full px-4 py-2 h-14`}>
-            <TextInput
-              style={tw`flex-1`}
-              placeholder="Employee name hare"
-              onChangeText={(value) => console.log(value)}
-            />
-          </View>
-        </View>
-
-        {/*  ------------ dropdown section j----------------- */}
-        <View style={tw``}>
-          <Text
-            style={tw`font-DegularDisplayDemoMedium text-xl text-black  ml-2`}
-          >
-            Role
-          </Text>
-          <Dropdown
-            style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            data={dropdownData}
-            maxHeight={300}
-            labelField="label"
-            valueField="value"
-            placeholder={!isFocus ? "- select roll-" : "..."}
-            value={value}
-            onFocus={() => setIsFocus(true)}
-            onBlur={() => setIsFocus(false)}
-            onChange={(item) => {
-              setValue(item.value);
-              setIsFocus(false);
-            }}
-          />
-        </View>
-
-        {/*  ---------------- Phone number -------------- */}
-
-        <View style={tw`gap-1 mt-6 mb-3`}>
-          <View
-            style={tw`border border-gray-300 rounded-full px-5 py-2 h-14 flex-row items-center gap-2`}
-          >
-            <SvgXml xml={IconPhoneGray} />
-            <TextInput
-              style={tw`flex-1`}
-              placeholder="Phone number"
-              placeholderTextColor={"#535353"}
-              onChangeText={(value) => console.log(value)}
-            />
-          </View>
-        </View>
-
-        {/* ------------------ location -------------- */}
-        <View style={tw`gap-1 mt-6 mb-3`}>
-          <View
-            style={tw`border border-gray-300 rounded-full px-5 py-2 h-14 flex-row items-center gap-2`}
-          >
-            <SvgXml xml={IconLocationGray} />
-            <TextInput
-              style={tw`flex-1`}
-              placeholder="Location"
-              placeholderTextColor={"#535353"}
-              onChangeText={(value) => console.log(value)}
-            />
-          </View>
-        </View>
-      </View>
-
-      {/* ---------------- primary button ---------------- */}
-
-      <PrimaryButton
-        titleProps="Save changes"
-        onPress={() => setSuccessModal(true)}
-      />
-
-      <SuccessModal
-        setModalVisible={setSuccessModal}
-        modalVisible={successModalVisible}
-        successImage={ImgSuccessGIF}
-        modalTitle="Changes Employee Info"
+      <TouchableWithoutFeedback
+        onPress={Keyboard.dismiss} accessible={false}
       >
-        <PrimaryButton
-          contentStyle={tw`bg-redDeep`}
-          titleProps="Go Back"
-          onPress={() => router.back()}
-        />
-      </SuccessModal>
-    </ScrollView>
+
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          style={tw`flex-grow px-5`}
+          contentContainerStyle={tw`pb-6 gap-6`}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View>
+            <BackTitleButton
+              pageName={"Edit employee"}
+              onPress={() => router.back()}
+              titleTextStyle={tw`text-xl`}
+            // contentStyle={tw`px-5`}
+            />
+
+            <Formik
+              initialValues={{
+                image: employee?.image ? { uri: employee?.image, name: "existing.jpg", type: "image/jpeg" } : null,
+                name: employee?.name,
+                phone: employee?.phone,
+                location: employee?.location
+              }}
+              // validate={validation}
+              onSubmit={async (values) => {
+                // console.log("=========== Final ", JSON.stringify(values, null, 2));
+                try {
+                  const formData = new FormData();
+                  if ((values.image as any).uri !== employee.image) {
+                    formData.append("image", {
+                      uri: (values.image as any).uri,
+                      name: (values.image as any).name || "photo.jpg",
+                      type: (values.image as any).type || "image/jpeg"
+                    } as any);
+                  }
+
+                  if (values.name !== employee.name) {
+                    formData.append("name", values.name);
+                  }
+                  if (values.location !== employee.location) {
+                    formData.append("location", values.location);
+                  }
+                  if (values.location !== employee.phone) {
+                    formData.append("phone", values.phone);
+                  }
+                  if (formData === null) {
+                    router.push({
+                      pathname: "/Toaster",
+                      params: {
+                        res: "Nothing to change"
+                      }
+                    })
+                    setTimeout(() => {
+                      router.back()
+                    }, 1000);
+                  }
+                  formData.append("_method", "PUT");
+                  console.log("=========== Final ", JSON.stringify(formData, null, 2));
+
+                  const response = await editEmployee({ id: id, formData: formData }).unwrap();
+
+                  if (response) {
+                    setSuccessModal(true);
+                  }
+                } catch (err) {
+                  console.log("Error form submited", err, " api error: ", isErrorEmployeeDetails);
+                }
+
+
+
+              }}
+            >
+              {({ handleChange, handleSubmit, errors, touched, setFieldValue, values, setFieldTouched }) => (
+                <View
+
+                >
+                  {/* <Pressable
+                    onPress={() => pickImage(setFieldValue, setFieldTouched)}
+                    style={tw`border border-dashed border-gray-500 rounded-3xl p-6 justify-center items-center mt-2  gap-2 `}
+                  >
+                    {values.image ? (
+                      <Image
+                        source={{ uri: values.image.uri }}
+                        style={tw`h-32 w-32 rounded-3xl`}
+                        resizeMode="cover"
+                      />
+                    ) :
+                      <SvgXml xml={IconUploadImage} />
+                    }
+                    {errors.image && touched.image && !values.image ?
+                      <Text style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}>
+                        {errors.image}
+                      </Text> :
+                      <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
+                        {!errors.image && values.image ? "Uploaded" : "Upload"} employee image
+                      </Text>
+                    }
+
+                    {!values.image &&
+                      <TouchableOpacity
+                        onPress={() => pickImage(setFieldValue, setFieldTouched)}
+                        style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
+                      >
+                        <Text style={tw`font-DegularDisplayDemoRegular text-xl text-white`}>
+                          Browse
+                        </Text>
+                      </TouchableOpacity>
+                    }
+                  </Pressable> */}
+                  <View style={tw`bg-white  py-10 flex-row justify-center rounded-2xl`}>
+                    <View>
+                      <Image source={{ uri: values.image?.uri }} width={100} height={100} resizeMode="cover" style={tw`rounded-full`} />
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => pickImage(setFieldValue, setFieldTouched)}
+                      style={tw`absolute w-full  items-end right-3 top-3`}
+                    >
+                      <View >
+                        <SvgXml xml={IconProfileImageEdit} />
+                      </View>
+                    </TouchableOpacity>
+
+                  </View>
+
+
+                  <View style={tw`gap-1 mt-6 mb-3`}>
+                    <Text
+                      style={tw`font-DegularDisplayDemoMedium text-xl text-black  ml-2`}
+                    >
+                      Name
+                    </Text>
+
+                    <View style={tw`border border-gray-300 rounded-full px-4 py-2 h-14`}>
+                      <TextInput
+                        style={tw`flex-1`}
+                        placeholder="Employee name hare"
+                        value={values.name}
+                        onChangeText={handleChange("name")}
+                        placeholderTextColor={"#535353"}
+                      />
+                    </View>
+                    {errors.name && touched.name && (
+                      <Text style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}>
+                        {errors.name}
+                      </Text>
+                    )
+
+                    }
+                  </View>
+
+
+                  <View style={tw`gap-1 mt-6 mb-3`}>
+                    <View
+                      style={tw`border border-gray-300 rounded-full px-5 py-2 h-14 flex-row items-center gap-2`}
+                    >
+                      <SvgXml xml={IconPhoneGray} />
+                      <TextInput
+                        style={tw`flex-1`}
+                        placeholder="Phone number"
+                        placeholderTextColor={"#535353"}
+                        value={values.phone}
+                        onChangeText={handleChange("phone")}
+                        keyboardType="number-pad"
+                      />
+                    </View>
+                    {errors.phone && touched.phone && (
+                      <Text style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}>
+                        {errors.phone}
+                      </Text>
+                    )
+
+                    }
+                  </View>
+
+
+                  <View style={tw`gap-1 mt-6 mb-3`}>
+                    <View
+                      style={tw`border border-gray-300 rounded-full px-5 py-2 h-14 flex-row items-center gap-2`}
+                    >
+                      <SvgXml xml={IconLocationGray} />
+                      <TextInput
+                        style={tw`flex-1`}
+                        placeholder="Location"
+                        value={values.location}
+                        onChangeText={handleChange("location")}
+                      />
+                    </View>
+
+                    {errors.location && touched.location && (
+                      <Text style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}>
+                        {errors.location}
+                      </Text>
+                    )
+
+                    }
+                  </View>
+                  {isLoadingEditEmployee &&
+                    <ActivityIndicator size={"large"} color={"#FF6600"} />
+                  }
+                  <PrimaryButton titleProps="Save changes" onPress={handleSubmit} />
+                </View>
+              )}
+
+
+
+            </Formik>
+          </View>
+
+          {/* ---------------- primary button ---------------- */}
+
+          {/* <PrimaryButton
+            titleProps="Save changes"
+            onPress={() => setSuccessModal(true)}
+          /> */}
+
+          <SuccessModal
+            setModalVisible={setSuccessModal}
+            modalVisible={successModalVisible}
+            successImage={ImgSuccessGIF}
+            modalTitle="Changes Employee Info"
+          >
+            <PrimaryButton
+              contentStyle={tw`bg-redDeep`}
+              titleProps="Go Back"
+              onPress={() => router.back()}
+            />
+          </SuccessModal>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+
+
+    </KeyboardAvoidingView>
+
   );
 };
 

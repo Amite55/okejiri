@@ -7,12 +7,20 @@ import {
 import SettingsCard from "@/src/Components/SettingsCard";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
+import { useEmployeeDetailsQuery } from "@/src/redux/apiSlices/companyProvider/account/employeesSlice";
+import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { Image, ScrollView, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Employees_Details = () => {
+  const { id } = useLocalSearchParams();
+
+  const { data: employeeDetailsData, isLoading: isLoadingEmployeeDetails, isError: isErrorEmployeeDetails } = useEmployeeDetailsQuery(id)
+  const employee = employeeDetailsData?.data;
+
+  console.log(" ==================== employee details =============== ", JSON.stringify(employeeDetailsData, null, 2))
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -25,7 +33,7 @@ const Employees_Details = () => {
         pageName={"Employee details"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
-        // contentStyle={tw`px-5`}
+      // contentStyle={tw`px-5`}
       />
       <View style={tw`gap-3`}>
         <View
@@ -34,15 +42,15 @@ const Employees_Details = () => {
           <Image
             style={tw`w-24 h-24 rounded-full  `}
             source={{
-              uri: "https://i.ibb.co/H65jtCN/slava-jamm-r-Aa-N15-Wb-E9-Q-unsplash.jpg",
+              uri: employee?.image,
             }}
           />
           <Text
             style={tw`font-DegularDisplayDemoRegular text-2xl text-black text-center`}
           >
-            Profile Name
+            {employee?.name}
           </Text>
-          <View
+          {/* <View
             style={tw`w-32 h-8 rounded-xl border border-gray-300 flex-row justify-center gap-2 items-center`}
           >
             <View style={tw`w-2 h-2 rounded-full bg-success600`} />
@@ -51,7 +59,7 @@ const Employees_Details = () => {
             >
               Cleaner
             </Text>
-          </View>
+          </View> */}
         </View>
 
         {/* ------------------- contact info -------------- */}
@@ -61,22 +69,27 @@ const Employees_Details = () => {
           <View style={tw`flex-row gap-3 items-center`}>
             <SvgXml xml={IconPhoneGray} />
             <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-              +9856325459
+              {employee?.phone}
             </Text>
           </View>
 
           <View style={tw`flex-row gap-3 items-center`}>
             <SvgXml xml={IconLocationGray} />
             <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-              Dhaka, Bangladesh
+              {employee?.location}
             </Text>
           </View>
         </View>
 
         <SettingsCard
           onPress={() =>
-            router.push(
-              "/service_provider/company/my_employees/employee_profile_edit"
+            router.push({
+              pathname: "/service_provider/company/my_employees/employee_profile_edit",
+              params: {
+                id: id
+              }
+            }
+
             )
           }
           fastIcon={IconEditPenBlack}
@@ -84,9 +97,12 @@ const Employees_Details = () => {
         />
         <SettingsCard
           onPress={() =>
-            router.push(
-              "/service_provider/company/my_employees/service_provided"
-            )
+            router.push({
+              pathname: "/service_provider/company/my_employees/service_provided",
+              params: {
+                id: id
+              }
+            })
           }
           fastIcon={IconMyService}
           title="Service provided"
