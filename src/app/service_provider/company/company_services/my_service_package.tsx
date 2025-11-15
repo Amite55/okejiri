@@ -1,37 +1,32 @@
-import { IconDustBin, IconPlus } from "@/assets/icons";
+import { IconEditPen, IconPlus } from "@/assets/icons";
 import { ImgEmptyService } from "@/assets/images/image";
-import AddServicesModal from "@/src/Components/AddServicesModal";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useDeleteMyServicesMutation } from "@/src/redux/apiSlices/companyProvider/account/services/servicesSlice";
-import { useLazyMy_servicesQuery } from "@/src/redux/apiSlices/IndividualProvider/account/MyServices/myServicesSlicel";
-import BottomSheet from "@gorhom/bottom-sheet";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
+import { useLazyMy_service_packagesQuery } from "@/src/redux/apiSlices/IndividualProvider/account/MyServices/myServicesSlicel";
+import { useCreateConnectAccountMutation } from "@/src/redux/apiSlices/stripeSlices";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View
+    ActivityIndicator,
+    FlatList,
+    Image,
+    RefreshControl,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
+import { WebView } from "react-native-webview";
 
-const My_Service = () => {
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  // const { data: userProfileInfo } = useProfileQuery({});
-  // const { stripe_account_id, stripe_payouts_enabled } =
-  //   userProfileInfo?.data || {};
+const My_Service_Package = () => {
+  const { data: userProfileInfo } = useProfileQuery({});
+  const { stripe_account_id, stripe_payouts_enabled } =
+    userProfileInfo?.data || {};
 
-  // const [createConnectAccount] = useCreateConnectAccountMutation();
-  //  ==================================== API
-  const [fetchMyServices, { isFetching }] =
-    useLazyMy_servicesQuery();
-  const [deleteMyService, {data: deleteMyServiceData, isLoading: isLoadingMyService, isError: isErrorMyService}] = useDeleteMyServicesMutation();
-
-  // =================================== API end;
+  const [createConnectAccount] = useCreateConnectAccountMutation();
+  const [fetchMyServicePackages, { isFetching }] =
+    useLazyMy_service_packagesQuery();
 
   const [OnboardingUrl, setOnboardingUrl] = useState<string | null>(null);
   const [services, setServices] = useState<any[]>([]);
@@ -40,7 +35,7 @@ const My_Service = () => {
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const { id } = useLocalSearchParams();
-  // console.log(id, "id");
+  console.log(id, "id");
 
   // ======================== LOAD SERVICE PACKAGES ==========================
   const loadServices = async (pageNum = 1, isRefresh = false) => {
@@ -48,8 +43,8 @@ const My_Service = () => {
       if ((isFetching || loadingMore) && !isRefresh) return;
       if (!isRefresh) setLoadingMore(true);
 
-      const res = await fetchMyServices(pageNum).unwrap();
-      console.log("respos...........", JSON.stringify(res, null, 2));
+      const res = await fetchMyServicePackages({ pageNum, id }).unwrap();
+      console.log(res, "respos...........");
 
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
@@ -73,7 +68,7 @@ const My_Service = () => {
       setLoadingMore(false);
     }
   };
-  console.log("=============== services ================  ", JSON.stringify(services, null, 2))
+
   // ======================== REFRESH ==========================
   const handleRefresh = () => {
     setRefreshing(true);
@@ -93,102 +88,128 @@ const My_Service = () => {
     loadServices(1, true);
   }, []);
 
-  // // ======================== STRIPE CONNECT ==========================
+  // ======================== STRIPE CONNECT ==========================
+  const handelCannact = async () => {
+    const formData = new FormData();
+    formData.append("country", "NG");
+    formData.append("return_url", "https://translate?success=true");
+    formData.append("refresh_url", "https://translate?success=false");
 
-  // ========================== Handler ====================================
-  const handleServiceDelete = async (id: any)=>{
-    if(!id)return;
-
-    try{
-      const response = await deleteMyService(id).unwrap();
-      console.log("============ res ======= ", response)
-      if(response){
-        router.push({
-          pathname:"/Toaster",
-          params:{
-            res:"Service Deleted Successfully",
-
-          }
-        })
-
-      }
-
-    }catch(err){
-      console.log("error service delete !", err)
+    try {
+      const res = await createConnectAccount(formData);
+      setOnboardingUrl(res.data.data.onboarding_url);
+    } catch (error) {
+      console.log("Stripe connect error:", error);
     }
-  }
-
-  const openSheet = ()=>{
-    console.log(" ================== open sheet ======= ")
-    bottomSheetRef.current?.expand();
-  }
+  };
 
   // ======================== RENDER SERVICE ITEM ==========================
-  const renderServiceItem = (item: any) => {
-    console.log(" ================== item ", JSON.stringify(item, null, 2))
-    return (
-      <View style={tw` w-[48%] p-1`}>
-        <View style={tw`rounded-2xl`}>
-          <View>
-            <Image source={{ uri: item?.service?.image }} style={tw`w-full h-50 rounded-2xl`} />
-            {/* <Image source={{ uri: item.}} /> */}
-          </View>
-          <TouchableOpacity
-            onPress={()=> handleServiceDelete(item.id)}
-            style={tw`p-2 bg-black/20 absolute right-3 top-3 rounded-lg`}
-          >
-            <SvgXml xml={IconDustBin}/>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={tw`absolute bottom-3 left-3 right-3   p-2   bg-black/20 rounded-full `}
-          >
-            <Text style={tw`text-center text-white  font-DegularDisplayDemoRegular text-base`}>{item?.service?.name}</Text>
-          </TouchableOpacity>
-        </View>
-
+  const renderServiceItem = ({ item }: any) => (
+    <View style={tw`bg-white p-4 rounded-2xl mb-4`}>
+      {/* Image */}
+      <View style={tw`justify-center items-center`}>
+        <Image
+          style={tw`h-44 w-[98%] rounded-2xl`}
+          source={{ uri: item?.image }}
+        />
       </View>
-    )
+
+      {/* Title + Edit */}
+      <View style={tw`flex-row justify-between items-center my-4`}>
+        <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
+          {item?.title}
+        </Text>
+        <TouchableOpacity
+          onPress={() =>
+            router.push("/service_provider/individual/my_services/edit_package")
+          }
+          style={tw`p-2`}
+        >
+          <SvgXml xml={IconEditPen} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Package Detail Items */}
+      {item?.package_detail_items?.length > 0 && (
+        <View style={tw`pl-8 gap-2`}>
+          {item.package_detail_items.map((detail: any, index: number) => (
+            <View key={index} style={tw`flex-row items-center gap-2`}>
+              <View style={tw`w-2 h-2 bg-black`} />
+              <Text
+                style={tw`font-DegularDisplayDemoRegular text-black text-xl`}
+              >
+                {detail?.item}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Delivery Time */}
+      <TouchableOpacity
+        onPress={() =>
+          router.push(
+            "/service_provider/individual/my_services/delivery_extension"
+          )
+        }
+        style={tw`flex-row justify-between items-center px-3 my-3`}
+      >
+        <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+          Expected delivery time
+        </Text>
+        <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
+          {item?.delivery_time} hours
+        </Text>
+      </TouchableOpacity>
+
+      {/* Price */}
+      <View
+        style={tw`bg-primary w-full h-14 rounded-full flex-row justify-between items-center px-4 my-2`}
+      >
+        <Text style={tw`text-white font-DegularDisplayDemoMedium text-3xl`}>
+          Cost:
+        </Text>
+        <Text style={tw`text-white font-DegularDisplayDemoMedium text-3xl`}>
+          ₦ {item?.price}
+        </Text>
+      </View>
+    </View>
+  );
+
+  // ======================== WEBVIEW ==========================
+  if (OnboardingUrl) {
+    return (
+      <View style={{ flex: 1 }}>
+        <WebView
+          source={{ uri: OnboardingUrl }}
+          startInLoadingState={true}
+          renderLoading={() => (
+            <ActivityIndicator size="large" color="#000" style={tw`mt-10`} />
+          )}
+          onError={(e) => {
+            console.log("WebView error:", e.nativeEvent);
+            setOnboardingUrl(null);
+          }}
+          style={{ flex: 1 }}
+        />
+      </View>
+    );
   }
-
-
-
-  // // ======================== WEBVIEW ==========================
-  // if (OnboardingUrl) {
-  //   return (
-  //     <View style={{ flex: 1 }}>
-  //       <WebView
-  //         source={{ uri: OnboardingUrl }}
-  //         startInLoadingState={true}
-  //         renderLoading={() => (
-  //           <ActivityIndicator size="large" color="#000" style={tw`mt-10`} />
-  //         )}
-  //         onError={(e) => {
-  //           console.log("WebView error:", e.nativeEvent);
-  //           setOnboardingUrl(null);
-  //         }}
-  //         style={{ flex: 1 }}
-  //       />
-  //     </View>
-  //   );
-  // }
 
   // ======================== MAIN RETURN ==========================
   return (
     <View style={tw`flex-1 bg-base_color`}>
       <FlatList
         data={services}
-        keyExtractor={(item) => item?.id.toString()}
-        renderItem={({ item }) => renderServiceItem(item)}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderServiceItem}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
-        numColumns={2}
-        columnWrapperStyle={tw`justify-between`}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
         contentContainerStyle={tw`px-5 pb-10`}
         showsVerticalScrollIndicator={false}
-
         ListHeaderComponent={() => (
           <View>
             <BackTitleButton
@@ -197,7 +218,7 @@ const My_Service = () => {
               titleTextStyle={tw`text-xl`}
             />
 
-            {/* <View style={tw`flex-row justify-between items-center mt-3`}>
+            <View style={tw`flex-row justify-between items-center mt-3`}>
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
               >
@@ -232,7 +253,7 @@ const My_Service = () => {
                   </Text>
                 </TouchableOpacity>
               )}
-            </View> */}
+            </View>
           </View>
         )}
         ListFooterComponent={
@@ -261,19 +282,8 @@ const My_Service = () => {
           </View>
         )}
       />
-      <View style={tw`px-4`}>
-        <TouchableOpacity
-        onPress={openSheet}
-        style={tw`flex-row bg-primary py-4 justify-center rounded-full w-full px-4 gap-2 items-center`}
-      >
-        <SvgXml xml={IconPlus} width={15}/>
-        <Text style={tw`text-white text-xl font-DegularDisplayDemoRegular`}>Add more</Text>
-      </TouchableOpacity>
-      </View>
-      <AddServicesModal bottomSheetRef={bottomSheetRef}/>
-      
     </View>
   );
 };
 
-export default My_Service;
+export default My_Service_Package;
