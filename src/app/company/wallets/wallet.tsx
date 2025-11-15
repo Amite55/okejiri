@@ -9,15 +9,23 @@ import {
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import * as Clipboard from "expo-clipboard";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import { SvgXml } from "react-native-svg";
 
 const Wallet_Index = () => {
+  const { wallet_address, wallet_balance } = useLocalSearchParams();
+  console.log(wallet_address, wallet_balance);
+
+  // [-======================== copy to clipboard =======================-]
   const copyToClipboard = async (text: string) => {
     await Clipboard.setStringAsync(text);
-    Alert.alert("Copied to clipboard!");
+    Toast.show({
+      type: ALERT_TYPE.SUCCESS,
+      title: "Copied to clipboard",
+    });
   };
   return (
     <ScrollView
@@ -46,7 +54,7 @@ const Wallet_Index = () => {
           Available balance
         </Text>
         <Text style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}>
-          ₦1000.50
+          ₦ {wallet_balance || "0.00"}
         </Text>
       </View>
 
@@ -58,16 +66,15 @@ const Wallet_Index = () => {
             Wallet address
           </Text>
           <TouchableOpacity
-            onPress={() =>
-              copyToClipboard(" 0x742d35Cc6634C0532925a3b844Bc454e4438f44e")
-            }
+            disabled={!wallet_address}
+            onPress={() => copyToClipboard(wallet_address as string)}
           >
             <SvgXml xml={IconCopy} />
           </TouchableOpacity>
         </View>
 
         <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-          0x742d35Cc6634C0532925a3b844Bc454e4438f44e
+          {wallet_address ? wallet_address : "N/A"}
         </Text>
       </View>
 

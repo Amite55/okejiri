@@ -1,11 +1,13 @@
 import { StripeProvider } from "@stripe/stripe-react-native";
 import { Stack } from "expo-router";
+
 import { AlertNotificationRoot } from "react-native-alert-notification";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import tw from "../lib/tailwind";
 import store from "../redux/store";
+
 
 export default function RootLayout() {
   return (

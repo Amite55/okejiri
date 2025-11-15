@@ -276,8 +276,8 @@ const ServiceDetails = () => {
           ) : (
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => {
-                handleDeleteStoreCartItem(
+              onPress={async () => {
+                await handleDeleteStoreCartItem(
                   packageDetails?.data?.package_details?.id
                 );
               }}

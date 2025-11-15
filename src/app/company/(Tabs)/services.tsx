@@ -10,23 +10,39 @@ import {
   FlatList,
   Image,
   Platform,
+  RefreshControl,
   SafeAreaView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 
-const services = () => {
+const Services = () => {
+  const [refreshing, setRefreshing] = React.useState(false);
+
   // ------------------ api end point ------------------
   const {
     data: getServicesData,
     isLoading: servicesLoading,
     error,
-  } = useServicesQuery();
+    refetch: serviceRefetch,
+  } = useServicesQuery({});
 
   if (servicesLoading) {
     return <ServicePageSkeleton />;
   }
+
+  // [----------------- refresh function ----------------]
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([getServicesData, serviceRefetch]);
+    } catch (error) {
+      console.log(error, "refresh error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const serviceItemRender = ({ item }: any) => {
     return (
@@ -60,8 +76,8 @@ const services = () => {
           <TouchableOpacity
             onPress={() =>
               router.push({
-                pathname: "/company/serviceNearbyHistory",
-                params: { service_id: item?.id },
+                pathname: "/company/categoryByService",
+                params: { categoryService: item?.name, service_id: item?.id },
               })
             }
             style={tw`flex-1 justify-center items-center`}
@@ -101,13 +117,16 @@ const services = () => {
   return (
     <SafeAreaView style={tw`flex-1 bg-base_color mb-24`}>
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         data={getServicesData?.data.services}
         renderItem={serviceItemRender}
         ListHeaderComponent={serviceHeaderRender}
         numColumns={2}
         keyExtractor={(item) => item.id.toString()}
         ListHeaderComponentStyle={tw`w-full mb-3`}
-        contentContainerStyle={tw`pt-2 items-center px-5 gap-3`}
+        contentContainerStyle={tw`pt-2 items-center px-5 gap-3 pb-5`}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
       />
@@ -115,4 +134,4 @@ const services = () => {
   );
 };
 
-export default services;
+export default Services;

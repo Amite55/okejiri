@@ -1,13 +1,13 @@
 import {
-  IconCancel,
-  IconDeliveryApproved,
-  IconDispute,
-  IconExtension,
-  IconKYCComplete,
-  IconNewOrder,
-  IconProfileBadge,
-  IconWaring,
-  IconWithdrawalPending,
+    IconCancel,
+    IconDeliveryApproved,
+    IconDispute,
+    IconExtension,
+    IconKYCComplete,
+    IconNewOrder,
+    IconProfileBadge,
+    IconWaring,
+    IconWithdrawalPending,
 } from "@/assets/icons";
 import { ImgCleaning } from "@/assets/images/image";
 import React from "react";
@@ -17,7 +17,7 @@ import tw from "../lib/tailwind";
 
 const iconMap = {
   new_order: IconNewOrder,
-  request_approved: IconDeliveryApproved,
+  delivery_request_approved: IconDeliveryApproved,
   complete_kyc: IconKYCComplete,
   warning: IconWaring,
   cancelled: IconCancel,
@@ -27,7 +27,7 @@ const iconMap = {
 };
 const textColorMap = {
   new_order: "#FF6600",
-  request_approved: "#008100",
+  delivery_request_approved: "#008100",
   complete_kyc: "#9747FF",
   warning: "#FF3A00",
   cancelled: "#FF3A00",
@@ -37,7 +37,7 @@ const textColorMap = {
   delivery_request: "#4F52FF",
 };
 
-const NotificationCard = ({
+const ProviderNotificationCard = ({
   item,
   onPress,
   
@@ -48,6 +48,8 @@ const NotificationCard = ({
   
  
 }) => {
+
+  console.log("============= item =========", JSON.stringify(item, null, 2));
   const Icon = iconMap[item?.data?.type];
   const textColor = textColorMap[item?.data?.type] || "#000000";
 
@@ -56,7 +58,7 @@ const NotificationCard = ({
       onPress={onPress}
       activeOpacity={0.8}
       style={[
-        tw`flex-row  items-center gap-2 rounded-2xl py-2 px-2 relative shadow-md`,
+        tw`flex-row  items-center gap-2 rounded-2xl py-6 px-2 relative shadow-md`,
         item?.read_at ? tw`bg-white` : tw`bg-gray-200`,
       ]}
     >
@@ -105,4 +107,4 @@ const NotificationCard = ({
   );
 };
 
-export default NotificationCard;
+export default ProviderNotificationCard;
