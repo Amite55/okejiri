@@ -1,30 +1,29 @@
 import {
   IconBalance,
-  IconDate,
-  IconProfileBadge,
   IconRightArrowCornerPrimaryColor,
-  IconSettingWhite,
+  IconSettingWhite
 } from "@/assets/icons";
 import {
   ImgComplete,
   ImgNew,
-  ImgPending,
-  ImgProfileImg,
+  ImgPending
 } from "@/assets/images/image";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
+import TransactionsCard from "@/src/Components/TransactionsCard";
+import UserCard from "@/src/Components/UserCard";
 import tw from "@/src/lib/tailwind";
-import { useHomeProviderQuery } from "@/src/redux/apiSlices/IndividualProvider/homeSlices";
+import { useHomeDataQuery } from "@/src/redux/apiSlices/companyProvider/homeSlices";
+import { useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/orderSlices";
+import { useRecentOrderQuery, useRecentTransactionsQuery } from "@/src/redux/apiSlices/IndividualProvider/homeSlices";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
@@ -37,10 +36,61 @@ const dropdownData = [
 ];
 
 const Individual_Service_Provider_Index = () => {
-  const { data: homeProviderData, isLoading } = useHomeProviderQuery({});
-  const [value, setValue] = useState(null);
+
+
+
+  const [value, setValue] = useState("this_week");
   const [isFocus, setIsFocus] = useState(false);
-  console.log("homeProviderData", homeProviderData);
+
+
+  // data fetch - START
+  const { data: homeData, isLoading: homeDataLoading } = useHomeDataQuery(value);
+
+  const { data: recentOrder, isLoading: recentOrderLoading } = useRecentOrderQuery("New");
+  const { data: recentTransaction, isLoading: recentTransactionLoading } = useRecentTransactionsQuery({});
+  // const recentOrder = recentOrderData?.data?.data.slice(0,3) || [];
+
+  const [fetchOrderItem] = useLazyOrderDetailsQuery();
+
+
+  // if()
+  // console.log("++++++++++ recent order data =================== ", recentOrder);
+  // console.log("++++++++++ recent transaction order data inside =================== ", recentTransaction?.data.data);
+  // data fetch - END
+
+
+  // state for fetch data;
+  const formateDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const options = { weekday: "short", day: "2-digit", month: "short", year: "numeric" };
+    const parts = date.toLocaleDateString("en-US", options).split(" ");
+    // console.log(date.toLocaleDateString("en-US", options))
+    const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${parts[3]}`;
+    return formatted;
+  }
+
+  const [descriptions, setDescriptions] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    if (recentOrder?.data?.data?.length) {
+      const fetchDescriptions = async () => {
+        for (const item of recentOrder.data.data) {
+          try {
+            const response = await fetchOrderItem(item.id).unwrap();
+            const count = response?.data?.provider?.provider_services?.length ?? 0;
+            setDescriptions(prev => ({ ...prev, [item.id]: `${count} ${count === 1 ? "service" : "services"}` }));
+          } catch (err) {
+            setDescriptions(prev => ({ ...prev, [item.id]: "N/A" }));
+          }
+        }
+      };
+      fetchDescriptions();
+    }
+  }, [recentOrder]);
+
+
+
+
 
   return (
     <ScrollView
@@ -54,7 +104,12 @@ const Individual_Service_Provider_Index = () => {
       <ServiceProfileHeaderInfo
         onPress={() => router.push("/service_provider/individual/account")}
         onPressNotification={() =>
-          router.push("/notification_Global/notifications")
+          router.push({
+            pathname: "/notification_Global/notifications",
+            params: {
+              provider_type: "individual"
+            }
+          })
         }
       />
 
@@ -71,7 +126,7 @@ const Individual_Service_Provider_Index = () => {
             Total earnings
           </Text>
           <Text style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}>
-            ₦ 100,000
+            ₦ {homeData?.data?.total_earnings ?? 0}
           </Text>
         </View>
         <View style={tw`w-44`}>
@@ -108,7 +163,7 @@ const Individual_Service_Provider_Index = () => {
             <Text
               style={tw`font-DegularDisplayDemoSemibold text-3xl text-white`}
             >
-              10
+              {homeData?.data?.new_order ?? 0}
             </Text>
           </View>
           <View style={tw`absolute -top-2 right-1`}>
@@ -127,7 +182,7 @@ const Individual_Service_Provider_Index = () => {
             <Text
               style={tw`font-DegularDisplayDemoSemibold text-3xl text-white`}
             >
-              10
+              {homeData?.data?.pending_order ?? 0}
             </Text>
           </View>
           <View style={tw`absolute -top-2 right-1`}>
@@ -146,7 +201,7 @@ const Individual_Service_Provider_Index = () => {
             <Text
               style={tw`font-DegularDisplayDemoSemibold text-3xl text-white`}
             >
-              10
+              {homeData?.data?.completed_order ?? 0}
             </Text>
           </View>
           <View style={tw`absolute -top-2 right-1`}>
@@ -165,87 +220,47 @@ const Individual_Service_Provider_Index = () => {
           router.push("/service_provider/individual/(Tabs)/order")
         }
       />
+      {/* recent order  */}
+      <View style={tw`gap-3 my-4`}>
+        {recentOrder?.data?.data.slice(0, 3).map((item: any, index: any) => {
 
-      <View style={tw`gap-3 mt-4`}>
-        {[1, 2, 3, 4].map((index) => {
           return (
-            <Pressable
-              onPress={() =>
-                router.push(
-                  "/service_provider/individual/order_details_profile"
-                )
-              }
-              style={tw`h-32 px-5 rounded-2xl bg-white flex-row justify-between items-center`}
+            <UserCard
               key={index}
-            >
-              <View style={tw`flex-row items-center gap-3`}>
-                <Image
-                  style={tw`w-16 h-16 rounded-full `}
-                  source={ImgProfileImg}
-                />
-                <View style={tw`gap-1.5`}>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <Text>Profile Name</Text>
-                    <SvgXml xml={IconProfileBadge} />
-                  </View>
-                  <Text>Service title goes here</Text>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <SvgXml xml={IconDate} />
-                    <Text>Mon, June 2</Text>
-                  </View>
-                </View>
-              </View>
-              <TouchableOpacity
-                style={tw`w-12 h-12 rounded-2xl border border-primary justify-center items-center `}
-              >
-                <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-              </TouchableOpacity>
-            </Pressable>
+              ProfileName={item.user.name}
+              isProfileBadge={item.user.kyc_status === "Verified" ? true : false}
+              Date={formateDate(item.created_at)}
+              Description={descriptions[item.id]}
+              ImgProfileImg={item.user.avatar}
+            // onPress={() => router.push("")}
+            />
           );
         })}
       </View>
 
       {/* ------------------------ Recent transactions ----------------- */}
       <View style={tw`mt-4`}>
-        <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-          Recent transactions
-        </Text>
-        <View style={tw`gap-6 my-4`}>
-          {[1, 2, 3, 4, 5, 6, 7].map((index) => {
-            return (
-              <View
-                key={index}
-                style={tw`flex-row items-center justify-between`}
-              >
-                <View style={tw`flex-row items-center gap-4`}>
-                  <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-                  <View>
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
-                    >
-                      Service title goes here
-                    </Text>
-                    <View style={tw`flex-row gap-2 items-center `}>
-                      <Text
-                        style={tw`font-DegularDisplayDemoSemibold text-xl text-black`}
-                      >
-                        Jhon Doe
-                      </Text>
-                      <SvgXml xml={IconProfileBadge} />
-                    </View>
-                  </View>
-                </View>
-
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-primary  text-2xl `}
-                >
-                  ₦200.00
-                </Text>
+              <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
+                Recent transactions
+              </Text>
+      
+              <View style={tw`gap-6 my-4`}>
+                {recentTransaction?.data.data.map((item: any, index: any) => {
+                  return (
+                    <TransactionsCard
+                      key={index}
+                      price={item.amount}
+                      profileBadge={item.sender.kyc_status === "Verified"? true: false}
+                      type={item.direction}
+                      varient={item.transaction_type}
+                      title="Service title goes here"
+                      transactionIcon={IconRightArrowCornerPrimaryColor}
+                      userName={item.sender.name}
+                    />
+                  );
+                })}
               </View>
-            );
-          })}
-        </View>
-      </View>
+            </View>
     </ScrollView>
   );
 };

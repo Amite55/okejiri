@@ -2,7 +2,7 @@ import { IconProfileBadge, IconStar } from "@/assets/icons";
 import { ImgProfileImg } from "@/assets/images/image";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
@@ -97,6 +97,10 @@ const renderServiceProvided = ({ item }) => {
 };
 
 const Service_Provided = () => {
+  const {id} = useLocalSearchParams();
+
+  console.log(" =========================== employee id ===================== ", id);
+  
   return (
     <FlatList
       style={tw`flex-1 bg-base_color`}
