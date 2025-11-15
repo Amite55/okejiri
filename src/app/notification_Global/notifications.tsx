@@ -16,7 +16,9 @@ const Notification = () => {
   const [isFetchMore, setIsFetchMore] = useState(false);
 
   // ------------------------------- API ------------------------------- //
-  const { data: notificationData, isLoading: isLoadingNotification, isError: isErrorLoadingNotification } = useGetNotificationsQuery(page);
+  const { data: notificationData, isLoading: isLoadingNotification, isError: isErrorLoadingNotification } = useGetNotificationsQuery(page, {
+  refetchOnMountOrArgChange: true,
+});
   const [singleMark, { data: singleMarkData, isLoading: isLoadingSingleMarkData }] = useSingleMarkMutation();
 
   // -------------------------------- Effect -------------------------- //
