@@ -66,7 +66,7 @@ const My_Employee = () => {
     }
   }
 
-  // console.log("===================== Employeee ========================= ", JSON.stringify(employees!, null, 2))
+  // console.log("===================== Employeee ========================= ", JSON.stringify(employees, null, 2))
 
   // ======================== REFRESH ==========================
   const handleRefresh = () => {
@@ -120,7 +120,7 @@ const My_Employee = () => {
 
               <TouchableOpacity
                 style={tw`bg-primary px-6 py-2 flex-row gap-2 rounded-xl items-center`}
-                onPress={()=> router.push("/service_provider/company/my_employees/add_new_employee")}
+                onPress={() => router.push("/service_provider/company/my_employees/add_new_employee")}
               >
                 <SvgXml xml={IconPlus} width={12} />
                 <Text style={tw`font-DegularDisplayDemoMedium text-xl text-white`}>Add</Text>
@@ -130,150 +130,65 @@ const My_Employee = () => {
           </View>
         )}
 
-        renderItem={({ item }) => (
-          <View>
-            <Pressable
-              onPress={() =>
-                router.push(
-                  "/service_provider/company/my_employees/employees_details"
-                )
-              }
-              key={item}
-              style={tw`relative bg-white flex-row items-center gap-4 p-2 rounded-lg`}
-            >
-              <Image style={tw`w-24 h-24 rounded-xl`} source={{ uri: item?.image }} />
-              <View>
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
-                >
-                  {item.name}
-                </Text>
-
-
-
-
-                <Text
-                  style={tw`font-DegularDisplayDemoRegular text-lg text-regularText`}
-                >
-                  {item?.completed_booking_count} {item?.completed_booking_count > 1 ? "services" : "service"} completed
-                </Text>
-              </View>
-
-              <TouchableOpacity
+        renderItem={({ item }) => {
+          // console.log(" =========== item ", JSON.stringify(item, null, 2))
+          return (
+            <View>
+              <Pressable
                 onPress={() =>
                   router.push({
                     pathname: "/service_provider/company/my_employees/employees_details",
                     params: {
-                      id: item.id
+                      id: item?.id
                     }
                   }
-                    
+
                   )
                 }
-                style={tw`absolute right-2 top-2 w-11 h-11 rounded-2xl bg-secondary justify-center items-center`}
+                key={item}
+                style={tw`relative bg-white flex-row items-center gap-4 p-2 rounded-lg`}
               >
-                <SvgXml xml={IconRightCornerArrowWhite} />
-              </TouchableOpacity>
-            </Pressable>
-          </View>
-        )}
+                <Image style={tw`w-24 h-24 rounded-xl`} source={{ uri: item?.image }} />
+                <View>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
+                  >
+                    {item.name}
+                  </Text>
 
-      />
-      {/* <BackTitleButton
-        pageName={"My employees"}
-        onPress={() => router.back()}
-        titleTextStyle={tw`text-xl`}
-      // contentStyle={tw`px-5`}
-      />
 
-      <View style={tw`flex-row justify-between items-center`}>
-        <Text style={tw`font-DegularDisplayDemoRegular text-black text-xl`}>
-          Total : 200 employees
-        </Text>
-        <TouchableOpacity
-          onPress={() =>
-            router.push(
-              "/service_provider/company/my_employees/add_new_employee"
-            )
-          }
-          style={tw`bg-primary w-36 h-14 flex-row justify-center items-center rounded-xl gap-2`}
-        >
-          <SvgXml xml={IconPlus} />
-          <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
-            Add
-          </Text>
-        </TouchableOpacity>
-      </View>
 
-      <View style={tw`flex-row items-center justify-between gap-3 mt-8`}>
-        <View
-          style={tw`flex-1 flex-row justify-between items-center bg-deepBlue50 h-12 rounded-2xl px-5`}
-        >
-          <View style={tw`flex-row items-center gap-2`}>
-            <View style={tw`w-4 h-4 rounded-full bg-deepBlue200`} />
-            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-              100
-            </Text>
-          </View>
-          <SvgXml xml={IconRightArrowCornerGray} />
-        </View>
 
-        <View
-          style={tw`flex-1 flex-row justify-between items-center bg-white h-12 rounded-2xl px-5`}
-        >
-          <View style={tw`flex-row items-center gap-2`}>
-            <View style={tw`w-4 h-4 rounded-full bg-success600`} />
-            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-              150
-            </Text>
-          </View>
-          <SvgXml xml={IconRightArrowCornerGray} />
-        </View>
-      </View>
+                  <Text
+                    style={tw`font-DegularDisplayDemoRegular text-lg text-regularText`}
+                  >
+                    {item?.completed_booking_count} {item?.completed_booking_count > 1 ? "services" : "service"} completed
+                  </Text>
+                </View>
 
-      <View style={tw`gap-2 my-5`}>
-        {[1, 2, 3, 4, 5].map((item) => (
-          <Pressable
-            onPress={() =>
-              router.push(
-                "/service_provider/company/my_employees/employees_details"
-              )
-            }
-            key={item}
-            style={tw`relative bg-white flex-row items-center gap-4 p-2 rounded-lg`}
-          >
-            <Image style={tw`w-24 h-24 rounded-xl`} source={ImgProfileImg} />
-            <View>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
-              >
-                Mark Jukerburg
-              </Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: "/service_provider/company/my_employees/employees_details",
+                      params: {
+                        id: item?.id
+                      }
+                    }
 
-              <View style={tw`flex-row items-center gap-2`}>
-                <View style={tw`w-2.5 h-2.5 rounded-full bg-success600`} />
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-xl text-regularText`}
+                    )
+                  }
+                  style={tw`absolute right-2 top-2 w-11 h-11 rounded-2xl bg-secondary justify-center items-center`}
                 >
-                  Cleaner
-                </Text>
-              </View>
-
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-lg text-regularText`}
-              >
-                30 service completed
-              </Text>
+                  <SvgXml xml={IconRightCornerArrowWhite} />
+                </TouchableOpacity>
+              </Pressable>
             </View>
+          )
+        }
+        }
 
-            <TouchableOpacity
-              style={tw`absolute right-1 top-1 w-11 h-11 rounded-2xl bg-secondary justify-center items-center`}
-            >
-              <SvgXml xml={IconRightCornerArrowWhite} />
-            </TouchableOpacity>
-          </Pressable>
-        ))}
-      </View> */}
+      />
+
     </View>
   );
 };
