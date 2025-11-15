@@ -1,22 +1,15 @@
 import { IconCrossWhite, IconProfileBadge } from "@/assets/icons";
-import {
-  ImgDisputeFour,
-  ImgDisputeThree,
-  ImgDisputeTwo,
-  ImgDisputFive,
-  ImgDisputOne,
-  ImgDisputSix,
-  ImgProfileImg,
-} from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useDisputeDetailsQuery } from "@/src/redux/apiSlices/companyProvider/account/myDisputeSlice";
 import { _HEIGHT } from "@/utils/utils";
-import { router } from "expo-router";
+import { Image } from "expo-image";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   FlatList,
-  Image,
+
   Modal,
   Pressable,
   ScrollView,
@@ -27,34 +20,29 @@ import {
 import { SvgXml } from "react-native-svg";
 
 const Dispute_Review = () => {
+  // =========================================== API ======================================== //
+  // disput
+  const { id } = useLocalSearchParams();
+
+  const { data: disputeReviewData, isLoading: isLoadingDisputeReview, isError: isErrorDisputeReview } = useDisputeDetailsQuery(id);
+
+  // ============================================== Effect ======================================= ///
+
+  
+  // ============================================= handler ======================================= ///
+
+  console.log("======== dispute id ============== ", id)
+
+
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const disputeGallary = [
-    {
-      id: 1,
-      image: ImgDisputOne,
-    },
-    {
-      id: 2,
-      image: ImgDisputeTwo,
-    },
-    {
-      id: 3,
-      image: ImgDisputeFour,
-    },
-    {
-      id: 4,
-      image: ImgDisputeThree,
-    },
-    {
-      id: 5,
-      image: ImgDisputFive,
-    },
-    {
-      id: 6,
-      image: ImgDisputSix,
-    },
-  ];
+  const disputeGallary = disputeReviewData?.data?.attachments || [];
   const visibleImages = disputeGallary.slice(0, 3);
+  const item = disputeReviewData?.data;
+
+
+  console.log("===================> dispute review details === ", JSON.stringify(item, null, 2))
+  console.log("===================> dispute attachments details === ", JSON.stringify(visibleImages, null, 2))
+
 
   return (
     <ScrollView
@@ -64,11 +52,14 @@ const Dispute_Review = () => {
       contentContainerStyle={tw`pb-6`}
     >
       <BackTitleButton
-        pageName={"Dispute status"}
+        pageName={"Dispute review"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
-
+      {/* <Image 
+        source={{uri: "http://103.186.20.114:8005/uploads/disputes/176293922557c7be9d8326.webp"}}
+        style={tw`h-20 w-15`}
+      /> */}
       <View style={tw`mt-4`}>
         <Text
           style={tw`font-DegularDisplayDemoMedium text-2xl text-redWhite mb-2`}
@@ -76,11 +67,11 @@ const Dispute_Review = () => {
           User
         </Text>
         <View style={tw`flex-row items-center gap-1 mb-5`}>
-          <Image style={tw`w-12 h-12 rounded-full `} source={ImgProfileImg} />
+          <Image style={tw`w-12 h-12 rounded-full `} source={{ uri: item?.opposite_party?.avatar }} />
           <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
-            Profile Name
+            {item?.opposite_party?.name}
           </Text>
-          <SvgXml xml={IconProfileBadge} />
+          {item?.opposite_party?.kyc_status === "Verified" ? <SvgXml xml={IconProfileBadge} /> : null}
         </View>
 
         <Text
@@ -91,7 +82,7 @@ const Dispute_Review = () => {
         <Text
           style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
         >
-          Provider harassed me
+          {item?.reason}
         </Text>
 
         <Text
@@ -102,13 +93,7 @@ const Dispute_Review = () => {
         <Text
           style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
         >
-          Lorem ipsum dolor sit amet consectetur. Id in tempor varius arcu
-          aliquet habitasse tristique vitae sapien. Tincidunt purus morbi
-          nascetur id. Aliquam risus magna eu diam aliquam faucibus duis. Vitae
-          eu consectetur urna eget. Habitant at gravida cras eu gravida mauris
-          pellentesque. Nunc rutrum nunc augue vitae dapibus hendrerit. In at id
-          amet odio dui elit a. Integer ultrices ac ut eu non suspendisse ac
-          aenean tristique. Amet at tempor sed neque sem egestas in.
+          {item?.details}
         </Text>
       </View>
       <Text
@@ -119,24 +104,29 @@ const Dispute_Review = () => {
       <View
         style={tw`flex-row gap-2 relative justify-center items-center mb-6`}
       >
-        {visibleImages.map((img, index) => (
-          <Image
-            key={index}
-            source={img.image}
-            style={tw`w-28 h-28 rounded-2xl`}
-            resizeMode="cover"
-          />
-        ))}
+        {visibleImages && visibleImages?.map((img: string, index: any) => {
+          console.log("==== img ===== ", img)
+          return (
+            <Image
+
+              key={index}
+              source={{uri:img}}
+              style={tw`w-30 h-30 rounded-2xl`}
+              // resizeMode="cover"
+              contentFit="cover"
+            />
+          )
+        })}
 
         {/* ------------ when image length up to three --------------------- */}
 
-        {disputeGallary.length > 3 && (
+        {disputeGallary?.length > 3 && (
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
             style={tw`absolute top-0 w-28 h-28 bg-black bg-opacity-50 rounded-2xl right-0 justify-center items-center`}
           >
             <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
-              + {disputeGallary.length}
+              + {disputeGallary?.length}
             </Text>
           </TouchableOpacity>
         )}
@@ -145,10 +135,15 @@ const Dispute_Review = () => {
       {/* ---------- appeal button -----------  */}
       <PrimaryButton
         onPress={() =>
-          router.push("/service_provider/individual/disputes/dispute_appeal")
+          router.push({
+            pathname: "/service_provider/individual/disputes/dispute_appeal",
+            params:{
+              id: id // dispute_id
+            }
+          })
         }
-        contentStyle={tw`bg-transparent border border-gray-500`}
-        textStyle={tw`text-black`}
+        contentStyle={tw`bg-primary `}
+        textStyle={tw`text-white font-DegularDisplayDemoMedium text-xl`}
         titleProps="Submit your appeal"
       />
 
@@ -210,9 +205,9 @@ const Dispute_Review = () => {
               contentContainerStyle={tw`justify-center items-center mt-3 px-2`}
               renderItem={({ item }) => (
                 <Image
-                  source={item.image}
-                  style={tw`w-28 h-28 rounded-xl m-1 `}
-                  resizeMode="cover"
+                  source={{uri:item}}
+                  style={tw`w-30 h-30 rounded-xl m-1 `}
+                  contentFit="cover"
                 />
               )}
             />

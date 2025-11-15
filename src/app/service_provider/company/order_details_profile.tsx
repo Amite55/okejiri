@@ -164,7 +164,7 @@ const Order_Details_Profile = () => {
 
                     }>
                         <View
-                            style={tw`flex-row py-2 px-7 justify-between items-center gap-2 rounded-full ${order.status === "New" ? "bg-primary" : order.status === "Pending" ? "bg-violet" : "bg-success600"}`}
+                            style={tw`flex-row py-2 px-7 justify-between items-center gap-2 rounded-full ${order.status === "New" ? "bg-primary" : order.status === "Pending" ? "bg-violet"  : order.status ==="Cancelled"? "bg-[#FF3A00]" : "bg-success600"}`}
                         >
                             <SvgXml xml={IconWhiteDot} />
                             <Text style={tw`font-DegularDisplayDemoMedium text-xl pb-1 text-white`}>{order.status === "New" ? "New Order" : order.status || "updated"}</Text>

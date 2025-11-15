@@ -3,7 +3,8 @@ import { ImgLoadingSuccess } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
+import { useAddDisputeAppealMutation } from "@/src/redux/apiSlices/companyProvider/account/myDisputeSlice";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
@@ -18,8 +19,86 @@ import {
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 
+import * as ImagePicker from "expo-image-picker";
+
 const Dispute_Appeal = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [value, setValue] = useState<string | null>(null);
+  const [isFocus, setIsFocus] = useState<boolean>(false);
+  const [reason, setReason] = useState<string>("");
+  const [images, setImages] = useState<any>(null);
+  const [explanation, setExplanation] = useState<string>("");
+  const { id } = useLocalSearchParams<{ id: string }>();
+  console.log("=================== appeal id ============== ", id)
+  // =========== API ==================== //
+  const [addAppealDispute, { isLoading, }] = useAddDisputeAppealMutation();
+
+  //  ===================== Image picker ================= //
+  const pickImages = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      alert("Permission to access gallery is required!");
+      return;
+    }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      allowsEditing: false,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImages(result.assets.map((item) => item.uri));
+    }
+  };
+
+  const submitDispute = async () => {
+    // ------------ check all field required  --------------
+    console.log("================= disputed appeal =================== ", id)
+    if (!id || !explanation || !images) {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: "Please fill all the fields" }
+      })
+      return;
+    }
+
+    try {
+      let formData = new FormData();
+      formData.append("dispute_id", id);
+
+      formData.append("details", explanation);
+      // ✅ Append multiple images properly
+      images.forEach((uri: any, index: any) => {
+        formData.append("attachments[]", {
+          uri,
+          name: `attachment_${index}.jpg`,
+          type: "image/jpeg",
+        });
+      });
+      console.log(formData, "thi this new form dtaa------------->")
+      const response = await addAppealDispute(formData).unwrap();
+      console.log(response, "thi this new form dtaa------------->")
+      if (response) {
+        setModalVisible(true);
+      }
+      else {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: "An appeal has already been submitted for this disputed" }
+        })
+      }
+    } catch (err: any) {
+      // console.error("Full error object: ----------------------->", err,);
+      router.push({
+        pathname: "/Toaster",
+        params: { res: err.message || "Failed to submit" }
+      })
+    }
+  };
+
+
+
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -47,28 +126,28 @@ const Dispute_Appeal = () => {
               multiline={true}
               numberOfLines={4}
               placeholder="Type here"
-              onChangeText={(newText) => console.log(newText)}
+              onChangeText={setExplanation}
               // value={}
               textAlignVertical="top"
             />
           </View>
 
           {/* ------------------ Image upload ------------------ */}
-
           <Pressable
-            style={tw`border-2 border-dashed border-gray-500 rounded-3xl p-6 justify-center items-center   gap-2 `}
+            style={tw`border-2 border-dashed border-gray-500 rounded-3xl p-6 justify-center items-center gap-2`}
           >
             <SvgXml xml={IconUploadImage} />
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-xl  text-black`}
-            >
+            <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
               Upload files
             </Text>
-            <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-lg text-gray-600`}
+            >
               Upload images or videos
             </Text>
-            <TouchableOpacity
+            {(!images || images.length === 0) ? <TouchableOpacity
               style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
+              onPress={pickImages}
             >
               <Text
                 style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
@@ -76,14 +155,40 @@ const Dispute_Appeal = () => {
                 Browse
               </Text>
             </TouchableOpacity>
+              :
+              (
+                <View style={tw`w-full mt-3`}>
+                  <Text
+                    style={tw`font-DegularDisplayDemoRegular text-sm text-green-600 mt-2 py-2`}
+                  >
+                    {images.length} {images.length === 1 ? "file selected" : "files selected"}
+                  </Text>
+
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {images.map((img, index) => (
+                      <View key={index} style={tw`flex-row`}>
+
+                        <Text numberOfLines={1} ellipsizeMode="clip" style={tw`text-xs text-gray-400`}>
+                          {img.filename}
+                        </Text>
+                      </View>
+                    ))
+
+                    }
+                  </ScrollView>
+                </View>
+
+              )
+            }
+
           </Pressable>
         </View>
       </View>
 
       {/*  ------------- next button -------------------- */}
       <PrimaryButton
-        onPress={() => setModalVisible(true)}
-        titleProps="Submit"
+        onPress={() => submitDispute()}
+        titleProps={isLoading ? "Submitting..." : "Submit with Image"}
         // IconProps={""}
         contentStyle={tw`mt-4`}
       />
@@ -111,14 +216,14 @@ const Dispute_Appeal = () => {
               In Review
             </Text>
             <Text style={tw`text-base text-gray-500 text-center mt-2`}>
-              Your order has been placed.
+              Your dispute appeal has been placed.
             </Text>
 
             {/* Close Button */}
             <PrimaryButton
               onPress={() => {
                 setModalVisible(false);
-                router.push("/service_provider/individual/(Tabs)/home");
+                router.push("/service_provider/company/(Tabs)/home");
               }}
               titleProps="Go to home"
               IconProps={IconRightArrow}

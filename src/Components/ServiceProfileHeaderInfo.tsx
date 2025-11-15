@@ -20,7 +20,7 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
 
   const notificationCounter =
     notificationData?.data?.unread_notifications_count;
-
+  // console.log("======== notification counter ", notificationCounter)
   return (
     <View
       style={tw`py-3 flex-1 bg-base_color flex-row items-center justify-between `}
@@ -32,7 +32,10 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
         <View style={tw` `}>
           <Image
             style={tw`w-14 h-14 rounded-full `}
-            source={userProfileInfo?.data?.avatar}
+            source={userProfileInfo?.data?.role === "PROVIDER" && userProfileInfo?.data?.provider_type === "Company" ?
+              {uri: userProfileInfo?.data?.company?.company_logo}
+
+              : { uri: userProfileInfo?.data?.avatar }}
             contentFit="contain"
           />
         </View>
@@ -41,14 +44,22 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
           <Text
             style={tw`font-DegularDisplayDemoSemibold flex-row items-center text-black text-xl`}
           >
-            {userProfileInfo?.data?.name}
+            {userProfileInfo?.data?.role === "PROVIDER" && userProfileInfo?.data?.provider_type === "Company" ?
+              userProfileInfo?.data?.company?.company_name
+
+              : userProfileInfo?.data?.name}
           </Text>
           <View style={tw`flex-row justify-start items-center gap-1`}>
             <SvgXml xml={IconLocation} />
             <Text
+              numberOfLines={1}
+              ellipsizeMode="clip"
               style={tw`font-DegularDisplayDemoRegular text-base text-black`}
             >
-              Dhaka, Bangladesh
+              {userProfileInfo?.data?.role === "PROVIDER" && userProfileInfo?.data?.provider_type === "Company" ?
+                userProfileInfo?.data?.company?.company_location
+
+                : userProfileInfo?.data?.address}
             </Text>
           </View>
         </View>
@@ -61,10 +72,10 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
         <SvgXml xml={IconNotificationDark} />
         {notificationCounter > 0 && (
           <View
-            style={tw`absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center`}
+            style={tw`absolute top-0 right-0 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center p-1`}
           >
             <Text style={tw`text-white text-xs font-bold`}>
-              {notificationCounter?.length > 9 ? "9+" : notificationCounter}
+              {notificationCounter > 9 ? "9+" : notificationCounter}
             </Text>
           </View>
         )}

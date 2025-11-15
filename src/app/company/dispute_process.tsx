@@ -50,7 +50,7 @@ const Dispute_Process: React.FC = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   //    ============== api end point -------------------------
-  const [addDispute, { isLoading, }] = useAddDisputeMutation();
+  const [addDispute, { isLoading, isError, error }] = useAddDisputeMutation();
 // =================== sei na image picker --------------->
   const pickImages = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -59,10 +59,10 @@ const Dispute_Process: React.FC = () => {
       return;
     }
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsMultipleSelection: true,
       allowsEditing: false,
-      quality: 1,
+      quality: 0.7,
     });
     if (!result.canceled) {
       setImages(result.assets.map((item) => item.uri));
@@ -86,12 +86,18 @@ const Dispute_Process: React.FC = () => {
       formData.append("details", explanation);
       // ✅ Append multiple images properly
       images.forEach((uri: any, index: any) => {
+        const uriParts = uri.split(".");
+        const fileExt = uriParts[uriParts.length - 1];
+        const filename = `dispute_${Date.now()}_${index}.${fileExt}`;
+        const fileType = `image/${fileExt === "jpg" ? "jpeg": fileExt}`
+
         formData.append("attachments[]", {
           uri,
-          name: `attachment_${index}.jpg`,
-          type: "image/jpeg",
-        });
+          name: filename,
+          type: fileType,
+        } as any);
       });
+      console.log(" ============ form data ================== ", JSON.stringify(formData,null,2))
       const response = await addDispute(formData).unwrap();
       console.log(response, "thi this new form dtaa------------->")
       if (response) {
@@ -104,7 +110,11 @@ const Dispute_Process: React.FC = () => {
         }, 1000);
       }
     } catch (err: any) {
-      console.error("Full error object: ----------------------->", err,);
+      console.log("error ", err, " isError ", isError , " error ", error)
+      router.push({
+          pathname: "/Toaster",
+          params: { res: err?.message || "" },
+        })
     }
   };
 
