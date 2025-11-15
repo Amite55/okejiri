@@ -69,7 +69,6 @@ const My_Disputes = () => {
       </TouchableOpacity>
     );
   };
-  // console.log(disputes?.data);
 
   return (
     <FlatList
