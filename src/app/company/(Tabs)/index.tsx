@@ -36,7 +36,7 @@ const Company_Home_Index = () => {
     data: serviceNearbyData,
     isLoading: serviceNearbyLoading,
     refetch: nearByServiceRefetch,
-  } = useServiceNearbyQuery({});
+  } = useServiceNearbyQuery({ per_page: 10, page: 1 });
   const {
     data: servicesData,
     isLoading: servicesLoading,
@@ -73,8 +73,8 @@ const Company_Home_Index = () => {
           <TouchableOpacity
             onPress={() =>
               router.push({
-                pathname: "/company/serviceNearbyHistory",
-                params: { categoryService: "true", service_id: item?.id },
+                pathname: "/company/categoryByService",
+                params: { categoryService: item?.name, service_id: item?.id },
               })
             }
             style={[tw`flex-1 justify-center items-center `]}

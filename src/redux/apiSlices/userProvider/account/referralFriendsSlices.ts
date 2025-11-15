@@ -2,13 +2,13 @@ import { api } from "@/src/redux/base/baseApi";
 
 export const referralFriendsSlices = api.injectEndpoints({
   endpoints: (build) => ({
-    myReferrals: build.query({
-      query: (page) => ({
-        url: `/my-referrals?per_page=${page}`,
+    getMyReferrals: build.query({
+      query: ({ per_page, page }) => ({
+        url: `/my-referrals?per_page=${per_page}&page=${page}`,
         method: "GET",
       }),
     }),
   }),
 });
 
-export const { useMyReferralsQuery } = referralFriendsSlices;
+export const { useGetMyReferralsQuery } = referralFriendsSlices;
