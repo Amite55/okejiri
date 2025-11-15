@@ -12,10 +12,13 @@ import {
 } from "@/assets/images/image";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useDisputeDetailsQuery } from "@/src/redux/apiSlices/companyProvider/account/myDisputeSlice";
 import { _HEIGHT } from "@/utils/utils";
 import { router } from "expo-router";
+import { useLocalSearchParams } from "expo-router/build/hooks";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Modal,
@@ -29,6 +32,20 @@ import { SvgXml } from "react-native-svg";
 
 const Disputes_Status = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  const { id } = useLocalSearchParams();
+  const { data: DisputeDetails, isLoading } = useDisputeDetailsQuery(id);
+  if (isLoading) {
+    return (
+      <View style={tw`flex-1 justify-center items-center bg-white`}>
+        <ActivityIndicator size="large" color="#" />
+        <Text style={tw`text-gray-600 text-base mt-3 font-poppins`}>
+          Loading dispute details...
+        </Text>
+      </View>
+    );
+  }
+  console.log("DisputeDetails", DisputeDetails, "DisputeDetails");
   const disputeGallary = [
     {
       id: 1,

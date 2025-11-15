@@ -6,29 +6,31 @@ import {
 } from "@/assets/icons";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useMyDisputeQuery } from "@/src/redux/apiSlices/companyProvider/account/myDisputeSlice";
 import { router } from "expo-router";
-import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SvgXml } from "react-native-svg";
 
-const DisputesData = [
-  {
-    id: 1,
-    status: "Pending",
-  },
-  {
-    id: 2,
-    status: "Under review",
-  },
-  {
-    id: 3,
-    status: "Resolved",
-  },
-];
-
 const My_Disputes = () => {
-  // =========== render disputes item --------------------
+  const [page, setPage] = useState<number>(1);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+
+  const {
+    data: disputes,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useMyDisputeQuery({});
 
   const DisputesRenderData = ({ item }: { item: any }) => {
     let statusIcon;
@@ -44,19 +46,19 @@ const My_Disputes = () => {
     return (
       <TouchableOpacity
         onPress={() =>
-          router.push("/service_provider/individual/disputes/disputes_status")
+          router.push({
+            pathname: "/service_provider/individual/disputes/disputes_status",
+            params: { id: item.id },
+          })
         }
-        style={[
-          tw`  h-28 px-4 py-2 rounded-3xl w-full bg-white border-b border-red-400`,
-        ]}
+        style={tw`h-28 px-4 py-2 rounded-3xl w-full bg-white border-b border-red-400`}
       >
         <Text style={tw`font-DegularDisplayDemoMedium text-2xl mb-2`}>
-          Provider harassed me
+          {item.reason.split(" ").slice(0, 3).join(" ")}
         </Text>
-        <View style={tw`flex-row justify-between items-end  `}>
+        <View style={tw`flex-row justify-between items-end`}>
           <Text numberOfLines={2} style={tw`flex-1`}>
-            Lorem ipsum dolor sit amet consectetur. Blandit pharetra adipiscing
-            neque
+            {item.details}
           </Text>
           <SvgXml xml={IconRightArrowCornerGray} />
         </View>
@@ -67,11 +69,13 @@ const My_Disputes = () => {
       </TouchableOpacity>
     );
   };
+  // console.log(disputes?.data);
 
   return (
     <FlatList
-      data={DisputesData}
+      data={disputes?.data}
       renderItem={DisputesRenderData}
+      keyExtractor={(item, index) => `dispute-${item?.id || index}`}
       ListHeaderComponent={() => (
         <BackTitleButton
           pageName={"My disputes"}
@@ -79,10 +83,30 @@ const My_Disputes = () => {
           titleTextStyle={tw`text-xl`}
         />
       )}
-      keyExtractor={(item) => item.id.toString()}
-      contentContainerStyle={tw` flex-1 bg-base_color px-5  gap-3 pb-10`}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={refetch} />
+      }
       showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={tw`bg-base_color px-5 gap-3 `}
+      ListFooterComponent={
+        <View style={tw`py-4  flex justify-center items-center`}>
+          {loadingMore ? (
+            <>
+              <ActivityIndicator size="small" color="#0000ff" />
+              <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
+            </>
+          ) : !hasMore && disputes.length > 0 ? (
+            <Text style={tw`text-gray-500`}>No more disputes to load</Text>
+          ) : null}
+        </View>
+      }
+      ListEmptyComponent={
+        !isLoading ? (
+          <View style={tw`py-4 flex justify-center items-center`}>
+            <Text style={tw`text-gray-500`}>No disputes found</Text>
+          </View>
+        ) : null
+      }
     />
   );
 };

@@ -30,6 +30,9 @@ const baseQueryWithPath: BaseQueryFn<BaseQueryArgs, unknown, unknown> = async (
         Authorization: token ? `Bearer ${token}` : "",
       },
     });
+
+    console.log(result);
+
     if (result?.status === 403) {
       AsyncStorage.removeItem("token");
       AsyncStorage.removeItem("user");
