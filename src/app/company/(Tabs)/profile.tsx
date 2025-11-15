@@ -19,16 +19,10 @@ import {
   useProfileQuery,
 } from "@/src/redux/apiSlices/authSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Profile = () => {
@@ -74,9 +68,8 @@ const Profile = () => {
       >
         <Image
           style={tw`w-28 h-28 rounded-full  `}
-          source={{
-            uri: "https://i.ibb.co/H65jtCN/slava-jamm-r-Aa-N15-Wb-E9-Q-unsplash.jpg",
-          }}
+          source={userProfileInfo?.data?.avatar}
+          contentFit="contain"
         />
         <Text
           style={tw`font-DegularDisplayDemoSemibold text-2xl text-black text-center`}
@@ -98,8 +91,17 @@ const Profile = () => {
         </View>
       </View>
 
-      <Pressable
-        onPress={() => router.push("/company/wallets/wallet")}
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() =>
+          router.push({
+            pathname: "/company/wallets/wallet",
+            params: {
+              wallet_balance: userProfileInfo?.data?.wallet_balance,
+              wallet_address: userProfileInfo?.data?.wallet_address,
+            },
+          })
+        }
         style={tw`flex-row justify-between items-center my-4 bg-white p-4 rounded-2xl`}
       >
         <View style={tw`flex-row items-center gap-3`}>
@@ -114,17 +116,21 @@ const Profile = () => {
               Available balance
             </Text>
             <Text style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}>
-              ₦1000.50
+              ₦
+              {userProfileInfo?.data?.wallet_balance
+                ? userProfileInfo?.data?.wallet_balance
+                : 0}
             </Text>
           </View>
         </View>
         <TouchableOpacity
-          onPress={() => router.push("/company/wallets/wallet")}
+          disabled
+          // onPress={() => router.push("/company/wallets/wallet")}
           style={tw`w-14 h-14 rounded-full border border-gray-500 justify-center items-center`}
         >
           <SvgXml xml={IconRightCornerArrow} />
         </TouchableOpacity>
-      </Pressable>
+      </TouchableOpacity>
 
       <View style={tw`gap-3 mb-6`}>
         <SettingsCard
@@ -161,7 +167,12 @@ const Profile = () => {
         />
         <SettingsCard
           title=" Refer a friend"
-          onPress={() => router.push("/company/refer_friend")}
+          onPress={() =>
+            router.push({
+              pathname: "/company/refer_friend",
+              params: { referCode: userProfileInfo?.data?.referral_code },
+            })
+          }
           fastIcon={IconShare}
         />
       </View>
