@@ -16,7 +16,10 @@ import {
 import LogoutModal from "@/src/Components/LogoutModal";
 import SettingsCard from "@/src/Components/SettingsCard";
 import tw from "@/src/lib/tailwind";
-import { useLogoutMutation, useProfileQuery } from "@/src/redux/apiSlices/authSlices";
+import {
+  useLogoutMutation,
+  useProfileQuery,
+} from "@/src/redux/apiSlices/authSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -70,23 +73,35 @@ const Account = () => {
       >
         <Image
           style={tw`w-28 h-28 rounded-full  `}
-          source={profile?.role === "PROVIDER" && profile?.provider_type === "Company" ? {
-            uri: profile?.company?.company_logo
-          } : {
-            uri: "https://i.ibb.co/H65jtCN/slava-jamm-r-Aa-N15-Wb-E9-Q-unsplash.jpg",
-          }}
+          source={
+            profile?.role === "PROVIDER" && profile?.provider_type === "Company"
+              ? {
+                  uri: profile?.company?.company_logo,
+                }
+              : {
+                  uri: "https://i.ibb.co/H65jtCN/slava-jamm-r-Aa-N15-Wb-E9-Q-unsplash.jpg",
+                }
+          }
         />
         <Text
           style={tw`font-DegularDisplayDemoRegular text-2xl text-black text-center`}
         >
-          {profile?.role === "PROVIDER" && profile?.provider_type === "Company" ?
-            profile?.company?.company_name
+          {profile?.role === "PROVIDER" && profile?.provider_type === "Company"
+            ? profile?.company?.company_name
             : profile.name}
         </Text>
         <View
-          style={tw`flex-row py-2 px-7 justify-between items-center gap-2 rounded-full ${profile?.kyc_status === "In Review" ? "bg-secondary" : profile?.kyc_status === "Verified" ? "bg-violet" : "bg-blueMagenta"}`}
+          style={tw`flex-row py-2 px-7 justify-between items-center gap-2 rounded-full ${
+            profile?.kyc_status === "In Review"
+              ? "bg-secondary"
+              : profile?.kyc_status === "Verified"
+              ? "bg-violet"
+              : "bg-blueMagenta"
+          }`}
         >
-          <Text style={tw`font-PoppinsMedium text-base text-white`}>{profile?.kyc_status}</Text>
+          <Text style={tw`font-PoppinsMedium text-base text-white`}>
+            {profile?.kyc_status}
+          </Text>
         </View>
       </View>
 
