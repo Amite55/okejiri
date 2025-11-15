@@ -13,6 +13,9 @@ export const companyPortfolioSlice = api.injectEndpoints({
       query: (requestBody) => ({
         url: "/portfolios",
         method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
         body: requestBody,
       }),
       invalidatesTags: ["portfolio"],
