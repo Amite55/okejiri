@@ -29,7 +29,7 @@ const Account = () => {
 
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
-  const { data: userProfileInfo } = useProfileQuery({});
+ 
   const { data: profileData, isLoading: isLoadingProfile, isError: isErrorProfile } = useProfileQuery({});
 
 
@@ -96,8 +96,8 @@ const Account = () => {
           router.push({
             pathname: "/company/wallets/wallet",
             params: {
-              wallet_balance: userProfileInfo?.data?.wallet_balance,
-              wallet_address: userProfileInfo?.data?.wallet_address,
+              wallet_balance: profileData?.data?.wallet_balance,
+              wallet_address: profileData?.data?.wallet_address,
             },
           })
         }
@@ -116,8 +116,8 @@ const Account = () => {
             </Text>
             <Text style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}>
               ₦
-              {userProfileInfo?.data?.wallet_balance
-                ? userProfileInfo?.data?.wallet_balance
+              {profileData?.data?.wallet_balance
+                ? profileData?.data?.wallet_balance
                 : 0}
             </Text>
           </View>
