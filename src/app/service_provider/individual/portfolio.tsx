@@ -23,6 +23,7 @@ import {
 } from "@/assets/icons";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import {
+  useAddPortfolioMutation,
   useDeletePortfoliosMutation,
   useLazyGetPortfoliosQuery,
   useUpdatePortfolioMutation,
@@ -45,6 +46,7 @@ const Portfolio = () => {
     useLazyGetPortfoliosQuery();
   const [deletePortfolios] = useDeletePortfoliosMutation();
   const [updatePortfolio] = useUpdatePortfolioMutation();
+  const [addPortfolio] = useAddPortfolioMutation();
 
   // === Load data from API ===
   const loadPortfolios = async (pageNum = 1, isRefresh = false) => {
@@ -65,8 +67,8 @@ const Portfolio = () => {
         const uniqueNew = newData.filter((p: any) => !existingIds.has(p.id));
         setPortfolios((prev) => [...prev, ...uniqueNew]);
       }
+      setHasMore(currentPage < lastPage);
 
-      setHasMore(newData.length > 0);
       setPage(currentPage + 1);
     } catch (err) {
       console.log("Portfolio fetch error:", err);
@@ -75,7 +77,6 @@ const Portfolio = () => {
       setLoadingMore(false);
     }
   };
-
   // === Refresh ===
   const handleRefresh = () => {
     setRefreshing(true);
@@ -146,6 +147,44 @@ const Portfolio = () => {
       console.log("❌ Image selection cancelled");
     }
   };
+  const pickImageAddMore = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0 && selectedId) {
+      const selectedImage = result.assets[0];
+      setImageAsset(selectedImage);
+
+      const form = new FormData();
+      const filename =
+        selectedImage.fileName ??
+        selectedImage.uri.split("/").pop() ??
+        `image_${Date.now()}.jpg`;
+      const extMatch = /\.(\w+)$/.exec(filename);
+      const mime = extMatch ? `image/${extMatch[1]}` : "image/jpeg";
+      form.append("image", {
+        uri: selectedImage.uri,
+        name: filename,
+        type: mime,
+      } as any);
+
+      try {
+        const res = await addPortfolio(form).unwrap();
+        if (res?.status === "success") {
+          setSelectModalVisible(false);
+          handleRefresh();
+        }
+      } catch (err) {
+        console.log("❌ Update error:", err);
+      }
+    } else {
+      console.log("❌ Image selection cancelled");
+    }
+  };
 
   // === delete portfolio item ===
   const handleDelete = async () => {
@@ -154,14 +193,13 @@ const Portfolio = () => {
 
     try {
       const res = await deletePortfolios(selectedId).unwrap();
-      console.log(res);
       router.push({
         pathname: "/Toaster",
         params: { res: res.message },
       });
       setSelectModalVisible(false);
     } catch (err) {
-      console.log("❌ Delete error:", err);
+      console.log(" Delete error:", err);
     }
   };
 
@@ -174,7 +212,7 @@ const Portfolio = () => {
           <BackTitleButton
             pageName="Portfolio"
             onPress={() => router.back()}
-            titleTextStyle={tw`text-xl`}
+            titleTextStyle={tw`text-xl `}
           />
         }
         ListFooterComponent={
@@ -188,9 +226,10 @@ const Portfolio = () => {
               <Text style={tw`text-gray-500`}>No more items</Text>
             ) : null}
             <PrimaryButton
-              titleProps="Send"
+              titleProps="Add_More"
               IconProps={IconPlus}
               contentStyle={tw`mt-4`}
+              onPress={pickImageAddMore}
             />
           </View>
         }

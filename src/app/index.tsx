@@ -53,12 +53,6 @@ export default function Index() {
     AppLoader();
   }, []);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     router.replace("/service_provider/individual/(Tabs)/home");
-  //   }, 2000);
-  // }, []);
-
   useEffect(() => {
     setTimeout(() => {
       const render = async () => {
