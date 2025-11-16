@@ -115,10 +115,13 @@ const Disputes_Status = () => {
         )}
       </View>
 
-      {/* See dispute */}
+      {/* .........See dispute......... */}
       <TouchableOpacity
         onPress={() =>
-          router.push("/service_provider/individual/disputes/dispute_review")
+          router.push({
+            pathname: "/service_provider/individual/disputes/dispute_review",
+            params: { id: dispute?.id },
+          })
         }
         style={tw`flex-row my-4 justify-end items-center gap-2`}
       >

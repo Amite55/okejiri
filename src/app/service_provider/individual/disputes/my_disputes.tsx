@@ -71,42 +71,44 @@ const My_Disputes = () => {
   };
 
   return (
-    <FlatList
-      data={disputes?.data}
-      renderItem={DisputesRenderData}
-      keyExtractor={(item, index) => `dispute-${item?.id || index}`}
-      ListHeaderComponent={() => (
-        <BackTitleButton
-          pageName={"My disputes"}
-          onPress={() => router.back()}
-          titleTextStyle={tw`text-xl`}
-        />
-      )}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={refetch} />
-      }
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={tw`bg-base_color px-5 gap-3 `}
-      ListFooterComponent={
-        <View style={tw`py-4  flex justify-center items-center`}>
-          {loadingMore ? (
-            <>
-              <ActivityIndicator size="small" color="#0000ff" />
-              <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
-            </>
-          ) : !hasMore && disputes.length > 0 ? (
-            <Text style={tw`text-gray-500`}>No more disputes to load</Text>
-          ) : null}
-        </View>
-      }
-      ListEmptyComponent={
-        !isLoading ? (
-          <View style={tw`py-4 flex justify-center items-center`}>
-            <Text style={tw`text-gray-500`}>No disputes found</Text>
+    <View style={tw`bg-base_color flex-1`}>
+      <FlatList
+        data={disputes?.data}
+        renderItem={DisputesRenderData}
+        keyExtractor={(item, index) => `dispute-${item?.id || index}`}
+        ListHeaderComponent={() => (
+          <BackTitleButton
+            pageName={"My disputes"}
+            onPress={() => router.back()}
+            titleTextStyle={tw`text-xl`}
+          />
+        )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refetch} />
+        }
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={tw`bg-base_color px-5 gap-3 `}
+        ListFooterComponent={
+          <View style={tw`py-4  flex justify-center items-center`}>
+            {loadingMore ? (
+              <>
+                <ActivityIndicator size="small" color="#0000ff" />
+                <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
+              </>
+            ) : !hasMore && disputes.length > 0 ? (
+              <Text style={tw`text-gray-500`}>No more disputes to load</Text>
+            ) : null}
           </View>
-        ) : null
-      }
-    />
+        }
+        ListEmptyComponent={
+          !isLoading ? (
+            <View style={tw`py-4 flex justify-center items-center`}>
+              <Text style={tw`text-gray-500`}>No disputes found</Text>
+            </View>
+          ) : null
+        }
+      />
+    </View>
   );
 };
 
