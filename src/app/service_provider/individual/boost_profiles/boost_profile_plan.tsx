@@ -3,22 +3,58 @@ import { ImgBoostPlan } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useGetSettingQuery } from "@/src/redux/apiSlices/companyProvider/account/boostProfileSlice";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 
-// ------------------ static dropdown value -----------------
+// ------------------ static dropdown value ----------------- //
 const dropdownData = [
-  { label: "3 days", value: "1" },
-  { label: "7 dayss", value: "2" },
-  { label: "15 days", value: "3" },
-  { label: "30 days", value: "4" },
+  { label: "3 days", value: "3" },
+  { label: "7 days", value: "7" },
+  { label: "15 days", value: "15" },
+  { label: "30 days", value: "30" },
 ];
 
 const Boost_Profile_Plan = () => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+
+  // ......... Api intragre ..........//
+  const { data: settingProfile, isLoading: settingProfileLoading } =
+    useGetSettingQuery({});
+
+  // ----------- dynamic price mapping ---------------- //
+  const getSelectedPrice = () => {
+    if (!settingProfile?.data || !value) return null;
+
+    const prices = {
+      "3": settingProfile.data.three_day_boosting_price,
+      "7": settingProfile.data.seven_day_boosting_price,
+      "15": settingProfile.data.fifteen_day_boosting_price,
+      "30": settingProfile.data.thirty_day_boosting_price,
+    };
+
+    return prices[value] || null;
+  };
+
+  const selectedPrice = getSelectedPrice();
+
+  if (settingProfileLoading) {
+    return (
+      <View style={tw`flex-1 justify-center items-center`}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -52,7 +88,7 @@ const Boost_Profile_Plan = () => {
           <Text
             style={tw`font-DegularDisplayDemoSemibold text-4xl text-primary `}
           >
-            ₦ 200.00
+            ₦ {settingProfile?.data?.thirty_day_boosting_price || "0.00"}
           </Text>
           <Text
             style={tw`font-DegularDisplayDemoRegular  text-xl text-primary`}
@@ -61,7 +97,7 @@ const Boost_Profile_Plan = () => {
           </Text>
         </View>
 
-        {/*  ------------ dropdown section j----------------- */}
+        {/*  ------------ dropdown section ----------------- */}
         <View style={tw``}>
           <Text
             style={tw`font-DegularDisplayDemoMedium text-xl text-black mb-2 ml-2`}
@@ -89,23 +125,20 @@ const Boost_Profile_Plan = () => {
         </View>
       </View>
 
+      {/* Bottom Section */}
       <View style={tw`gap-2 mt-6`}>
-        <View style={tw`flex-row justify-between items-center `}>
+        <View style={tw`flex-row justify-between items-center`}>
           <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-            Upgrade your boost for 30 days
+            {value ? `Upgrade your boost for ${value} days` : "Select a plan"}
           </Text>
+
           <Text style={tw`font-DegularDisplayDemoSemibold text-3xl text-black`}>
-            ₦ 200.00
+            ₦ {selectedPrice ?? "0.00"}
           </Text>
         </View>
-        {/*  ------------- next button -------------------- */}
+
         <PrimaryButton
-          // onPress={() => {
-          //   router.push(
-          //     "/service_provider/individual/boost_profiles/boost_profile_plan"
-          //   );
-          // }}
-          titleProps="Pay now "
+          titleProps="Pay now"
           IconProps={IconPayCardWhite}
           contentStyle={tw`mt-1`}
         />
@@ -124,23 +157,10 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     paddingHorizontal: 24,
   },
-  icon: {
-    marginRight: 5,
-  },
   placeholderStyle: {
     fontSize: 18,
   },
   selectedTextStyle: {
     fontSize: 18,
-  },
-
-  textArea: {
-    borderWidth: 1,
-    borderColor: "gray",
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    minHeight: 200,
-    maxHeight: 300,
-    borderRadius: 20,
   },
 });
