@@ -1,14 +1,25 @@
 import { IconSearch } from "@/assets/icons";
 import ChatListProfile from "@/src/Components/ChatListProfile";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
-import ChatListData from "@/src/json/ChatListData.json";
+import ChatListSkeleton from "@/src/Components/skeletons/ChatListSkeleton";
 import tw from "@/src/lib/tailwind";
+import { useGetChartListQuery } from "@/src/redux/apiSlices/messagingSlices";
 import { router } from "expo-router";
 import React from "react";
 import { ScrollView, Text, TextInput, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Chats = () => {
+  // =================== api end point ===================
+  const { data: chatList, isLoading } = useGetChartListQuery({
+    page: 1,
+    per_page: 10,
+    role: "USER",
+  });
+
+  if (isLoading) {
+    return <ChatListSkeleton />;
+  }
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -43,19 +54,24 @@ const Chats = () => {
       </View>
 
       <View style={tw`gap-1`}>
-        {ChatListData?.length === 0 ? (
+        {chatList?.data?.data?.length === 0 ? (
           <Text
             style={tw`font-DegularDisplayDemoMedium text-xl text-deepBlue100 text-center`}
           >
             Your Chat List
           </Text>
         ) : (
-          ChatListData?.map((chatItem) => {
+          chatList?.data?.data?.map((chatItem, index) => {
             return (
               <ChatListProfile
-                key={chatItem?.id}
+                key={index}
                 chatItem={chatItem}
-                onPress={() => router.push("/company/messaging")}
+                onPress={() =>
+                  router.push({
+                    pathname: "/company/messaging",
+                    params: { receiverId: chatItem?.user_id },
+                  })
+                }
               />
             );
           })

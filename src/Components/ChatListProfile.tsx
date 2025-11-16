@@ -1,6 +1,7 @@
 import { IconProfileBadge } from "@/assets/icons";
+import { Image } from "expo-image";
 import React from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
@@ -22,25 +23,36 @@ const ChatListProfile = ({ chatItem, onPress }: IChatProfileProps) => {
     >
       <Image
         style={tw`w-14 h-14 rounded-full mr-3`}
-        source={{ uri: chatItem?.image }}
+        source={{ uri: chatItem?.avatar }}
+        contentFit="contain"
       />
-      <View>
-        <View style={tw`flex-row justify-between`}>
-          <View style={tw`flex-row items-center gap-2`}>
+
+      <View style={tw`flex-1`}>
+        {/* -------- FIXED PART -------- */}
+        <View style={tw`flex-row justify-between items-center w-full`}>
+          <View style={tw`flex-row items-center gap-2 flex-1`}>
             <Text
-              style={tw`font-DegularDisplayDemoSemibold text-black text-xl `}
+              style={tw`font-DegularDisplayDemoSemibold text-black text-xl`}
             >
               {chatItem?.name}
             </Text>
-            {chatItem.badge ? <SvgXml xml={IconProfileBadge} /> : null}
+
+            {chatItem?.badge ? <SvgXml xml={IconProfileBadge} /> : null}
           </View>
-          <Text style={tw``}>Time</Text>
+
+          <Text style={tw`font-DegularDisplayBlack text-base`}>
+            {chatItem?.last_message_time}
+          </Text>
         </View>
+        {/* ---------------------------- */}
+
         <Text
           numberOfLines={1}
           style={tw`mt-1 font-DegularDisplayDemoRegular text-base text-black`}
         >
-          {chatItem?.text}
+          {chatItem?.last_message?.length > 40
+            ? `${chatItem?.last_message?.slice(0, 40)}...`
+            : chatItem?.last_message}
         </Text>
       </View>
     </TouchableOpacity>
