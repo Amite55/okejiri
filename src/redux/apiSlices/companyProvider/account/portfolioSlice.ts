@@ -3,7 +3,7 @@ import { api } from "@/src/redux/base/baseApi";
 export const companyPortfolioSlice = api.injectEndpoints({
   endpoints: (builder) => ({
     getPortfolios: builder.query({
-      query: (page = 10) => ({
+      query: (page) => ({
         url: `/portfolios?page=${page}`,
         method: "GET",
       }),
