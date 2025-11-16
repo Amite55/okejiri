@@ -3,7 +3,12 @@ import { ImgBoostPlan } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useGetSettingQuery } from "@/src/redux/apiSlices/companyProvider/account/boostProfileSlice";
+import {
+  useBoostMyProfilePostMutation,
+  useGetSettingQuery,
+} from "@/src/redux/apiSlices/companyProvider/account/boostProfileSlice";
+import { useCreatePaymentIntentMutation } from "@/src/redux/apiSlices/stripeSlices";
+import { useStripe } from "@stripe/stripe-react-native";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -27,12 +32,23 @@ const dropdownData = [
 const Boost_Profile_Plan = () => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
-
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  // ..................payment works.................//
+  const [createPaymentIntent] = useCreatePaymentIntentMutation();
+  const [boostMyProfilePost] = useBoostMyProfilePostMutation();
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   // ......... Api intragre ..........//
   const { data: settingProfile, isLoading: settingProfileLoading } =
     useGetSettingQuery({});
 
   // ----------- dynamic price mapping ---------------- //
+  if (settingProfileLoading) {
+    return (
+      <View style={tw`flex-1 justify-center items-center`}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+  }
   const getSelectedPrice = () => {
     if (!settingProfile?.data || !value) return null;
 
@@ -48,13 +64,72 @@ const Boost_Profile_Plan = () => {
 
   const selectedPrice = getSelectedPrice();
 
-  if (settingProfileLoading) {
-    return (
-      <View style={tw`flex-1 justify-center items-center`}>
-        <ActivityIndicator size="large" color="blue" />
-      </View>
-    );
-  }
+  const handlePayment = async () => {
+    if (!selectedPrice || !value) {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: "Please select a plan first!" },
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const paymentIntentRes = await createPaymentIntent({
+        amount: selectedPrice,
+        currency: "NGN",
+      }).unwrap();
+
+      const clientSecret = paymentIntentRes?.data?.client_secret;
+      const paymentIntentId =
+        paymentIntentRes?.data?.id || paymentIntentRes?.data?.payment_intent_id;
+
+      if (!clientSecret) {
+        throw new Error("Client secret missing!");
+      }
+
+      const initSheet = await initPaymentSheet({
+        paymentIntentClientSecret: clientSecret,
+        merchantDisplayName: "Your App Name",
+      });
+
+      if (initSheet.error) {
+        throw new Error(initSheet.error.message);
+      }
+
+      const presentSheet = await presentPaymentSheet();
+
+      if (presentSheet.error) {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: presentSheet.error.message },
+        });
+        return;
+      }
+
+      const boostRes = await boostMyProfilePost({
+        number_of_days: value,
+        payment_method: "referral_balance",
+        payment_amount: selectedPrice,
+        payment_intent_id: paymentIntentId,
+      }).unwrap();
+
+      const msg = boostRes?.message || "Boost request submitted successfully.";
+
+      router.push({
+        pathname: "/Toaster",
+        params: { res: msg },
+      });
+    } catch (error: any) {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: error?.message || "Payment failed!" },
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <ScrollView
@@ -138,9 +213,10 @@ const Boost_Profile_Plan = () => {
         </View>
 
         <PrimaryButton
-          titleProps="Pay now"
+          titleProps={isProcessing ? "Processing..." : "Pay now"}
           IconProps={IconPayCardWhite}
           contentStyle={tw`mt-1`}
+          onPress={handlePayment}
         />
       </View>
     </ScrollView>
