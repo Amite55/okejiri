@@ -34,11 +34,15 @@ import { SvgXml } from "react-native-svg";
 const Portfolio = () => {
   const [selectModalVisible, setSelectModalVisible] = React.useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  // pagination & list states
   const [page, setPage] = useState<number>(1);
   const [portfolios, setPortfolios] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [isFirstLoading, setIsFirstLoading] = useState<boolean>(true);
+
   const [imageAsset, setImageAsset] =
     React.useState<ImagePicker.ImagePickerAsset | null>(null);
 
@@ -48,38 +52,53 @@ const Portfolio = () => {
   const [updatePortfolio] = useUpdatePortfolioMutation();
   const [addPortfolio] = useAddPortfolioMutation();
 
-  // === Load data from API ===
+  // === Load data from API with pagination ===
   const loadPortfolios = async (pageNum = 1, isRefresh = false) => {
     try {
+      // Prevent multiple simultaneous requests
       if ((isLoading || isFetching || loadingMore) && !isRefresh) return;
-      if (!isRefresh) setLoadingMore(true);
 
-      const res = await fetchPortfolios({ page: pageNum }).unwrap();
+      if (isRefresh) {
+        setRefreshing(true);
+        setIsFirstLoading(pageNum === 1);
+      } else {
+        setLoadingMore(true);
+      }
+
+      const res = await fetchPortfolios(pageNum).unwrap();
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
-      const currentPage = responseData?.current_page || 1;
-      const lastPage = responseData?.last_page || currentPage;
-
+      const currentPage = responseData?.current_page || pageNum;
+      const lastPage = responseData?.last_page;
       if (isRefresh) {
         setPortfolios(newData);
       } else {
-        const existingIds = new Set(portfolios.map((p) => p.id));
-        const uniqueNew = newData.filter((p: any) => !existingIds.has(p.id));
-        setPortfolios((prev) => [...prev, ...uniqueNew]);
+        setPortfolios((prev) => {
+          const existingIds = new Set(prev.map((p) => p.id));
+          const uniqueNew = newData.filter((p: any) => !existingIds.has(p.id));
+          const result = [...prev, ...uniqueNew];
+          return result;
+        });
       }
-      setHasMore(currentPage < lastPage);
 
+      if (lastPage) {
+        setHasMore(currentPage < lastPage);
+      } else {
+        setHasMore(newData.length > 0);
+      }
       setPage(currentPage + 1);
     } catch (err) {
-      console.log("Portfolio fetch error:", err);
+      console.log("❌ Portfolio fetch error:", err);
+      setHasMore(false);
     } finally {
       setRefreshing(false);
       setLoadingMore(false);
+      setIsFirstLoading(false);
     }
   };
+
   // === Refresh ===
   const handleRefresh = () => {
-    setRefreshing(true);
     setPage(1);
     setHasMore(true);
     loadPortfolios(1, true);
@@ -87,7 +106,7 @@ const Portfolio = () => {
 
   // === Load More ===
   const handleLoadMore = () => {
-    if (!loadingMore && hasMore && !isFetching) {
+    if (!loadingMore && hasMore && !isFetching && !isLoading && page > 1) {
       loadPortfolios(page);
     }
   };
@@ -123,6 +142,7 @@ const Portfolio = () => {
 
       const extMatch = /\.(\w+)$/.exec(filename);
       const mime = extMatch ? `image/${extMatch[1]}` : "image/jpeg";
+
       form.append("_method", "PUT");
       form.append("image", {
         uri: selectedImage.uri,
@@ -147,6 +167,8 @@ const Portfolio = () => {
       console.log("❌ Image selection cancelled");
     }
   };
+
+  // === add new image ===
   const pickImageAddMore = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -156,7 +178,6 @@ const Portfolio = () => {
     });
 
     if (!result.canceled && result.assets.length > 0) {
-      // selectedId remove
       const selectedImage = result.assets[0];
       setImageAsset(selectedImage);
 
@@ -173,7 +194,7 @@ const Portfolio = () => {
         uri: selectedImage.uri,
         name: filename,
         type: mime,
-      });
+      } as any);
 
       try {
         const res = await addPortfolio(form).unwrap();
@@ -183,7 +204,6 @@ const Portfolio = () => {
             pathname: "/Toaster",
             params: { res: res.message },
           });
-          router.push("/service_provider/individual/(Tabs)/account");
           handleRefresh();
         }
       } catch (err) {
@@ -194,10 +214,9 @@ const Portfolio = () => {
     }
   };
 
-  // === delete portfolio item ===//
+  // === delete portfolio item ===
   const handleDelete = async () => {
     if (!selectedId) return;
-    console.log(selectedId);
 
     try {
       const res = await deletePortfolios(selectedId).unwrap();
@@ -206,10 +225,20 @@ const Portfolio = () => {
         params: { res: res.message },
       });
       setSelectModalVisible(false);
+      handleRefresh();
     } catch (err) {
       console.log(" Delete error:", err);
     }
   };
+
+  // === Initial full-screen loader ===
+  if (isFirstLoading && portfolios.length === 0 && !refreshing) {
+    return (
+      <View style={tw`flex-1 bg-base_color justify-center items-center`}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={tw`flex-1 bg-base_color px-3 pb-2`}>
@@ -223,36 +252,18 @@ const Portfolio = () => {
             titleTextStyle={tw`text-xl `}
           />
         }
-        ListFooterComponent={
-          <View style={tw`mt-4 mb-8 flex justify-center items-center`}>
-            {loadingMore ? (
-              <>
-                <ActivityIndicator size="small" color="#0000ff" />
-                <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
-              </>
-            ) : !hasMore && portfolios.length > 0 ? (
-              <Text style={tw`text-gray-500`}>No more items</Text>
-            ) : null}
-            <PrimaryButton
-              titleProps="Add_More"
-              IconProps={IconPlus}
-              contentStyle={tw`mt-4`}
-              onPress={pickImageAddMore}
-            />
-          </View>
-        }
-        numColumns={2}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={tw`gap-3`}
-        style={tw`pt-2`}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
+        numColumns={2}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={tw`gap-3 pb-4`}
+        style={tw`pt-2`}
         columnWrapperStyle={tw`justify-between`}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.1} // কমিয়ে দিন
         renderItem={({ item }: any) => (
-          <View style={[tw`w-[48%]`, { height: 240 }]}>
+          <View style={[tw`w-[48%] mb-3`, { height: 240 }]}>
             <Image
               source={{ uri: item.image }}
               resizeMode="cover"
@@ -260,17 +271,55 @@ const Portfolio = () => {
             />
             <TouchableOpacity
               onPress={() => hendelAction(item.id)}
-              style={tw`absolute top-3 right-3 justify-center items-center w-10 h-10 rounded-full border border-white`}
+              style={tw`absolute top-3 right-3 justify-center items-center w-10 h-10 rounded-full border border-white bg-black bg-opacity-30`}
             >
               <SvgXml xml={IconThreeWhite} />
             </TouchableOpacity>
           </View>
         )}
+        ListFooterComponent={
+          loadingMore ? (
+            <View style={tw`py-4 flex justify-center items-center`}>
+              <ActivityIndicator size="small" />
+              <Text style={tw`mt-2 text-gray-500`}>
+                Loading more portfolios...
+              </Text>
+            </View>
+          ) : !hasMore && portfolios.length > 0 ? (
+            <View style={tw`py-4 flex justify-center items-center`}>
+              <Text style={tw`text-gray-500 mb-4`}>No more portfolios</Text>
+            </View>
+          ) : null
+        }
+        ListEmptyComponent={
+          !isFirstLoading && !refreshing ? (
+            <View style={tw`py-10 flex justify-center items-center`}>
+              <Text style={tw`text-gray-500 mb-32`}>No portfolio found</Text>
+              <PrimaryButton
+                titleProps="Add Portfolio"
+                IconProps={IconPlus}
+                contentStyle={tw`mt-4`}
+                onPress={pickImageAddMore}
+              />
+            </View>
+          ) : null
+        }
       />
+
+      {/* Add More Button - Always visible at bottom */}
+      {!isFirstLoading && !refreshing && portfolios.length > 0 && (
+        <View style={tw`absolute bottom-4 left-0 right-0 px-3`}>
+          <PrimaryButton
+            titleProps="Add More"
+            IconProps={IconPlus}
+            onPress={pickImageAddMore}
+          />
+        </View>
+      )}
 
       {/* ========= selected modal ============= */}
       <Modal
-        animationType="none"
+        animationType="fade"
         transparent={true}
         visible={selectModalVisible}
         onRequestClose={() => setSelectModalVisible(false)}
@@ -293,18 +342,18 @@ const Portfolio = () => {
 
             <View style={tw`w-full m-4`}>
               <TouchableOpacity
-                style={tw`flex-row justify-center items-center border border-[#0063E580] w-full p-1 rounded-lg gap-2 mb-2`}
+                style={tw`flex-row justify-center items-center border border-[#0063E580] w-full p-3 rounded-lg gap-2 mb-3`}
                 onPress={pickImage}
               >
                 <SvgXml xml={IconSwapGreen} />
-                <Text>Swap image</Text>
+                <Text style={tw`text-base`}>Swap image</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={tw`flex-row justify-center items-center border border-[#C47575] w-full p-1 rounded-lg gap-2`}
+                style={tw`flex-row justify-center items-center border border-[#C47575] w-full p-3 rounded-lg gap-2`}
                 onPress={handleDelete}
               >
                 <SvgXml xml={IconDeleteRed} />
-                <Text>Delete image</Text>
+                <Text style={tw`text-base`}>Delete image</Text>
               </TouchableOpacity>
             </View>
           </View>

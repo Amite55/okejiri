@@ -11,4 +11,5 @@ export const referralFriendsSlices = api.injectEndpoints({
   }),
 });
 
-export const { useGetMyReferralsQuery } = referralFriendsSlices;
+export const { useGetMyReferralsQuery, useLazyGetMyReferralsQuery } =
+  referralFriendsSlices;
