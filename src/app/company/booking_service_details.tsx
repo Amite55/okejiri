@@ -371,6 +371,15 @@ const Booking_Service_Details = () => {
                   {(OrderDetailsData?.data?.status === "New" ||
                     OrderDetailsData?.data?.status === "Pending") && (
                     <TouchableOpacity
+                      activeOpacity={0.8}
+                      onPress={() =>
+                        router.push({
+                          pathname: "/company/messaging",
+                          params: {
+                            receiverId: OrderDetailsData?.data?.provider?.id,
+                          },
+                        })
+                      }
                       style={tw`border border-gray-300 flex-row items-center rounded-2xl gap-2 px-2 h-11`}
                     >
                       <SvgXml xml={IconChatsYellow} />
