@@ -32,9 +32,7 @@ import {
 const Message = () => {
   const { receiverId } = useLocalSearchParams();
   const receiverIdNumber = Number(receiverId);
-
   const socket = getSocket();
-
   const router = useRouter();
   const [message, setMessage] = React.useState("");
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
@@ -68,36 +66,30 @@ const Message = () => {
     if (!socket && ProfilerData?.data?.id) {
       initiateSocket(ProfilerData?.data?.id);
     }
-
     return () => {
       disconnectSocket();
     };
   }, [ProfilerData?.data?.id]);
 
-  // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ send message $$$$$$$$$$$$$$$$$$$$$$$$$$
+  // [$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ send message $$$$$$$$$$$$$$$$$$$$$$$$$$]
   const handleSendMessage = useCallback(async () => {
     if (!message.trim()) return;
-
     try {
       const response = await sendMessage({
         receiver_id: receiverIdNumber,
         message: message,
       }).unwrap();
-
       if (socket) {
         socket.emit("private-message", {
           receiverId: receiverIdNumber,
           message: message,
         });
       }
-
-      console.log("Message Sent:", response);
       if (response?.status === "success") {
         handleGetMessages();
       }
       // input clear
       setMessage("");
-
       // instantly fetch messages again
     } catch (error) {
       console.log("Send Error:", error);
@@ -106,7 +98,6 @@ const Message = () => {
 
   useEffect(() => {
     socket?.on("private-message", (data) => {
-      console.log("Received:", data);
       if (receiverId) {
         handleGetMessages();
       }

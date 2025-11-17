@@ -9,7 +9,10 @@ import React from "react";
 import { ScrollView, Text, TextInput, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
-const chats = () => {
+const Chats = () => {
+  const [search, setSearch] = React.useState("");
+  // console.log(search);
+
   // =================== api end point ===================
   const { data: chatList, isLoading } = useGetChartListQuery({
     page: 1,
@@ -19,6 +22,14 @@ const chats = () => {
   if (isLoading) {
     return <ChatListSkeleton />;
   }
+
+  // ==================== handle search ====================
+  const handleSearch = async () => {
+    try {
+    } catch (error) {
+      console.log(error, "your searching not working ==============>");
+    }
+  };
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -35,7 +46,7 @@ const chats = () => {
         }
       />
 
-      <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>
+      <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-2`}>
         Chats
       </Text>
 
@@ -47,6 +58,7 @@ const chats = () => {
         <TextInput
           placeholder="Search chats"
           placeholderTextColor={"#535353"}
+          onChangeText={(item) => setSearch(item)}
         />
       </View>
 
@@ -59,7 +71,6 @@ const chats = () => {
           </Text>
         ) : (
           chatList?.data?.data?.map((chatItem, index) => {
-            console.log(chatItem);
             return (
               <ChatListProfile
                 key={index}
@@ -79,4 +90,4 @@ const chats = () => {
   );
 };
 
-export default chats;
+export default Chats;
