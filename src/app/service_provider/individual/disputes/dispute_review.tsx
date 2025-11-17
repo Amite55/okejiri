@@ -9,7 +9,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   FlatList,
-
   Modal,
   Pressable,
   ScrollView,
@@ -24,25 +23,27 @@ const Dispute_Review = () => {
   // disput
   const { id } = useLocalSearchParams();
 
-  const { data: disputeReviewData, isLoading: isLoadingDisputeReview, isError: isErrorDisputeReview } = useDisputeDetailsQuery(id);
+  const {
+    data: disputeReviewData,
+    isLoading: isLoadingDisputeReview,
+    isError: isErrorDisputeReview,
+  } = useDisputeDetailsQuery(id);
 
-  // ============================================== Effect ======================================= ///
-
-  
-  // ============================================= handler ======================================= ///
-
-  console.log("======== dispute id ============== ", id)
-
+  console.log("======== dispute id ============== ", id);
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const disputeGallary = disputeReviewData?.data?.attachments || [];
   const visibleImages = disputeGallary.slice(0, 3);
   const item = disputeReviewData?.data;
 
-
-  console.log("===================> dispute review details === ", JSON.stringify(item, null, 2))
-  console.log("===================> dispute attachments details === ", JSON.stringify(visibleImages, null, 2))
-
+  console.log(
+    "===================> dispute review details === ",
+    JSON.stringify(item, null, 2)
+  );
+  console.log(
+    "===================> dispute attachments details === ",
+    JSON.stringify(visibleImages, null, 2)
+  );
 
   return (
     <ScrollView
@@ -67,11 +68,16 @@ const Dispute_Review = () => {
           User
         </Text>
         <View style={tw`flex-row items-center gap-1 mb-5`}>
-          <Image style={tw`w-12 h-12 rounded-full `} source={{ uri: item?.opposite_party?.avatar }} />
+          <Image
+            style={tw`w-12 h-12 rounded-full `}
+            source={{ uri: item?.opposite_party?.avatar }}
+          />
           <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
             {item?.opposite_party?.name}
           </Text>
-          {item?.opposite_party?.kyc_status === "Verified" ? <SvgXml xml={IconProfileBadge} /> : null}
+          {item?.opposite_party?.kyc_status === "Verified" ? (
+            <SvgXml xml={IconProfileBadge} />
+          ) : null}
         </View>
 
         <Text
@@ -104,19 +110,19 @@ const Dispute_Review = () => {
       <View
         style={tw`flex-row gap-2 relative justify-center items-center mb-6`}
       >
-        {visibleImages && visibleImages?.map((img: string, index: any) => {
-          console.log("==== img ===== ", img)
-          return (
-            <Image
-
-              key={index}
-              source={{uri:img}}
-              style={tw`w-30 h-30 rounded-2xl`}
-              // resizeMode="cover"
-              contentFit="cover"
-            />
-          )
-        })}
+        {visibleImages &&
+          visibleImages?.map((img: string, index: any) => {
+            console.log("==== img ===== ", img);
+            return (
+              <Image
+                key={index}
+                source={{ uri: img }}
+                style={tw`w-30 h-30 rounded-2xl`}
+                // resizeMode="cover"
+                contentFit="cover"
+              />
+            );
+          })}
 
         {/* ------------ when image length up to three --------------------- */}
 
@@ -137,9 +143,9 @@ const Dispute_Review = () => {
         onPress={() =>
           router.push({
             pathname: "/service_provider/individual/disputes/dispute_appeal",
-            params:{
-              id: id // dispute_id
-            }
+            params: {
+              id: id,
+            },
           })
         }
         contentStyle={tw`bg-primary `}
@@ -166,7 +172,7 @@ const Dispute_Review = () => {
             {
               height: _HEIGHT,
             },
-            tw`justify-end items-end bg-black bg-opacity-15  `,
+            tw`justify-end items-end bg-black bg-opacity-15 `,
           ]}
         >
           <Pressable
@@ -205,7 +211,7 @@ const Dispute_Review = () => {
               contentContainerStyle={tw`justify-center items-center mt-3 px-2`}
               renderItem={({ item }) => (
                 <Image
-                  source={{uri:item}}
+                  source={{ uri: item }}
                   style={tw`w-30 h-30 rounded-xl m-1 `}
                   contentFit="cover"
                 />
