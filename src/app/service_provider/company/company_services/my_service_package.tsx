@@ -44,7 +44,7 @@ const My_Service_Package = () => {
       if (!isRefresh) setLoadingMore(true);
 
       const res = await fetchMyServicePackages({ pageNum, id }).unwrap();
-      console.log(res, "respos...........");
+      // console.log(res, "respos...........");
 
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
@@ -116,12 +116,20 @@ const My_Service_Package = () => {
 
       {/* Title + Edit */}
       <View style={tw`flex-row justify-between items-center my-4`}>
-        <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
+        <View style={tw`w-[90%]`}>
+           <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
           {item?.title}
         </Text>
+        </View>
+       
         <TouchableOpacity
           onPress={() =>
-            router.push("/service_provider/individual/my_services/edit_package")
+            router.push({
+              pathname: "/service_provider/individual/my_services/edit_package",
+              params: {
+                id : item.id
+              }
+            })
           }
           style={tw`p-2`}
         >
@@ -133,7 +141,7 @@ const My_Service_Package = () => {
       {item?.package_detail_items?.length > 0 && (
         <View style={tw`pl-8 gap-2`}>
           {item.package_detail_items.map((detail: any, index: number) => (
-            <View key={index} style={tw`flex-row items-center gap-2`}>
+            <View key={index} style={tw`flex-row items-center gap-2 w-[88%]`}>
               <View style={tw`w-2 h-2 bg-black`} />
               <Text
                 style={tw`font-DegularDisplayDemoRegular text-black text-xl`}
@@ -152,7 +160,7 @@ const My_Service_Package = () => {
             "/service_provider/individual/my_services/delivery_extension"
           )
         }
-        style={tw`flex-row justify-between items-center px-3 my-3`}
+        style={tw`flex-row justify-between items-center px-3 my-3 py-2`}
       >
         <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
           Expected delivery time
@@ -196,6 +204,11 @@ const My_Service_Package = () => {
     );
   }
 
+
+  //  ================= test console;
+  // console.log("==================== services  ========================= ", JSON.stringify(services, null, 2))
+
+
   // ======================== MAIN RETURN ==========================
   return (
     <View style={tw`flex-1 bg-base_color`}>
@@ -218,7 +231,7 @@ const My_Service_Package = () => {
               titleTextStyle={tw`text-xl`}
             />
 
-            <View style={tw`flex-row justify-between items-center mt-3`}>
+            <View style={tw`flex-row justify-between items-center mt-3 py-2`}>
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
               >
@@ -228,15 +241,18 @@ const My_Service_Package = () => {
               {stripe_account_id && stripe_payouts_enabled === 1 ? (
                 <TouchableOpacity
                   onPress={() =>
-                    router.push(
-                      "/service_provider/individual/my_services/add_package"
-                    )
+                    router.push({
+                      pathname: "/service_provider/individual/my_services/add_package",
+                      // params:{
+                      //   id: item.id
+                      // }
+                    })
                   }
-                  style={tw`flex-row justify-center items-center gap-2 w-40 h-14 bg-primary rounded-full`}
+                  style={tw`flex-row justify-center items-center gap-2 px-6 py-2 bg-primary rounded-full`}
                 >
-                  <SvgXml xml={IconPlus} />
+                  <SvgXml xml={IconPlus} width={10}/>
                   <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
+                    style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
                   >
                     Add more
                   </Text>
