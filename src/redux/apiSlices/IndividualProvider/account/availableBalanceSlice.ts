@@ -29,5 +29,8 @@ export const availableBalanceSlice = api.injectEndpoints({
   overrideExisting: true,
 });
 
-export const { useRecent_transactionsQuery, useTransfer_balanceMutation } =
-  availableBalanceSlice;
+export const {
+  useRecent_transactionsQuery,
+  useTransfer_balanceMutation,
+  useWithdrawMutation,
+} = availableBalanceSlice;
