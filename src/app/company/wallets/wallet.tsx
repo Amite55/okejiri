@@ -64,7 +64,7 @@ const Wallet_Index = () => {
   const [depositAmount, { isLoading: depositLoading }] =
     useDepositSuccessMutation();
 
-  // === Load data ===
+  // === Load data ===//
   useEffect(() => {
     if (recentTransactions?.data?.data) {
       const newItems = recentTransactions.data.data;
