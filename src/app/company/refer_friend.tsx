@@ -55,7 +55,6 @@ const Refer_Friend = () => {
       }
 
       const res = await getMyReferrals({ page: pageNum }).unwrap();
-
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
       const currentPage = responseData?.current_page || pageNum;
