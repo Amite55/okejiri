@@ -32,6 +32,18 @@ const My_Disputes = () => {
     refetch,
   } = useMyDisputeQuery({});
 
+  // Refresh handler
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } catch (error) {
+      console.log("Refresh error:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   const DisputesRenderData = ({ item }: { item: any }) => {
     let statusIcon;
 
@@ -70,43 +82,65 @@ const My_Disputes = () => {
     );
   };
 
+  // Show full screen loader when first time loading
+  if (isLoading && !refreshing) {
+    return (
+      <View style={tw`flex-1 bg-base_color justify-center items-center`}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={tw`mt-4 text-gray-500`}>Loading disputes...</Text>
+      </View>
+    );
+  }
+
   return (
-    <FlatList
-      data={disputes?.data}
-      renderItem={DisputesRenderData}
-      keyExtractor={(item, index) => `dispute-${item?.id || index}`}
-      ListHeaderComponent={() => (
-        <BackTitleButton
-          pageName={"My disputes"}
-          onPress={() => router.back()}
-          titleTextStyle={tw`text-xl`}
-        />
-      )}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={refetch} />
-      }
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={tw`bg-base_color px-5 gap-3 `}
-      ListFooterComponent={
-        <View style={tw`py-4  flex justify-center items-center`}>
-          {loadingMore ? (
-            <>
-              <ActivityIndicator size="small" color="#0000ff" />
-              <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
-            </>
-          ) : !hasMore && disputes.length > 0 ? (
-            <Text style={tw`text-gray-500`}>No more disputes to load</Text>
-          ) : null}
-        </View>
-      }
-      ListEmptyComponent={
-        !isLoading ? (
+    <View style={tw`bg-base_color flex-1`}>
+      <FlatList
+        data={disputes?.data}
+        renderItem={DisputesRenderData}
+        keyExtractor={(item, index) => `dispute-${item?.id || index}`}
+        ListHeaderComponent={() => (
+          <BackTitleButton
+            pageName={"My disputes"}
+            onPress={() => router.back()}
+            titleTextStyle={tw`text-xl`}
+          />
+        )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={tw`bg-base_color px-5 gap-3 `}
+        ListFooterComponent={
           <View style={tw`py-4 flex justify-center items-center`}>
-            <Text style={tw`text-gray-500`}>No disputes found</Text>
+            {isFetching && !refreshing ? (
+              <>
+                <ActivityIndicator size="small" color="#0000ff" />
+                <Text style={tw`mt-2 text-gray-500`}>Updating disputes...</Text>
+              </>
+            ) : loadingMore ? (
+              <>
+                <ActivityIndicator size="small" color="#0000ff" />
+                <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
+              </>
+            ) : !hasMore && disputes?.data?.length > 0 ? (
+              <Text style={tw`text-gray-500`}>No more disputes to load</Text>
+            ) : null}
           </View>
-        ) : null
-      }
-    />
+        }
+        ListEmptyComponent={
+          !isLoading && !isFetching ? (
+            <View style={tw`py-10 flex justify-center items-center`}>
+              <Text style={tw`text-gray-500 text-lg mb-2`}>
+                No disputes found
+              </Text>
+              <Text style={tw`text-gray-400 text-center`}>
+                You don't have any disputes at the moment.
+              </Text>
+            </View>
+          ) : null
+        }
+      />
+    </View>
   );
 };
 
