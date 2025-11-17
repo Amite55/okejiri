@@ -1,29 +1,29 @@
 import {
-    IconDeleteRed,
-    IconEditPenGreen,
-    IconPlusYellow,
-    IconResetImage,
-    IconWatch,
+  IconDeleteRed,
+  IconEditPenGreen,
+  IconPlusYellow,
+  IconResetImage,
+  IconWatch,
 } from "@/assets/icons";
 import { ImgCleaning } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-    Image,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
@@ -37,6 +37,8 @@ const dropdownData = [
 ];
 
 const Edit_Package = () => {
+  const {id} = useLocalSearchParams();
+  
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
 

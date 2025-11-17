@@ -73,7 +73,7 @@ const My_Service = () => {
       setLoadingMore(false);
     }
   };
-  console.log("=============== services ================  ", JSON.stringify(services, null, 2))
+  // console.log("=============== services ================  ", JSON.stringify(services, null, 2))
   // ======================== REFRESH ==========================
   const handleRefresh = () => {
     setRefreshing(true);
@@ -125,7 +125,7 @@ const My_Service = () => {
 
   // ======================== RENDER SERVICE ITEM ==========================
   const renderServiceItem = (item: any) => {
-    console.log(" ================== item ", JSON.stringify(item, null, 2))
+    // console.log(" ================== item ", JSON.stringify(item, null, 2))
     return (
       <View style={tw` w-[48%] p-1`}>
         <View style={tw`rounded-2xl`}>
