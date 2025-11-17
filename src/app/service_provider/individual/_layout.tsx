@@ -22,6 +22,7 @@ const Individual_Layout = () => {
 
         <Stack.Screen name="booking_cancel" />
         <Stack.Screen name="warning" />
+        <Stack.Screen name="individualMessaging" />
       </Stack>
     </View>
   );

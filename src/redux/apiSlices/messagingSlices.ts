@@ -3,10 +3,10 @@ import { api } from "../base/baseApi";
 export const messagingSlices = api.injectEndpoints({
   endpoints: (builder) => ({
     sendMessage: builder.mutation({
-      query: (message) => ({
+      query: (messageInfo) => ({
         url: "/send-message",
         method: "POST",
-        body: message,
+        body: messageInfo,
       }),
       invalidatesTags: ["message"],
     }),
@@ -19,8 +19,8 @@ export const messagingSlices = api.injectEndpoints({
       invalidatesTags: ["message"],
     }),
     getMessages: builder.query({
-      query: (id, page = 10) => ({
-        url: `/get-message?per_page=${page}&receiver_id=${id}`,
+      query: ({ receiver_id, per_page, page }) => ({
+        url: `/get-message?per_page=${per_page}&receiver_id=${receiver_id}&page=${page}`,
         method: "GET",
       }),
       providesTags: ["message"],
@@ -48,11 +48,18 @@ export const messagingSlices = api.injectEndpoints({
       invalidatesTags: ["message"],
     }),
     searchNewUser: builder.query({
-      query: ({ userRole, search, page }) => ({
-        url: `/chat-list?per_page=${page}&search=${search}&role=${userRole}`,
+      query: ({ role, search, page, per_page }) => ({
+        url: `/search-new-user?per_page=${per_page}&search=${search}&role=${role}&page=${page}`,
         method: "GET",
       }),
       providesTags: ["search"],
+    }),
+    getChartList: builder.query({
+      query: ({ role, per_page, page }) => ({
+        url: `/chat-list?per_page=${per_page}&role=${role}&page=${page}`,
+        method: "GET",
+      }),
+      providesTags: ["message"],
     }),
   }),
 });
@@ -60,9 +67,11 @@ export const messagingSlices = api.injectEndpoints({
 export const {
   useSendMessageMutation,
   useGetMessagesQuery,
+  useLazyGetMessagesQuery,
   useMarkAsReadMutation,
   useUnSendForMeMutation,
   useUnSendEveryoneMutation,
   useSearchNewUserQuery,
   useEditMessageMutation,
+  useGetChartListQuery,
 } = messagingSlices;

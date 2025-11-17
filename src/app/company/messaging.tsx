@@ -1,219 +1,244 @@
 import {
   FlatList,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { IconBackLeftArrow } from "@/assets/icons";
 import { ImgProfileImg } from "@/assets/images/image";
 import tw from "@/src/lib/tailwind";
-import { useRouter } from "expo-router";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
+import {
+  useLazyGetMessagesQuery,
+  useSendMessageMutation,
+} from "@/src/redux/apiSlices/messagingSlices";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { SvgXml } from "react-native-svg";
 
+import {
+  disconnectSocket,
+  getSocket,
+  initiateSocket,
+} from "@/src/redux/service/socket";
+
 const Message = () => {
+  const { receiverId } = useLocalSearchParams();
+  const receiverIdNumber = Number(receiverId);
+  const socket = getSocket();
   const router = useRouter();
   const [message, setMessage] = React.useState("");
-  const [allMessages, setAllMessages] = React.useState([
-    {
-      id: 1,
-      user: true,
-      name: "Emma Johnson",
-      time: "09:15",
-      message:
-        "Hey, how's the project coming along? Need any help with the design?",
-    },
-    {
-      id: 2,
-      user: false,
-      name: "Michael Chen",
-      time: "09:22",
-      message:
-        "Almost done! Just finishing up the last section. Should be ready by EOD.",
-    },
-    {
-      id: 3,
-      user: true,
-      name: "Emma Johnson",
-      time: "09:25",
-      message: "Great! Let me know if you want me to review anything.",
-    },
-    {
-      id: 4,
-      user: false,
-      name: "Sarah Williams",
-      time: "11:40",
-      message:
-        "Team meeting moved to 2pm. Don't forget to bring your progress reports!",
-    },
-    {
-      id: 5,
-      user: true,
-      name: "David Kim",
-      time: "12:05",
-      message: "Lunch today? I'm craving some sushi.",
-    },
-    {
-      id: 6,
-      user: false,
-      name: "Alex Rodriguez",
-      time: "12:10",
-      message: "Can't today - got a deadline. Maybe tomorrow?",
-    },
-    {
-      id: 7,
-      user: true,
-      name: "Olivia Martin",
-      time: "14:30",
-      message:
-        "Has anyone seen the client feedback from last week's presentation?",
-    },
-    {
-      id: 8,
-      user: false,
-      name: "James Wilson",
-      time: "14:35",
-      message: "It's in the shared drive under Client > Feedback > June",
-    },
-    {
-      id: 9,
-      user: true,
-      name: "Sophia Lee",
-      time: "16:45",
-      message:
-        "Reminder: Office closes early tomorrow for the holiday weekend.",
-    },
-    {
-      id: 10,
-      user: false,
-      name: "Daniel Brown",
-      time: "16:50",
-      message: "Thanks for the reminder! Almost forgot about that.",
-    },
-  ]);
+  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
+  const [allMessages, setAllMessages] = React.useState([]);
+
+  // ------------------ api end point ---------------------
+  const { data: ProfilerData, isLoading: isProfilerLoading } = useProfileQuery(
+    {}
+  );
+  const [getMessages, messageResults] = useLazyGetMessagesQuery();
+  const [sendMessage] = useSendMessageMutation();
+
+  //  8******************* get messages function ***********************
+  const handleGetMessages = async () => {
+    const res = await getMessages({
+      receiver_id: receiverIdNumber,
+      page: 1,
+      per_page: 100,
+    });
+    const messageList = res?.data?.data?.data || [];
+    if (res?.data) {
+      setAllMessages([...messageList].reverse());
+    }
+  };
+
+  // ------------- fast render this screen connect to socket -----------------------------
+  useEffect(() => {
+    handleGetMessages();
+    if (!ProfilerData?.data?.id) return; // wait for user data
+    // connect only once
+    if (!socket && ProfilerData?.data?.id) {
+      initiateSocket(ProfilerData?.data?.id);
+    }
+    return () => {
+      disconnectSocket();
+    };
+  }, [ProfilerData?.data?.id]);
+
+  // [$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ send message $$$$$$$$$$$$$$$$$$$$$$$$$$]
+  const handleSendMessage = useCallback(async () => {
+    if (!message.trim()) return;
+    try {
+      const response = await sendMessage({
+        receiver_id: receiverIdNumber,
+        message: message,
+      }).unwrap();
+      if (socket) {
+        socket.emit("private-message", {
+          receiverId: receiverIdNumber,
+          message: message,
+        });
+      }
+      if (response?.status === "success") {
+        handleGetMessages();
+      }
+      // input clear
+      setMessage("");
+      // instantly fetch messages again
+    } catch (error) {
+      console.log("Send Error:", error);
+    }
+  }, [message, receiverIdNumber, sendMessage, handleGetMessages]);
+
+  useEffect(() => {
+    socket?.on("private-message", (data) => {
+      if (receiverId) {
+        handleGetMessages();
+      }
+    });
+  }, [socket]);
+
+  // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true)
+    );
+    const hide = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   return (
-    <View style={tw`bg-base_color flex-1`}>
-      <View style={tw`px-4 py-3 flex-row items-center gap-2`}>
-        <View style={tw`flex-row items-center gap-2`}>
-          <TouchableOpacity onPress={() => router.back()} style={tw`pr-3`}>
-            <SvgXml xml={IconBackLeftArrow} />
-          </TouchableOpacity>
-          <Image style={tw`w-11 h-11 rounded-full `} source={ImgProfileImg} />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+    >
+      <View style={tw`bg-base_color flex-1`}>
+        <View style={tw`px-4 py-3 flex-row items-center gap-2`}>
+          <View style={tw`flex-row items-center gap-2`}>
+            <TouchableOpacity onPress={() => router.back()} style={tw`pr-3`}>
+              <SvgXml xml={IconBackLeftArrow} />
+            </TouchableOpacity>
+            <Image style={tw`w-11 h-11 rounded-full `} source={ImgProfileImg} />
+          </View>
+          <Text
+            style={tw`text-xl text-deepBlue400 font-DegularDisplayDemoBold`}
+          >
+            Larry Smith
+          </Text>
         </View>
-        <Text style={tw`text-xl text-deepBlue400 font-DegularDisplayDemoBold`}>
-          Larry Smith
-        </Text>
-      </View>
 
-      <FlatList
-        keyboardShouldPersistTaps="always"
-        invertStickyHeaders
-        inverted
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={tw`gap-3  py-10`}
-        data={allMessages?.sort((a, b) => b.id - a.id)}
-        renderItem={({ item }) => (
-          <>
-            {item.user && (
-              <View style={tw` flex-row items-start gap-2 px-4`}>
-                <View style={tw`flex-1 flex-row items-end gap-2`}>
-                  <Text
-                    style={tw`text-xs text-deepBlue75 font-DegularDisplayDemoRegular`}
-                  >
-                    {item.time}
-                  </Text>
-                  <View
-                    style={tw`flex-1 bg-primary p-3 rounded-l-md rounded-b-md`}
-                  >
-                    <Text
-                      style={tw`text-base text-white font-DegularDisplayDemoMedium`}
-                    >
-                      {item.message}
-                    </Text>
+        <FlatList
+          keyboardShouldPersistTaps="handled"
+          invertStickyHeaders
+          inverted
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item?.id.toString()}
+          contentContainerStyle={tw`gap-5 py-6`}
+          data={allMessages?.sort((a, b) => b?.id - a?.id)}
+          renderItem={({ item }) => {
+            // console.log(item, "this is item ----------------->");
+
+            const isAuthUser =
+              ProfilerData?.data?.id === item?.sender_id ? true : false;
+            return (
+              <>
+                {isAuthUser && (
+                  <View style={tw` flex-row items-start gap-2 px-4`}>
+                    <View style={tw`flex-1 flex-row items-end gap-3`}>
+                      <Text
+                        style={tw`text-xs text-deepBlue75 font-DegularDisplayDemoRegular`}
+                      >
+                        {item?.time_ago}
+                      </Text>
+                      <View
+                        style={tw`flex-1 bg-primary p-3 rounded-l-2xl rounded-b-2xl`}
+                      >
+                        <Text
+                          style={tw`text-base text-white font-DegularDisplayDemoMedium`}
+                        >
+                          {item?.message}
+                        </Text>
+                      </View>
+                    </View>
+                    <Image
+                      style={tw`w-10 h-10 rounded-full `}
+                      source={ImgProfileImg}
+                    />
                   </View>
-                </View>
-                <Image
-                  style={tw`w-11 h-11 rounded-full `}
-                  source={ImgProfileImg}
-                />
-              </View>
-            )}
-            {item.user || (
-              <View style={tw` flex-row items-start gap-2 px-4`}>
-                <Image
-                  style={tw`w-11 h-11 rounded-full `}
-                  source={ImgProfileImg}
-                />
-                <View style={tw`flex-1 flex-row items-end gap-2`}>
-                  <View
-                    style={tw`flex-1 bg-white p-3 rounded-r-md rounded-b-md`}
-                  >
-                    <Text
-                      style={tw`text-base text-deepBlue400 font-DegularDisplayDemoMedium`}
-                    >
-                      {item.message}
-                    </Text>
+                )}
+                {!isAuthUser && (
+                  <View style={tw` flex-row items-start gap-2 px-4`}>
+                    <Image
+                      style={tw`w-10 h-10 rounded-full `}
+                      source={ImgProfileImg}
+                    />
+                    <View style={tw`flex-1 flex-row items-end gap-3`}>
+                      <View
+                        style={tw`flex-1 bg-gray-300 p-3 rounded-r-2xl rounded-b-2xl`}
+                      >
+                        <Text
+                          style={tw`text-base text-deepBlue400 font-DegularDisplayDemoMedium`}
+                        >
+                          {item?.message}
+                        </Text>
+                      </View>
+                      <Text
+                        style={tw`text-xs text-deepBlue75 font-DegularDisplayDemoRegular`}
+                      >
+                        {item?.time}
+                      </Text>
+                    </View>
                   </View>
-                  <Text
-                    style={tw`text-xs text-deepBlue75 font-DegularDisplayDemoRegular`}
-                  >
-                    {item.time}
-                  </Text>
-                </View>
-              </View>
-            )}
-          </>
-        )}
-      />
-      <View
-        style={tw`flex-row items-center border border-gray-200 mx-3 m-3 rounded-full  gap-2`}
-      >
-        <TextInput
-          style={tw`flex-1 bg-white px-4 rounded-md`}
-          placeholder="Type a message"
-          placeholderTextColor={"#535353"}
-          value={message}
-          onChangeText={(text) => setMessage(text)}
+                )}
+              </>
+            );
+          }}
         />
 
-        <TouchableOpacity
+        {/* INPUT BOX */}
+        <View
           style={[
-            tw`h-12 bg-secondary w-18 justify-center items-center `,
-            { borderTopRightRadius: 30, borderBottomRightRadius: 30 },
+            tw`flex-row items-center border border-gray-200 mx-3 m-3 rounded-full gap-2 `,
+            isKeyboardVisible ? tw`mb-10` : tw`mb-0`,
           ]}
         >
-          <Text style={tw`text-white font-DegularDisplayDemoSemibold text-xl`}>
-            Send
-          </Text>
-        </TouchableOpacity>
-        {/* <TButton
-          title="Send"
-          onPress={() => {
-            // Send message
-            setAllMessages((pre) => {
-              return [
-                ...pre,
-                {
-                  id: pre.length + 1,
-                  user: true,
-                  name: "You",
-                  time: new Date().toLocaleTimeString(),
-                  message: message,
-                },
-              ];
-            });
-          }}
-          containerStyle={tw` bg-transparent px-4`}
-          titleStyle={tw`text-deepBlue400 text-base font-NunitoSansBold`}
-        /> */}
+          <TextInput
+            style={tw`flex-1 px-4 rounded-md max-h-14`}
+            placeholder="Type a message"
+            multiline
+            placeholderTextColor={"#535353"}
+            value={message}
+            onChangeText={(text) => setMessage(text)}
+          />
+
+          <TouchableOpacity
+            onPress={handleSendMessage}
+            style={[
+              tw`h-12 bg-secondary w-18 justify-center items-center`,
+              { borderTopRightRadius: 30, borderBottomRightRadius: 30 },
+            ]}
+          >
+            <Text
+              style={tw`text-white font-DegularDisplayDemoSemibold text-xl`}
+            >
+              Send
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
