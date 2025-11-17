@@ -6,17 +6,17 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
@@ -59,16 +59,21 @@ const Add_Package = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={tw`flex-1`}
+    // <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <KeyboardAvoidingView
+      style={tw`flex-1 bg-base_color`}
+      behavior={Platform.OS === "ios" ? "padding" : "position"} // iOS/Android different behavior
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -120}
+    >
+      <TouchableWithoutFeedback
+        onPress={Keyboard.dismiss} accessible={false}
       >
         <ScrollView
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
-          style={tw`flex-1 bg-base_color `}
-          contentContainerStyle={tw`pb-6 px-5 `}
+          style={tw`flex-grow px-5`}
+          contentContainerStyle={tw`pb-6 gap-6`}
+          keyboardShouldPersistTaps="handled"
         >
           <BackTitleButton
             pageName={"Add package"}
@@ -244,8 +249,10 @@ const Add_Package = () => {
             contentStyle={tw`mt-4`}
           />
         </ScrollView>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+
+    </KeyboardAvoidingView >
+    // </TouchableWithoutFeedback >
   );
 };
 
