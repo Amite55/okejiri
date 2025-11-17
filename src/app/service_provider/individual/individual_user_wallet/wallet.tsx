@@ -9,7 +9,10 @@ import {
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
-import { useWithdrawMutation } from "@/src/redux/apiSlices/IndividualProvider/account/availableBalanceSlice";
+import {
+  useRecent_transactionsQuery,
+  useWithdrawMutation,
+} from "@/src/redux/apiSlices/IndividualProvider/account/availableBalanceSlice";
 import { useGetAvailableBalanceQuery } from "@/src/redux/apiSlices/stripeSlices";
 import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
@@ -35,6 +38,14 @@ const Wallet_Index = () => {
   } = useGetAvailableBalanceQuery(String(stripeAccountId), {
     skip: !stripeAccountId,
   });
+
+  // Add the recent transactions query
+  const {
+    data: transactionsData,
+    isLoading: transactionsLoading,
+    error: transactionsError,
+  } = useRecent_transactionsQuery(1); // Start with page 1
+
   const referralBonus = Number(userProfileInfo?.data?.referral_balance) || 0;
   const earned = Number(availableAmount?.data?.available?.[0]?.amount) || 0;
   const earnedFormatted = earned;
@@ -43,8 +54,10 @@ const Wallet_Index = () => {
 
   const [isWithdrawModalVisible, setWithdrawModalVisible] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
-
   const [withdraw, { isLoading: isWithdrawing }] = useWithdrawMutation();
+
+  // Get transactions from the API response
+  const transactions = transactionsData?.data?.data || [];
 
   if (isLoading || availableAmountLoading) {
     return (
@@ -112,6 +125,45 @@ const Wallet_Index = () => {
     }
   };
 
+  // Function to format transaction type for display
+  const formatTransactionType = (type: string) => {
+    const typeMap: { [key: string]: string } = {
+      transfer: "Transfer",
+      payment: "Payment",
+      withdrawal: "Withdrawal",
+      // Add more mappings as needed
+    };
+    return typeMap[type] || type;
+  };
+
+  // Function to get transaction title based on type and direction
+  const getTransactionTitle = (transaction: any) => {
+    if (transaction.transaction_type === "transfer") {
+      return transaction.direction === "credit"
+        ? `Transfer from ${transaction.sender?.name || "User"}`
+        : `Transfer to ${transaction.receiver?.name || "User"}`;
+    }
+    return formatTransactionType(transaction.transaction_type);
+  };
+
+  // Function to get display name based on direction
+  const getDisplayName = (transaction: any) => {
+    if (transaction.direction === "credit") {
+      return transaction.sender?.name || "User";
+    } else {
+      return transaction.receiver?.name || "User";
+    }
+  };
+
+  // Function to get KYC status based on direction
+  const getKYCStatus = (transaction: any) => {
+    if (transaction.direction === "credit") {
+      return transaction.sender?.kyc_status;
+    } else {
+      return transaction.receiver?.kyc_status;
+    }
+  };
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -124,6 +176,7 @@ const Wallet_Index = () => {
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
+
       {/* ---------------- card balance -------------- */}
       <View
         style={tw`bg-white rounded-xl py-4 justify-center items-center gap-3 my-4`}
@@ -168,7 +221,6 @@ const Wallet_Index = () => {
       </View>
 
       {/* ------------ wallet refer code ----------------- */}
-
       <View style={tw`border border-gray-300 rounded-2xl p-4`}>
         <View style={tw`flex-row justify-between items-center `}>
           <Text style={tw`font-DegularDisplayDemoSemibold text-xl text-black `}>
@@ -189,7 +241,6 @@ const Wallet_Index = () => {
       </View>
 
       {/*  ----------------  */}
-
       <View style={tw`flex-row justify-center items-center gap-4 my-7`}>
         <TouchableOpacity
           onPress={() =>
@@ -210,7 +261,7 @@ const Wallet_Index = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => setWithdrawModalVisible(true)} // Open modal on press
+          onPress={() => setWithdrawModalVisible(true)}
           style={tw`flex-row justify-center items-center gap-3 w-48 h-12 border border-gray-300 rounded-2xl`}
         >
           <SvgXml xml={IconWithdraw} />
@@ -225,40 +276,72 @@ const Wallet_Index = () => {
         <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
           Recent transactions
         </Text>
-        <View style={tw`gap-4 my-3`}>
-          {[1, 2, 3, 4, 5, 6, 7].map((index) => {
-            return (
-              <View
-                key={index}
-                style={tw`flex-row items-center justify-between`}
-              >
-                <View style={tw`flex-row items-center gap-4`}>
-                  <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-                  <View>
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
-                    >
-                      Service title goes here
-                    </Text>
-                    <View style={tw`flex-row gap-2 items-center `}>
+
+        {transactionsLoading ? (
+          <View style={tw`py-4 items-center`}>
+            <ActivityIndicator size="small" color="#0000ff" />
+            <Text style={tw`mt-2`}>Loading transactions...</Text>
+          </View>
+        ) : transactionsError ? (
+          <View style={tw`py-4 items-center`}>
+            <Text style={tw`text-red-500`}>Error loading transactions</Text>
+          </View>
+        ) : transactions.length === 0 ? (
+          <View style={tw`py-4 items-center`}>
+            <Text style={tw`text-regularText`}>No transactions found</Text>
+          </View>
+        ) : (
+          <View style={tw`gap-4 my-3`}>
+            {transactions.map((transaction) => {
+              const displayName = getDisplayName(transaction);
+              const kycStatus = getKYCStatus(transaction);
+
+              return (
+                <View
+                  key={transaction.id}
+                  style={tw`flex-row items-center justify-between`}
+                >
+                  <View style={tw`flex-row items-center gap-4`}>
+                    <SvgXml xml={IconRightArrowCornerPrimaryColor} />
+                    <View>
                       <Text
-                        style={tw`font-DegularDisplayDemoSemibold text-xl text-black`}
+                        style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
                       >
-                        Jhon Doe
+                        {getTransactionTitle(transaction)}
                       </Text>
-                      <SvgXml xml={IconProfileBadge} />
+                      <View style={tw`flex-row gap-2 items-center `}>
+                        <Text
+                          style={tw`font-DegularDisplayDemoSemibold text-xl text-black`}
+                        >
+                          {displayName}
+                        </Text>
+                        {kycStatus === "Verified" && (
+                          <SvgXml xml={IconProfileBadge} />
+                        )}
+                      </View>
+                      <Text
+                        style={tw`font-DegularDisplayDemoRegular text-sm text-regularText`}
+                      >
+                        {new Date(transaction.created_at).toLocaleDateString()}
+                      </Text>
                     </View>
                   </View>
+                  <Text
+                    style={[
+                      tw`font-DegularDisplayDemoMedium text-2xl`,
+                      transaction.direction === "credit"
+                        ? tw`text-green-500`
+                        : tw`text-red-500`,
+                    ]}
+                  >
+                    {transaction.direction === "credit" ? "+" : "-"}₦
+                    {transaction.amount}
+                  </Text>
                 </View>
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-primary  text-2xl `}
-                >
-                  ₦200.00
-                </Text>
-              </View>
-            );
-          })}
-        </View>
+              );
+            })}
+          </View>
+        )}
       </View>
 
       {/* Withdraw Modal */}
