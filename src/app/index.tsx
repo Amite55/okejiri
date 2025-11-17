@@ -54,37 +54,43 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      const render = async () => {
-        try {
-          if (userProfileInfo?.data?.role === "USER") {
-            router.push("/company/(Tabs)");
-            if (userProfileInfo?.data?.kyc_status === "Unverified") {
-              setTimeout(() => {
-                router.push("/kyc_completed_modal");
-              }, 500);
-            }
-          } else if (userProfileInfo?.data?.role === "PROVIDER") {
-            if (userProfileInfo?.data?.provider_type === "Individual") {
-              router.replace("/service_provider/individual/(Tabs)/home");
-            } else if (userProfileInfo?.data?.provider_type === "Company") {
-              router.replace("/service_provider/company/home");
-            }
-          } else {
-            router.push("/chose_roll");
-          }
-        } catch (error) {
-          // router.push("/company/(Tabs)");
-          // router.push("/auth/provide_service");
-          // router.push("/chose_roll");
-        } finally {
-          await SplashScreen.hideAsync();
+    if (isLoading) return;
+
+    const redirect = async () => {
+      try {
+        const role = userProfileInfo?.data?.role;
+        const kyc = userProfileInfo?.data?.kyc_status;
+        const type = userProfileInfo?.data?.provider_type;
+
+        if (!role) {
+          router.replace("/chose_roll");
+          return;
         }
-      };
-      render();
-    }, 2000);
-    // ============= call function ============= //
-  }, [useProfileQuery, userProfileInfo, isLoading]);
+
+        if (role === "USER") {
+          router.replace("/company/(Tabs)");
+          if (kyc === "Unverified") {
+            setTimeout(() => {
+              router.push("/kyc_completed_modal");
+            }, 300);
+          }
+        }
+
+        if (role === "PROVIDER") {
+          if (type === "Individual") {
+            router.replace("/service_provider/individual/(Tabs)/home");
+          } else if (type === "Company") {
+            router.replace("/service_provider/company/home");
+          }
+        }
+      } catch (e) {
+      } finally {
+        await SplashScreen.hideAsync();
+      }
+    };
+
+    redirect();
+  }, [isLoading]);
 
   return (
     <SafeAreaView style={tw`flex-1 bg-white`}>

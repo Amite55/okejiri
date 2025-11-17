@@ -35,16 +35,32 @@ const Contact = () => {
   const [locationModalVisible, setLocationModal] = useState(false);
   const roll = useRoll();
   const providerTypes = useProviderTypes();
-  const { longitude, latitude, errorMsg } = useLocation();
+  const [locatinLoading, setLocatinLoading] = useState(false);
+  const { longitude, latitude, errorMsg, getUserLocation } = useLocation();
+
+  console.log(locatinLoading, "status >>>>>>>");
 
   // ------------------------ api end point ---------------------
   const [information, { isLoading: isLoadingPersonalization }] =
     useCompletePersonalizationMutation();
 
-  const handleLocation = () => {
-    setIsLatitude(latitude);
-    setIsLongitude(longitude);
-    console.log(isLatitude, isLongitude, "add location  your location ");
+  const handleLocation = async () => {
+    const loc = await getUserLocation(); // fresh updated values
+
+    if (loc) {
+      setLocatinLoading(true);
+      setIsLatitude(loc.latitude);
+      setIsLongitude(loc.longitude);
+      console.log(loc.latitude, loc.longitude, "User location captured");
+    } else {
+      setLocatinLoading(false);
+      console.log("Failed to get location");
+
+      router.push({
+        pathname: "/Toaster",
+        params: { res: errorMsg || "Failed to get location" },
+      });
+    }
   };
 
   const handlePersonalInfo = async () => {
@@ -149,17 +165,22 @@ const Contact = () => {
               />
             </View>
 
-            <TouchableOpacity
-              style={tw`flex-row items-center gap-2 justify-center`}
-              onPress={() => handleLocation()}
-            >
-              <SvgXml xml={IconLocation} />
-              <Text
-                style={tw`text-secondary font-DegularDisplayDemoRegular text-center text-xl my-4`}
+            {locatinLoading ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={tw`flex-row items-center gap-2 justify-center`}
+                onPress={() => handleLocation()}
               >
-                Use my current location
-              </Text>
-            </TouchableOpacity>
+                <SvgXml xml={IconLocation} />
+                <Text
+                  style={tw`text-secondary font-DegularDisplayDemoRegular text-center text-xl my-4`}
+                >
+                  Use my current location
+                </Text>
+              </TouchableOpacity>
+            )}
 
             {((roll === "PROVIDER" && providerTypes === "Company") ||
               providerTypes === "Individual") && (

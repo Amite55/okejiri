@@ -42,7 +42,7 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
                 ? { uri: userProfileInfo?.data?.company?.company_logo }
                 : { uri: userProfileInfo?.data?.avatar }
             }
-            contentFit="contain"
+            contentFit="cover"
           />
         </View>
 

@@ -1,6 +1,5 @@
 import {
   FlatList,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -13,7 +12,6 @@ import {
 import React, { useCallback, useEffect } from "react";
 
 import { IconBackLeftArrow } from "@/assets/icons";
-import { ImgProfileImg } from "@/assets/images/image";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import {
@@ -28,6 +26,7 @@ import {
   getSocket,
   initiateSocket,
 } from "@/src/redux/service/socket";
+import { Image } from "expo-image";
 
 const Message = () => {
   const { receiverId } = useLocalSearchParams();
@@ -125,17 +124,21 @@ const Message = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
     >
       <View style={tw`bg-base_color flex-1`}>
-        <View style={tw`px-4 py-3 flex-row items-center gap-2`}>
+        <View style={tw`px-4 py-3 flex-row items-center gap-2 shadow`}>
           <View style={tw`flex-row items-center gap-2`}>
             <TouchableOpacity onPress={() => router.back()} style={tw`pr-3`}>
               <SvgXml xml={IconBackLeftArrow} />
             </TouchableOpacity>
-            <Image style={tw`w-11 h-11 rounded-full `} source={ImgProfileImg} />
+            <Image
+              style={tw`w-11 h-11 rounded-full `}
+              source={{ uri: ProfilerData?.data?.avatar }}
+              contentFit="cover"
+            />
           </View>
           <Text
             style={tw`text-xl text-deepBlue400 font-DegularDisplayDemoBold`}
           >
-            Larry Smith
+            {ProfilerData?.data?.name}
           </Text>
         </View>
 
@@ -148,8 +151,6 @@ const Message = () => {
           contentContainerStyle={tw`gap-5 py-6`}
           data={allMessages?.sort((a, b) => b?.id - a?.id)}
           renderItem={({ item }) => {
-            // console.log(item, "this is item ----------------->");
-
             const isAuthUser =
               ProfilerData?.data?.id === item?.sender_id ? true : false;
             return (
@@ -174,7 +175,8 @@ const Message = () => {
                     </View>
                     <Image
                       style={tw`w-10 h-10 rounded-full `}
-                      source={ImgProfileImg}
+                      source={{ uri: item?.sender?.avatar }}
+                      contentFit="cover"
                     />
                   </View>
                 )}
@@ -182,7 +184,8 @@ const Message = () => {
                   <View style={tw` flex-row items-start gap-2 px-4`}>
                     <Image
                       style={tw`w-10 h-10 rounded-full `}
-                      source={ImgProfileImg}
+                      source={{ uri: item?.sender?.avatar }}
+                      contentFit="cover"
                     />
                     <View style={tw`flex-1 flex-row items-end gap-3`}>
                       <View
