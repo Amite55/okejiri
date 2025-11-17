@@ -4,7 +4,7 @@ import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useTransfer_balanceMutation } from "@/src/redux/apiSlices/IndividualProvider/account/availableBalanceSlice";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
   Image,
@@ -19,18 +19,37 @@ import {
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 
-const AcountsTypes = [
+const ALL_ACCOUNT_TYPES = [
   { id: 1, name: "Earned balance", value: "referral_balance" },
   { id: 2, name: "Deposited balance", value: "wallet_balance" },
 ];
 
+const REFERRAL_ONLY = [
+  { id: 1, name: "Earned balance", value: "referral_balance" },
+];
+
 const Transfer_Balance = () => {
+  const params = useLocalSearchParams<{
+    from?: string;
+    account_type?: string;
+  }>();
+
+  const isFromProviderWallet = params?.from === "provider_wallet";
+
+  const dropdownData = isFromProviderWallet ? REFERRAL_ONLY : ALL_ACCOUNT_TYPES;
+
   const [isFocus, setIsFocus] = React.useState(false);
-  const [selectedAccountType, setSelectedAccountType] = React.useState(null);
+  const [selectedAccountType, setSelectedAccountType] = React.useState<
+    string | null
+  >(
+    isFromProviderWallet
+      ? (params?.account_type as string) || "referral_balance"
+      : null
+  );
   const [amount, setAmount] = React.useState<string>("");
   const [walletAddress, setWalletAddress] = React.useState<string>("");
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
-  // ----------------------- keyboard show hide handler -----------------------
+
   React.useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
       setKeyboardVisible(true);
@@ -45,10 +64,9 @@ const Transfer_Balance = () => {
     };
   }, []);
 
-  // [========================= api end point =========================]
   const [transferBalance, { isLoading: isTransferBalanceLoading }] =
     useTransfer_balanceMutation();
-  // ================ handle transfer balance ================
+
   const handleTransferBalance = async () => {
     if (!amount || !walletAddress || !selectedAccountType) {
       router.push({
@@ -63,22 +81,23 @@ const Transfer_Balance = () => {
       wallet_address: walletAddress,
       account_type: selectedAccountType,
     };
+
     try {
       const response = await transferBalance(transferData).unwrap();
       if (response) {
         router.push({
           pathname: "/Toaster",
-          params: { res: response?.message || response },
+          params: { res: response?.message || (response as any) },
         });
         setTimeout(() => {
-          router.replace("/company/(Tabs)/profile");
+          router.back();
         }, 1000);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("error", error);
       router.push({
         pathname: "/Toaster",
-        params: { res: error?.message || error || "Something went wrong" },
+        params: { res: error?.message || "Something went wrong" },
       });
     }
   };
@@ -86,7 +105,7 @@ const Transfer_Balance = () => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS/Android alada behavior
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -110,6 +129,7 @@ const Transfer_Balance = () => {
               source={ImgTransferBalance}
             />
 
+            {/* Wallet address */}
             <View style={tw`my-6`}>
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-base text-black pb-1`}
@@ -126,6 +146,7 @@ const Transfer_Balance = () => {
               </View>
             </View>
 
+            {/* Select account */}
             <View>
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-base text-black pb-1`}
@@ -140,22 +161,31 @@ const Transfer_Balance = () => {
                 ]}
                 placeholderStyle={tw`text-base`}
                 selectedTextStyle={tw`text-base`}
-                data={AcountsTypes}
+                data={dropdownData}
                 maxHeight={300}
                 labelField="name"
                 valueField="value"
                 dropdownPosition="bottom"
-                placeholder={!isFocus ? "Select service" : "..."}
-                // value={value}
+                placeholder={
+                  selectedAccountType
+                    ? dropdownData.find((d) => d.value === selectedAccountType)
+                        ?.name || "Select account"
+                    : !isFocus
+                    ? "Select account"
+                    : "..."
+                }
+                value={selectedAccountType || undefined}
                 onFocus={() => setIsFocus(true)}
                 onBlur={() => setIsFocus(false)}
                 onChange={(item) => {
                   setIsFocus(false);
                   setSelectedAccountType(item.value);
                 }}
+                disable={isFromProviderWallet}
               />
             </View>
 
+            {/* Amount */}
             <View style={tw`my-6`}>
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-base text-black pb-1`}
@@ -172,7 +202,6 @@ const Transfer_Balance = () => {
                   placeholderTextColor={"#535353"}
                   onChangeText={(value: any) => setAmount(value)}
                 />
-
                 <Text
                   style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
                 >
@@ -182,12 +211,13 @@ const Transfer_Balance = () => {
             </View>
           </View>
 
-          {/*  ------------- next button -------------------- */}
+          {/* Send button */}
           <PrimaryButton
-            onPress={() => handleTransferBalance()}
-            titleProps="Send"
+            onPress={handleTransferBalance}
+            titleProps={isTransferBalanceLoading ? "Sending..." : "Send"}
             IconProps={IconSendWhite}
             contentStyle={tw`mt-4`}
+            disabled={isTransferBalanceLoading}
           />
         </ScrollView>
       </TouchableWithoutFeedback>

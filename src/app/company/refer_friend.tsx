@@ -92,7 +92,7 @@ const Refer_Friend = () => {
     }
   };
 
-  // ================== pull to refresh ==================
+  // ================== pull to refresh ==================//
   const handleRefresh = () => {
     setPage(1);
     setHasMore(true);

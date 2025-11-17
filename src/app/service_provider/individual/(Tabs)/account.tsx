@@ -96,7 +96,9 @@ const Account = () => {
         activeOpacity={0.8}
         onPress={() =>
           router.push({
-            pathname: "/company/wallets/wallet",
+            // pathname: "/company/wallets/wallet",
+            pathname:
+              "/service_provider/individual/individual_user_wallet/wallet",
             params: {
               wallet_balance: userProfileInfo?.data?.wallet_balance,
               wallet_address: userProfileInfo?.data?.wallet_address,
@@ -126,11 +128,6 @@ const Account = () => {
         </View>
         <TouchableOpacity
           disabled
-          // onPress={() =>
-          //   router.push(
-          //     "/service_provider/individual/individual_user_wallet/wallet"
-          //   )
-          // }
           style={tw`w-14 h-14 rounded-full border border-gray-500 justify-center items-center`}
         >
           <SvgXml xml={IconRightCornerArrow} />
