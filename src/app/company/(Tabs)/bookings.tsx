@@ -17,7 +17,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
 import { SvgXml } from "react-native-svg";
 
 const Bookings = () => {
@@ -63,12 +62,6 @@ const Bookings = () => {
                 key={item?.id}
                 item={item}
                 index={item?.id}
-                // onPress={() =>
-                //   router.push({
-                //     pathname: "/company/my_booking",
-                //     params: { status: "booking_request_pending" },
-                //   })
-                // }
                 onPress={() =>
                   router.push({
                     pathname: "/company/booking_service_details",

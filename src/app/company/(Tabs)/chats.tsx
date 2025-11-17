@@ -1,14 +1,35 @@
 import { IconSearch } from "@/assets/icons";
 import ChatListProfile from "@/src/Components/ChatListProfile";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
-import ChatListData from "@/src/json/ChatListData.json";
+import ChatListSkeleton from "@/src/Components/skeletons/ChatListSkeleton";
 import tw from "@/src/lib/tailwind";
+import { useGetChartListQuery } from "@/src/redux/apiSlices/messagingSlices";
 import { router } from "expo-router";
 import React from "react";
 import { ScrollView, Text, TextInput, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
-const chats = () => {
+const Chats = () => {
+  const [search, setSearch] = React.useState("");
+  // console.log(search);
+
+  // =================== api end point ===================
+  const { data: chatList, isLoading } = useGetChartListQuery({
+    page: 1,
+    per_page: 10,
+    role: "",
+  });
+  if (isLoading) {
+    return <ChatListSkeleton />;
+  }
+
+  // ==================== handle search ====================
+  const handleSearch = async () => {
+    try {
+    } catch (error) {
+      console.log(error, "your searching not working ==============>");
+    }
+  };
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -25,7 +46,7 @@ const chats = () => {
         }
       />
 
-      <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>
+      <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-2`}>
         Chats
       </Text>
 
@@ -37,23 +58,29 @@ const chats = () => {
         <TextInput
           placeholder="Search chats"
           placeholderTextColor={"#535353"}
+          onChangeText={(item) => setSearch(item)}
         />
       </View>
 
       <View style={tw`gap-1`}>
-        {ChatListData?.length === 0 ? (
+        {chatList?.data?.data?.length === 0 ? (
           <Text
             style={tw`font-DegularDisplayDemoMedium text-xl text-deepBlue100 text-center`}
           >
             Your Chat List
           </Text>
         ) : (
-          ChatListData?.map((chatItem) => {
+          chatList?.data?.data?.map((chatItem, index) => {
             return (
               <ChatListProfile
-                key={chatItem?.id}
+                key={index}
                 chatItem={chatItem}
-                onPress={() => router.push("/company/messaging")}
+                onPress={() =>
+                  router.push({
+                    pathname: "/company/messaging",
+                    params: { receiverId: chatItem?.user_id },
+                  })
+                }
               />
             );
           })
@@ -63,4 +90,4 @@ const chats = () => {
   );
 };
 
-export default chats;
+export default Chats;
