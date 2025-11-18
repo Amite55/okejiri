@@ -21,7 +21,7 @@ import { SvgXml } from "react-native-svg";
 const Refer_Friend = () => {
   const { referCode } = useLocalSearchParams();
 
-  // ================== pagination states ==================
+  // ================== pagination states ==================//
   const [page, setPage] = useState<number>(1);
   const [referrals, setReferrals] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -29,11 +29,11 @@ const Refer_Friend = () => {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [isFirstLoading, setIsFirstLoading] = useState<boolean>(true);
 
-  // ================== API hook (lazy) ==================
+  // ================== API hook (lazy) ==================//
   const [getMyReferrals, { isLoading, isFetching }] =
     useLazyGetMyReferralsQuery();
 
-  // ================== copy to clipboard ==================
+  // ================== copy to clipboard ==================//
   const copyToClipboard = async (text: string) => {
     await Clipboard.setStringAsync(text);
     Toast.show({
@@ -42,7 +42,7 @@ const Refer_Friend = () => {
     });
   };
 
-  // ================== load referrals (with pagination) ==================
+  // ================== load referrals (with pagination) ==================//
   const loadReferrals = async (pageNum = 1, isRefresh = false) => {
     try {
       if ((isLoading || isFetching || loadingMore) && !isRefresh) return;
@@ -92,14 +92,14 @@ const Refer_Friend = () => {
     }
   };
 
-  // ================== pull to refresh ==================
+  // ================== pull to refresh ==================//
   const handleRefresh = () => {
     setPage(1);
     setHasMore(true);
     loadReferrals(1, true);
   };
 
-  // ================== infinite scroll load more ==================
+  // ================== infinite scroll load more ==================//
   const handleLoadMore = () => {
     if (!hasMore) return;
     if (!loadingMore && !isFetching && !isLoading && page > 1) {
@@ -107,7 +107,7 @@ const Refer_Friend = () => {
     }
   };
 
-  // ================== initial load ==================
+  // ================== initial load ==================//
   useEffect(() => {
     loadReferrals(1, true);
   }, []);
@@ -153,7 +153,7 @@ const Refer_Friend = () => {
     );
   };
 
-  // ================== initial loader ==================
+  // ================== initial loader ==================//
   if (isFirstLoading && !refreshing && referrals.length === 0) {
     return (
       <View style={tw`flex-1 bg-base_color justify-center items-center`}>
@@ -161,8 +161,7 @@ const Refer_Friend = () => {
       </View>
     );
   }
-
-  // ================== main render ==================
+  // ================== main render ==================//
   return (
     <View style={tw`bg-base_color flex-1`}>
       <FlatList
