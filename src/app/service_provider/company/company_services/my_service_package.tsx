@@ -25,7 +25,7 @@ const My_Service_Package = () => {
     userProfileInfo?.data || {};
 
   const [createConnectAccount] = useCreateConnectAccountMutation();
-  const [fetchMyServicePackages, { isFetching }] =
+  const [fetchMyServicePackages, { data: serviceData, isFetching }] =
     useLazyMy_service_packagesQuery();
 
   const [OnboardingUrl, setOnboardingUrl] = useState<string | null>(null);
@@ -35,7 +35,7 @@ const My_Service_Package = () => {
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const { id } = useLocalSearchParams();
-  console.log(id, "id");
+  console.log("my service package service id         ======================  ", id);
 
   // ======================== LOAD SERVICE PACKAGES ==========================
   const loadServices = async (pageNum = 1, isRefresh = false) => {
@@ -43,8 +43,8 @@ const My_Service_Package = () => {
       if ((isFetching || loadingMore) && !isRefresh) return;
       if (!isRefresh) setLoadingMore(true);
 
-      const res = await fetchMyServicePackages({ pageNum, id }).unwrap();
-      // console.log(res, "respos...........");
+      const res = await fetchMyServicePackages({ pageNum, service_id: id }).unwrap();
+      console.log("respos...........", JSON.stringify(res, null, 2));
 
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
@@ -104,85 +104,91 @@ const My_Service_Package = () => {
   };
 
   // ======================== RENDER SERVICE ITEM ==========================
-  const renderServiceItem = ({ item }: any) => (
-    <View style={tw`bg-white p-4 rounded-2xl mb-4`}>
-      {/* Image */}
-      <View style={tw`justify-center items-center`}>
-        <Image
-          style={tw`h-44 w-[98%] rounded-2xl`}
-          source={{ uri: item?.image }}
-        />
-      </View>
+  const renderServiceItem = ({ item }: any) => {
+    console.log(" ============== image address ====================== ", item?.image)
+    return (
 
-      {/* Title + Edit */}
-      <View style={tw`flex-row justify-between items-center my-4`}>
-        <View style={tw`w-[90%]`}>
-           <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-          {item?.title}
-        </Text>
+      <View style={tw`bg-white p-4 rounded-2xl mb-4`}>
+        {/* Image */}
+        <View style={tw`justify-center items-center`}>
+          <Image
+            style={tw`h-44 w-[98%] rounded-2xl`}
+            source={{ uri: item?.image }}
+            resizeMode="cover"
+          />
         </View>
-       
+
+        {/* Title + Edit */}
+        <View style={tw`flex-row justify-between items-center my-4`}>
+          <View style={tw`w-[90%]`}>
+            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
+              {item?.title}
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/service_provider/company/company_services/edit_package",
+                params: {
+                  id: item.id
+                }
+              })
+            }
+            style={tw`p-2`}
+          >
+            <SvgXml xml={IconEditPen} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Package Detail Items */}
+        {item?.package_detail_items?.length > 0 && (
+          <View style={tw`pl-8 gap-2`}>
+            {item.package_detail_items.map((detail: any, index: number) => (
+              <View key={index} style={tw`flex-row items-center gap-2 w-[88%]`}>
+                <View style={tw`w-2 h-2 bg-black`} />
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-black text-xl`}
+                >
+                  {detail?.item}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Delivery Time */}
         <TouchableOpacity
           onPress={() =>
-            router.push({
-              pathname: "/service_provider/individual/my_services/edit_package",
-              params: {
-                id : item.id
-              }
-            })
+            router.push(
+              "/service_provider/individual/my_services/delivery_extension"
+            )
           }
-          style={tw`p-2`}
+          style={tw`flex-row justify-between items-center px-3 my-3 py-2`}
         >
-          <SvgXml xml={IconEditPen} />
+          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+            Expected delivery time
+          </Text>
+          <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
+            {item?.delivery_time} hours
+          </Text>
         </TouchableOpacity>
-      </View>
 
-      {/* Package Detail Items */}
-      {item?.package_detail_items?.length > 0 && (
-        <View style={tw`pl-8 gap-2`}>
-          {item.package_detail_items.map((detail: any, index: number) => (
-            <View key={index} style={tw`flex-row items-center gap-2 w-[88%]`}>
-              <View style={tw`w-2 h-2 bg-black`} />
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-black text-xl`}
-              >
-                {detail?.item}
-              </Text>
-            </View>
-          ))}
+        {/* Price */}
+        <View
+          style={tw`bg-primary w-full h-14 rounded-full flex-row justify-between items-center px-4 my-2`}
+        >
+          <Text style={tw`text-white font-DegularDisplayDemoMedium text-3xl`}>
+            Cost:
+          </Text>
+          <Text style={tw`text-white font-DegularDisplayDemoMedium text-3xl`}>
+            ₦ {item?.price}
+          </Text>
         </View>
-      )}
-
-      {/* Delivery Time */}
-      <TouchableOpacity
-        onPress={() =>
-          router.push(
-            "/service_provider/individual/my_services/delivery_extension"
-          )
-        }
-        style={tw`flex-row justify-between items-center px-3 my-3 py-2`}
-      >
-        <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-          Expected delivery time
-        </Text>
-        <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
-          {item?.delivery_time} hours
-        </Text>
-      </TouchableOpacity>
-
-      {/* Price */}
-      <View
-        style={tw`bg-primary w-full h-14 rounded-full flex-row justify-between items-center px-4 my-2`}
-      >
-        <Text style={tw`text-white font-DegularDisplayDemoMedium text-3xl`}>
-          Cost:
-        </Text>
-        <Text style={tw`text-white font-DegularDisplayDemoMedium text-3xl`}>
-          ₦ {item?.price}
-        </Text>
       </View>
-    </View>
-  );
+    );
+
+  }
 
   // ======================== WEBVIEW ==========================
   if (OnboardingUrl) {
@@ -206,7 +212,7 @@ const My_Service_Package = () => {
 
 
   //  ================= test console;
-  // console.log("==================== services  ========================= ", JSON.stringify(services, null, 2))
+  // console.log("==================== services  ========================= ", JSON.stringify(serviceData, null, 2))
 
 
   // ======================== MAIN RETURN ==========================
@@ -242,15 +248,15 @@ const My_Service_Package = () => {
                 <TouchableOpacity
                   onPress={() =>
                     router.push({
-                      pathname: "/service_provider/individual/my_services/add_package",
-                      // params:{
-                      //   id: item.id
-                      // }
+                      pathname: "/service_provider/company/company_services/add_package",
+                      params: {
+                        id: id
+                      }
                     })
                   }
                   style={tw`flex-row justify-center items-center gap-2 px-6 py-2 bg-primary rounded-full`}
                 >
-                  <SvgXml xml={IconPlus} width={10}/>
+                  <SvgXml xml={IconPlus} width={10} />
                   <Text
                     style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
                   >
