@@ -1,4 +1,4 @@
-import { IconRightArrowCornerPrimaryColor, IconSearch } from "@/assets/icons";
+import { IconRightArrowCornerPrimaryColor } from "@/assets/icons";
 import BookingCard from "@/src/Components/BookingCard";
 import ServiceCard from "@/src/Components/ServiceCard";
 
@@ -26,9 +26,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-import { TextInput } from "react-native-gesture-handler";
-import { SvgXml } from "react-native-svg";
 
 const Company_Home_Index = () => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -137,7 +134,7 @@ const Company_Home_Index = () => {
         }
       />
       {/* ======================= search bar -=-o--------------------------- */}
-      <View
+      {/* <View
         style={tw`w-full h-14 flex-row justify-start items-center px-4 gap-2 bg-white rounded-full my-3`}
       >
         <SvgXml xml={IconSearch} />
@@ -145,9 +142,9 @@ const Company_Home_Index = () => {
           placeholder="Search service"
           placeholderTextColor={"#535353"}
         />
-      </View>
+      </View> */}
       {/* ======================== benner section start hare ==================== */}
-      <View style={tw`flex-1 justify-center items-center `}>
+      <View style={tw`flex-1 justify-center items-center  pt-2`}>
         <UserCarousel />
       </View>
 

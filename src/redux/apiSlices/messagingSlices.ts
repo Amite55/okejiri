@@ -55,8 +55,8 @@ export const messagingSlices = api.injectEndpoints({
       providesTags: ["search"],
     }),
     getChartList: builder.query({
-      query: ({ role, per_page, page }) => ({
-        url: `/chat-list?per_page=${per_page}&role=${role}&page=${page}`,
+      query: ({ search, per_page, page }) => ({
+        url: `/chat-list?per_page=${per_page}&search=${search}&page=${page}`,
         method: "GET",
       }),
       providesTags: ["message"],
@@ -74,4 +74,5 @@ export const {
   useSearchNewUserQuery,
   useEditMessageMutation,
   useGetChartListQuery,
+  useLazyGetChartListQuery,
 } = messagingSlices;
