@@ -292,7 +292,7 @@ const Wallet_Index = () => {
           </View>
         ) : (
           <View style={tw`gap-4 my-3`}>
-            {transactions.map((transaction) => {
+            {transactions.map((transaction: any) => {
               const displayName = getDisplayName(transaction);
               const kycStatus = getKYCStatus(transaction);
 

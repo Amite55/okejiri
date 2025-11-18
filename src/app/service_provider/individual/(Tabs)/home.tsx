@@ -1,13 +1,9 @@
 import {
   IconBalance,
   IconRightArrowCornerPrimaryColor,
-  IconSettingWhite
+  IconSettingWhite,
 } from "@/assets/icons";
-import {
-  ImgComplete,
-  ImgNew,
-  ImgPending
-} from "@/assets/images/image";
+import { ImgComplete, ImgNew, ImgPending } from "@/assets/images/image";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import TransactionsCard from "@/src/Components/TransactionsCard";
@@ -15,16 +11,13 @@ import UserCard from "@/src/Components/UserCard";
 import tw from "@/src/lib/tailwind";
 import { useHomeDataQuery } from "@/src/redux/apiSlices/companyProvider/homeSlices";
 import { useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/orderSlices";
-import { useRecentOrderQuery, useRecentTransactionsQuery } from "@/src/redux/apiSlices/IndividualProvider/homeSlices";
+import {
+  useRecentOrderQuery,
+  useRecentTransactionsQuery,
+} from "@/src/redux/apiSlices/IndividualProvider/homeSlices";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
 
@@ -36,40 +29,46 @@ const dropdownData = [
 ];
 
 const Individual_Service_Provider_Index = () => {
-
-
-
   const [value, setValue] = useState("this_week");
   const [isFocus, setIsFocus] = useState(false);
 
-
   // data fetch - START
-  const { data: homeData, isLoading: homeDataLoading } = useHomeDataQuery(value);
+  const { data: homeData, isLoading: homeDataLoading } =
+    useHomeDataQuery(value);
 
-  const { data: recentOrder, isLoading: recentOrderLoading } = useRecentOrderQuery("New");
-  const { data: recentTransaction, isLoading: recentTransactionLoading } = useRecentTransactionsQuery({});
+  const { data: recentOrder, isLoading: recentOrderLoading } =
+    useRecentOrderQuery("New");
+  const { data: recentTransaction, isLoading: recentTransactionLoading } =
+    useRecentTransactionsQuery({});
   // const recentOrder = recentOrderData?.data?.data.slice(0,3) || [];
 
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
-
 
   // if()
   // console.log("++++++++++ recent order data =================== ", recentOrder);
   // console.log("++++++++++ recent transaction order data inside =================== ", recentTransaction?.data.data);
   // data fetch - END
 
-
   // state for fetch data;
   const formateDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    const options = { weekday: "short", day: "2-digit", month: "short", year: "numeric" };
-    const parts = date.toLocaleDateString("en-US", options).split(" ");
+    const options = {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    };
+    const parts = date.toLocaleDateString("en-US", options as any).split(" ");
     // console.log(date.toLocaleDateString("en-US", options))
-    const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${parts[3]}`;
+    const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${
+      parts[3]
+    }`;
     return formatted;
-  }
+  };
 
-  const [descriptions, setDescriptions] = useState<{ [key: string]: string }>({});
+  const [descriptions, setDescriptions] = useState<{ [key: string]: string }>(
+    {}
+  );
 
   useEffect(() => {
     if (recentOrder?.data?.data?.length) {
@@ -77,20 +76,20 @@ const Individual_Service_Provider_Index = () => {
         for (const item of recentOrder.data.data) {
           try {
             const response = await fetchOrderItem(item.id).unwrap();
-            const count = response?.data?.provider?.provider_services?.length ?? 0;
-            setDescriptions(prev => ({ ...prev, [item.id]: `${count} ${count === 1 ? "service" : "services"}` }));
+            const count =
+              response?.data?.provider?.provider_services?.length ?? 0;
+            setDescriptions((prev) => ({
+              ...prev,
+              [item.id]: `${count} ${count === 1 ? "service" : "services"}`,
+            }));
           } catch (err) {
-            setDescriptions(prev => ({ ...prev, [item.id]: "N/A" }));
+            setDescriptions((prev) => ({ ...prev, [item.id]: "N/A" }));
           }
         }
       };
       fetchDescriptions();
     }
   }, [recentOrder]);
-
-
-
-
 
   return (
     <ScrollView
@@ -107,8 +106,8 @@ const Individual_Service_Provider_Index = () => {
           router.push({
             pathname: "/notification_Global/notifications",
             params: {
-              provider_type: "individual"
-            }
+              provider_type: "individual",
+            },
           })
         }
       />
@@ -223,16 +222,17 @@ const Individual_Service_Provider_Index = () => {
       {/* recent order  */}
       <View style={tw`gap-3 my-4`}>
         {recentOrder?.data?.data.slice(0, 3).map((item: any, index: any) => {
-
           return (
             <UserCard
               key={index}
               ProfileName={item.user.name}
-              isProfileBadge={item.user.kyc_status === "Verified" ? true : false}
+              isProfileBadge={
+                item.user.kyc_status === "Verified" ? true : false
+              }
               Date={formateDate(item.created_at)}
               Description={descriptions[item.id]}
               ImgProfileImg={item.user.avatar}
-            // onPress={() => router.push("")}
+              // onPress={() => router.push("")}
             />
           );
         })}
@@ -240,27 +240,29 @@ const Individual_Service_Provider_Index = () => {
 
       {/* ------------------------ Recent transactions ----------------- */}
       <View style={tw`mt-4`}>
-              <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-                Recent transactions
-              </Text>
-      
-              <View style={tw`gap-6 my-4`}>
-                {recentTransaction?.data.data.map((item: any, index: any) => {
-                  return (
-                    <TransactionsCard
-                      key={index}
-                      price={item.amount}
-                      profileBadge={item.sender.kyc_status === "Verified"? true: false}
-                      type={item.direction}
-                      varient={item.transaction_type}
-                      title="Service title goes here"
-                      transactionIcon={IconRightArrowCornerPrimaryColor}
-                      userName={item.sender.name}
-                    />
-                  );
-                })}
-              </View>
-            </View>
+        <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
+          Recent transactions
+        </Text>
+
+        <View style={tw`gap-6 my-4`}>
+          {recentTransaction?.data.data.map((item: any, index: any) => {
+            return (
+              <TransactionsCard
+                key={index}
+                price={item.amount}
+                profileBadge={
+                  item.sender.kyc_status === "Verified" ? true : false
+                }
+                type={item.direction}
+                varient={item.transaction_type}
+                title="Service title goes here"
+                transactionIcon={IconRightArrowCornerPrimaryColor}
+                userName={item.sender.name}
+              />
+            );
+          })}
+        </View>
+      </View>
     </ScrollView>
   );
 };

@@ -19,6 +19,7 @@ import {
   useLogoutMutation,
   useProfileQuery,
 } from "@/src/redux/apiSlices/authSlices";
+import { useGetAvailableBalanceQuery } from "@/src/redux/apiSlices/stripeSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -33,7 +34,19 @@ const Account = () => {
 
   const [logout] = useLogoutMutation({});
   const { data: userProfileInfo } = useProfileQuery({});
-
+  const stripeAccountId = userProfileInfo?.data?.stripe_account_id;
+  const {
+    data: availableAmount,
+    isLoading: availableAmountLoading,
+    refetch: refetchAvailableBalance,
+  } = useGetAvailableBalanceQuery(String(stripeAccountId), {
+    skip: !stripeAccountId,
+  });
+  const referralBonus = Number(userProfileInfo?.data?.referral_balance) || 0;
+  const earned = Number(availableAmount?.data?.available?.[0]?.amount) || 0;
+  const earnedFormatted = earned;
+  const referralFormatted = referralBonus;
+  const totalBalance = earnedFormatted + referralFormatted;
   // -------------- handle logout --------------
   const handleLogoutUser = async () => {
     const token = await AsyncStorage.getItem("token");
@@ -44,7 +57,7 @@ const Account = () => {
       await AsyncStorage.removeItem("providerTypes");
       await AsyncStorage.removeItem("token");
       router.replace("/chose_roll");
-    } catch (e) {
+    } catch (e: any) {
       console.log("Error reading role from AsyncStorage", e);
       router.push({
         pathname: "/Toaster",
@@ -96,7 +109,6 @@ const Account = () => {
         activeOpacity={0.8}
         onPress={() =>
           router.push({
-            // pathname: "/company/wallets/wallet",
             pathname:
               "/service_provider/individual/individual_user_wallet/wallet",
             params: {
@@ -119,10 +131,7 @@ const Account = () => {
               Available balance
             </Text>
             <Text style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}>
-              ₦
-              {userProfileInfo?.data?.wallet_balance
-                ? userProfileInfo?.data?.wallet_balance
-                : 0}
+              ₦{totalBalance ? totalBalance : 0}
             </Text>
           </View>
         </View>
@@ -145,7 +154,6 @@ const Account = () => {
         <SettingsCard
           title=" My services"
           onPress={() =>
-            // router.push("/service_provider/individual/my_services/my_service")
             router.push(
               "/service_provider/company/company_services/my_services"
             )
