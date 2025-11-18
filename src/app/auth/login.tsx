@@ -12,7 +12,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, router } from "expo-router";
 import { Formik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -31,61 +31,90 @@ const LoginIndex = () => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [isEyeShow, setIsEyeShow] = useState<boolean>(false);
   const [isVisible, setIsVisible] = useState<boolean>(true);
+  const [savedEmail, setSavedEmail] = useState("");
+  const [savedPassword, setSavedPassword] = useState("");
   const providerTypes = useProviderTypes();
   const roll = useRoll();
-
   // ------------------------ api end point ---------------------
   const [credentials, { isLoading: isLoadingLogin }] = useLoginMutation();
   const { data: userProfileInfo, isLoading } = useProfileQuery({});
 
   // ----------------- handel login ---------------------
   const handleLogin = async (formData: any) => {
+    Keyboard.dismiss();
     const payload = {
       ...formData,
       role: roll,
       provider_type: providerTypes ? providerTypes : "",
     };
-    if (roll === "USER") {
-      delete payload.provider_type;
-      const res = await credentials(payload).unwrap();
-      if (res?.data?.user?.role === roll) {
-        await AsyncStorage.setItem("token", res?.data?.access_token);
-        router.replace("/company/(Tabs)");
-        if (userProfileInfo?.data?.kyc_status === "Unverified") {
-          setTimeout(() => {
-            router.push("/kyc_completed_modal");
-          }, 500);
-        }
-      }
-    } else if (roll === "PROVIDER") {
-      if (providerTypes === "Individual") {
-        const res = await credentials(payload).unwrap();
-        if (res?.data?.user?.provider_type === providerTypes) {
-          await AsyncStorage.setItem("token", res?.data?.access_token);
-          router.replace("/service_provider/individual/(Tabs)/home");
-        }
-      } else if (providerTypes === "Company") {
-        const res = await credentials(payload).unwrap();
-        if (res?.data?.user?.provider_type === providerTypes) {
-          await AsyncStorage.setItem("token", res?.data?.access_token);
-          router.replace("/service_provider/company/home");
-        }
-      }
-    }
     try {
+      if (roll === "USER") {
+        delete payload.provider_type;
+        const res = await credentials(payload).unwrap();
+        // ------------- login info save async storage -------------
+        if (isChecked) {
+          await AsyncStorage.setItem(
+            "loginInfo",
+            JSON.stringify({
+              email: formData.email,
+              password: formData.password,
+            })
+          );
+        } else {
+          await AsyncStorage.removeItem("loginInfo");
+        }
+        // dynamic route change ========================😩
+        if (res?.data?.user?.role === roll) {
+          await AsyncStorage.setItem("token", res?.data?.access_token);
+          router.replace("/company/(Tabs)");
+          if (userProfileInfo?.data?.kyc_status === "Unverified") {
+            setTimeout(() => {
+              router.push("/kyc_completed_modal");
+            }, 500);
+          }
+        }
+      } else if (roll === "PROVIDER") {
+        if (providerTypes === "Individual") {
+          const res = await credentials(payload).unwrap();
+          if (res?.data?.user?.provider_type === providerTypes) {
+            await AsyncStorage.setItem("token", res?.data?.access_token);
+            router.replace("/service_provider/individual/(Tabs)/home");
+          }
+        } else if (providerTypes === "Company") {
+          const res = await credentials(payload).unwrap();
+          if (res?.data?.user?.provider_type === providerTypes) {
+            await AsyncStorage.setItem("token", res?.data?.access_token);
+            router.replace("/service_provider/company/home");
+          }
+        }
+      }
     } catch (error) {
       console.log(error, "login fail -----");
       router.push({
         pathname: `/Toaster`,
-        params: { res: error?.message || error },
+        params: {
+          res: error?.message || error || "Login Fail Please Try Again",
+        },
       });
+      if (error?.metadata?.redirect_login === true) {
+        setTimeout(() => {
+          router.push({
+            pathname: `/auth/login`,
+          });
+        }, 2000);
+      }
     }
   };
 
+  // ============== remember me checkbox handler ================
   const handleCheckBox = async () => {
     setIsChecked(!isChecked);
+    try {
+      await AsyncStorage.setItem("rememberMe", JSON.stringify(isChecked));
+    } catch (error) {
+      console.log(error, "User Info Storage not save ---->");
+    }
   };
-
   const validate = (values: any) => {
     const errors: any = {};
     if (!values.email) {
@@ -101,6 +130,24 @@ const LoginIndex = () => {
     }
     return errors;
   };
+
+  // -------------------- default render ---------------------
+  useEffect(() => {
+    const loadData = async () => {
+      const check = await AsyncStorage.getItem("rememberMe");
+      const savedInfo = await AsyncStorage.getItem("loginInfo");
+
+      if (check === "true" && savedInfo) {
+        const parsed = JSON.parse(savedInfo);
+
+        setIsChecked(true);
+        setSavedEmail(parsed.email);
+        setSavedPassword(parsed.password);
+      }
+    };
+
+    loadData();
+  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -124,7 +171,12 @@ const LoginIndex = () => {
             />
           </View>
           <Formik
-            initialValues={{ email: "", password: "" }}
+            enableReinitialize={true}
+            initialValues={{
+              email: savedEmail,
+              password: savedPassword,
+            }}
+            // initialValues={{ email: "", password: "" }}
             onSubmit={(values) => {
               handleLogin(values);
             }}

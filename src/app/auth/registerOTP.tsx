@@ -2,7 +2,10 @@ import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useVerifyOtpMutation } from "@/src/redux/apiSlices/authSlices";
+import {
+  useForgotPasswordMutation,
+  useVerifyOtpMutation,
+} from "@/src/redux/apiSlices/authSlices";
 import { PrimaryColor } from "@/utils/utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
@@ -23,11 +26,14 @@ const RegisterOTP = () => {
   const { email } = useLocalSearchParams();
 
   // ------------------------ api end point ---------------------
-  const [otpVerify, { isLoading: isLoadingRegister }] = useVerifyOtpMutation();
+  const [otpVerify, { isLoading: isLoadingRegister, reset }] =
+    useVerifyOtpMutation();
+  const [resendOtp, { isLoading: isLoadingResend }] =
+    useForgotPasswordMutation();
 
   const handleResendOtp = async () => {
     try {
-      const response = await otpVerify({ email }).unwrap();
+      const response = await resendOtp({ email }).unwrap();
       if (response) {
         router.push({
           pathname: "/Toaster",
@@ -46,7 +52,7 @@ const RegisterOTP = () => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS/Android alada behavior
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -114,7 +120,10 @@ const RegisterOTP = () => {
             <View style={tw`w-full items-end mt-1`}>
               <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => handleResendOtp()}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  handleResendOtp();
+                }}
               >
                 <Text style={tw`text-primary font-semibold text-[12px]`}>
                   Send Again
