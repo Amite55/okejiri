@@ -1039,3 +1039,13 @@ export const IconCheckBoxChecked= `<svg width="30" height="30" viewBox="0 0 30 3
 </g>
 </svg>
 `
+
+export const IconRightArrowBlack = `<svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M7.68192 7.77766L1.53617 14L0 12.4447L5.37767 7L0 1.55531L1.53617 0L7.68192 6.22234C7.88559 6.42861 8 6.70834 8 7C8 7.29166 7.88559 7.57139 7.68192 7.77766Z" fill="black"/>
+</svg>
+` 
+
+export const IconLeftArrowWhite = `<svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16 8.01244H3.97353L8.64461 12.5684L7.17685 14L0 7L7.17685 -9.53674e-07L8.64461 1.43159L3.97353 5.98756H16V8.01244Z" fill="white"/>
+</svg>
+`
