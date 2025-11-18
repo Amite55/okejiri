@@ -20,6 +20,7 @@ import {
   useProfileQuery,
 } from "@/src/redux/apiSlices/authSlices";
 import { useGetAvailableBalanceQuery } from "@/src/redux/apiSlices/stripeSlices";
+import { useRoleSwitchMutation } from "@/src/redux/apiSlices/userProvider/account/roleSwitchSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -42,6 +43,8 @@ const Account = () => {
   } = useGetAvailableBalanceQuery(String(stripeAccountId), {
     skip: !stripeAccountId,
   });
+  const [switchRole] = useRoleSwitchMutation();
+
   const referralBonus = Number(userProfileInfo?.data?.referral_balance) || 0;
   const earned = Number(availableAmount?.data?.available?.[0]?.amount) || 0;
   const earnedFormatted = earned;
@@ -62,6 +65,26 @@ const Account = () => {
       router.push({
         pathname: "/Toaster",
         params: { res: e?.message || e },
+      });
+    }
+  };
+
+  // =-======================== Handle role switch ===========================//
+  const handleRoleSwitch = async () => {
+    try {
+      const res = await switchRole({}).unwrap();
+
+      if (res) {
+        await AsyncStorage.setItem("token", res?.data?.access_token);
+        await AsyncStorage.setItem("roll", res?.data?.user?.role);
+        await AsyncStorage.removeItem("providerTypes");
+        router.replace("/auth/contact");
+      }
+    } catch (error) {
+      console.log(error, "role not switched");
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
       });
     }
   };
@@ -148,7 +171,7 @@ const Account = () => {
       <View style={tw`gap-3 mb-6`}>
         <SettingsCard
           title=" Switch to User"
-          onPress={() => router.push("/company/(Tabs)")}
+          onPress={() => handleRoleSwitch()}
           fastIcon={IconSwitch}
         />
         <SettingsCard

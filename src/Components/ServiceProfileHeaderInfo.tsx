@@ -21,6 +21,10 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
   } = useProfileQuery({}, { refetchOnMountOrArgChange: true });
   const { data: notificationData, isLoading: isNotificationLoading } =
     useGetNotificationsQuery({ page: 1 });
+  // console.log(
+  //   userProfileInfo?.data,
+  //   "this is profile checking ----------------------->"
+  // );
 
   const notificationCounter =
     notificationData?.data?.unread_notifications_count;
