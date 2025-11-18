@@ -49,7 +49,7 @@ const My_Service = () => {
       if (!isRefresh) setLoadingMore(true);
 
       const res = await fetchMyServices(pageNum).unwrap();
-      console.log("respos...........", JSON.stringify(res, null, 2));
+      // console.log("respos...........", JSON.stringify(res, null, 2));
 
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
@@ -125,7 +125,7 @@ const My_Service = () => {
 
   // ======================== RENDER SERVICE ITEM ==========================
   const renderServiceItem = (item: any) => {
-    // console.log(" ================== item ", JSON.stringify(item, null, 2))
+    // console.log(" ================== item my services ===============  ", JSON.stringify(item, null, 2))
     return (
       <View style={tw` w-[48%] p-1`}>
         <View style={tw`rounded-2xl`}>
@@ -143,7 +143,7 @@ const My_Service = () => {
             onPress={()=> router.push({
               pathname: "/service_provider/company/company_services/my_service_package",
               params: {
-                id: item.id
+                id: item.service_id
               }
             })}
             style={tw`absolute bottom-3 left-3 right-3   p-2   bg-black/20 rounded-full `}
