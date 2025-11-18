@@ -1,47 +1,43 @@
 import * as Location from "expo-location";
+import { router } from "expo-router";
+
 import { useState } from "react";
 
-const useLocation = () => {
-  const [longitude, setLongitude] = useState<number | null>(null);
-  const [latitude, setLatitude] = useState<number | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+interface ILocation {
+  longitude: number;
+  latitude: number;
+}
 
-  const getUserLocation = async () => {
-    try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      console.log("Permission Status:", status);
-      if (status !== "granted") {
-        setErrorMsg("Permission denied");
-        return null;
-      }
+export const useCheckLocation = () => {
+  const [location, setLocation] = useState<ILocation | null>(null);
+  const [loading, setLoading] = useState(false);
 
-      let { coords } = await Location.getCurrentPositionAsync({});
-      console.log("Coords:", coords);
+  const getLocation = async () => {
+    setLoading(true);
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      // router?.dismiss();
+      setLoading(false);
+      router?.push({
+        pathname: "/Toaster",
+        params: { res: "Location permission not granted" },
+      });
 
-      if (coords) {
-        setLongitude(coords.longitude);
-        setLatitude(coords.latitude);
+      await Location.requestBackgroundPermissionsAsync();
+    }
 
-        return {
-          longitude: coords.longitude,
-          latitude: coords.latitude,
-        };
-      }
+    let location = await Location.getCurrentPositionAsync();
 
-      return null;
-    } catch (error: any) {
-      console.log("Location error:", error);
-      setErrorMsg(error?.message || "Something went wrong");
-      return null;
+    const { latitude, longitude } = location.coords;
+
+    if (latitude && longitude) {
+      setLocation({
+        latitude,
+        longitude,
+      });
+      setLoading(false);
     }
   };
 
-  return {
-    longitude,
-    latitude,
-    errorMsg,
-    getUserLocation,
-  };
+  return { location, loading, getLocation, setLoading };
 };
-
-export default useLocation;

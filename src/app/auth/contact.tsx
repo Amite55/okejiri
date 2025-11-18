@@ -2,11 +2,13 @@ import { IconLocation, IconRightArrow } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
 import LocationAccessModal from "@/src/Components/LocationAccessModal";
-import useLocation from "@/src/hooks/useLocation";
+import RoleChooseSkeleton from "@/src/Components/skeletons/RoleChooseSkeleton";
+import { useCheckLocation } from "@/src/hooks/useLocation";
 import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { useCompletePersonalizationMutation } from "@/src/redux/apiSlices/personalizationSlice";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -30,35 +32,33 @@ const Contact = () => {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [about, setAbout] = useState("");
-  const [isLatitude, setIsLatitude] = useState(null);
-  const [isLongitude, setIsLongitude] = useState(null);
   const [locationModalVisible, setLocationModal] = useState(false);
   const roll = useRoll();
   const providerTypes = useProviderTypes();
-  const [locatinLoading, setLocatinLoading] = useState(false);
-  const { longitude, latitude, errorMsg, getUserLocation } = useLocation();
+  const { getLocation, location, loading: locatinLoading } = useCheckLocation();
 
-  console.log(locatinLoading, "status >>>>>>>");
+  // console.log(longitude, "status >>>>>>>");
 
   // ------------------------ api end point ---------------------
   const [information, { isLoading: isLoadingPersonalization }] =
-    useCompletePersonalizationMutation();
+    useCompletePersonalizationMutation({});
+  const { data: getProfileData, isLoading: isLoadingProfile } = useProfileQuery(
+    {}
+  );
 
   const handleLocation = async () => {
-    const loc = await getUserLocation(); // fresh updated values
+    await getLocation();
 
-    if (loc) {
-      setLocatinLoading(true);
-      setIsLatitude(loc.latitude);
-      setIsLongitude(loc.longitude);
-      console.log(loc.latitude, loc.longitude, "User location captured");
-    } else {
-      setLocatinLoading(false);
-      console.log("Failed to get location");
-
+    if (location?.latitude && location?.longitude) {
       router.push({
         pathname: "/Toaster",
-        params: { res: errorMsg || "Failed to get location" },
+        params: { res: "Location captured successfully" },
+      });
+    } else {
+      console.log("Failed to get location");
+      router.push({
+        pathname: "/Toaster",
+        params: { res: "Failed to get location" },
       });
     }
   };
@@ -77,16 +77,18 @@ const Contact = () => {
         phone,
         address,
         about,
-        latitude: isLatitude ? isLatitude : null,
-        longitude: isLongitude ? isLongitude : null,
+        id: getProfileData?.data?.id,
+        latitude: location ? location.latitude : null,
+        longitude: location ? location.longitude : null,
         role: roll,
-        provider_type: providerTypes ? providerTypes : " ",
+        provider_type: providerTypes ? providerTypes : "",
       };
       if (roll === "USER") {
         delete info.about;
         delete info.provider_type;
         const res = await information(info).unwrap();
-        if (res) {
+        // ------------ redirect ---------------------
+        if (res?.status === "success") {
           router.replace("/company/(Tabs)");
         }
       } else if (roll === "PROVIDER") {
@@ -96,6 +98,7 @@ const Contact = () => {
             params: { jsonContactInfo: JSON.stringify(info) },
           });
         } else if (providerTypes === "Company") {
+          console.log(info, "this is contact info");
           router.replace({
             pathname: "/auth/setup_business_profile",
             params: { jsonContactInfo: JSON.stringify(info) },
@@ -109,6 +112,10 @@ const Contact = () => {
       });
     }
   };
+
+  if (isLoadingProfile || isLoadingPersonalization) {
+    return <RoleChooseSkeleton />;
+  }
 
   return (
     <KeyboardAvoidingView
@@ -149,6 +156,7 @@ const Contact = () => {
                 style={tw`flex-1 text-base font-PoppinsMedium `}
                 placeholder="Your number"
                 onChangeText={(value) => setPhone(value)}
+                keyboardType="numeric"
               />
             </View>
             <Text style={tw`text-black font-medium text-base ml-3 my-1`}>
@@ -166,7 +174,11 @@ const Contact = () => {
             </View>
 
             {locatinLoading ? (
-              <ActivityIndicator size="large" color="#0000ff" />
+              <ActivityIndicator
+                size="small"
+                color="#0000ff"
+                style={tw`mt-4`}
+              />
             ) : (
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -197,6 +209,7 @@ const Contact = () => {
                     style={tw`flex-1 text-base font-PoppinsMedium `}
                     placeholder="Write a bio about you"
                     onChangeText={(value) => setAbout(value)}
+                    multiline
                   />
                 </View>
               </View>
