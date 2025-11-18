@@ -18,7 +18,7 @@ export const companyPortfolioSlice = api.injectEndpoints({
         },
         body: requestBody,
       }),
-      invalidatesTags: ["portfolio"],
+      invalidatesTags: ["portfolio", "addPortfolio"],
     }),
     updatePortfolio: builder.mutation({
       query: ({ id, requestBody }) => ({
@@ -29,7 +29,7 @@ export const companyPortfolioSlice = api.injectEndpoints({
         },
         body: requestBody,
       }),
-      invalidatesTags: ["portfolio"],
+      invalidatesTags: ["portfolio", "addPortfolio"],
     }),
     deletePortfolios: builder.mutation({
       query: (id) => ({

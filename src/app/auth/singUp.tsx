@@ -80,7 +80,6 @@ const SingUp = () => {
   }
 
   const handelRegister = async (value: any) => {
-    console.log(value);
     try {
       const payload = {
         ...value,

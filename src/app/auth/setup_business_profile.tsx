@@ -1,16 +1,16 @@
 import { IconCameraProfile } from "@/assets/icons";
 import { ImgCompanyLogo } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
+import ProviderProfileSkeleton from "@/src/Components/skeletons/ProviderProfileSkeleton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import {
-  useCompletePersonalizationMutation,
-  useGetServicesQuery,
-} from "@/src/redux/apiSlices/personalizationSlice";
+import { useGetServicesQuery } from "@/src/redux/apiSlices/companyProvider/account/services/servicesSlice";
+import { useCompletePersonalizationMutation } from "@/src/redux/apiSlices/personalizationSlice";
 import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -26,28 +26,19 @@ import { MultiSelect } from "react-native-element-dropdown";
 import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
-// ------------------ static dropdown value -----------------
-const dropdownData = [
-  { label: "Cleaning", value: "1" },
-  { label: "Barbing", value: "2" },
-  { label: "Cooking", value: "3" },
-  { label: "Plumbing", value: "4" },
-  { label: "Designing", value: "5" },
-];
-
 const Setup_Business_Profile = () => {
   const { jsonContactInfo } = useLocalSearchParams();
   const contactInfo = JSON.parse(jsonContactInfo as any);
   const [value, setValue] = useState([]);
   const [isFocus, setIsFocus] = useState(false);
   const [error, setError] = useState("");
+  const stgValue = value.map(String);
 
   // ************************** api end point **************************
   const [information, { isLoading: isLoadingPersonalization }] =
-    useCompletePersonalizationMutation();
-  const { data: getServiceData, isLoading } = useGetServicesQuery({});
-
-  console.log(value, "this is get service ");
+    useCompletePersonalizationMutation({});
+  const { data: getServiceData, isLoading: isLoadingServices } =
+    useGetServicesQuery({});
 
   const handleScreenValue = async (formData: any) => {
     try {
@@ -59,11 +50,10 @@ const Setup_Business_Profile = () => {
         const payload = {
           ...contactInfo,
           ...formData,
-          service_id: [value],
+          service_id: stgValue,
         };
-        console.log(payload, ";alskdjfa;slkdjfal;skdjf");
         const res = await information(payload).unwrap();
-        if (res) {
+        if (res?.status === "success") {
           router.replace("/service_provider/company/(Tabs)/home");
         }
       }
@@ -104,6 +94,10 @@ const Setup_Business_Profile = () => {
       return errors;
     }
   };
+
+  if (isLoadingServices) {
+    return <ProviderProfileSkeleton />;
+  }
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -241,7 +235,7 @@ const Setup_Business_Profile = () => {
                   data={getServiceData?.data?.services}
                   maxHeight={300}
                   labelField="name"
-                  dropdownPosition="bottom"
+                  dropdownPosition="top"
                   valueField="id"
                   placeholder={!isFocus ? "-select your services-" : "..."}
                   value={value}
@@ -282,14 +276,19 @@ const Setup_Business_Profile = () => {
                   </Text>
                 )}
               </View>
-              <PrimaryButton
-                onPress={() => handleSubmit()}
-                contentStyle={tw`h-12 mb-4`}
-                // onPress={() =>
-                //   router.replace("/service_provider/company/(Tabs)/home")
-                // }
-                titleProps="Sign up"
-              />
+              {isLoadingPersonalization ? (
+                <ActivityIndicator
+                  size="small"
+                  color={tw.color("primary")}
+                  style={tw`mt-2`}
+                />
+              ) : (
+                <PrimaryButton
+                  onPress={() => handleSubmit()}
+                  contentStyle={tw`h-12 `}
+                  titleProps="Sign up"
+                />
+              )}
             </ScrollView>
           )}
         </Formik>

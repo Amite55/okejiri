@@ -45,7 +45,6 @@ const Portfolio = () => {
 
   const [imageAsset, setImageAsset] =
     React.useState<ImagePicker.ImagePickerAsset | null>(null);
-
   const [fetchPortfolios, { isLoading, isFetching }] =
     useLazyGetPortfoliosQuery();
   const [deletePortfolios] = useDeletePortfoliosMutation();
@@ -55,7 +54,6 @@ const Portfolio = () => {
   // === Load data from API with pagination ===
   const loadPortfolios = async (pageNum = 1, isRefresh = false) => {
     try {
-      // Prevent multiple simultaneous requests
       if ((isLoading || isFetching || loadingMore) && !isRefresh) return;
 
       if (isRefresh) {
@@ -88,7 +86,7 @@ const Portfolio = () => {
       }
       setPage(currentPage + 1);
     } catch (err) {
-      console.log("❌ Portfolio fetch error:", err);
+      console.log(" Portfolio fetch error:", err);
       setHasMore(false);
     } finally {
       setRefreshing(false);
@@ -161,10 +159,10 @@ const Portfolio = () => {
           handleRefresh();
         }
       } catch (err) {
-        console.log("❌ Update error:", err);
+        console.log("Update error:", err);
       }
     } else {
-      console.log("❌ Image selection cancelled");
+      console.log(" Image selection cancelled");
     }
   };
 
@@ -207,10 +205,10 @@ const Portfolio = () => {
           handleRefresh();
         }
       } catch (err) {
-        console.log("❌ Add error:", err);
+        console.log("Add error:", err);
       }
     } else {
-      console.log("❌ Image selection cancelled pickImageAddMore");
+      console.log(" Image selection cancelled pickImageAddMore");
     }
   };
 
@@ -261,7 +259,7 @@ const Portfolio = () => {
         style={tw`pt-2`}
         columnWrapperStyle={tw`justify-between`}
         onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.1} // কমিয়ে দিন
+        onEndReachedThreshold={0.1}
         renderItem={({ item }: any) => (
           <View style={[tw`w-[48%] mb-3`, { height: 240 }]}>
             <Image

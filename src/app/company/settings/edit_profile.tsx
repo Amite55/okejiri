@@ -1,6 +1,7 @@
 import { IconCameraProfile, IconPlusBlackSmall } from "@/assets/icons";
 import { ImgSuccessGIF } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
+import ProviderProfileSkeleton from "@/src/Components/skeletons/ProviderProfileSkeleton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import {
@@ -11,15 +12,18 @@ import {
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import React, { useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
 import {
+  Keyboard,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
@@ -31,75 +35,81 @@ interface EditProfileFormData {
   address: string;
 }
 
-// Interface for form validation errors
-interface FormErrors {
-  name?: {
-    message?: string;
-  };
-  phone?: {
-    message?: string;
-  };
-  address?: {
-    message?: string;
-  };
-}
 // Interface for component props
 interface EditProfileProps {}
 
-// Interface for BackTitleButton props
-interface BackTitleButtonProps {
-  pageName: string;
-  onPress: () => void;
-  titleTextStyle: string;
-}
-
 const Edit_Profile: React.FC<EditProfileProps> = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [editProfile] = useEditProfileMutation();
-  const [editProfilePicture] = useEditProfilePictureMutation();
-  const { data: userProfileInfo, isLoading, error } = useProfileQuery({});
+  const [fullName, setFullName] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
   const [imageAsset, setImageAsset] =
     React.useState<ImagePicker.ImagePickerAsset | null>(null);
+  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
 
+  // ---------------- api end point ----------------
+  const [editProfile, { isLoading: isEditProfileLoading }] =
+    useEditProfileMutation();
+  const [editProfilePicture] = useEditProfilePictureMutation();
   const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<EditProfileFormData>({
-    defaultValues: {
-      name: "",
-      phone: "",
-      address: "",
-    },
-    mode: "onBlur",
-  });
+    data: userProfileInfo,
+    isLoading: isprofileLoading,
+    error,
+  } = useProfileQuery({});
 
-  const onSubmit: SubmitHandler<EditProfileFormData> = async (
-    data: EditProfileFormData
-  ): Promise<void> => {
+  useEffect(() => {
+    if (userProfileInfo?.data) {
+      const { name, phone, address, user_name } = userProfileInfo?.data;
+      setUserName(user_name || "");
+      setFullName(name || "");
+      setPhoneNumber(phone || "");
+      setAddress(address || "");
+    }
+  }, [userProfileInfo]);
+
+  // ------------- submit form handler -------------
+  const onSubmit = async (): Promise<void> => {
+    const isKycVerified = userProfileInfo?.data?.kyc_status === "Verified";
+
+    if (!fullName || !userName || !phoneNumber || !address) {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: "Please fill all the fields" },
+      });
+      return;
+    }
     try {
+      const formData = {
+        name: fullName,
+        user_name: userName,
+        phone: phoneNumber,
+        address: address,
+      };
+
       // Call your edit profile API with proper typing
-      const result = await editProfile(data).unwrap();
-      setModalVisible(true);
+      const result = await editProfile(formData).unwrap();
+      if (result.status === "success") {
+        setModalVisible(true);
+        setTimeout(() => {
+          setModalVisible(false);
+          router.back();
+        }, 1000);
+      }
     } catch (error: unknown) {
       // You can add error handling UI here
+      console.log(error, "not update your profile------------->");
+      router.push({
+        pathname: "/Toaster",
+        params: { res: error?.message || error },
+      });
     }
-  };
-
-  const handleModalClose = (): void => {
-    setModalVisible(false);
-    router.push("/company/settings/setting");
   };
 
   const handleBackPress = (): void => {
     router.back();
   };
-
-  // Helper function to get border color based on errors
-  const getBorderColor = (fieldName: keyof FormErrors): string => {
-    return errors[fieldName] ? "border-red-500" : "border-gray-300";
-  };
-
+  // -------------------- image picker ---------------------
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -107,20 +117,16 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
       aspect: [16, 9],
       quality: 1,
     });
-
     if (!result.canceled && result.assets.length > 0) {
       const selectedImage = result.assets[0];
       setImageAsset(selectedImage);
-
       const form = new FormData();
       const filename =
         selectedImage.fileName ??
         selectedImage.uri.split("/").pop() ??
         `photo_${Date.now()}.jpg`;
-
       const extMatch = /\.(\w+)$/.exec(filename);
       const mime = extMatch ? `image/${extMatch[1]}` : "image/jpeg";
-
       form.append("photo", {
         uri: selectedImage.uri,
         name: filename,
@@ -146,237 +152,223 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
     }
   };
 
+  // console.log(userProfileInfo?.data?.name, "thi sis;alskdjf--------->");
+
+  // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true)
+    );
+    const hide = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
+  // loading skeleton =================================s>
+  if (isprofileLoading) {
+    return <ProviderProfileSkeleton />;
+  }
   return (
-    <ScrollView
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-      keyboardDismissMode="interactive"
-      style={tw`flex-1 bg-base_color px-5`}
-      contentContainerStyle={tw`pb-6 justify-between flex-grow`}
-      keyboardShouldPersistTaps="handled"
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS/Android alada behavior
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
-      <View>
-        <BackTitleButton
-          pageName={"Edit profile"}
-          onPress={handleBackPress}
-          titleTextStyle={tw`text-xl`}
-        />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          style={tw`flex-1 bg-base_color px-5`}
+          contentContainerStyle={[
+            tw`justify-between flex-grow bg-base_color pb-1`,
+            isKeyboardVisible && tw`pb-10`,
+          ]}
+        >
+          {/* <View style={tw`flex-1 `}> */}
+          <View>
+            <BackTitleButton
+              pageName={"Edit profile"}
+              onPress={handleBackPress}
+              titleTextStyle={tw`text-xl`}
+            />
 
-        {/* Profile Image Section */}
-        <View style={tw`relative justify-center items-center my-4`}>
-          <Image
-            style={tw`w-24 h-24 rounded-full`}
-            source={userProfileInfo?.data?.avatar || imageAsset}
-          />
+            {/* Profile Image Section */}
+            <View style={tw`flex-1 relative justify-center items-center my-4`}>
+              <Image
+                style={tw`w-24 h-24 rounded-full`}
+                source={userProfileInfo?.data?.avatar || imageAsset}
+              />
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={tw`absolute right-38 -bottom-2 w-10 h-10 rounded-full bg-primary justify-center items-center`}
-            accessibilityLabel="Change profile picture"
-            accessibilityRole="button"
-            onPress={pickImage}
-          >
-            <SvgXml xml={IconCameraProfile} />
-            <Pressable
-              style={tw`absolute right-0 bottom-0 w-4 h-4 rounded-full bg-white justify-center items-center`}
-            >
-              <SvgXml fontSize={10} xml={IconPlusBlackSmall} />
-            </Pressable>
-          </TouchableOpacity>
-        </View>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={tw`absolute right-38 -bottom-2 w-10 h-10 rounded-full bg-primary justify-center items-center`}
+                accessibilityLabel="Change profile picture"
+                accessibilityRole="button"
+                onPress={pickImage}
+              >
+                <SvgXml xml={IconCameraProfile} />
+                <Pressable
+                  style={tw`absolute right-0 bottom-0 w-4 h-4 rounded-full bg-white justify-center items-center`}
+                >
+                  <SvgXml fontSize={10} xml={IconPlusBlackSmall} />
+                </Pressable>
+              </TouchableOpacity>
+            </View>
 
-        {/* Edit Input Form */}
-        <View style={tw`mt-4`}>
-          {/* Full Name Input Field */}
-          <Text
-            style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
-          >
-            Your full name
-          </Text>
-          <View
-            style={tw`w-full h-14 rounded-full border ${getBorderColor(
-              "name"
-            )} px-4 justify-center mb-4`}
-          >
-            <Controller
-              control={control}
-              rules={{
-                required: "Full name is required",
-                minLength: {
-                  value: 2,
-                  message: "Full name must be at least 2 characters",
-                },
-                maxLength: {
-                  value: 50,
-                  message: "Full name must be less than 50 characters",
-                },
-                pattern: {
-                  value: /^[a-zA-Z\s]*$/,
-                  message: "Full name can only contain letters and spaces",
-                },
-              }}
-              render={({ field: { onChange, onBlur, value } }: any) => (
+            {/* Edit Input Form */}
+            <View style={tw`mt-4`}>
+              {/* Full Name Input Field */}
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
+              >
+                Your full name
+              </Text>
+              <View
+                style={tw`w-full h-14 rounded-full border  px-4 justify-center mb-4`}
+              >
                 <TextInput
                   placeholder="John Smith"
                   placeholderTextColor="#535353"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
+                  onChangeText={(text) => setFullName(text)}
+                  value={fullName}
                   style={tw`flex-1 font-DegularDisplayDemoRegular text-base`}
                   accessibilityLabel="Full name input"
                   accessibilityHint="Enter your full name"
                 />
-              )}
-              name="name"
-            />
-          </View>
-          {errors.name && (
-            <Text style={tw`text-red-500 text-sm ml-2 mb-2`}>
-              {errors.name.message}
-            </Text>
-          )}
+              </View>
 
-          {/* Contact Number Input Field */}
-          <Text
-            style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
-          >
-            Contact Number
-          </Text>
-          <View
-            style={tw`w-full h-14 rounded-full border ${getBorderColor(
-              "phone"
-            )} px-4 justify-center mb-4`}
-          >
-            <Controller
-              control={control}
-              rules={{
-                required: "Contact number is required",
-                pattern: {
-                  value: /^\+?[\d\s-()]+$/,
-                  message: "Please enter a valid contact number",
-                },
-                minLength: {
-                  value: 10,
-                  message: "Contact number must be at least 10 digits",
-                },
-              }}
-              render={({ field: { onChange, onBlur, value } }: any) => (
+              {/* Full Name Input Field */}
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
+              >
+                User name
+              </Text>
+              <View
+                style={tw`w-full h-14 rounded-full border  px-4 justify-center mb-4`}
+              >
                 <TextInput
+                  editable={
+                    userProfileInfo?.data?.kyc_status === "Verified"
+                      ? false
+                      : true
+                  }
+                  placeholder="smith"
+                  placeholderTextColor="#535353"
+                  onChangeText={(text) => setUserName(text)}
+                  value={userName}
+                  style={tw`flex-1 font-DegularDisplayDemoRegular text-base`}
+                  accessibilityLabel="Full name input"
+                  accessibilityHint="Enter your full name"
+                />
+              </View>
+              {/* Contact Number Input Field */}
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
+              >
+                Contact Number
+              </Text>
+              <View
+                style={tw`w-full h-14 rounded-full border  px-4 justify-center mb-4`}
+              >
+                <TextInput
+                  editable={
+                    userProfileInfo?.data?.kyc_status === "Verified"
+                      ? false
+                      : true
+                  }
                   placeholder="+12121212112"
                   placeholderTextColor="#535353"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
+                  onChangeText={(text) => setPhoneNumber(text)}
+                  value={phoneNumber}
                   keyboardType="phone-pad"
                   style={tw`flex-1 font-DegularDisplayDemoRegular text-base`}
                   accessibilityLabel="Contact number input"
                   accessibilityHint="Enter your contact number"
                 />
-              )}
-              name="phone"
-            />
-          </View>
-          {errors.phone && (
-            <Text style={tw`text-red-500 text-sm ml-2 mb-2`}>
-              {errors.phone.message}
-            </Text>
-          )}
+              </View>
 
-          {/* address Input Field */}
-          <Text
-            style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
-          >
-            address
-          </Text>
-          <View
-            style={tw`w-full h-14 rounded-full border ${getBorderColor(
-              "address"
-            )} px-4 justify-center mb-4`}
-          >
-            <Controller
-              control={control}
-              rules={{
-                required: "address is required",
-                minLength: {
-                  value: 2,
-                  message: "address must be at least 2 characters",
-                },
-                maxLength: {
-                  value: 100,
-                  message: "address must be less than 100 characters",
-                },
-              }}
-              render={({ field: { onChange, onBlur, value } }: any) => (
+              {/* address Input Field */}
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
+              >
+                Address
+              </Text>
+              <View
+                style={tw`w-full h-14 rounded-full border px-4 justify-center mb-4`}
+              >
                 <TextInput
+                  editable={
+                    userProfileInfo?.data?.kyc_status === "Verified"
+                      ? false
+                      : true
+                  }
                   placeholder="Dhaka, Bangladesh"
                   placeholderTextColor="#535353"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
+                  onChangeText={(text) => setAddress(text)}
+                  value={address}
                   style={tw`flex-1 font-DegularDisplayDemoRegular text-base`}
                   accessibilityLabel="address input"
                   accessibilityHint="Enter your address"
                 />
-              )}
-              name="address"
-            />
+              </View>
+            </View>
           </View>
-          {errors.address && (
-            <Text style={tw`text-red-500 text-sm ml-2 mb-2`}>
-              {errors.address.message}
-            </Text>
-          )}
-        </View>
-      </View>
 
-      {/* Submit Button */}
-      <PrimaryButton
-        onPress={handleSubmit(onSubmit)}
-        titleProps={isLoading ? "Updating..." : "Submit"}
-        contentStyle={tw`mt-4`}
-      />
+          {/* Submit Button */}
+          <PrimaryButton
+            onPress={() => onSubmit()}
+            titleProps={isEditProfileLoading ? "Updating..." : "Submit"}
+            contentStyle={tw`mt-4`}
+          />
 
-      {/* Success Modal */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={handleModalClose}
-        statusBarTranslucent={true}
-      >
-        <View
-          style={tw`flex-1 bg-black bg-opacity-50 justify-center items-center px-5`}
-        >
-          <View
-            style={tw`w-full bg-white p-6 rounded-2xl items-center shadow-lg max-w-sm`}
+          {/* Success Modal */}
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+            statusBarTranslucent={true}
           >
-            {/* Success Icon */}
-            <Image
-              style={tw`mt-4 mb-4 w-16 h-16`}
-              source={ImgSuccessGIF}
-              accessibilityLabel="Success animation"
-            />
-
-            {/* Success Message */}
-            <Text
-              style={tw`text-2xl font-DegularDisplayDemoBold text-gray-900 text-center mt-2`}
+            <View
+              style={tw`flex-1 bg-black bg-opacity-50 justify-center items-center px-5`}
             >
-              Success!
-            </Text>
-            <Text style={tw`text-base text-gray-600 text-center mt-2 mb-6`}>
-              Your profile has been updated successfully.
-            </Text>
+              <View
+                style={tw`w-full bg-white p-6 rounded-2xl items-center shadow-lg max-w-sm`}
+              >
+                {/* Success Icon */}
+                <Image
+                  style={tw`mt-4 mb-4 w-16 h-16`}
+                  source={ImgSuccessGIF}
+                  accessibilityLabel="Success animation"
+                />
 
-            {/* Close Button */}
-            <PrimaryButton
+                {/* Success Message */}
+                <Text
+                  style={tw`text-2xl font-DegularDisplayDemoBold text-gray-900 text-center mt-2`}
+                >
+                  Success!
+                </Text>
+                <Text style={tw`text-base text-gray-600 text-center mt-2 mb-6`}>
+                  Your profile has been updated successfully.
+                </Text>
+
+                {/* Close Button */}
+                {/* <PrimaryButton
               onPress={handleModalClose}
               titleProps="Go Back"
               contentStyle={tw`w-full`}
-            />
-          </View>
-        </View>
-      </Modal>
-    </ScrollView>
+            /> */}
+              </View>
+            </View>
+          </Modal>
+          {/* </View> */}
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
