@@ -102,6 +102,13 @@ const SingUp = () => {
         pathname: `/Toaster`,
         params: { res: error?.message || error },
       });
+      if (error?.metadata?.redirect_login === true) {
+        setTimeout(() => {
+          router.push({
+            pathname: `/auth/login`,
+          });
+        }, 2000);
+      }
     }
   };
 

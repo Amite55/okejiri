@@ -29,9 +29,8 @@ const Dispute_Appeal = () => {
   const [images, setImages] = useState<any>(null);
   const [explanation, setExplanation] = useState<string>("");
   const { id } = useLocalSearchParams<{ id: string }>();
-  console.log("=================== appeal id ============== ", id)
   // =========== API ==================== //
-  const [addAppealDispute, { isLoading, }] = useAddDisputeAppealMutation();
+  const [addAppealDispute, { isLoading }] = useAddDisputeAppealMutation();
 
   //  ===================== Image picker ================= //
   const pickImages = async () => {
@@ -53,12 +52,12 @@ const Dispute_Appeal = () => {
 
   const submitDispute = async () => {
     // ------------ check all field required  --------------
-    console.log("================= disputed appeal =================== ", id)
+
     if (!id || !explanation || !images) {
       router.push({
         pathname: "/Toaster",
-        params: { res: "Please fill all the fields" }
-      })
+        params: { res: "Please fill all the fields" },
+      });
       return;
     }
 
@@ -75,29 +74,28 @@ const Dispute_Appeal = () => {
           type: "image/jpeg",
         });
       });
-      console.log(formData, "thi this new form dtaa------------->")
       const response = await addAppealDispute(formData).unwrap();
-      console.log(response, "thi this new form dtaa------------->")
       if (response) {
         setModalVisible(true);
-      }
-      else {
+      } else {
         router.push({
           pathname: "/Toaster",
-          params: { res: "An appeal has already been submitted for this disputed" }
-        })
+          params: {
+            res: "An appeal has already been submitted for this disputed",
+          },
+        });
+        setTimeout(() => {
+          router.back();
+        }, 1500);
       }
     } catch (err: any) {
-      // console.error("Full error object: ----------------------->", err,);
+      console.error("Full error object: ----------------------->", err);
       router.push({
         pathname: "/Toaster",
-        params: { res: err.message || "Failed to submit" }
-      })
+        params: { res: err.message || "Failed to submit" },
+      });
     }
   };
-
-
-
 
   return (
     <ScrollView
@@ -145,42 +143,41 @@ const Dispute_Appeal = () => {
             >
               Upload images or videos
             </Text>
-            {(!images || images.length === 0) ? <TouchableOpacity
-              style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
-              onPress={pickImages}
-            >
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
+            {!images || images.length === 0 ? (
+              <TouchableOpacity
+                style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
+                onPress={pickImages}
               >
-                Browse
-              </Text>
-            </TouchableOpacity>
-              :
-              (
-                <View style={tw`w-full mt-3`}>
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-sm text-green-600 mt-2 py-2`}
-                  >
-                    {images.length} {images.length === 1 ? "file selected" : "files selected"}
-                  </Text>
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
+                >
+                  Browse
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={tw`w-full mt-3`}>
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-sm text-green-600 mt-2 py-2`}
+                >
+                  {images.length}{" "}
+                  {images.length === 1 ? "file selected" : "files selected"}
+                </Text>
 
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {images.map((img, index) => (
-                      <View key={index} style={tw`flex-row`}>
-
-                        <Text numberOfLines={1} ellipsizeMode="clip" style={tw`text-xs text-gray-400`}>
-                          {img.filename}
-                        </Text>
-                      </View>
-                    ))
-
-                    }
-                  </ScrollView>
-                </View>
-
-              )
-            }
-
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  {images.map((img, index) => (
+                    <View key={index} style={tw`flex-row`}>
+                      <Text
+                        numberOfLines={1}
+                        ellipsizeMode="clip"
+                        style={tw`text-xs text-gray-400`}
+                      >
+                        {img.filename}
+                      </Text>
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
           </Pressable>
         </View>
       </View>

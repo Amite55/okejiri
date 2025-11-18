@@ -64,27 +64,37 @@ const LoginIndex = () => {
           await AsyncStorage.removeItem("loginInfo");
         }
         // dynamic route change ========================😩
-        if (res?.data?.user?.role === roll) {
+        if (res?.data?.user?.is_personalization_complete === false) {
           await AsyncStorage.setItem("token", res?.data?.access_token);
-          router.replace("/company/(Tabs)");
-          if (userProfileInfo?.data?.kyc_status === "Unverified") {
-            setTimeout(() => {
-              router.push("/kyc_completed_modal");
-            }, 500);
+          router.push("/auth/contact");
+        } else {
+          if (res?.data?.user?.role === roll) {
+            await AsyncStorage.setItem("token", res?.data?.access_token);
+            router.replace("/company/(Tabs)");
+            if (userProfileInfo?.data?.kyc_status === "Unverified") {
+              setTimeout(() => {
+                router.push("/kyc_completed_modal");
+              }, 500);
+            }
           }
         }
       } else if (roll === "PROVIDER") {
-        if (providerTypes === "Individual") {
-          const res = await credentials(payload).unwrap();
-          if (res?.data?.user?.provider_type === providerTypes) {
-            await AsyncStorage.setItem("token", res?.data?.access_token);
-            router.replace("/service_provider/individual/(Tabs)/home");
-          }
-        } else if (providerTypes === "Company") {
-          const res = await credentials(payload).unwrap();
-          if (res?.data?.user?.provider_type === providerTypes) {
-            await AsyncStorage.setItem("token", res?.data?.access_token);
-            router.replace("/service_provider/company/home");
+        const res = await credentials(payload).unwrap();
+
+        if (res?.data?.user?.is_personalization_completed === false) {
+          await AsyncStorage.setItem("token", res?.data?.access_token);
+          router.push("/auth/contact");
+        } else {
+          if (providerTypes === "Individual") {
+            if (res?.data?.user?.provider_type === providerTypes) {
+              await AsyncStorage.setItem("token", res?.data?.access_token);
+              router.replace("/service_provider/individual/(Tabs)/home");
+            }
+          } else if (providerTypes === "Company") {
+            if (res?.data?.user?.provider_type === providerTypes) {
+              await AsyncStorage.setItem("token", res?.data?.access_token);
+              router.replace("/service_provider/company/home");
+            }
           }
         }
       }
@@ -96,25 +106,24 @@ const LoginIndex = () => {
           res: error?.message || error || "Login Fail Please Try Again",
         },
       });
-      if (error?.metadata?.redirect_login === true) {
+      if (error?.metadata?.redirect_verification === true) {
         setTimeout(() => {
           router.push({
-            pathname: `/auth/login`,
+            pathname: `/auth/registerOTP`,
+            params: { email: formData.email },
           });
-        }, 2000);
+        }, 1000);
       }
     }
   };
 
   // ============== remember me checkbox handler ================
   const handleCheckBox = async () => {
-    setIsChecked(!isChecked);
-    try {
-      await AsyncStorage.setItem("rememberMe", JSON.stringify(isChecked));
-    } catch (error) {
-      console.log(error, "User Info Storage not save ---->");
-    }
+    const newValue = !isChecked;
+    setIsChecked(newValue);
+    await AsyncStorage.setItem("rememberMe", JSON.stringify(newValue));
   };
+  // ================= form validation =====================
   const validate = (values: any) => {
     const errors: any = {};
     if (!values.email) {

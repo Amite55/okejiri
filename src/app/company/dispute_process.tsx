@@ -17,7 +17,7 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View
+  View,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
@@ -51,7 +51,8 @@ const Dispute_Process: React.FC = () => {
 
   //    ============== api end point -------------------------
   const [addDispute, { isLoading, isError, error }] = useAddDisputeMutation();
-// =================== sei na image picker --------------->
+
+  // =================== sei na image picker --------------->
   const pickImages = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -74,11 +75,10 @@ const Dispute_Process: React.FC = () => {
     if (!id || !reason || !explanation || !images) {
       router.push({
         pathname: "/Toaster",
-        params: { res: "Please fill all the fields" }
-      })
+        params: { res: "Please fill all the fields" },
+      });
       return;
     }
-
     try {
       let formData = new FormData();
       formData.append("booking_id", id);
@@ -86,39 +86,30 @@ const Dispute_Process: React.FC = () => {
       formData.append("details", explanation);
       // ✅ Append multiple images properly
       images.forEach((uri: any, index: any) => {
-        const uriParts = uri.split(".");
-        const fileExt = uriParts[uriParts.length - 1];
-        const filename = `dispute_${Date.now()}_${index}.${fileExt}`;
-        const fileType = `image/${fileExt === "jpg" ? "jpeg": fileExt}`
-
         formData.append("attachments[]", {
           uri,
-          name: filename,
-          type: fileType,
+          name: `attachment_${index}.jpg`,
+          type: "image/jpeg",
         } as any);
       });
-      console.log(" ============ form data ================== ", JSON.stringify(formData,null,2))
       const response = await addDispute(formData).unwrap();
-      console.log(response, "thi this new form dtaa------------->")
       if (response) {
         router.push({
           pathname: "/Toaster",
           params: { res: response?.message || "Report sent successfully!" },
-        })
+        });
         setTimeout(() => {
-          router.back()
-        }, 1000);
+          router.back();
+        }, 3000);
       }
     } catch (err: any) {
-      console.log("error ", err, " isError ", isError , " error ", error)
+      console.log("error ", err, " isError ", isError, " error ", error);
       router.push({
-          pathname: "/Toaster",
-          params: { res: err?.message || "" },
-        })
+        pathname: "/Toaster",
+        params: { res: err?.message || err },
+      });
     }
   };
-
-
 
   return (
     <KeyboardAvoidingView
@@ -126,133 +117,122 @@ const Dispute_Process: React.FC = () => {
       behavior={Platform.OS === "ios" ? "padding" : "position"} // iOS/Android different behavior
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -120}
     >
-      <TouchableWithoutFeedback
-         onPress={Keyboard.dismiss} accessible={false}
-      >
-      <ScrollView
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-        style={tw`flex-grow px-5`}
-        contentContainerStyle={tw`pb-6`}
-        keyboardShouldPersistTaps="handled"
-      >
-        <BackTitleButton
-          pageName={"Dispute process"}
-          onPress={() => router.back()}
-          titleTextStyle={tw`text-xl`}
-        />
-        <View style={tw`gap-3 mt-4`}>
-          {/* ------------ dropdown section ------------------ */}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          style={tw`px-5 bg-base_color`}
+          contentContainerStyle={tw`pb-1 justify-between flex-grow  bg-base_color`}
+        >
           <View>
-            <Text
-              style={tw`font-DegularDisplayDemoMedium text-xl text-black mb-2 ml-2`}
-            >
-              Reason
-            </Text>
-            <Dropdown
-              style={[styles.dropdown, isFocus && { borderColor: "#3b82f6" }]}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              data={dropdownData}
-              search={false}
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!isFocus ? "- select -" : "..."}
-              value={value}
-              onFocus={() => setIsFocus(true)}
-              onBlur={() => setIsFocus(false)}
-              onChange={(item: DropdownItem) => {
-                setValue(item.value);
-                setIsFocus(false);
-                setReason(item.label);
-              }}
-              itemTextStyle={styles.itemTextStyle}
+            <BackTitleButton
+              pageName={"Dispute process"}
+              onPress={() => router.back()}
+              titleTextStyle={tw`text-xl`}
             />
-          </View>
+            <View style={tw`gap-3 mt-4 `}>
+              {/* ------------ dropdown section ------------------ */}
+              <View>
+                <Text
+                  style={tw`font-DegularDisplayDemoMedium text-xl text-black mb-2 ml-2`}
+                >
+                  Reason
+                </Text>
+                <Dropdown
+                  style={[
+                    styles.dropdown,
+                    isFocus && { borderColor: "#3b82f6" },
+                  ]}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={dropdownData}
+                  search={false}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={!isFocus ? "- select -" : "..."}
+                  value={value}
+                  onFocus={() => setIsFocus(true)}
+                  onBlur={() => setIsFocus(false)}
+                  onChange={(item: DropdownItem) => {
+                    setValue(item.value);
+                    setIsFocus(false);
+                    setReason(item.label);
+                  }}
+                  itemTextStyle={styles.itemTextStyle}
+                />
+              </View>
 
-          {/* ---------- message explanation --------------- */}
-          <View>
-            <Text
-              style={tw`font-DegularDisplayDemoMedium text-xl text-black mb-2 ml-2`}
-            >
-              Your explanation
-            </Text>
-            <TextInput
-              style={styles.textArea}
-              multiline={true}
-              numberOfLines={8}
-              placeholder="Type here"
-              placeholderTextColor={"#535353"}
-              onChangeText={setExplanation}
-              value={explanation}
-              textAlignVertical="top"
-            />
-          </View>
+              {/* ---------- message explanation --------------- */}
+              <View>
+                <Text
+                  style={tw`font-DegularDisplayDemoMedium text-xl text-black mb-2 ml-2`}
+                >
+                  Your explanation
+                </Text>
+                <TextInput
+                  style={styles.textArea}
+                  multiline={true}
+                  numberOfLines={8}
+                  placeholder="Type here"
+                  placeholderTextColor={"#535353"}
+                  onChangeText={setExplanation}
+                  value={explanation}
+                  textAlignVertical="top"
+                />
+              </View>
 
-          {/* ------------------ Image upload ------------------ */}
-          <Pressable
-            style={tw`border-2 border-dashed border-gray-500 rounded-3xl p-6 justify-center items-center gap-2`}
-          >
-            <SvgXml xml={IconUploadImage} />
-            <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-              Upload files
-            </Text>
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-lg text-gray-600`}
-            >
-              Upload images or videos
-            </Text>
-            {(!images || images.length === 0) ? <TouchableOpacity
-              style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
-              onPress={pickImages}
-            >
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
+              {/* ------------------ Image upload ------------------ */}
+              <Pressable
+                style={tw`border-2 border-dashed border-gray-500 rounded-3xl p-6 justify-center items-center gap-2`}
               >
-                Browse
-              </Text>
-            </TouchableOpacity>
-              :
-              (
-                <View style={tw`w-full mt-3`}>
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-sm text-green-600 mt-2 py-2`}
+                <SvgXml xml={IconUploadImage} />
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                >
+                  Upload files
+                </Text>
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-lg text-gray-600`}
+                >
+                  Upload images or videos
+                </Text>
+                {!images || images.length === 0 ? (
+                  <TouchableOpacity
+                    style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
+                    onPress={pickImages}
                   >
-                    {images.length} {images.length === 1 ? "file selected" : "files selected"}
-                  </Text>
+                    <Text
+                      style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
+                    >
+                      Browse
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <View style={tw`w-full mt-3 justify-center items-center`}>
+                    <Text
+                      style={tw`font-DegularDisplayDemoRegular text-lg text-green-600  `}
+                    >
+                      {images?.length}{" "}
+                      {images?.length === 1
+                        ? "file selected"
+                        : "files selected"}
+                    </Text>
+                  </View>
+                )}
+              </Pressable>
+            </View>
+          </View>
 
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {images.map((img, index) => (
-                      <View key={index} style={tw`flex-row`}>
-
-                        <Text numberOfLines={1} ellipsizeMode="clip" style={tw`text-xs text-gray-400`}>
-                          {img.filename}
-                        </Text>
-                      </View>
-                    ))
-
-                    }
-                  </ScrollView>
-                </View>
-
-              )
-            }
-
-          </Pressable>
-        </View>
-
-        {/* ------------- submit buttons -------------------- */}
-        <View style={tw`mt-8 gap-3`}>
+          {/* ------------- submit buttons -------------------- */}
           <PrimaryButton
             onPress={() => submitDispute()}
             titleProps={isLoading ? "Submitting..." : "Submit with Image"}
-          // disabled={isLoading}
+            contentStyle={tw`mt-10`}
           />
-        </View>
-      </ScrollView>
+        </ScrollView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
