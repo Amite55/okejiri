@@ -24,7 +24,6 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
 
   const notificationCounter =
     notificationData?.data?.unread_notifications_count;
-  // console.log("======== notification counter ", notificationCounter)
   return (
     <View
       style={tw`py-3 flex-1 bg-base_color flex-row items-center justify-between `}

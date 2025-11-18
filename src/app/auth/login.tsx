@@ -96,6 +96,13 @@ const LoginIndex = () => {
           res: error?.message || error || "Login Fail Please Try Again",
         },
       });
+      if (error?.metadata?.redirect_login === true) {
+        setTimeout(() => {
+          router.push({
+            pathname: `/auth/login`,
+          });
+        }, 2000);
+      }
     }
   };
 

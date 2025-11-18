@@ -4,11 +4,13 @@ const personalizationSlice = api.injectEndpoints({
   endpoints: (builder) => {
     return {
       completePersonalization: builder.mutation({
-        query: (information) => ({
-          url: "/auth/complete-personalizations/2",
-          method: "PUT",
-          body: information,
-        }),
+        query: (information) => {
+          return {
+            url: `/auth/complete-personalizations/${information.id}`,
+            method: "PUT",
+            body: information,
+          };
+        },
         invalidatesTags: ["user"],
       }),
       completeKYC: builder.mutation({
