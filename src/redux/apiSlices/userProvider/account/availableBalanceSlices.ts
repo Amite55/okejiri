@@ -30,6 +30,7 @@ export const availableBalanceSlices = api.injectEndpoints({
 
 export const {
   useGetRecentTransactionsQuery,
+  useLazyGetRecentTransactionsQuery,
   useDepositSuccessMutation,
   useTransferBalanceMutation,
 } = availableBalanceSlices;

@@ -478,6 +478,11 @@ export const IconDownloadBlack = `<svg width="21" height="20" viewBox="0 0 21 20
 </svg>
 
 `;
+export const IconWithdraw = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 0L12.5 3.75H11.25V6.25H8.75V3.75H7.5L10 0ZM18.75 8.75V18.75H1.25V8.75H18.75ZM20 7.5H0V20H20V7.5Z" fill="black"/>
+<path d="M10 10C10.4925 10 10.9801 10.097 11.4351 10.2855C11.89 10.4739 12.3034 10.7501 12.6517 11.0983C12.9999 11.4466 13.2761 11.86 13.4645 12.3149C13.653 12.7699 13.75 13.2575 13.75 13.75C13.75 14.2425 13.653 14.7301 13.4645 15.1851C13.2761 15.64 12.9999 16.0534 12.6517 16.4017C12.3034 16.7499 11.89 17.0261 11.4351 17.2145C10.9801 17.403 10.4925 17.5 10 17.5H16.25V16.25H17.5V11.25H16.25V10H10ZM6.25 13.75C6.25 12.7554 6.64509 11.8016 7.34835 11.0983C8.05161 10.3951 9.00544 10 10 10H3.75V11.25H2.5V16.25H3.75V17.5H10C9.00544 17.5 8.05161 17.1049 7.34835 16.4017C6.64509 15.6984 6.25 14.7446 6.25 13.75Z" fill="black"/>
+</svg>
+`;
 export const IconSendWhite = `<svg width="21" height="18" viewBox="0 0 21 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M1.68723 17.9017C1.28551 18.0616 0.903874 18.0264 0.542324 17.7962C0.180775 17.566 0 17.2315 0 16.7927V11.3976L9.64132 8.99971L0 6.60186V1.2067C0 0.767093 0.180775 0.432593 0.542324 0.203198C0.903874 -0.026196 1.28551 -0.0613649 1.68723 0.0976925L20.2468 7.8907C20.7489 8.11051 21 8.48018 21 8.99971C21 9.51924 20.7489 9.88891 20.2468 10.1087L1.68723 17.9017Z" fill="white"/>
 </svg>
@@ -849,7 +854,7 @@ export const IconNewOrderNotification = `<svg width="74" height="74" viewBox="0 
 </filter>
 </defs>
 </svg>
-`
+`;
 
 export const IconPayoutRequestNotification = `<svg width="74" height="74" viewBox="0 0 74 74" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_1454_12240)">
@@ -870,7 +875,7 @@ export const IconPayoutRequestNotification = `<svg width="74" height="74" viewBo
 </filter>
 </defs>
 </svg>
-`
+`;
 
 export const IconOrderRejectedNotification = `<svg width="74" height="74" viewBox="0 0 74 74" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_875_16384)">
@@ -891,7 +896,7 @@ export const IconOrderRejectedNotification = `<svg width="74" height="74" viewBo
 </filter>
 </defs>
 </svg>
-`
+`;
 
 export const IconDeliveryApprovedNotification = `<svg width="74" height="74" viewBox="0 0 74 74" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_183_7095)">
@@ -917,7 +922,7 @@ export const IconDeliveryApprovedNotification = `<svg width="74" height="74" vie
 </linearGradient>
 </defs>
 </svg>
-`
+`;
 
 export const IconCompleteKycNotification = `<svg width="74" height="74" viewBox="0 0 74 74" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_183_7108)">
@@ -938,7 +943,7 @@ export const IconCompleteKycNotification = `<svg width="74" height="74" viewBox=
 </filter>
 </defs>
 </svg>
-`
+`;
 
 export const IconWaringNotification = `<svg width="74" height="74" viewBox="0 0 74 74" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_447_20307)">
@@ -959,7 +964,7 @@ export const IconWaringNotification = `<svg width="74" height="74" viewBox="0 0 
 </filter>
 </defs>
 </svg>
-`
+`;
 
 export const IconNewDisputeNotification = `<svg width="74" height="74" viewBox="0 0 74 74" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_1039_2765)">
@@ -987,7 +992,7 @@ export const IconNewDisputeNotification = `<svg width="74" height="74" viewBox="
 </filter>
 </defs>
 </svg>
-`
+`;
 
 export const IconRequestForDelivery = `<svg width="74" height="74" viewBox="0 0 74 74" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_6277_2687)">
@@ -1009,7 +1014,7 @@ export const IconRequestForDelivery = `<svg width="74" height="74" viewBox="0 0 
 </filter>
 </defs>
 </svg>
-`
+`;
 
 export const IconProfileImageEdit = `<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
 <foreignObject x="-40" y="-40" width="130" height="130"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(20px);clip-path:url(#bgblur_0_825_10204_clip_path);height:100%;width:100%"></div></foreignObject><g data-figma-bg-blur-radius="40">
@@ -1020,17 +1025,17 @@ export const IconProfileImageEdit = `<svg width="50" height="50" viewBox="0 0 50
 <clipPath id="bgblur_0_825_10204_clip_path" transform="translate(40 40)"><rect width="50" height="50" rx="10"/>
 </clipPath></defs>
 </svg>
-`
+`;
 
-export const IconDustBin=`<svg width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const IconDustBin = `<svg width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M14 1H10.5L9.5 0H4.5L3.5 1H0V3H14M1 16C1 16.5304 1.21071 17.0391 1.58579 17.4142C1.96086 17.7893 2.46957 18 3 18H11C11.5304 18 12.0391 17.7893 12.4142 17.4142C12.7893 17.0391 13 16.5304 13 16V4H1V16Z" fill="#FF5345"/>
 </svg>
-`
+`;
 export const IconCheckBoxUnChecked = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="0.5" y="0.5" width="19" height="19" rx="1.5" stroke="black"/>
 </svg>
-`
-export const IconCheckBoxChecked= `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+`;
+export const IconCheckBoxChecked = `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
 <mask id="mask0_1363_7392" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="30" height="30">
 <rect width="30" height="30" rx="6" fill="#D9D9D9"/>
 </mask>
@@ -1038,4 +1043,4 @@ export const IconCheckBoxChecked= `<svg width="30" height="30" viewBox="0 0 30 3
 <path d="M1.66667 0H28.3333C28.7754 0 29.1993 0.175595 29.5118 0.488155C29.8244 0.800716 30 1.22464 30 1.66667V28.3333C30 28.7754 29.8244 29.1993 29.5118 29.5118C29.1993 29.8244 28.7754 30 28.3333 30H1.66667C1.22464 30 0.800716 29.8244 0.488155 29.5118C0.175595 29.1993 0 28.7754 0 28.3333V1.66667C0 1.22464 0.175595 0.800716 0.488155 0.488155C0.800716 0.175595 1.22464 0 1.66667 0ZM13.3383 21.6667L25.1217 9.88167L22.7667 7.525L13.3383 16.9533L8.62333 12.2383L6.26667 14.595L13.3383 21.6667Z" fill="black"/>
 </g>
 </svg>
-`
+`;
