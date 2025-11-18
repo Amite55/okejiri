@@ -132,7 +132,7 @@ const Dispute_Review = () => {
             style={tw`absolute top-0 w-28 h-28 bg-black bg-opacity-50 rounded-2xl right-0 justify-center items-center`}
           >
             <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
-              + {disputeGallary?.length}
+              + {disputeGallary?.length - 3}
             </Text>
           </TouchableOpacity>
         )}

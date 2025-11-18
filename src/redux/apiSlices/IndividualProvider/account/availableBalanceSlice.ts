@@ -3,7 +3,7 @@ import { api } from "../../../base/baseApi";
 export const availableBalanceSlice = api.injectEndpoints({
   endpoints: (builder) => ({
     recent_transactions: builder.query({
-      query: (page = 10) => ({
+      query: (page) => ({
         url: `/my-transactions?page=${page}`,
         method: "GET",
       }),
@@ -29,5 +29,9 @@ export const availableBalanceSlice = api.injectEndpoints({
   overrideExisting: true,
 });
 
-export const { useRecent_transactionsQuery, useTransfer_balanceMutation } =
-  availableBalanceSlice;
+export const {
+  useRecent_transactionsQuery,
+  useLazyRecent_transactionsQuery,
+  useTransfer_balanceMutation,
+  useWithdrawMutation,
+} = availableBalanceSlice;

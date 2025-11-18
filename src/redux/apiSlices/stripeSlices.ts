@@ -22,8 +22,8 @@ export const stripeSlice = api.injectEndpoints({
       invalidatesTags: ["payment"],
     }),
     getAvailableBalance: builder.query({
-      query: () => ({
-        url: `/stripe/connected/balance?account_id=acct_1SPMLf3z6X4klhUr`,
+      query: (id: string) => ({
+        url: `/stripe/connected/balance?account_id=${id}`,
         method: "GET",
       }),
       providesTags: ["payment"],
