@@ -11,7 +11,6 @@ import {
   IconSettings,
   IconShare,
   IconSmallMultiple,
-  IconSwitch,
 } from "@/assets/icons";
 import LogoutModal from "@/src/Components/LogoutModal";
 import SettingsCard from "@/src/Components/SettingsCard";
@@ -34,9 +33,13 @@ const Account = () => {
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
 
-  const { data: userProfileInfo, isLoading: isLoadingProfile, isError: isErrorProfile } = useProfileQuery({});
-    const stripeAccountId = userProfileInfo?.data?.stripe_account_id;
- const {
+  const {
+    data: userProfileInfo,
+    isLoading: isLoadingProfile,
+    isError: isErrorProfile,
+  } = useProfileQuery({});
+  const stripeAccountId = userProfileInfo?.data?.stripe_account_id;
+  const {
     data: availableAmount,
     isLoading: availableAmountLoading,
     refetch: refetchAvailableBalance,
@@ -118,7 +121,7 @@ const Account = () => {
         </View>
       </View>
 
-  <TouchableOpacity
+      <TouchableOpacity
         activeOpacity={0.8}
         onPress={() =>
           router.push({
@@ -159,11 +162,6 @@ const Account = () => {
       {/* ------------ settings menu ---------------- */}
 
       <View style={tw`gap-3 mb-6`}>
-        <SettingsCard
-          title=" Switch to User"
-          onPress={() => router.push("/company/(Tabs)")}
-          fastIcon={IconSwitch}
-        />
         <SettingsCard
           title="services"
           onPress={() =>

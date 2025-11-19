@@ -55,7 +55,7 @@ const ServiceNearbyHistory = () => {
           onPress={() =>
             router.push({
               pathname: "/company/serviceDetails",
-              params: { service_id: item?.id },
+              params: { id: item?.id },
             })
           }
         />
