@@ -70,7 +70,10 @@ const Dispute_Review = () => {
         <View style={tw`flex-row items-center gap-1 mb-5`}>
           <Image
             style={tw`w-12 h-12 rounded-full `}
-            source={{ uri: item?.opposite_party?.avatar }}
+            source={
+              item?.opposite_party?.avatar ||
+              "http://103.186.20.114:8005/uploads/disputes/176293922557c7be9d8326.webp"
+            }
           />
           <Text style={tw`font-DegularDisplayDemoRegular text-xl `}>
             {item?.opposite_party?.name}
@@ -116,7 +119,7 @@ const Dispute_Review = () => {
             return (
               <Image
                 key={index}
-                source={{ uri: img }}
+                source={img}
                 style={tw`w-30 h-30 rounded-2xl`}
                 // resizeMode="cover"
                 contentFit="cover"
@@ -129,7 +132,7 @@ const Dispute_Review = () => {
         {disputeGallary?.length > 3 && (
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
-            style={tw`absolute top-0 w-28 h-28 bg-black bg-opacity-50 rounded-2xl right-0 justify-center items-center`}
+            style={tw`absolute top-0 w-30 h-30 bg-black bg-opacity-50 rounded-2xl right-2.02 justify-center items-center`}
           >
             <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white`}>
               + {disputeGallary?.length - 3}

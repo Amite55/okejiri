@@ -28,7 +28,6 @@ import { usePackageDetailsQuery } from "@/src/redux/apiSlices/userProvider/servi
 import { _HEIGHT, PrimaryColor } from "@/utils/utils";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
