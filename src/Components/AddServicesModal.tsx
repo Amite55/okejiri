@@ -71,6 +71,13 @@ export default function AddServicesModal({ ref, exsiting_service = [] }: any) {
         } catch (err) {
             setScreenLoading(false)
             console.log("error add services modal", err)
+            router.push({
+                pathname: "/Toaster",
+                params: {
+                    res: "Failed Add more service"
+                }
+            })
+            return;
         }
     }
 

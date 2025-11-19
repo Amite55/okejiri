@@ -20,6 +20,7 @@ import {
   useLogoutMutation,
   useProfileQuery,
 } from "@/src/redux/apiSlices/authSlices";
+import { useGetAvailableBalanceQuery } from "@/src/redux/apiSlices/stripeSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -32,11 +33,23 @@ const Account = () => {
 
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
- 
-  const { data: profileData, isLoading: isLoadingProfile, isError: isErrorProfile } = useProfileQuery({});
 
+  const { data: userProfileInfo, isLoading: isLoadingProfile, isError: isErrorProfile } = useProfileQuery({});
+    const stripeAccountId = userProfileInfo?.data?.stripe_account_id;
+ const {
+    data: availableAmount,
+    isLoading: availableAmountLoading,
+    refetch: refetchAvailableBalance,
+  } = useGetAvailableBalanceQuery(String(stripeAccountId), {
+    skip: !stripeAccountId,
+  });
+  const referralBonus = Number(userProfileInfo?.data?.referral_balance) || 0;
+  const earned = Number(availableAmount?.data?.available?.[0]?.amount) || 0;
+  const earnedFormatted = earned;
+  const referralFormatted = referralBonus;
+  const totalBalance = earnedFormatted + referralFormatted;
 
-  const profile = profileData?.data;
+  const profile = userProfileInfo?.data;
   // -------------- handle logout --------------
   const handleLogoutUser = async () => {
     const token = await AsyncStorage.getItem("token");
@@ -105,14 +118,15 @@ const Account = () => {
         </View>
       </View>
 
-      <TouchableOpacity
+  <TouchableOpacity
         activeOpacity={0.8}
         onPress={() =>
           router.push({
-            pathname: "/company/wallets/wallet",
+            pathname:
+              "/service_provider/individual/individual_user_wallet/wallet",
             params: {
-              wallet_balance: profileData?.data?.wallet_balance,
-              wallet_address: profileData?.data?.wallet_address,
+              wallet_balance: userProfileInfo?.data?.wallet_balance,
+              wallet_address: userProfileInfo?.data?.wallet_address,
             },
           })
         }
@@ -130,20 +144,12 @@ const Account = () => {
               Available balance
             </Text>
             <Text style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}>
-              ₦
-              {profileData?.data?.wallet_balance
-                ? profileData?.data?.wallet_balance
-                : 0}
+              ₦{totalBalance ? totalBalance : 0}
             </Text>
           </View>
         </View>
         <TouchableOpacity
           disabled
-          // onPress={() =>
-          //   router.push(
-          //     "/service_provider/individual/individual_user_wallet/wallet"
-          //   )
-          // }
           style={tw`w-14 h-14 rounded-full border border-gray-500 justify-center items-center`}
         >
           <SvgXml xml={IconRightCornerArrow} />

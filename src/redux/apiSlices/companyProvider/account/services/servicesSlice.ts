@@ -32,6 +32,7 @@ export const companyServicesSlice = api.injectEndpoints({
       invalidatesTags: ["services"],
     }),
   }),
+  overrideExisting: true
 });
 
 export const {
