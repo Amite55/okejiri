@@ -48,6 +48,7 @@ const Dispute_Process: React.FC = () => {
   const [images, setImages] = useState<any>(null);
   const [explanation, setExplanation] = useState<string>("");
   const { id } = useLocalSearchParams<{ id: string }>();
+  console.log(id, "thi is id --------------------->");
 
   //    ============== api end point -------------------------
   const [addDispute, { isLoading, isError, error }] = useAddDisputeMutation();
