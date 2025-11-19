@@ -2,11 +2,12 @@ import { IconPlus, IconRightCornerArrowWhite } from "@/assets/icons";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useLazyMyEmployeeQuery } from "@/src/redux/apiSlices/companyProvider/account/employeesSlice";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
-  Image,
+
   Pressable,
   RefreshControl,
   Text,
@@ -148,7 +149,7 @@ const My_Employee = () => {
                 key={item}
                 style={tw`relative bg-white flex-row items-center gap-4 p-2 rounded-lg`}
               >
-                <Image style={tw`w-24 h-24 rounded-xl`} source={{ uri: item?.image }} />
+                <Image style={tw`w-24 h-24 rounded-xl`} source={item?.image} contentFit="cover" />
                 <View>
                   <Text
                     style={tw`font-DegularDisplayDemoMedium text-xl text-black`}

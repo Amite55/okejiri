@@ -8,9 +8,10 @@ import SettingsCard from "@/src/Components/SettingsCard";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useEmployeeDetailsQuery } from "@/src/redux/apiSlices/companyProvider/account/employeesSlice";
+import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Employees_Details = () => {
@@ -42,9 +43,8 @@ const Employees_Details = () => {
           >
             <Image
               style={tw`w-24 h-24 rounded-full  `}
-              source={{
-                uri: employee?.image,
-              }}
+              source={employee?.image}
+              contentFit="cover"
             />
             <Text
               style={tw`font-DegularDisplayDemoRegular text-2xl text-black text-center`}

@@ -6,6 +6,7 @@ import tw from "@/src/lib/tailwind";
 import { useAddServiceAvailableTimeMutation, useAddServicePackageDetailItemMutation, useDeleteServicePackageDetailItemMutation, useEditMyServicePackageMutation, useMyServicePackageDetailsQuery, useMyServicePackageMutation, useUpdateServiceAvailableTimeMutation } from "@/src/redux/apiSlices/companyProvider/account/services/packages/packageSlice";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { FieldArray, Formik } from "formik";
@@ -13,7 +14,7 @@ import React, { useEffect, useRef, useState } from "react";
 // import { format } from "date-fns";
 import {
   ActivityIndicator,
-  Image,
+
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -370,9 +371,9 @@ const Edit_Package = () => {
                   >
                     {values.image ? (
                       <Image
-                        source={{ uri: (values.image as any).uri }}
+                        source={(values.image as any).uri}
                         style={tw`h-32 w-32 rounded-3xl`}
-                        resizeMode="cover"
+                        contentFit="cover"
                       />
                     ) :
                       <View>

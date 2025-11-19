@@ -38,7 +38,7 @@ const Manage_Discounts = () => {
     } catch (error: any) {
       router.push({
         pathname: "/Toaster",
-        params: { res: error.massage },
+        params: { res: error.massage || "Add discount error!" },
       });
     }
   };
