@@ -18,6 +18,7 @@ import {
   useLogoutMutation,
   useProfileQuery,
 } from "@/src/redux/apiSlices/authSlices";
+import { useRoleSwitchMutation } from "@/src/redux/apiSlices/userProvider/account/roleSwitchSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -31,6 +32,7 @@ const Profile = () => {
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
   const { data: userProfileInfo } = useProfileQuery({});
+  const [switchRole] = useRoleSwitchMutation();
 
   // -------------- handle logout --------------
   const handleLogoutUser = async () => {
@@ -47,6 +49,29 @@ const Profile = () => {
       router.push({
         pathname: "/Toaster",
         params: { res: e?.message || e },
+      });
+    }
+  };
+
+  // =-======================== Handle role switch ===========================//
+  const handleRoleSwitch = async () => {
+    try {
+      const res = await switchRole({}).unwrap();
+
+      if (res) {
+        await AsyncStorage.setItem("token", res?.data?.access_token);
+        await AsyncStorage.setItem("roll", res?.data?.user?.role);
+        await AsyncStorage.setItem(
+          "providerTypes",
+          res?.data?.user?.provider_type
+        );
+        router.replace("/auth/contact");
+      }
+    } catch (error) {
+      console.log(error, "role not switched");
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || error },
       });
     }
   };
@@ -135,9 +160,7 @@ const Profile = () => {
       <View style={tw`gap-3 mb-6`}>
         <SettingsCard
           title="  Switch to service provider"
-          onPress={() =>
-            router.push("/service_provider/individual/(Tabs)/home")
-          }
+          onPress={() => handleRoleSwitch()}
           fastIcon={IconSwitch}
         />
         <SettingsCard

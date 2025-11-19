@@ -98,7 +98,6 @@ export const bookingsSlice = api.injectEndpoints({
         return {
           url: `/add-dispute`,
           method: "POST",
-
           body: formData,
           headers: {
             "Content-Type": "multipart/form-data",
@@ -109,7 +108,7 @@ export const bookingsSlice = api.injectEndpoints({
       invalidatesTags: ["dispute"],
     }),
   }),
-  overrideExisting: true
+  overrideExisting: true,
 });
 
 export const {

@@ -2,6 +2,7 @@ import { IconCameraProfile, IconPlusBlackSmall } from "@/assets/icons";
 import { ImgSuccessGIF } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import ProviderProfileSkeleton from "@/src/Components/skeletons/ProviderProfileSkeleton";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import {
@@ -39,11 +40,13 @@ interface EditProfileFormData {
 interface EditProfileProps {}
 
 const Edit_Profile: React.FC<EditProfileProps> = () => {
+  const roll = useRoll();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [fullName, setFullName] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [address, setAddress] = useState<string>("");
+  const [about, setAbout] = useState<string>("");
   const [imageAsset, setImageAsset] =
     React.useState<ImagePicker.ImagePickerAsset | null>(null);
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
@@ -65,13 +68,12 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
       setFullName(name || "");
       setPhoneNumber(phone || "");
       setAddress(address || "");
+      setAbout(userProfileInfo?.data?.about || "");
     }
   }, [userProfileInfo]);
 
   // ------------- submit form handler -------------
   const onSubmit = async (): Promise<void> => {
-    const isKycVerified = userProfileInfo?.data?.kyc_status === "Verified";
-
     if (!fullName || !userName || !phoneNumber || !address) {
       router.push({
         pathname: "/Toaster",
@@ -85,8 +87,12 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
         user_name: userName,
         phone: phoneNumber,
         address: address,
+        about: about,
       };
-
+      console.log(formData, "this fromdata --------->");
+      if (userProfileInfo?.data?.role === "USER") {
+        delete formData.about;
+      }
       // Call your edit profile API with proper typing
       const result = await editProfile(formData).unwrap();
       if (result.status === "success") {
@@ -228,7 +234,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 Your full name
               </Text>
               <View
-                style={tw`w-full h-14 rounded-full border  px-4 justify-center mb-4`}
+                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
               >
                 <TextInput
                   placeholder="John Smith"
@@ -248,7 +254,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 User name
               </Text>
               <View
-                style={tw`w-full h-14 rounded-full border  px-4 justify-center mb-4`}
+                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
               >
                 <TextInput
                   editable={
@@ -272,7 +278,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 Contact Number
               </Text>
               <View
-                style={tw`w-full h-14 rounded-full border  px-4 justify-center mb-4`}
+                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
               >
                 <TextInput
                   editable={
@@ -290,7 +296,6 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   accessibilityHint="Enter your contact number"
                 />
               </View>
-
               {/* address Input Field */}
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
@@ -298,7 +303,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 Address
               </Text>
               <View
-                style={tw`w-full h-14 rounded-full border px-4 justify-center mb-4`}
+                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
               >
                 <TextInput
                   editable={
@@ -315,13 +320,35 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   accessibilityHint="Enter your address"
                 />
               </View>
+
+              {userProfileInfo?.data?.role === "PROVIDER" && (
+                <View>
+                  {/* About You */}
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2`}
+                  >
+                    About you
+                  </Text>
+                  <TextInput
+                    style={[
+                      tw`border border-gray-300 h-36 rounded-2xl p-4 mt-2 px-4`,
+                    ]}
+                    multiline
+                    numberOfLines={4}
+                    placeholder="Write something about you..."
+                    value={about}
+                    onChangeText={(text) => setAbout(text)}
+                    textAlignVertical="top"
+                  />
+                </View>
+              )}
             </View>
           </View>
 
           {/* Submit Button */}
           <PrimaryButton
             onPress={() => onSubmit()}
-            titleProps={isEditProfileLoading ? "Updating..." : "Submit"}
+            titleProps={isEditProfileLoading ? "Updating..." : "Save Changes"}
             contentStyle={tw`mt-4`}
           />
 

@@ -4,6 +4,7 @@ import {
   IconRightArrowCornerGray,
   IconUnderReview,
 } from "@/assets/icons";
+import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useMyDisputeQuery } from "@/src/redux/apiSlices/companyProvider/account/myDisputeSlice";
@@ -48,17 +49,17 @@ const My_Disputes = () => {
         onPress={() =>
           router.push({
             pathname: "/company/disputes/disputes_status",
-            params: { id: item.id },
+            params: { id: item?.id },
           })
         }
         style={tw`h-28 px-4 py-2 rounded-3xl w-full bg-white border-b border-red-400`}
       >
         <Text style={tw`font-DegularDisplayDemoMedium text-2xl mb-2`}>
-          {item.reason.split(" ").slice(0, 3).join(" ")}
+          {item?.reason.split(" ").slice(0, 3).join(" ")}
         </Text>
         <View style={tw`flex-row justify-between items-end`}>
           <Text numberOfLines={2} style={tw`flex-1`}>
-            {item.details}
+            {item?.details}
           </Text>
           <SvgXml xml={IconRightArrowCornerGray} />
         </View>
@@ -69,6 +70,11 @@ const My_Disputes = () => {
       </TouchableOpacity>
     );
   };
+
+  // ================= loading skeleton ================== //
+  if (isLoading || isFetching) {
+    return <NotificationSkeleton />;
+  }
 
   return (
     <FlatList
@@ -86,6 +92,7 @@ const My_Disputes = () => {
         <RefreshControl refreshing={refreshing} onRefresh={refetch} />
       }
       showsVerticalScrollIndicator={false}
+      style={tw`flex-1 bg-base_color`}
       contentContainerStyle={tw`bg-base_color px-5 gap-3 `}
       ListFooterComponent={
         <View style={tw`py-4  flex justify-center items-center`}>
