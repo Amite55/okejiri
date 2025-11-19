@@ -1,6 +1,7 @@
 import {
   IconCancel,
   IconDeliveryApproved,
+  IconDeliveryRequestSent,
   IconDispute,
   IconExtension,
   IconKYCComplete,
@@ -16,7 +17,7 @@ import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
 const iconMap = {
-  new_order: IconNewOrder,
+  order_approved: IconNewOrder,
   request_approved: IconDeliveryApproved,
   complete_kyc: IconKYCComplete,
   warning: IconWaring,
@@ -24,9 +25,12 @@ const iconMap = {
   new_dispute: IconDispute,
   withdrawal_request_pending: IconWithdrawalPending,
   delivery_extension: IconExtension,
+  delivery_request_sent: IconDeliveryRequestSent,
+  payout_request: IconWithdrawalPending,
+  extend_delivery_time: IconExtension
 };
 const textColorMap = {
-  new_order: "#FF6600",
+  order_approved: "#FF6600",
   request_approved: "#008100",
   complete_kyc: "#9747FF",
   warning: "#FF3A00",
@@ -35,6 +39,9 @@ const textColorMap = {
   withdrawal_request_pending: "#4285F4",
   delivery_extension: "#2577FF",
   delivery_request: "#4F52FF",
+  delivery_request_sent: "#4F52FF",
+  payout_request: "#4285F4",
+  extend_delivery_time: "#2577FF"
 };
 
 const NotificationCard = ({

@@ -17,14 +17,14 @@ export const myServicesSlice = api.injectEndpoints({
         url: `/my-service-package?page=${page}&service_id=${service_id}`,
         method: "GET",
       }),
-      providesTags: ["servicePackages"],
+      providesTags: ["services"],
     }),
     my_service_package_details: builder.query({
       query: (id) => ({
         url: `my-service-package/${id}`,
         method: "GET",
       }),
-      providesTags: ["servicePackageDetails"],
+      providesTags: ["services"],
     }),
     my_service_package_post: builder.mutation({
       query: (data) => ({
@@ -32,7 +32,7 @@ export const myServicesSlice = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["servicePost"],
+      invalidatesTags: ["services"],
     }),
     edit_my_service_package: builder.mutation({
       query: ({ id, data }) => ({
@@ -40,7 +40,7 @@ export const myServicesSlice = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["editService"],
+      invalidatesTags: ["services"],
     }),
 
     add_service_package_detail_items: builder.mutation({
@@ -49,14 +49,14 @@ export const myServicesSlice = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["addServicePackageDetail"],
+      invalidatesTags: ["services"],
     }),
     delete_service_package_detail: builder.mutation({
       query: (id) => ({
         url: `/delete-service-package-detail-item/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["deleteService"],
+      invalidatesTags: ["services"],
     }),
     add_service_available_time: builder.mutation({
       query: (data) => ({
@@ -64,7 +64,7 @@ export const myServicesSlice = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["addServiceAvailable"],
+      invalidatesTags: ["services"],
     }),
     update_service_available_time: builder.mutation({
       query: ({ data, id }) => ({
@@ -72,7 +72,7 @@ export const myServicesSlice = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["updateServiceAvailable"],
+      invalidatesTags: ["services"],
     }),
   }),
   overrideExisting: true,

@@ -178,7 +178,7 @@ const Account = () => {
           title=" My services"
           onPress={() =>
             router.push(
-              "/service_provider/company/company_services/my_services"
+               "/service_provider/company/company_services/my_services"
             )
           }
           fastIcon={IconMyService}
