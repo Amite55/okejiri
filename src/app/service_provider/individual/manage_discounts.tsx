@@ -21,23 +21,17 @@ const Manage_Discounts = () => {
   const [discountAmount, setDiscountAmount] = useState("10");
 
   const handleSubmit = async () => {
-    if (!discountAmount || isNaN(Number(discountAmount))) {
-      router.push({
-        pathname: "/Toaster",
-        params: { res: "Please enter a valid discount amount" },
-      });
-      return;
-    }
-
     try {
       const res = await manage_discountse({
         discount_amount: Number(discountAmount),
       }).unwrap();
 
+      console.log(res?.message);
+      console.log(res?.message);
       if (res.status === "success") {
         router.push({
           pathname: "/Toaster",
-          params: { res: "Please enter a valid discount amount" },
+          params: { res: res?.message },
         });
       }
       router.back();
