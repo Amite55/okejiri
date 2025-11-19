@@ -73,6 +73,13 @@ const Contact = () => {
         });
         return;
       }
+      if (!location.latitude || !location.longitude) {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: "Please allow location access" },
+        });
+        return;
+      }
       const info = {
         phone,
         address,
