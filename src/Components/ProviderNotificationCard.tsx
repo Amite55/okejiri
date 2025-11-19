@@ -1,6 +1,7 @@
 import {
   IconCompleteKycNotification,
   IconDeliveryApprovedNotification,
+  IconExtension,
   IconNewDisputeNotification,
   IconNewOrderNotification,
   IconOrderRejectedNotification,
@@ -28,9 +29,10 @@ const iconMap = {
   order_approved: IconDeliveryApprovedNotification,
   new_report: IconWaringNotification,
   delivery_request_sent: IconRequestForDelivery,
-  extend_delivery_time: IconDeliveryApprovedNotification,
+  extend_delivery_time: IconExtension,
   accept_extend_delivery_time: IconDeliveryApprovedNotification,
-  report: IconWaringNotification
+  report: IconWaringNotification,
+  
 };
 const textColorMap = {
   payout_request: "#4285F4",
@@ -45,9 +47,10 @@ const textColorMap = {
   order_approved:  "#008100",
   new_report: "#FF3A00",
   delivery_request_sent: "#4285F4",
-  extend_delivery_time:  "#008100",
+  extend_delivery_time:  "#2577FF",
   accept_extend_delivery_time: "#008100",
-  report: "#FF3A00"
+  report: "#FF3A00",
+  
 };
 
 const ProviderNotificationCard = ({

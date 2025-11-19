@@ -9,7 +9,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Image,
+
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -23,6 +23,7 @@ import {
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 
+import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { Formik } from "formik";
 
@@ -136,45 +137,34 @@ const Employee_Profile_Edit = () => {
             />
 
             <Formik
+              enableReinitialize={true}
               initialValues={{
                 image: employee?.image ? { uri: employee?.image, name: "existing.jpg", type: "image/jpeg" } : null,
-                name: employee?.name,
-                phone: employee?.phone,
-                location: employee?.location
+                name: employee?.name ?? "",
+                phone: employee?.phone ?? "",
+                location: employee?.location ?? ""
               }}
               // validate={validation}
               onSubmit={async (values) => {
                 // console.log("=========== Final ", JSON.stringify(values, null, 2));
                 try {
                   const formData = new FormData();
-                  if ((values.image as any).uri !== employee.image) {
-                    formData.append("image", {
-                      uri: (values.image as any).uri,
-                      name: (values.image as any).name || "photo.jpg",
-                      type: (values.image as any).type || "image/jpeg"
-                    } as any);
-                  }
 
-                  if (values.name !== employee.name) {
-                    formData.append("name", values.name);
-                  }
-                  if (values.location !== employee.location) {
-                    formData.append("location", values.location);
-                  }
-                  if (values.location !== employee.phone) {
-                    formData.append("phone", values.phone);
-                  }
-                  if (formData === null) {
-                    router.push({
-                      pathname: "/Toaster",
-                      params: {
-                        res: "Nothing to change"
-                      }
-                    })
-                    setTimeout(() => {
-                      router.back()
-                    }, 1000);
-                  }
+                  formData.append("image", {
+                    uri: (values.image as any).uri,
+                    name: (values.image as any).name || "photo.jpg",
+                    type: (values.image as any).type || "image/jpeg"
+                  } as any);
+
+
+                  // if (values.name !== employee.name) {
+                  formData.append("name", values.name);
+
+                  formData.append("location", values.location);
+
+                  formData.append("phone", values.phone);
+
+
                   formData.append("_method", "PUT");
                   console.log("=========== Final ", JSON.stringify(formData, null, 2));
 
@@ -230,7 +220,7 @@ const Employee_Profile_Edit = () => {
                   </Pressable> */}
                   <View style={tw`bg-white  py-10 flex-row justify-center rounded-2xl`}>
                     <View>
-                      <Image source={{ uri: values.image?.uri }} width={100} height={100} resizeMode="cover" style={tw`rounded-full`} />
+                      <Image source={values.image?.uri} contentFit="cover" style={tw`rounded-full w-25 h-25`} />
                     </View>
                     <TouchableOpacity
                       onPress={() => pickImage(setFieldValue, setFieldTouched)}

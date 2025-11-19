@@ -5,12 +5,13 @@ import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { useLazyMy_service_packagesQuery } from "@/src/redux/apiSlices/IndividualProvider/account/MyServices/myServicesSlicel";
 import { useCreateConnectAccountMutation } from "@/src/redux/apiSlices/stripeSlices";
+import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
+
   RefreshControl,
   Text,
   TouchableOpacity,
@@ -113,8 +114,8 @@ const My_Service_Package = () => {
         <View style={tw`justify-center items-center`}>
           <Image
             style={tw`h-44 w-[98%] rounded-2xl`}
-            source={{ uri: item?.image }}
-            resizeMode="cover"
+            source={item?.image }
+            contentFit="cover"
           />
         </View>
 
