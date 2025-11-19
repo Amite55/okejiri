@@ -29,21 +29,10 @@ const Dispute_Review = () => {
     isError: isErrorDisputeReview,
   } = useDisputeDetailsQuery(id);
 
-  console.log("======== dispute id ============== ", id);
-
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const disputeGallary = disputeReviewData?.data?.attachments || [];
   const visibleImages = disputeGallary.slice(0, 3);
   const item = disputeReviewData?.data;
-
-  console.log(
-    "===================> dispute review details === ",
-    JSON.stringify(item, null, 2)
-  );
-  console.log(
-    "===================> dispute attachments details === ",
-    JSON.stringify(visibleImages, null, 2)
-  );
 
   return (
     <ScrollView
@@ -57,10 +46,7 @@ const Dispute_Review = () => {
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
-      {/* <Image 
-        source={{uri: "http://103.186.20.114:8005/uploads/disputes/176293922557c7be9d8326.webp"}}
-        style={tw`h-20 w-15`}
-      /> */}
+
       <View style={tw`mt-4`}>
         <Text
           style={tw`font-DegularDisplayDemoMedium text-2xl text-redWhite mb-2`}
@@ -112,7 +98,6 @@ const Dispute_Review = () => {
       >
         {visibleImages &&
           visibleImages?.map((img: string, index: any) => {
-            console.log("==== img ===== ", img);
             return (
               <Image
                 key={index}

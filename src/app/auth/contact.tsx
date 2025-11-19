@@ -90,6 +90,11 @@ const Contact = () => {
         // ------------ redirect ---------------------
         if (res?.status === "success") {
           router.replace("/company/(Tabs)");
+          if (getProfileData?.data?.kyc_status === "Unverified") {
+            setTimeout(() => {
+              router.push("/kyc_completed_modal");
+            }, 500);
+          }
         }
       } else if (roll === "PROVIDER") {
         if (providerTypes === "Individual") {
