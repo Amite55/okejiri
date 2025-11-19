@@ -8,11 +8,19 @@ import {
 import SettingsCard from "@/src/Components/SettingsCard";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { router } from "expo-router";
 import React from "react";
 import { ScrollView, View } from "react-native";
 
 const Setting_Index = () => {
+  // ------------ api slices ------------------
+  const {
+    data: userProfileInfo,
+    isLoading: isprofileLoading,
+    error,
+  } = useProfileQuery({});
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -33,7 +41,13 @@ const Setting_Index = () => {
         <SettingsCard
           title=" Edit profile"
           onPress={() =>
-            router.push("/service_provider/individual/settings/edit_profile")
+            userProfileInfo?.data?.role === "PROVIDER"
+              ? userProfileInfo?.data?.provider_type === "Company"
+                ? router.push(
+                    "/service_provider/individual/settings/edit_profile"
+                  )
+                : router.push("/company/settings/edit_profile")
+              : router.push("/company/settings/edit_profile")
           }
           fastIcon={IconEditPenBlack}
         />
