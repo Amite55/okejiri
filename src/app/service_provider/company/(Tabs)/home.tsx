@@ -282,17 +282,20 @@ const Home_Index_Company = () => {
         </Text>
 
         <View style={tw`gap-6 my-4`}>
-          {recentTransaction?.data.data.map((item: any, index: any) => {
+          {recentTransaction && recentTransaction?.data.data.map((item: any, index: any) => {
+            // console.log(" ========= transaction item ============ ", JSON.stringify(item!, null, 2))
             return (
               <TransactionsCard
                 key={index}
-                price={item.amount}
-                profileBadge={item.sender.kyc_status === "Verified" ? true : false}
-                type={item.direction}
-                varient={item.transaction_type}
+                price={item?.amount}
+                profileBadge={item?.sender?.kyc_status === "Verified" ? true : false}
+                type={item?.direction}
+                varient={item?.transaction_type}
                 title="Service title goes here"
                 transactionIcon={IconRightArrowCornerPrimaryColor}
-                userName={item.sender.name}
+                userName={item?.sender.name}
+                created_at={formateDate(item?.created_at)}
+                transaction_id={item?.transaction_id}
               />
             );
           })}

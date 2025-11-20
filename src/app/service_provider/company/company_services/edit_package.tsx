@@ -157,11 +157,7 @@ const Edit_Package = () => {
       const fileType = `image/${fileExt === "jpg" ? "jpeg" : fileExt}`;
 
       // Set Formik field
-      setFieldValue("image", {
-        uri: picked.uri,
-        name: fileName,
-        type: fileType,
-      });
+      setFieldValue("image", result.assets[0]);
       setFieldTouched("image", true);
     }
   };
@@ -236,21 +232,21 @@ const Edit_Package = () => {
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
   }
 
-  
+
   useEffect(() => {
     if (servicePackages?.delivery_time) {
       setDelivery_time(servicePackages.delivery_time);
     }
   }, [servicePackages]);
   // console.log(" =================== my service package =================== ", JSON.stringify(servicePackages, null, 2))
-// ============================= console.log ======================================= 
-  if (isLoadingMyServiceDetails) {
-    return (
-      <View style={tw`flex-1 justify-center items-center`}>
-        <ActivityIndicator size="large" color="#FF6600" />
-      </View>
-    );
-  }
+  // ============================= console.log ======================================= 
+  // if (isLoadingMyServiceDetails) {
+  //   return (
+  //     <View style={tw`flex-1 justify-center items-center`}>
+  //       <ActivityIndicator size="large" color="#FF6600" />
+  //     </View>
+  //   );
+  // }
 
   return (
     // <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -275,7 +271,7 @@ const Edit_Package = () => {
             onPress={() => router.back()}
             titleTextStyle={tw`text-xl`}
           />
-
+          {isLoadingMyServiceDetails && <ActivityIndicator size={"small"} color={"#FF6600"} />}
           {/* ------------------ Image upload ------------------ */}
           <Formik <PackageFormValues>
             enableReinitialize={true}
@@ -293,35 +289,20 @@ const Edit_Package = () => {
               delivery_time: servicePackages?.delivery_time ?? "",
             }}
             onSubmit={async (values) => {
-
-
-              // if (!id || !delivery_time || !values.image || !values.title || values.service_details.length === 0 || !values.available_time_from || !values.available_time_to) {
-              //   router.push({
-              //     pathname: "/Toaster",
-              //     params: {
-              //       res: "Fill up all required fields"
-              //     }
-              //   })
-              //   return;
-              // }
-
-
-
-
-
-
-
-
               try {
                 const formData = new FormData();
 
                 formData.append("service_id", String(id));
                 formData.append("title", values.title);
-                formData.append("image", {
-                  uri: (values.image as any).uri,
-                  name: (values.image as any).name || "photo.jpg",
-                  type: (values.image as any).type || "image/jpeg"
-                } as any);
+                console.log(" ======== values image ========== ", values.image, " ==== ", values.image.uri.startsWith("http"))
+                if (!values.image.uri.startsWith("http")) {
+                  formData.append("image", {
+                    uri: (values.image as any).uri,
+                    name: (values.image as any).name,
+                    type: (values.image as any).type
+                  } as any);
+                }
+
                 formData.append("price", values.price);
                 formData.append("delivery_time", delivery_time);
 
@@ -330,29 +311,29 @@ const Edit_Package = () => {
 
 
                 console.log(" =============== form data ================", JSON.stringify(formData, null, 2));
-                const response = await editPackage({id: id, requestBody: formData}).unwrap();
+                // const response = await editPackage({ id: id, requestBody: formData }).unwrap();
 
-                if (response) {
-                  router.push({
-                    pathname: "/Toaster",
-                    params: {
-                      res: "My service package edited!",
-                    }
-                  })
-                  // // ()=> resetForm();
-                  // setTimeout(() => {
-                  //   router.back();
-                  // }, 500)
-                }
+                // if (response) {
+                //   router.push({
+                //     pathname: "/Toaster",
+                //     params: {
+                //       res: "My service package edited!",
+                //     }
+                //   })
+                //   // ()=> resetForm();
+                //   setTimeout(() => {
+                //     router.back();
+                //   }, 500)
+                // }
               } catch (err) {
-                console.log("My service package adding failed", err)
+                console.log("My service package adding failed", JSON.stringify(err))
                 router.push({
                   pathname: "/Toaster",
                   params: {
                     res: "My service package added Failed!",
                   }
                 })
-                
+
               }
               console.log("Pressed ")
             }}

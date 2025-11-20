@@ -1,4 +1,5 @@
 import { IconBackLeftArrow, IconBookingConfirm, IconProfileBadge, IconStar } from '@/assets/icons';
+import NotificationSkeleton from '@/src/Components/skeletons/NotificationSkeleton';
 import tw from '@/src/lib/tailwind';
 import { useOrderDetailsQuery } from '@/src/redux/apiSlices/userProvider/bookingsSlices';
 import { Image } from 'expo-image';
@@ -20,9 +21,13 @@ export default function OrderApproved() {
     // console.log(" ============ id ================= ", id)
     // console.log(" ================ Order details data ============ ", JSON.stringify(orders, null, 2))
     const firstBookingItem = orders?.booking_items?.[0];
-    console.log(" ================== id ================ ", JSON.stringify(orders, null, 2))
+    // console.log(" ================== id ================ ", JSON.stringify(orders, null, 2))
+    if(isLoadingOrderDetails || !id){
+        return <NotificationSkeleton />
+    }
+
     return (
-        <View>
+        <View style={tw`bg-base_color flex-1`}>
             <View>
                 <Image source={orders?.booking_items?.[0].package?.image} style={tw`w-full h-50 `} />
                 <View style={tw`absolute py-4 px-4`}>

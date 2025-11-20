@@ -7,7 +7,7 @@ import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, Bottom
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import tw from '../lib/tailwind';
 import { useAcceptDeliveryRequestMutation, useDeclineDeliveryRequestMutation, useOrderDetailsQuery } from '../redux/apiSlices/userProvider/bookingsSlices';
@@ -78,7 +78,9 @@ export default function RequestForDeliveryModal({ ref, id, onClose, onAccepted }
                         <Text style={tw`text-white text-xl font-bold`}>✕</Text>
                     </TouchableOpacity>
                 </View>
-
+                {isLoadingOrderDetails &&
+                    <ActivityIndicator size={"large"} color={"#FF6600"} />
+                }
                 <BottomSheetScrollView contentContainerStyle={tw`flex-1 bg-base_color  `}>
                     <View style={tw`px-4 py-4 rounded-3xl gap-3`}>
                         <Image source={orders?.booking_items?.[0].package?.image} style={tw`w-full h-30 rounded-3xl`} />
@@ -141,8 +143,9 @@ export default function RequestForDeliveryModal({ ref, id, onClose, onAccepted }
 
                                 }}
                                 style={tw`px-4 py-6 w-[48%]`}>
-                                <View style={tw`bg-redDeep py-4 rounded-full`}>
-                                    <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}>Decline</Text>
+                                <View style={tw`bg-redDeep py-4 rounded-full flex-row items-center justify-center gap-3`}>
+                                    {isLoadingDeclineDeliveryRequest && <ActivityIndicator size={"small"} color={"#fff"}/>}
+                                    <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}>{isLoadingDeclineDeliveryRequest ? "Declining...":"Decline"}</Text>
                                 </View>
 
                             </TouchableOpacity>
@@ -172,8 +175,9 @@ export default function RequestForDeliveryModal({ ref, id, onClose, onAccepted }
 
                                 }}
                                 style={tw`px-4 py-6 w-[48%]`}>
-                                <View style={tw`bg-[#319F43] py-4 rounded-full`}>
-                                    <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}>Accept</Text>
+                                <View style={tw`bg-[#319F43] py-4 rounded-full flex-row justify-center items-center gap-3`}>
+                                    {isLoadingAcceptDeliveryRequest && <ActivityIndicator size={"small"} color={"#fff"}/>}
+                                    <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}>{isLoadingAcceptDeliveryRequest ? "Accepting...":"Accept"}</Text>
                                 </View>
 
                             </TouchableOpacity>

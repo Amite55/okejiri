@@ -189,6 +189,11 @@ const Add_Package = () => {
 
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
   }
+  const isTimeGreater = (t1: any, t2: any) => {
+    const d1 = new Date(`1970-01-01T${t1}`);
+    const d2 = new Date(`1970-01-01T${t2}`);
+    return d1 > d2;
+  };
 
   const openFixedModal = () => {
     setModalType("fixed");
@@ -326,12 +331,15 @@ const Add_Package = () => {
                       res: "My service package added!",
                     }
                   })
+                  setTimeout(() => {
+                  router.back();
+                }, 500)
                   // ()=> resetForm();
-                  
+
                 }
                 setTimeout(() => {
-                    router.back();
-                  }, 200)
+                  router.back();
+                }, 200)
               } catch (err) {
                 router.push({
                   pathname: "/Toaster",
@@ -647,19 +655,69 @@ const Add_Package = () => {
                             setShow(false);
                             setDate(currentDate);
 
-                            const formated = formatedDate(currentDate)
+                            const formated = formatedDate(currentDate);
 
+                            const updatedFrom = [...values.available_time_from];
+                            const updatedTo = [...values.available_time_to];
 
                             if (editingField === "from") {
-                              const updated = [...values.available_time_from];
-                              updated[currentTimeIndex] = formated;
-                              setFieldValue("available_time_from", updated);
-                            } else if (editingField === 'to') {
-                              const updated = [...values.available_time_to];
-                              updated[currentTimeIndex] = formated;
-                              setFieldValue("available_time_to", updated);
+                              updatedFrom[currentTimeIndex] = formated;
+
+                              const toTime = updatedTo[currentTimeIndex];
+
+                              // --- PREVENT ONLY WHEN BOTH HAVE VALUES ---
+                              if (toTime) {
+                                const convertTo = convertTo24Hour(toTime);
+                                const convertFormated = convertTo24Hour(formated)
+                                if (isTimeGreater(convertTo, convertFormated)) {
+                                  // valid
+                                  setFieldValue("available_time_from", updatedFrom);
+                                } else {
+                                  // prevent
+                                  router.push({
+                                    pathname: "/Toaster",
+                                    params: {
+                                      res: "From time must be earlier than To time"
+                                    }
+                                  })
+
+
+                                  return;
+                                }
+                              } else {
+                                // to blank → allow
+                                setFieldValue("available_time_from", updatedFrom);
+                              }
+                            }
+
+                            if (editingField === "to") {
+                              updatedTo[currentTimeIndex] = formated;
+                              const fromTime = updatedFrom[currentTimeIndex];
+
+                              // --- PREVENT ONLY WHEN BOTH HAVE VALUES ---
+                              if (fromTime) {
+                                const convertFormate = convertTo24Hour(formated);
+                                const covertFromTime = convertTo24Hour(fromTime);
+                                if (isTimeGreater(convertFormate, covertFromTime)) {
+                                  // valid
+                                  setFieldValue("available_time_to", updatedTo);
+                                } else {
+                                  // prevent
+                                  router.push({
+                                    pathname: "/Toaster",
+                                    params: {
+                                      res: "To time must be later than From time"
+                                    }
+                                  })
+                                  return;
+                                }
+                              } else {
+                                // from blank → allow
+                                setFieldValue("available_time_to", updatedTo);
+                              }
                             }
                           }}
+
                         />
                       )
 
