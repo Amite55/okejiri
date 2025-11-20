@@ -55,6 +55,11 @@ const Setup_Business_Profile = () => {
         const res = await information(payload).unwrap();
         if (res?.status === "success") {
           router.replace("/service_provider/company/(Tabs)/home");
+          if (res?.data?.kyc_status === "Unverified") {
+            setTimeout(() => {
+              router.push("/kyc_completed_modal");
+            }, 500);
+          }
         }
       }
     } catch (error) {

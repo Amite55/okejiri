@@ -55,6 +55,11 @@ const Provide_Service = () => {
         const res = await information(payload).unwrap();
         if (res) {
           router.replace("/service_provider/individual/(Tabs)/home");
+          if (res?.data?.kyc_status === "Unverified") {
+            setTimeout(() => {
+              router.push("/kyc_completed_modal");
+            }, 500);
+          }
         }
       }
     } catch (error) {

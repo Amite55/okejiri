@@ -56,11 +56,15 @@ const Chats = () => {
   }, [debouncedSearch]);
 
   // =========== next routing ===========
-  const handleNext = async (id: any) => {
-    await markAsRead({ receiver_id: id });
+  const handleNext = async (item: any) => {
+    await markAsRead({ receiver_id: item?.user_id });
     router.push({
       pathname: "/company/messaging",
-      params: { receiverId: id },
+      params: {
+        receiverId: item?.user_id,
+        receiverName: item?.name,
+        receiverImage: item?.avatar,
+      },
     });
   };
 
@@ -116,7 +120,7 @@ const Chats = () => {
               chatItem={item}
               isRead={item?.is_read}
               onPress={() => {
-                handleNext(item?.user_id);
+                handleNext(item);
               }}
             />
           );

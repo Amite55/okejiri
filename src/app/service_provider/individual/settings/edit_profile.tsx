@@ -2,7 +2,6 @@ import { IconCameraProfile, IconPlusBlackSmall } from "@/assets/icons";
 import { ImgSuccessGIF } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import ProviderProfileSkeleton from "@/src/Components/skeletons/ProviderProfileSkeleton";
-import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import {
@@ -29,26 +28,17 @@ import {
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 
-// Interface for form data
-interface EditProfileFormData {
-  name: string;
-  phone: string;
-  address: string;
-}
-
 // Interface for component props
 interface EditProfileProps {}
 
 const Edit_Profile: React.FC<EditProfileProps> = () => {
-  const roll = useRoll();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [businessName, setBusinessName] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [about, setAbout] = useState<string>("");
-  const [imageAsset, setImageAsset] =
-    React.useState<ImagePicker.ImagePickerAsset | null>(null);
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
 
   // ---------------- api end point ----------------
@@ -63,18 +53,26 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
 
   useEffect(() => {
     if (userProfileInfo?.data) {
-      const { name, phone, address, user_name } = userProfileInfo?.data;
-      setUserName(user_name || "");
+      const { phone, user_name, name } = userProfileInfo?.data;
       setFullName(name || "");
+      setBusinessName(userProfileInfo?.data?.company?.company_name || "");
+      setUserName(user_name || "");
       setPhoneNumber(phone || "");
-      setAddress(address || "");
-      setAbout(userProfileInfo?.data?.about || "");
+      setAddress(userProfileInfo?.data?.company?.company_location || "");
+      setAbout(userProfileInfo?.data?.company?.about_business || "");
     }
   }, [userProfileInfo]);
 
   // ------------- submit form handler -------------
   const onSubmit = async (): Promise<void> => {
-    if (!fullName || !userName || !phoneNumber || !address) {
+    if (
+      !businessName ||
+      !userName ||
+      !phoneNumber ||
+      !fullName ||
+      !address ||
+      !about
+    ) {
       router.push({
         pathname: "/Toaster",
         params: { res: "Please fill all the fields" },
@@ -84,15 +82,13 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
     try {
       const formData = {
         name: fullName,
+        business_name: businessName,
         user_name: userName,
         phone: phoneNumber,
-        address: address,
-        about: about,
+        business_location: address,
+        address: userProfileInfo?.data?.address || "",
+        about_business: about,
       };
-      console.log(formData, "this fromdata --------->");
-      if (userProfileInfo?.data?.role === "USER") {
-        delete formData.about;
-      }
       // Call your edit profile API with proper typing
       const result = await editProfile(formData).unwrap();
       if (result.status === "success") {
@@ -125,7 +121,6 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
     });
     if (!result.canceled && result.assets.length > 0) {
       const selectedImage = result.assets[0];
-      setImageAsset(selectedImage);
       const form = new FormData();
       const filename =
         selectedImage.fileName ??
@@ -158,8 +153,6 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
     }
   };
 
-  // console.log(userProfileInfo?.data?.name, "thi sis;alskdjf--------->");
-
   // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
   useEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
@@ -191,7 +184,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
           style={tw`flex-1 bg-base_color px-5`}
           contentContainerStyle={[
             tw`justify-between flex-grow bg-base_color pb-1`,
-            isKeyboardVisible && tw`pb-10`,
+            isKeyboardVisible && tw`pb-16`,
           ]}
         >
           {/* <View style={tw`flex-1 `}> */}
@@ -205,8 +198,9 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
             {/* Profile Image Section */}
             <View style={tw`flex-1 relative justify-center items-center my-4`}>
               <Image
-                style={tw`w-24 h-24 rounded-full`}
-                source={userProfileInfo?.data?.avatar || imageAsset}
+                style={tw`w-24 h-24  rounded-full`}
+                source={userProfileInfo?.data?.company?.company_logo}
+                contentFit="cover"
               />
 
               <TouchableOpacity
@@ -231,7 +225,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
               >
-                Your full name
+                Full name
               </Text>
               <View
                 style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
@@ -241,6 +235,30 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   placeholderTextColor="#535353"
                   onChangeText={(text) => setFullName(text)}
                   value={fullName}
+                  style={tw`flex-1 font-DegularDisplayDemoRegular text-base`}
+                  accessibilityLabel="Full name input"
+                  accessibilityHint="Enter your full name"
+                />
+              </View>
+              {/* Business Name Input Field */}
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
+              >
+                Business name
+              </Text>
+              <View
+                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
+              >
+                <TextInput
+                  editable={
+                    userProfileInfo?.data?.kyc_status === "Verified"
+                      ? false
+                      : true
+                  }
+                  placeholder="John Smith"
+                  placeholderTextColor="#535353"
+                  onChangeText={(text) => setBusinessName(text)}
+                  value={businessName}
                   style={tw`flex-1 font-DegularDisplayDemoRegular text-base`}
                   accessibilityLabel="Full name input"
                   accessibilityHint="Enter your full name"
@@ -300,7 +318,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
               >
-                Address
+                Location
               </Text>
               <View
                 style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
@@ -321,27 +339,25 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 />
               </View>
 
-              {userProfileInfo?.data?.role === "PROVIDER" && (
-                <View>
-                  {/* About You */}
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2`}
-                  >
-                    About you
-                  </Text>
-                  <TextInput
-                    style={[
-                      tw`border border-gray-300 h-36 rounded-2xl p-4 mt-2 px-4`,
-                    ]}
-                    multiline
-                    numberOfLines={4}
-                    placeholder="Write something about you..."
-                    value={about}
-                    onChangeText={(text) => setAbout(text)}
-                    textAlignVertical="top"
-                  />
-                </View>
-              )}
+              <View>
+                {/* About You */}
+                <Text
+                  style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2`}
+                >
+                  About your business
+                </Text>
+                <TextInput
+                  style={[
+                    tw`border border-gray-300 h-36 rounded-2xl p-4 mt-2 px-4`,
+                  ]}
+                  multiline
+                  numberOfLines={4}
+                  placeholder="Write something about you..."
+                  value={about}
+                  onChangeText={(text) => setAbout(text)}
+                  textAlignVertical="top"
+                />
+              </View>
             </View>
           </View>
 
