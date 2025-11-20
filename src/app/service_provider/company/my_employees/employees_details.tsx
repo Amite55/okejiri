@@ -20,7 +20,7 @@ const Employees_Details = () => {
   const { data: employeeDetailsData, isLoading: isLoadingEmployeeDetails, isError: isErrorEmployeeDetails } = useEmployeeDetailsQuery(id)
   const employee = employeeDetailsData?.data;
 
-  // console.log(" ==================== employee details =============== ", JSON.stringify(employeeDetailsData, null, 2))
+  console.log(" ==================== employee details =============== ", JSON.stringify(employeeDetailsData, null, 2))
 
   return (
     <ScrollView
@@ -36,8 +36,9 @@ const Employees_Details = () => {
         titleTextStyle={tw`text-xl`}
       // contentStyle={tw`px-5`}
       />
-      {isLoadingEmployeeDetails ? <ActivityIndicator size={"large"} color="#FF6600" /> :
-        <View style={tw`gap-3`}>
+      {isLoadingEmployeeDetails && <ActivityIndicator size={"large"} color="#FF6600" /> }
+
+      {!isLoadingEmployeeDetails && <View style={tw`gap-3`}>
           <View
             style={tw`px-4 py-5 bg-white rounded-2xl justify-center items-center gap-3`}
           >
@@ -108,8 +109,9 @@ const Employees_Details = () => {
             fastIcon={IconMyService}
             title="Service provided"
           />
-        </View>
-      }
+        </View>}
+        
+      
 
     </ScrollView>
   );

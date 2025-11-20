@@ -3,7 +3,7 @@ import tw from "@/src/lib/tailwind";
 import { useGetAllProviderOrdersQuery, useLazyGetProviderOrdersQuery, useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/orderSlices";
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 
 const Order = () => {
   const [isNew, setIsNew] = useState<boolean>(true);
@@ -47,7 +47,7 @@ const Order = () => {
     const filtered = orders.filter((value: any) => value.status === status)
     const instant = filtered.filter((value: any) => value.booking_process === "instant").length;
     const schedule = filtered.filter((value: any) => value.booking_process === "schedule").length;
-    console.log("======= instant count, ", instant, " schedule ", schedule, " status ", status, " booking_process ", bookingProcess)
+    // console.log("======= instant count, ", instant, " schedule ", schedule, " status ", status, " booking_process ", bookingProcess)
     return { instantCount: instant, scheduleCount: schedule }
   }, [orders, status])
 
@@ -205,31 +205,51 @@ const Order = () => {
       </View>
 
       {/* -------------- order content ---------------- */}
+      {(isLoadingfetchOrderItems || isFetchingOrderItems) && (
+        <ActivityIndicator
+          style={tw`mt-10`}
+          size="large"
+          color="#FF6600"
+        />
+      )}
+      {/* Empty state */}
+      {!isLoadingfetchOrderItems &&
+        !isFetchingOrderItems &&
+        (!fetchOrderItemsData?.data?.data ||
+          fetchOrderItemsData?.data?.data.length === 0) && (
+          <View style={tw`items-center justify-center py-20`}>
+            <Text style={tw`text-xl text-gray-600 font-DegularDisplayDemoMedium`}>
+              No {bookingProcess} {status.toLowerCase()} orders found.
+            </Text>
+          </View>
+        )}
+      {!isLoadingfetchOrderItems &&
+        !isFetchingOrderItems &&
+        fetchOrderItemsData?.data?.data?.length > 0 &&
+        <View style={tw`gap-3 mt-2`}>
+          {fetchOrderItemsData?.data?.data.length > 0 && (fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
 
-      <View style={tw`gap-3 mt-4`}>
-        {fetchOrderItemsData?.data?.data ? (fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
-
-          <UserCard
-            key={index}
-            ProfileName={item.user.name}
-            isProfileBadge={item.user.kyc_status === "Verified" ? true : false}
-            Date={formateDate(item.created_at)}
-            Description={descriptions[item.id]}
-            ImgProfileImg={item.user.avatar}
-            onPress={() => router.push({
-              pathname: "/service_provider/company/order_details_profile",
-              params: {
-                id: item.id
-              }
-            })}
-          />
+            <UserCard
+              key={index}
+              ProfileName={item.user.name}
+              isProfileBadge={item.user.kyc_status === "Verified" ? true : false}
+              Date={formateDate(item.created_at)}
+              Description={descriptions[item.id]}
+              ImgProfileImg={item.user.avatar}
+              onPress={() => router.push({
+                pathname: "/service_provider/company/order_details_profile",
+                params: {
+                  id: item.id
+                }
+              })}
+            />
 
 
-        )))
+          )))
 
 
-          : null}
-        {/* {[1, 2, 3, 4].map((index) => {
+          }
+          {/* {[1, 2, 3, 4].map((index) => {
           return (
             <UserCard
               key={index}
@@ -241,7 +261,8 @@ const Order = () => {
             />
           );
         })} */}
-      </View>
+        </View>}
+
     </ScrollView>
   );
 };

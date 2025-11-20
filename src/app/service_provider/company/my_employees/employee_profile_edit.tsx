@@ -135,8 +135,8 @@ const Employee_Profile_Edit = () => {
               titleTextStyle={tw`text-xl`}
             // contentStyle={tw`px-5`}
             />
-
-            <Formik
+            {isLoadingEmployeeDetails && <ActivityIndicator size={"large"} color={"#FF6600"} />}
+            {!isLoadingEmployeeDetails && <Formik
               enableReinitialize={true}
               initialValues={{
                 image: employee?.image ? { uri: employee?.image, name: "existing.jpg", type: "image/jpeg" } : null,
@@ -314,7 +314,8 @@ const Employee_Profile_Edit = () => {
 
 
 
-            </Formik>
+            </Formik>}
+
           </View>
 
           {/* ---------------- primary button ---------------- */}

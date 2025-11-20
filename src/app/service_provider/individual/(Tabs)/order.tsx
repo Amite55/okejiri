@@ -4,6 +4,7 @@ import { useGetAllProviderOrdersQuery, useLazyGetProviderOrdersQuery, useLazyOrd
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   Pressable,
   ScrollView,
   Text,
@@ -204,9 +205,26 @@ const Order = () => {
       </View>
 
       {/* -------------- order content ---------------- */}
-
+      {(isLoadingfetchOrderItems || isFetchingOrderItems) && (
+        <ActivityIndicator
+          style={tw`mt-10`}
+          size="large"
+          color="#FF6600"
+        />
+      )}
+      {/* Empty state */}
+      {!isLoadingfetchOrderItems &&
+        !isFetchingOrderItems &&
+        (!fetchOrderItemsData?.data?.data ||
+          fetchOrderItemsData?.data?.data.length === 0) && (
+          <View style={tw`items-center justify-center py-20`}>
+            <Text style={tw`text-xl text-gray-600 font-DegularDisplayDemoMedium`}>
+              No {bookingProcess} {status.toLowerCase()} orders found.
+            </Text>
+          </View>
+        )}
       <View style={tw`gap-3 mt-4`}>
-        {fetchOrderItemsData?.data?.data ? (fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
+        {fetchOrderItemsData?.data?.data.length > 0 && (fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
 
           <UserCard
             key={index}
@@ -227,7 +245,7 @@ const Order = () => {
         )))
 
 
-          : null}
+          }
         {/* {[1, 2, 3, 4].map((index) => {
           return (
             <UserCard

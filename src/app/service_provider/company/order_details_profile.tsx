@@ -12,9 +12,10 @@ import UserReviewCard from "@/src/Components/UserReviewCard";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useLazyOrderDetailsQuery, useOrderApproveMutation, useRequestForDeliveryMutation } from "@/src/redux/apiSlices/companyProvider/orderSlices";
+import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Image, Pressable, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, FlatList, Pressable, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Order_Details_Profile = () => {
@@ -62,7 +63,7 @@ const Order_Details_Profile = () => {
 
     // api function
     const formatDate = (dateStr: string) => {
-        console.log("Date =========", dateStr);
+        // console.log("Date =========", dateStr);
         const date = new Date(dateStr);
 
         const day = String(date.getDate()).padStart(2, "0");
@@ -103,7 +104,7 @@ const Order_Details_Profile = () => {
         }
         try {
             const response = await orderApprove(orderId).unwrap();
-            console.log("======== order approve ", response);
+            // console.log("======== order approve ", response);
 
             setApprovedModalShown(true)
         } catch (err) {
@@ -151,22 +152,23 @@ const Order_Details_Profile = () => {
                 onPress={() => router.back()}
                 titleTextStyle={tw`text-xl`}
             />
-            {isLoadingFetchOrder || isFetchingFetchOrder ? (
+            {isLoadingFetchOrder && isFetchingFetchOrder && (
                 <View>
                     <ActivityIndicator size={"small"} color="#ff6600" />
 
                 </View>
-            ) : order ? (
+            ) }
+           {order &&
                 <View>
                     <View style={tw`flex-row justify-center items-center my-4`
 
 
                     }>
                         <View
-                            style={tw`flex-row py-2 px-7 justify-between items-center gap-2 rounded-full ${order.status === "New" ? "bg-primary" : order.status === "Pending" ? "bg-violet"  : order.status ==="Cancelled"? "bg-[#FF3A00]" : "bg-success600"}`}
+                            style={tw`flex-row py-2 px-7 justify-between items-center gap-2 rounded-full ${order?.status === "New" ? "bg-primary" : order?.status === "Pending" ? "bg-violet"  : order?.status ==="Cancelled"? "bg-[#FF3A00]" : "bg-success600"}`}
                         >
                             <SvgXml xml={IconWhiteDot} />
-                            <Text style={tw`font-DegularDisplayDemoMedium text-xl pb-1 text-white`}>{order.status === "New" ? "New Order" : order.status || "updated"}</Text>
+                            <Text style={tw`font-DegularDisplayDemoMedium text-xl pb-1 text-white`}>{order?.status === "New" ? "New Order" : order?.status || "updated"}</Text>
                         </View>
 
                     </View>
@@ -175,9 +177,9 @@ const Order_Details_Profile = () => {
                     <View
                         style={tw`bg-white h-56 rounded-xl justify-center items-center gap-2`}
                     >
-                        <Image style={tw`w-24 h-24 rounded-full `} source={{ uri: order.user?.avatar }} />
+                        <Image style={tw`w-24 h-24 rounded-full `} source={{ uri: order?.user?.avatar }} />
                         <View style={tw`flex-row items-center gap-2`}>
-                            <Text style={tw`font-DegularDisplayDemoRegular text-2xl text-black`}>{order.user?.name || "Unknown"}</Text>
+                            <Text style={tw`font-DegularDisplayDemoRegular text-2xl text-black`}>{order?.user?.name || "Unknown"}</Text>
                             {/* <SvgXml xml={IconProfileBadge} /> */}
 
                         </View>
@@ -498,9 +500,9 @@ const Order_Details_Profile = () => {
 
 
                 </View>
-            ) : null
+}
 
-            }
+            
 
         </ScrollView>
     );
