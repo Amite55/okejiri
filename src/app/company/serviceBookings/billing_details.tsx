@@ -149,6 +149,7 @@ const BillingDetails = () => {
                           style={tw`border border-gray-300 justify-center  w-full rounded-full h-14 px-4 `}
                         >
                           <TextInput
+                            editable={false}
                             onChangeText={handleChange("name")}
                             onBlur={handleBlur("name")}
                             value={values.name}
@@ -175,6 +176,7 @@ const BillingDetails = () => {
                           style={tw`border border-gray-300 justify-center  w-full rounded-full h-14 px-4 `}
                         >
                           <TextInput
+                            editable={false}
                             onChangeText={handleChange("email")}
                             onBlur={handleBlur("email")}
                             value={values.email}
@@ -201,6 +203,7 @@ const BillingDetails = () => {
                           style={tw`border border-gray-300 justify-center  w-full rounded-full h-14 px-4 `}
                         >
                           <TextInput
+                            editable={false}
                             onChangeText={handleChange("contactNumber")}
                             onBlur={handleBlur("contactNumber")}
                             value={values.contactNumber}
@@ -232,6 +235,7 @@ const BillingDetails = () => {
                       style={tw`border border-gray-300 justify-center  w-full rounded-3xl  px-4 `}
                     >
                       <TextInput
+                        editable={false}
                         onChangeText={handleChange("address")}
                         onBlur={handleBlur("address")}
                         value={values.address}

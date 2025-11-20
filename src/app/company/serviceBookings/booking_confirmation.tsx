@@ -1,6 +1,5 @@
 import {
   IconCardProfile,
-  IconEditPen,
   IconLocation,
   IconMailYellow,
   IconPhoneYellow,
@@ -13,13 +12,7 @@ import { useGetCartItemQuery } from "@/src/redux/apiSlices/userProvider/cartSlic
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Booking_Confirmation = () => {
@@ -114,9 +107,6 @@ const Booking_Confirmation = () => {
             >
               Personal details
             </Text>
-            <TouchableOpacity onPress={() => router.back()}>
-              <SvgXml xml={IconEditPen} />
-            </TouchableOpacity>
           </View>
 
           <View style={tw` mt-7 gap-3`}>

@@ -192,7 +192,7 @@ const Company_Home_Index = () => {
                 onPress={() =>
                   router.push({
                     pathname: "/company/serviceDetails",
-                    params: { service_id: item?.service_id },
+                    params: { id: item?.id },
                   })
                 }
               />

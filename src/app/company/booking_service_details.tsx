@@ -48,6 +48,7 @@ import {
   View,
 } from "react-native";
 
+import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
 import {
   useDeleteCartItemMutation,
   useGetCartItemQuery,
@@ -237,6 +238,11 @@ const Booking_Service_Details = () => {
       setImages(result.assets.map((item) => item.uri));
     }
   };
+  // ---------------- check order time -----------------
+  const thirtyMinutesInMs = 30 * 60 * 1000;
+  const createdTimeMs = new Date(OrderDetailsData?.data?.created_at).getTime();
+  const currentTimeMs = new Date().getTime();
+  const timeDifferenceMs = currentTimeMs - createdTimeMs;
 
   // [----------------- refresh function ----------------]
   const onRefresh = async () => {
@@ -251,11 +257,7 @@ const Booking_Service_Details = () => {
   };
   // ===================== if is loading =====================
   if (isOrderDetailsLoading) {
-    return (
-      <View>
-        <ActivityIndicator size="large" color={"#1111"} />
-      </View>
-    );
+    return <NotificationSkeleton />;
   }
 
   // ==================== handle reorder function ====================
@@ -368,8 +370,7 @@ const Booking_Service_Details = () => {
                     </View>
                   </TouchableOpacity>
                   {/* --------------  message button ---------------- */}
-                  {(OrderDetailsData?.data?.status === "New" ||
-                    OrderDetailsData?.data?.status === "Pending") && (
+                  {OrderDetailsData?.data?.status === "Pending" && (
                     <TouchableOpacity
                       activeOpacity={0.8}
                       onPress={() =>
@@ -482,7 +483,8 @@ const Booking_Service_Details = () => {
                 )}
 
                 {/* ----------------- if this user is new order ---------------- */}
-                {OrderDetailsData?.data?.status === "New" && (
+                {OrderDetailsData?.data?.status === "New" &&
+                timeDifferenceMs <= thirtyMinutesInMs ? (
                   <PrimaryButton
                     onPress={() => setCancelModalVisible(true)}
                     IconFastProps={IconCrossSolidRed}
@@ -490,9 +492,8 @@ const Booking_Service_Details = () => {
                     contentStyle={tw`bg-transparent border border-red-700 gap-1 h-12 mt-3`}
                     textStyle={tw`text-red-600`}
                   />
-                )}
-                {(OrderDetailsData?.data?.status === "Pending" ||
-                  OrderDetailsData?.data?.status === "New") && (
+                ) : null}
+                {OrderDetailsData?.data?.status === "Pending" && (
                   <PrimaryButton
                     IconFastProps={IconReportBlack}
                     titleProps="Report provider"

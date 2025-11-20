@@ -3,10 +3,8 @@ import {
   IconEmailGray,
   IconFileUpload,
   IconLocationGray,
-  IconMessageWhite,
   IconPhoneGray,
   IconProfileBadge,
-  IconReportBlack,
   IconStar,
 } from "@/assets/icons";
 import { ImgCleaning } from "@/assets/images/image";
@@ -178,38 +176,9 @@ const Provider_Profile = () => {
 
               {/* ----------------------------- report and message =---------------------- */}
 
-              <View
-                style={tw`flex-1 px-4 flex-row items-center gap-3 justify-center mt-32`}
-              >
-                <TouchableOpacity
-                  // onPress={() => setModalVisible(true)}
-                  onPress={() => handlePresentModalPress()}
-                  style={tw`border border-gray-400 flex-1 rounded-2xl h-12 flex-row justify-center items-center gap-3`}
-                >
-                  <SvgXml xml={IconReportBlack} />
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-black `}
-                  >
-                    Report
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => router.push("/company/messaging")}
-                  style={tw`bg-primary flex-1 rounded-2xl h-12 flex-row justify-center items-center gap-3`}
-                >
-                  <SvgXml xml={IconMessageWhite} />
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-white `}
-                  >
-                    Message
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
               {/*  ---------- provider details info  ----------------- */}
               <View
-                style={tw`border border-gray-300  mx-4 my-5 justify-center h-40 rounded-lg gap-2 p-3`}
+                style={tw`border border-gray-300  mx-4 my-5 justify-center h-40 rounded-lg gap-2 p-3 mt-32`}
               >
                 <View style={tw`flex-row gap-2 items-center`}>
                   <SvgXml xml={IconEmailGray} />

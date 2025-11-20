@@ -11,7 +11,6 @@ import {
   Image,
   Platform,
   RefreshControl,
-  SafeAreaView,
   Text,
   TouchableOpacity,
   View,
@@ -24,8 +23,8 @@ const Services = () => {
   const {
     data: getServicesData,
     isLoading: servicesLoading,
-    error,
     refetch: serviceRefetch,
+    error,
   } = useServicesQuery({});
 
   if (servicesLoading) {
@@ -115,22 +114,21 @@ const Services = () => {
   };
 
   return (
-    <SafeAreaView style={tw`flex-1 bg-base_color mb-24`}>
-      <FlatList
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        data={getServicesData?.data.services}
-        renderItem={serviceItemRender}
-        ListHeaderComponent={serviceHeaderRender}
-        numColumns={2}
-        keyExtractor={(item) => item.id.toString()}
-        ListHeaderComponentStyle={tw`w-full mb-3`}
-        contentContainerStyle={tw`pt-2 items-center px-5 gap-3 pb-5`}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-      />
-    </SafeAreaView>
+    <FlatList
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      data={getServicesData?.data.services}
+      renderItem={serviceItemRender}
+      ListHeaderComponent={serviceHeaderRender}
+      numColumns={2}
+      keyExtractor={(item) => item.id.toString()}
+      ListHeaderComponentStyle={tw`w-full mb-3`}
+      contentContainerStyle={tw`pt-1 items-center px-5 gap-3 pb-30 bg-base_color`}
+      style={tw`flex-1 bg-base_color`}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+    />
   );
 };
 

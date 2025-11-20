@@ -1,6 +1,5 @@
 import {
   IconBackLeftArrow,
-  IconChatsYellow,
   IconCross,
   IconFavouriteWhite,
   IconLocation,
@@ -41,7 +40,7 @@ import { Pressable, ScrollView } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const ServiceDetails = () => {
-  const { service_id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [itemDetails, setItemDetails] = useState<any>({});
   const [addToCartState, setAddToCartState] = useState([]);
@@ -49,7 +48,7 @@ const ServiceDetails = () => {
 
   // ================== api end point ==================
   const { data: packageDetails, isLoading: packageDetailingLoading } =
-    usePackageDetailsQuery(service_id);
+    usePackageDetailsQuery(id);
   const [cartResponse, { isLoading: isCartLoading }] =
     useStoreDeleteCartItemMutation();
   const [deleteCartResponse, { isLoading: deleteCartLoading }] =
@@ -363,14 +362,6 @@ const ServiceDetails = () => {
             </View>
           </TouchableOpacity>
           {/* --------------  message button ---------------- */}
-          <TouchableOpacity
-            style={tw`border border-gray-300 flex-row items-center rounded-2xl gap-2 px-2 h-11`}
-          >
-            <SvgXml xml={IconChatsYellow} />
-            <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
-              Message
-            </Text>
-          </TouchableOpacity>
         </View>
         <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
           Reviews
@@ -513,7 +504,7 @@ const ServiceDetails = () => {
                       router.push({
                         pathname: "/company/serviceDetails",
                         params: {
-                          service_id: item?.id,
+                          id: item?.id,
                         },
                       })
                     }
