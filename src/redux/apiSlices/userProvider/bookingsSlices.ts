@@ -101,7 +101,6 @@ export const bookingsSlice = api.injectEndpoints({
           body: formData,
           headers: {
             "Content-Type": "multipart/form-data",
-            Accept: "application/json",
           },
         };
       },

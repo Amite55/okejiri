@@ -13,6 +13,8 @@ const ServiceLayout = () => {
       <Stack.Screen name="billing_details" />
       <Stack.Screen name="booking_confirmation" />
       <Stack.Screen name="make_payment" />
+      <Stack.Screen name="order_approved" />
+      <Stack.Screen name="order_cancelled" />
     </Stack>
   );
 };

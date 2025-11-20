@@ -2,7 +2,7 @@
 
 import { IconSuccess } from '@/assets/icons';
 import React from 'react';
-import { Modal, Pressable, Text } from 'react-native';
+import { Modal, Pressable, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SvgXml } from 'react-native-svg';
 import tw from '../lib/tailwind';
@@ -17,7 +17,8 @@ interface AcceptedModalProps {
     btnTextStyle?: any;
     btnStyle?: any;
     onPress?: () => void;
-    onClose?: () => void
+    onClose?: () => void;
+    icon?: any;
 }
 
 
@@ -31,7 +32,8 @@ export default function AcceptedModal({
     btnTextStyle,
     btnStyle,
     onPress,
-    onClose
+    onClose,
+    icon
 }: AcceptedModalProps) {
     return (
         <Modal transparent visible={visible} animationType='fade'>
@@ -45,10 +47,11 @@ export default function AcceptedModal({
                     onStartShouldSetResponder={() => true}
                     style={tw`w-[90%] bg-white rounded-3xl items-center py-8 gap-3`}
                 >
-                   
-                        <SvgXml xml={IconSuccess} style={tw`w-15 h-15`} />
-                        <Text style={[tw`font-DegularDisplayDemoMedium text-center text-2xl text-black`, titleStyle]}>{title}</Text>
-                        <Text style={[tw`font-DegularDisplayDemoRegular text-center text-xl text-black`, subTitleStyle]}>{subtitle}</Text>
+
+                    {icon ? <SvgXml xml={icon} /> : <SvgXml xml={IconSuccess} style={tw`w-15 h-15`} />}
+                    <Text style={[tw`font-DegularDisplayDemoMedium text-center text-2xl text-black`, titleStyle]}>{title}</Text>
+                    <Text style={[tw`font-DegularDisplayDemoRegular text-center text-xl text-black`, subTitleStyle]}>{subtitle}</Text>
+                    <View style={tw`px-6 w-full`}>
                         <Pressable
                             style={[tw`bg-primary py-4 px-12 rounded-full`, btnStyle]}
                             onPress={onPress}
@@ -57,7 +60,9 @@ export default function AcceptedModal({
 
                             >{btnText}</Text>
                         </Pressable>
-                    
+                    </View>
+
+
                 </Animated.View>
             </Pressable>
 

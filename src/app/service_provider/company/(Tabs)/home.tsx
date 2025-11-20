@@ -42,7 +42,7 @@ const Home_Index_Company = () => {
   const { data: recentOrder, isLoading: recentOrderLoading } = useRecentOrderQuery("New");
   const { data: recentTransaction, isLoading: recentTransactionLoading } = useRecentTransactionsQuery({});
   // const recentOrder = recentOrderData?.data?.data.slice(0,3) || [];
-  
+
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
 
 
@@ -50,7 +50,7 @@ const Home_Index_Company = () => {
   // console.log("++++++++++ recent order data =================== ", recentOrder);
   // console.log("++++++++++ recent transaction order data inside =================== ", recentTransaction?.data.data);
   // data fetch - END
-  
+
 
   // state for fetch data;
   const formateDate = (dateStr: string) => {
@@ -152,7 +152,7 @@ const Home_Index_Company = () => {
           <View style={tw` justify-between items-center`}>
             <View />
             <SvgXml xml={IconMultipleUserBlack} />
-            
+
           </View>
           <Text
             style={tw`font-DegularDisplayDemoRegular text-base text-regularText text-center`}
@@ -253,17 +253,22 @@ const Home_Index_Company = () => {
       />
       {/*  resent order */}
       <View style={tw`gap-3 my-4`}>
-        {recentOrder?.data?.data.slice(0,3).map((item: any, index: any) => {
-          
+        {recentOrder?.data?.data.slice(0, 3).map((item: any, index: any) => {
+
           return (
             <UserCard
               key={index}
               ProfileName={item.user.name}
-              isProfileBadge={item.user.kyc_status === "Verified"? true: false}
+              isProfileBadge={item.user.kyc_status === "Verified" ? true : false}
               Date={formateDate(item.created_at)}
               Description={descriptions[item.id]}
               ImgProfileImg={item.user.avatar}
-            // onPress={() => router.push("")}
+              onPress={() => router.push({
+                pathname: "/service_provider/company/order_details_profile",
+                params: {
+                  id: item.id
+                }
+              })}
             />
           );
         })}
@@ -282,7 +287,7 @@ const Home_Index_Company = () => {
               <TransactionsCard
                 key={index}
                 price={item.amount}
-                profileBadge={item.sender.kyc_status === "Verified"? true: false}
+                profileBadge={item.sender.kyc_status === "Verified" ? true : false}
                 type={item.direction}
                 varient={item.transaction_type}
                 title="Service title goes here"

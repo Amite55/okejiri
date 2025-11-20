@@ -16,7 +16,7 @@ import { SvgXml } from "react-native-svg";
 
 const Employees_Details = () => {
   const { id } = useLocalSearchParams();
-  // console.log(" ============= id ", id)
+  console.log(" ============= id ", id)
   const { data: employeeDetailsData, isLoading: isLoadingEmployeeDetails, isError: isErrorEmployeeDetails } = useEmployeeDetailsQuery(id)
   const employee = employeeDetailsData?.data;
 
