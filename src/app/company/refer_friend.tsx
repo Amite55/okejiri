@@ -42,7 +42,7 @@ const Refer_Friend = () => {
     });
   };
 
-  // ================== load referrals (with pagination) ==================
+  // ================== load referrals (with pagination) ==================//
   const loadReferrals = async (pageNum = 1, isRefresh = false) => {
     try {
       if ((isLoading || isFetching || loadingMore) && !isRefresh) return;
@@ -53,8 +53,6 @@ const Refer_Friend = () => {
       } else {
         setLoadingMore(true);
       }
-
-      // 👉 এখানে গুরুত্বপূর্ণ: object না, শুধু number পাঠাচ্ছি
       const res = await getMyReferrals(pageNum).unwrap();
 
       const responseData = res?.data || {};
@@ -186,7 +184,6 @@ const Refer_Friend = () => {
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
             />
-
             <Text
               style={tw`font-DegularDisplayDemoMedium text-2xl text-black mt-2`}
             >
