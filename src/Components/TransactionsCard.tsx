@@ -13,8 +13,8 @@ interface ITransactionProps {
   price?: any;
   profileBadge?: boolean;
 
-  type: "credit" | "debit",
-  varient: "purchase" | "withdraw",
+  type:   "credit" | "debit",
+  varient: "transfer"| "purchase" | "withdraw",
   transactionCode?: string
 }
 const maskTransactionId = (transactionId?: string) => {
@@ -43,6 +43,11 @@ const TransactionsCard = ({
             <Text style={tw`font-DegularDisplayDemoMedium text-xl text-[#FF3A00]`}>
               {title}
             </Text>
+          }
+          {varient === "transfer" && <Text style={tw`font-DegularDisplayDemoMedium text-xl text-[#FF3A00]`}>
+              {userName}
+            </Text>
+
           }
 
           {varient === "purchase" &&

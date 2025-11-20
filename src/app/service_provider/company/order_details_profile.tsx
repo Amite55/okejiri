@@ -4,7 +4,6 @@ import {
     IconLocation,
     IconMailYellow,
     IconPhoneYellow,
-    IconRightCornerArrowWhite,
     IconStar,
     IconWhiteDot
 } from "@/assets/icons";
@@ -93,7 +92,7 @@ const Order_Details_Profile = () => {
     //     console.log("Item details ============ ", JSON.stringify(fetchOrderData?.data, null, 2))
     // }, [fetchOrderData?.data])
     const order = fetchOrderData?.data;
-    // console.log("provider avatar image, ", order?.provider.avatar)
+    // console.log("provider avatar image, ", JSON.stringify(order, null, 2))
     // console.log("Order id: ===========", id);
 
 
@@ -371,14 +370,19 @@ const Order_Details_Profile = () => {
                                     </View>
                                 </View>
 
-                                <View>
+                                {/* <View>
                                     <TouchableOpacity
-                                        onPress={() => router.push("/service_provider/company/my_employees/employees_details")}
+                                        onPress={() => router.push({
+                                            pathname: "/service_provider/company/my_employees/employees_details",
+                                            params:{
+                                                id: order?.provider?.id
+                                            }
+                                        })}
                                         style={tw`w-12 h-12 rounded-2xl  bg-secondary justify-center items-center `}
                                     >
-                                        <SvgXml xml={IconRightCornerArrowWhite} />
+                                       
                                     </TouchableOpacity>
-                                </View>
+                                </View> */}
 
                             </View>
 
@@ -444,14 +448,14 @@ const Order_Details_Profile = () => {
                                         </View>
                                     </View>
 
-                                    <View>
+                                    {/* <View>
                                         <TouchableOpacity
                                             onPress={() => router.push("/service_provider/company/my_employees/employees_details")}
                                             style={tw`w-12 h-12 rounded-2xl  bg-secondary justify-center items-center `}
                                         >
                                             <SvgXml xml={IconRightCornerArrowWhite} />
                                         </TouchableOpacity>
-                                    </View>
+                                    </View> */}
 
                                 </View>
 

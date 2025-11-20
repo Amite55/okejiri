@@ -27,7 +27,7 @@ const My_Service = () => {
 
   // const [createConnectAccount] = useCreateConnectAccountMutation();
   //  ==================================== API
-  const [fetchMyServices, { isFetching }] =
+  const [fetchMyServices, { isFetching, isLoading: isLoadingFetchMyService }] =
     useLazyMy_servicesQuery();
   const [deleteMyService, { data: deleteMyServiceData, isLoading: isLoadingMyService, isError: isErrorMyService }] = useDeleteMyServicesMutation();
 
@@ -273,8 +273,8 @@ const My_Service = () => {
             onPress={openSheet}
             style={tw`flex-row bg-primary py-4 justify-center rounded-full w-full px-4 gap-2 items-center`}
           >
-            <SvgXml xml={IconPlus} width={15} />
-            <Text style={tw`text-white text-xl font-DegularDisplayDemoRegular`}>Add more</Text>
+            {isLoadingFetchMyService ? <ActivityIndicator size={"small"} color={"#fff"}/> :<SvgXml xml={IconPlus} width={15} />}
+            <Text style={tw`text-white text-xl font-DegularDisplayDemoRegular`}>{isLoadingFetchMyService? "Adding more":"Add more"}</Text>
           </TouchableOpacity>
         </View>
 
