@@ -5,7 +5,7 @@ import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 import { IconDeliveryTimeExt } from "@/assets/icons";
 import AcceptedModal from "@/src/Components/AcceptedModal";
@@ -19,6 +19,7 @@ import {
   useSingleMarkMutation,
 } from "@/src/redux/apiSlices/notificationsSlices";
 
+import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const Notification = () => {
@@ -44,6 +45,8 @@ const Notification = () => {
   const {
     data: notificationData,
     isLoading: isLoadingNotification,
+    isFetching: isFetchingNotification,
+
   } = useGetNotificationsQuery(page, {
     refetchOnMountOrArgChange: true,
   });
@@ -124,18 +127,18 @@ const Notification = () => {
           pathname: "/company/serviceBookings/order_cancelled",
           params: {
             title: item?.data?.title,
-            subtitle: item?.data?.sub_title ,
-            reason: item?.data?.reason 
+            subtitle: item?.data?.sub_title,
+            reason: item?.data?.reason
           },
         });
         break;
       case "order_rejected":
-         router.push({
+        router.push({
           pathname: "/company/serviceBookings/order_cancelled",
           params: {
             title: item?.data?.title,
-            subtitle: item?.data?.sub_title ,
-            reason: item?.data?.reason 
+            subtitle: item?.data?.sub_title,
+            reason: item?.data?.reason
           },
         });
         break;
@@ -171,7 +174,7 @@ const Notification = () => {
   };
 
   if (isLoadingNotification) {
-    return <ActivityIndicator size="large" style={tw`mt-20`} />;
+    return <NotificationSkeleton />;
   }
 
   return (
@@ -181,26 +184,43 @@ const Notification = () => {
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
+      {isLoadingNotification && (
+        <View style={tw`py-10 items-center`}>
+          <ActivityIndicator size="large" color="#FF6600" />
+        </View>
+      )}
 
-      <FlatList
-        data={notifications}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={tw`gap-3 pb-5`}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          isFetchMore && (
-            <ActivityIndicator size="large" color="#FF6600" />
-          )
-        }
-        renderItem={({ item }) => (
-          <ProviderNotificationCard
-            item={item}
-            onPress={() => handleNotificationPress(item)}
-          />
-        )}
-      />
+      {/* ----------- Empty state ----------- */}
+      {!isLoadingNotification &&  ( notifications?.length === 0) && (
+        <View style={tw`py-10 items-center`}>
+          <Text style={tw`text-gray-500 text-base font-PoppinsBlack`}>
+            No notifications found
+          </Text>
+        </View>
+      )}
+      {notifications?.length > 0 &&
+        <FlatList
+          data={notifications}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={tw`gap-3 pb-5`}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isFetchMore ? (<ActivityIndicator size="large" color="#FF6600" />) : isFetchingNotification===false ?
+              <View style={tw`items-center py-6`}>
+                <Text style={tw`text-gray-400 font-PoppinsMedium`}>No more notifications</Text>
+              </View>: null
+          }
+          renderItem={({ item }) => (
+            <ProviderNotificationCard
+              item={item}
+              onPress={() => handleNotificationPress(item)}
+            />
+          )}
+        />
+      }
+
 
       {/* ------------------- Delivery Request Modal ------------------ */}
       <RequestForDeliveryModal

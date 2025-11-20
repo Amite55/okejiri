@@ -48,6 +48,13 @@ export const companyEmployeesSlice = api.injectEndpoints({
                 method: "GET"
             }),
             providesTags: ["settings"]
+        }),
+        deleteEmployee: builder.mutation({
+            query: (id)=>({
+                url: `/delete-employee/${id}`,
+                method: "DELETE"
+            }),
+            invalidatesTags: ["settings"]
         })
     }),
     overrideExisting: true
@@ -59,5 +66,6 @@ export const {
     useEditEmployeeMutation,
     useEmployeeDetailsQuery,
     useMyEmployeeQuery,
-    useLazyMyEmployeeQuery
+    useLazyMyEmployeeQuery,
+    useDeleteEmployeeMutation,
 } = companyEmployeesSlice;

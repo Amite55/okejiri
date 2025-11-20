@@ -1,11 +1,12 @@
-import { IconPlus, IconRightCornerArrowWhite } from "@/assets/icons";
+import { IconDeleteRed, IconPlus } from "@/assets/icons";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useLazyMyEmployeeQuery } from "@/src/redux/apiSlices/companyProvider/account/employeesSlice";
+import { useDeleteEmployeeMutation, useLazyMyEmployeeQuery } from "@/src/redux/apiSlices/companyProvider/account/employeesSlice";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
 
   Pressable,
@@ -27,6 +28,13 @@ const My_Employee = () => {
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [employees, setEmployees] = useState<any[]>([]);
+
+
+  const [deleteEmployee, {
+    isLoading: isLoadingDeleteEmployee,
+    isError: isErrorDeleteEmployee,
+    error: errorDeleteEmployee
+  }] = useDeleteEmployeeMutation();
 
 
   //  ====================================== effect
@@ -98,7 +106,7 @@ const My_Employee = () => {
     >
       <FlatList
         data={employees}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) => `${item?.id}_${index}`}
 
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
@@ -129,9 +137,10 @@ const My_Employee = () => {
             </View>
 
           </View>
+
         )}
 
-        renderItem={({ item }) => {
+        renderItem={({ item,index }) => {
           // console.log(" =========== item ", JSON.stringify(item, null, 2))
           return (
             <View>
@@ -146,47 +155,94 @@ const My_Employee = () => {
 
                   )
                 }
-                key={item}
-                style={tw`relative bg-white flex-row items-center gap-4 p-2 rounded-lg`}
+                key={`${item?.id}_${index}`}
+                style={tw` bg-white flex-row justify-between items-center gap-4 py-2 px-3 rounded-lg`}
               >
-                <Image style={tw`w-24 h-24 rounded-xl`} source={item?.image} contentFit="cover" />
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
-                  >
-                    {item.name}
-                  </Text>
+                <View style={tw`flex-row gap-2 items-center`}>
+                  <Image style={tw`w-24 h-24 rounded-xl`} source={item?.image} contentFit="cover" />
+                  <View>
+                    <Text
+                      style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
+                    >
+                      {item.name}
+                    </Text>
 
 
 
 
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-lg text-regularText`}
-                  >
-                    {item?.completed_booking_count} {item?.completed_booking_count > 1 ? "services" : "service"} completed
-                  </Text>
+                    <Text
+                      style={tw`font-DegularDisplayDemoRegular text-lg text-regularText`}
+                    >
+                      {item?.completed_booking_count} {item?.completed_booking_count > 1 ? "services" : "service"} completed
+                    </Text>
+                  </View>
                 </View>
 
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push({
-                      pathname: "/service_provider/company/my_employees/employees_details",
-                      params: {
-                        id: item?.id
+                <View>
+                  <TouchableOpacity
+                    onPress={async () => {
+                      try {
+                        const response = await deleteEmployee(item?.id).unwrap();
+                        if(response){
+                           router.push({
+                            pathname: "/Toaster",
+                            params: {
+                              res: "Removed Employee successful!"
+                            }
+                          })
+                          
+                        }
+
+                      } catch (err) {
+                        console.log("Employee deleted error ", err),
+                          router.push({
+                            pathname: "/Toaster",
+                            params: {
+                              res: "Removed Employee failed!"
+                            }
+                          })
                       }
                     }
 
-                    )
-                  }
-                  style={tw`absolute right-2 top-2 w-11 h-11 rounded-2xl bg-secondary justify-center items-center`}
-                >
-                  <SvgXml xml={IconRightCornerArrowWhite} />
-                </TouchableOpacity>
+                    }
+                    style={tw` w-11 h-11 rounded-2xl bg-gray-200 justify-center items-center z-10`}
+                  >
+                    <SvgXml xml={IconDeleteRed} />
+                  </TouchableOpacity>
+                </View>
+
               </Pressable>
             </View>
           )
         }
         }
+
+        // footer item and empty item.
+        ListFooterComponent={
+          loadingMore ? (
+            <View style={tw`mt-4 mb-8 justify-center items-center`}>
+              <ActivityIndicator size="small" color="#000" />
+              <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
+            </View>
+          ) : !hasMore && employees.length > 0 ? (
+            <Text style={tw`text-gray-500 text-center my-4 text-base font-PoppinsMedium`}>
+              End of list
+            </Text>
+          ) : null
+        }
+        ListEmptyComponent={() => (
+          <View style={tw`flex-1 justify-center items-center gap-3`}>
+
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-2xl text-gray-500`}
+            >
+              Your employee list is empty
+            </Text>
+            {/* <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+              Please add a service to see them here.
+            </Text> */}
+          </View>
+        )}
 
       />
 

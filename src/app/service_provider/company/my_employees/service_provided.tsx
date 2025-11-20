@@ -39,7 +39,7 @@ const providedServicesData = [
   },
 ];
 
-const renderServiceProvided = ({item, name} : {item: any, name: string}) => {
+const renderServiceProvided = ({ item, name }: { item: any, name: string }) => {
   console.log("============= item =============== ", JSON.stringify(item, null, 2))
   let statusStyle = "";
 
@@ -47,14 +47,14 @@ const renderServiceProvided = ({item, name} : {item: any, name: string}) => {
     statusStyle = "bg-blue-500";
   } else if (item.status === "Completed") {
     statusStyle = "bg-green-600";
-  }else if (item.status === "Cancelled") {
+  } else if (item.status === "Cancelled") {
     statusStyle = "bg-red-600 ";
   }
 
   return (
     <TouchableOpacity
-    disabled={true}
-    // key={item?.booking_items.id}
+      disabled={true}
+      // key={item?.booking_items.id}
       style={tw`flex-row justify-between bg-white px-2 py-3 rounded-xl`}
     >
       <View style={tw`flex-1 flex-row gap-3`}>
@@ -76,7 +76,7 @@ const renderServiceProvided = ({item, name} : {item: any, name: string}) => {
             <Text
               style={tw`font-DegularDisplayDemoMedium text-xl text-primary`}
             >
-              {item?.review?.rating === 0 || item?.review=== null  ? "0.0" : Number(item?.review?.rating).toFixed(1) }
+              {item?.review?.rating === 0 || item?.review === null ? "0.0" : Number(item?.review?.rating).toFixed(1)}
             </Text>
           </View>
         </View>
@@ -113,16 +113,39 @@ const Service_Provided = () => {
     <FlatList
       style={tw`flex-1 bg-base_color`}
       contentContainerStyle={tw`px-5 gap-3 pb-4`}
-      data={employee?.services_provided??[]}
+      data={employee?.services_provided ?? []}
       keyExtractor={(item, index) => `${item.id}-${index}`}
-      renderItem={({item})=> renderServiceProvided({item, name: employee?.name})}
+      renderItem={({ item }) => renderServiceProvided({ item, name: employee?.name })}
       ListHeaderComponent={() => (
-        <BackTitleButton
-          pageName={"Employee details"}
-          onPress={() => router.back()}
-          titleTextStyle={tw`text-xl`}
-        // contentStyle={tw`px-5`}
-        />
+        <View>
+          <BackTitleButton
+            pageName={"Service provided"}
+            onPress={() => router.back()}
+            titleTextStyle={tw`text-xl`}
+          // contentStyle={tw`px-5`}
+          />
+         
+
+        </View>
+
+
+      )}
+      ListFooterComponent={ employee?.services_provided?.length > 0 ? (
+          <View style={tw`mt-4 mb-8 justify-center items-center`}>
+            <Text style={tw`text-gray-500 text-lg`}>No more services in the list</Text>
+          </View>
+        ): null
+      }
+      ListEmptyComponent={() => (
+        <View style={tw`flex-1 justify-center items-center  gap-3`}>
+          
+          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-gray-500`}>
+            Nothing to show here
+          </Text>
+          <Text style={tw`font-DegularDisplayDemoRegular text-base text-gray-400`}>
+            Please add a service for provider to see them here.
+          </Text>
+        </View>
       )}
     />
   );
