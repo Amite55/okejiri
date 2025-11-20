@@ -80,7 +80,6 @@ const LoginIndex = () => {
         }
       } else if (roll === "PROVIDER") {
         const res = await credentials(payload).unwrap();
-
         if (res?.data?.user?.is_personalization_completed === false) {
           await AsyncStorage.setItem("token", res?.data?.access_token);
           router.push("/auth/contact");
@@ -89,11 +88,21 @@ const LoginIndex = () => {
             if (res?.data?.user?.provider_type === providerTypes) {
               await AsyncStorage.setItem("token", res?.data?.access_token);
               router.replace("/service_provider/individual/(Tabs)/home");
+              if (userProfileInfo?.data?.kyc_status === "Unverified") {
+                setTimeout(() => {
+                  router.push("/kyc_completed_modal");
+                }, 500);
+              }
             }
           } else if (providerTypes === "Company") {
             if (res?.data?.user?.provider_type === providerTypes) {
               await AsyncStorage.setItem("token", res?.data?.access_token);
               router.replace("/service_provider/company/home");
+              if (userProfileInfo?.data?.kyc_status === "Unverified") {
+                setTimeout(() => {
+                  router.push("/kyc_completed_modal");
+                }, 500);
+              }
             }
           }
         }

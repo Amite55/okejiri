@@ -110,7 +110,7 @@ const Boost_Profile_Plan = () => {
 
       const boostRes = await boostMyProfilePost({
         number_of_days: value,
-        payment_method: "referral_balance",
+        payment_method: "stripe",
         payment_amount: selectedPrice,
         payment_intent_id: paymentIntentId,
       }).unwrap();
@@ -122,6 +122,7 @@ const Boost_Profile_Plan = () => {
         params: { res: msg },
       });
     } catch (error: any) {
+      console.log(error, "payment not success");
       router.push({
         pathname: "/Toaster",
         params: { res: error?.message || "Payment failed!" },
@@ -136,7 +137,7 @@ const Boost_Profile_Plan = () => {
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       style={tw`flex-1 px-5 bg-base_color`}
-      contentContainerStyle={tw`pb-6 flex-grow justify-between`}
+      contentContainerStyle={tw`pb-1 flex-grow justify-between`}
     >
       <View>
         <BackTitleButton
@@ -208,7 +209,7 @@ const Boost_Profile_Plan = () => {
             {value ? `Upgrade your boost for ${value} days` : "Select a plan"}
           </Text>
 
-          <Text style={tw`font-DegularDisplayDemoSemibold text-3xl text-black`}>
+          <Text style={tw`font-DegularDisplayDemoSemibold text-xl text-black`}>
             ₦ {selectedPrice ?? "0.00"}
           </Text>
         </View>
