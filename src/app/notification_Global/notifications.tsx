@@ -2,23 +2,23 @@ import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 import ProviderNotificationCard from "@/src/Components/ProviderNotificationCard";
 import { useGetNotificationsQuery, useSingleMarkMutation } from "@/src/redux/apiSlices/notificationsSlices";
 const Notification = () => {
 
   const { provider_type } = useLocalSearchParams();
-  console.log("================ provider type ================= ", provider_type)
+  // console.log("================ provider type ================= ", provider_type)
 
   const [page, setPage] = useState(1);
   const [notifications, setNotification] = useState<any[]>([]);
   const [isFetchMore, setIsFetchMore] = useState(false);
 
   // ------------------------------- API ------------------------------- //
-  const { data: notificationData, isLoading: isLoadingNotification, isError: isErrorLoadingNotification } = useGetNotificationsQuery(page, {
-  refetchOnMountOrArgChange: true,
-});
+  const { data: notificationData, isLoading: isLoadingNotification, isError: isErrorLoadingNotification, isFetching: isFetchingNotification } = useGetNotificationsQuery(page, {
+    refetchOnMountOrArgChange: true,
+  });
   const [singleMark, { data: singleMarkData, isLoading: isLoadingSingleMarkData }] = useSingleMarkMutation();
 
   // -------------------------------- Effect -------------------------- //
@@ -76,7 +76,7 @@ const Notification = () => {
 
     // console.log(" ======== dispute id: ", item?.data)
 
-    console.log(" ===== item for new order ============= ", JSON.stringify(item?.data, null, 2))
+    // console.log(" ===== item for new order ============= ", JSON.stringify(item?.data, null, 2))
 
     if (item?.data?.type === "new_order") {
       if (provider_type === "individual") {
@@ -264,29 +264,49 @@ const Notification = () => {
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
-      <FlatList
-        data={notifications}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={tw`gap-3 px-2 py-2`}
-        onEndReached={loading_more}
-        onEndReachedThreshold={0.5}
-        initialNumToRender={10}
-        windowSize={5}
-        removeClippedSubviews={true}
-        ListFooterComponent={
-          isFetchMore ? (<ActivityIndicator size="large" color="#FF6600" />) : null
-        }
-        refreshing={isFetchMore}
-        onRefresh={() => setPage(1)}
-        renderItem={({ item }) => (
-          <ProviderNotificationCard
-            item={item}
+      {isLoadingNotification && (
+        <View style={tw`py-10 items-center`}>
+          <ActivityIndicator size="large" color="#FF6600" />
+        </View>
+      )}
 
-            onPress={() => handleNotification(item)}
-          />
-        )}
-      />
+      {/* ----------- Empty state ----------- */}
+      {!isLoadingNotification && (notifications?.length === 0) && (
+        <View style={tw`py-10 items-center`}>
+          <Text style={tw`text-gray-500 text-base font-PoppinsBlack`}>
+            No notifications found
+          </Text>
+        </View>
+      )}
+      {notifications?.length > 0 &&
+        <FlatList
+          data={notifications}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={tw`gap-3 px-2 py-2`}
+          onEndReached={loading_more}
+          onEndReachedThreshold={0.5}
+          initialNumToRender={10}
+          windowSize={5}
+          removeClippedSubviews={true}
+          ListFooterComponent={
+            isFetchMore ? (<ActivityIndicator size="large" color="#FF6600" />) :
+              <View style={tw`items-center py-6`}>
+                <Text style={tw`text-gray-400 font-PoppinsMedium`}>No more notifications</Text>
+              </View>
+          }
+          refreshing={isFetchMore}
+          onRefresh={() => setPage(1)}
+          renderItem={({ item }) => (
+            <ProviderNotificationCard
+              item={item}
+
+              onPress={() => handleNotification(item)}
+            />
+          )}
+        />
+      }
+
       {/* <View style={tw`gap-3 py-2`}>
         {values && values.map((item: any, index: any) => {
           return (
