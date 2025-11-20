@@ -4,8 +4,6 @@ import {
     IconLocation,
     IconMailYellow,
     IconPhoneYellow,
-    IconRightCornerArrowWhite,
-    IconStar,
     IconWhiteDot
 } from "@/assets/icons";
 import UserReviewCard from "@/src/Components/UserReviewCard";
@@ -344,33 +342,7 @@ const Order_Details_Profile = () => {
                     {/* active when Pending order type */}
                     {order.status === "Pending" &&
                         <View style={tw`gap-4`}>
-                            <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>Assign Provider</Text>
-
-                            <View style={tw`flex-row justify-between w-full bg-white rounded-lg py-2 px-2`}>
-                                <View style={tw`flex-row gap-2 items-center `}>
-                                    <View style={tw``}>
-                                        <Image style={tw`w-24 h-24 rounded-lg `} source={{ uri: order?.provider?.avatar || order?.provider?.company?.company_logo }} />
-                                    </View>
-                                    <View>
-                                        <Text style={tw`font-DegularDisplayDemoMedium text-xl`}>{order?.provider?.name}</Text>
-                                        <View style={tw`flex-row gap-2 items-center`}>
-                                            <Text style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}>{order?.provider?.ratings_avg_rating}</Text>
-                                            <SvgXml xml={IconStar} />
-                                        </View>
-
-                                    </View>
-                                </View>
-
-                                <View>
-                                    <TouchableOpacity
-                                        onPress={() => router.push("/service_provider/company/my_employees/employees_details")}
-                                        style={tw`w-12 h-12 rounded-2xl  bg-secondary justify-center items-center `}
-                                    >
-                                        <SvgXml xml={IconRightCornerArrowWhite} />
-                                    </TouchableOpacity>
-                                </View>
-
-                            </View>
+                           
 
                             <View style={tw`gap-2`}>
                                 <Pressable
@@ -416,38 +388,7 @@ const Order_Details_Profile = () => {
                     {/* active when Completed order type */}
                     {order.status === "Completed" &&
                         <View>
-                            <View style={tw`gap-4 py-2`}>
-                                <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>Assign Provider</Text>
-
-                                <View style={tw`flex-row justify-between w-full bg-white rounded-lg py-2 px-2`}>
-                                    <View style={tw`flex-row gap-2 items-center `}>
-                                        <View style={tw``}>
-                                            <Image style={tw`w-24 h-24 rounded-lg `} source={{ uri: order?.provider?.avatar || order?.provider?.company?.company_logo }} />
-                                        </View>
-                                        <View>
-                                            <Text style={tw`font-DegularDisplayDemoMedium text-xl`}>{order?.provider?.name}</Text>
-                                            <View style={tw`flex-row gap-2 items-center`}>
-                                                <Text style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}>{order?.provider?.ratings_avg_rating}</Text>
-                                                <SvgXml xml={IconStar} />
-                                            </View>
-
-                                        </View>
-                                    </View>
-
-                                    <View>
-                                        <TouchableOpacity
-                                            onPress={() => router.push("/service_provider/company/my_employees/employees_details")}
-                                            style={tw`w-12 h-12 rounded-2xl  bg-secondary justify-center items-center `}
-                                        >
-                                            <SvgXml xml={IconRightCornerArrowWhite} />
-                                        </TouchableOpacity>
-                                    </View>
-
-                                </View>
-
-
-
-                            </View>
+                            
 
                             <View style={tw`gap-4`}>
                                 <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>User Review</Text>

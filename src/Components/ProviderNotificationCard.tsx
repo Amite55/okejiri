@@ -141,4 +141,4 @@ const ProviderNotificationCard = ({
   );
 };
 
-export default ProviderNotificationCard;
+export default React.memo(ProviderNotificationCard);

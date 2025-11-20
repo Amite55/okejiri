@@ -1,137 +1,211 @@
+
+
+
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ActivityIndicator, FlatList, View } from "react-native";
 
+import { IconDeliveryTimeExt } from "@/assets/icons";
+import AcceptedModal from "@/src/Components/AcceptedModal";
 import FeedbackModel from "@/src/Components/FeedbackModal";
-import NotificationCard from "@/src/Components/NotificationCard";
+import ProviderNotificationCard from "@/src/Components/ProviderNotificationCard";
+import RequestDeliveryTimeExtModal from "@/src/Components/RequestDeliveryTimeExtModal";
 import RequestForDeliveryModal from "@/src/Components/RequestForDeliveryModal";
-import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
+
 import {
   useGetNotificationsQuery,
   useSingleMarkMutation,
 } from "@/src/redux/apiSlices/notificationsSlices";
+
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
-const UserNotification = () => {
-  // -------------------- api end point ---------------------
-  // const { data: notificationData, isLoading: isNotificationLoading } =
-  //   useGetNotificationsQuery({ page: 1 });
+const Notification = () => {
+  const { provider_type } = useLocalSearchParams();
 
-  // const [markAsReadNotification] = useSingleMarkMutation();
-
-  // ==================== loading skeleton ====================
-
-
-
+  // ------------------------------- STATES ------------------------------- //
   const [page, setPage] = useState(1);
   const [notifications, setNotification] = useState<any[]>([]);
   const [isFetchMore, setIsFetchMore] = useState(false);
+
+  // Modal Refs
   const deliveryModalRef = useRef<BottomSheetModal>(null);
   const feedbackModalRef = useRef<BottomSheetModal>(null);
   const requestDeliveryTimeExtModalRef = useRef<BottomSheetModal>(null);
+
+  // Selected IDs
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [requestDeliveryExtId, setRequestDeliveryExtId] = useState<number | null>(null);
+
+  const [acceptedModalShow, setAcceptedModalShow] = useState(false);
+
   // ------------------------------- API ------------------------------- //
-  const { data: notificationData, isLoading: isLoadingNotification, isError: isErrorLoadingNotification } = useGetNotificationsQuery(page, {
+  const {
+    data: notificationData,
+    isLoading: isLoadingNotification,
+  } = useGetNotificationsQuery(page, {
     refetchOnMountOrArgChange: true,
   });
-  const [singleMark, { data: singleMarkData, isLoading: isLoadingSingleMarkData }] = useSingleMarkMutation();
 
-  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-  const [requestDeliveryExtId, setRequestId] = useState<number | null>(null);
-  // -------------------------------- Effect -------------------------- //
+  const [singleMark] = useSingleMarkMutation();
+
+  // ------------------------------- EFFECT ------------------------------- //
   useEffect(() => {
-    // console.log("===========  notification item =========== ", JSON.stringify(notificationData, null, 2))
     if (notificationData?.data?.notifications?.data) {
-      if (page == 1) {
-        setNotification(notificationData.data.notifications.data)
+      if (page === 1) {
+        setNotification(notificationData.data.notifications.data);
       } else {
         setNotification((prev) => [
-          ...prev, ...notificationData.data.notifications.data
-        ])
+          ...prev,
+          ...notificationData.data.notifications.data,
+        ]);
       }
     }
-  }, [notificationData])
+  }, [notificationData]);
 
-  const loading_more = () => {
+  // ------------------------------- LOAD MORE ------------------------------- //
+  const loadMore = () => {
     if (!isFetchMore && notificationData?.data?.notifications?.next_page_url) {
       setIsFetchMore(true);
       setPage((prev) => prev + 1);
-      setTimeout(() => setIsFetchMore(false), 500)
+      setTimeout(() => setIsFetchMore(false), 400);
     }
-  }
+  };
 
-  // -------------------------------- handler -------------------------- //
-  // useEffect(()=>{
+  // ------------------------------- HANDLE PRESS ------------------------------- //
+  const handleNotificationPress = async (item: any) => {
+    // Mark notification as read
+    if (item.read_at === null) {
+      try {
+        await singleMark(item.id);
+      } catch { }
+    }
 
-  // },[provider_type])
-  const values = notifications || [] // only for read_at, id 
-  const notificationDetails = values
-  // console.log("values ================= ", JSON.stringify(notificationData, null, 2))
-  // console.log("======================== notifications =================== ", JSON.stringify(notificationDetails, null, 2));
-  // console.log("select item id", selectedOrderId)
+    const type = item?.data?.type;
+
+    // ---------------- Modal Types ---------------- //
+    if (type === "delivery_request_sent") {
+      setSelectedOrderId(item?.data?.order_id);
+      deliveryModalRef.current?.present();
+      return;
+    }
+
+    if (type === "extend_delivery_time") {
+      setRequestDeliveryExtId(item?.data?.request_id);
+      requestDeliveryTimeExtModalRef.current?.present();
+      return;
+    }
+
+    // ---------------- Routing Types ---------------- //
+    const navigateToOrder = () => {
+      router.push({
+        pathname:
+          provider_type === "individual"
+            ? "/service_provider/individual/order_details_profile"
+            : "/service_provider/company/order_details_profile",
+        params: { id: item.data.order_id || item.id },
+      });
+    };
+
+    switch (type) {
+      // case "new_order":
+      case "order_approved":
+        router.push({
+          pathname: "/company/serviceBookings/order_approved",
+          params: {
+            id: item.data.order_id
+          }
+        })
+        break;
+
+      case "order_cancelled":
+        router.push({
+          pathname: "/company/serviceBookings/order_cancelled",
+          params: {
+            title: item?.data?.title,
+            subtitle: item?.data?.sub_title ,
+            reason: item?.data?.reason 
+          },
+        });
+        break;
+      case "order_rejected":
+         router.push({
+          pathname: "/company/serviceBookings/order_cancelled",
+          params: {
+            title: item?.data?.title,
+            subtitle: item?.data?.sub_title ,
+            reason: item?.data?.reason 
+          },
+        });
+        break;
+
+
+      case "warning":
+        router.push("/service_provider/individual/warning");
+        break;
+
+      case "new_dispute":
+        router.push({
+          pathname: "/service_provider/individual/disputes/dispute_review",
+          params: { id: item?.data?.dispute_id },
+        });
+        break;
+
+      case "report":
+      case "new_report":
+        router.push({
+          pathname: "/service_provider/individual/warning",
+          params: {
+            title: item?.data?.title,
+            subtitle:
+              item?.data?.sub_title ||
+              item?.data?.data?.report_description,
+          },
+        });
+        break;
+
+      default:
+        break;
+    }
+  };
+
   if (isLoadingNotification) {
-    return <NotificationSkeleton />;
+    return <ActivityIndicator size="large" style={tw`mt-20`} />;
   }
 
   return (
-    <View style={tw`flex-1  bg-base_color  `}>
-      <ScrollView
-        showsHorizontalScrollIndicator={false}
+    <View style={tw`flex-1 bg-base_color px-5`}>
+      <BackTitleButton
+        pageName={"Notifications"}
+        onPress={() => router.back()}
+        titleTextStyle={tw`text-xl`}
+      />
+
+      <FlatList
+        data={notifications}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         showsVerticalScrollIndicator={false}
-        keyboardDismissMode="interactive"
-        style={tw`flex-1  bg-base_color px-5 `}
-        contentContainerStyle={tw`pb-5`}
-      >
-        <BackTitleButton
-          pageName={"Notifications"}
-          onPress={() => router.back()}
-          titleTextStyle={tw`text-xl`}
-        />
+        contentContainerStyle={tw`gap-3 pb-5`}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isFetchMore && (
+            <ActivityIndicator size="large" color="#FF6600" />
+          )
+        }
+        renderItem={({ item }) => (
+          <ProviderNotificationCard
+            item={item}
+            onPress={() => handleNotificationPress(item)}
+          />
+        )}
+      />
 
-        <View style={tw`gap-3`}>
-          {notificationDetails?.map((item: any) => {
-            return (
-              <NotificationCard
-                key={item.id}
-                item={item}
-                onPress={async () => {
-                  // console.log("====== item ", JSON.stringify(item, null, 2))
-                  await singleMark(item.id);
-
-                  if (item?.data.type === "order_approved") {
-                    router.push(
-                      "/service_provider/individual/order_details_profile"
-                    );
-                  } else if (item?.data.type === "warning") {
-                    router.push("/service_provider/individual/warning");
-                  } else if (item?.data.type === "cancelled") {
-                    router.push("/service_provider/individual/booking_cancel");
-                  }
-                  else if (item?.data.type === "new_dispute") {
-                    router.push(
-                      "/service_provider/individual/disputes/dispute_review"
-                    );
-                  }
-                  else if (item?.data.type === "delivery_request_sent") {
-                    // console.log("item", item)
-                    setSelectedOrderId(item?.data.order_id);
-                    deliveryModalRef.current?.present();
-                  }
-                  else if (item?.data.type === "extend_delivery_time") {
-                    // console.log(" ================ item ====== ", item);
-                    setRequestId(item?.data?.request_id);
-                  }
-                }}
-              />
-            );
-          })}
-        </View>
-
-      </ScrollView>
+      {/* ------------------- Delivery Request Modal ------------------ */}
       <RequestForDeliveryModal
         ref={deliveryModalRef}
-        id={selectedOrderId} // <-- pass notification id
+        id={selectedOrderId}
         onClose={() => deliveryModalRef?.current?.dismiss()}
         onAccepted={() => {
           deliveryModalRef?.current?.dismiss();
@@ -140,27 +214,40 @@ const UserNotification = () => {
           }, 500);
         }}
       />
+
+      {/* ------------------- Feedback Modal ------------------ */}
       <FeedbackModel
         ref={feedbackModalRef}
         id={selectedOrderId}
         onClose={() => feedbackModalRef?.current?.dismiss()}
-
       />
-      {/* <RequestDeliveryTimeExtModal 
+
+      {/* ------------------- Request Extension Modal ------------------ */}
+      <RequestDeliveryTimeExtModal
         ref={requestDeliveryTimeExtModalRef}
-        id={selectedOrderId} // <-- pass notification id
-        onClose={() => deliveryModalRef?.current?.dismiss()}
+        id={requestDeliveryExtId}
+        onClose={() => requestDeliveryTimeExtModalRef?.current?.dismiss()}
         onAccepted={() => {
-          deliveryModalRef?.current?.dismiss();
-          setTimeout(() => {
-            feedbackModalRef?.current?.present();
-          }, 500);
+          requestDeliveryTimeExtModalRef?.current?.dismiss();
+          setTimeout(() => setAcceptedModalShow(true), 500);
         }}
+      />
 
-      /> */}
+      {/* ------------------- Extension Accepted Modal ------------------ */}
+      <AcceptedModal
+        visible={acceptedModalShow}
+        title="Delivery extension request accepted"
+        titleStyle={tw`text-success600 font-DegularDisplayDemoMedium text-xl`}
+        icon={IconDeliveryTimeExt}
+        btnText="Cancel"
+        btnStyle={tw`bg-white border border-gray-300 w-full`}
+        btnTextStyle={tw`text-black font-PoppinsMedium text-base`}
+        onPress={() => setAcceptedModalShow(false)}
+        onClose={() => setAcceptedModalShow(false)}
+      />
     </View>
-
   );
 };
 
-export default UserNotification;
+export default Notification;
+
