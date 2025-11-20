@@ -60,8 +60,9 @@ const Individual_Service_Provider_Index = () => {
     };
     const parts = date.toLocaleDateString("en-US", options as any).split(" ");
     // console.log(date.toLocaleDateString("en-US", options))
-    const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${parts[3]
-      }`;
+    const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${
+      parts[3]
+    }`;
     return formatted;
   };
 
@@ -232,12 +233,14 @@ const Individual_Service_Provider_Index = () => {
               Date={formateDate(item.created_at)}
               Description={descriptions[item.id]}
               ImgProfileImg={item.user.avatar}
-              onPress={() => router.push({
-                pathname: "/service_provider/company/order_details_profile",
-                params: {
-                  id: item.id
-                }
-              })}
+              onPress={() =>
+                router.push({
+                  pathname: "/service_provider/company/order_details_profile",
+                  params: {
+                    id: item.id,
+                  },
+                })
+              }
             />
           );
         })}

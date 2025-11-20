@@ -29,7 +29,7 @@ import {
 import { Image } from "expo-image";
 
 const Message = () => {
-  const { receiverId } = useLocalSearchParams();
+  const { receiverId, receiverName, receiverImage } = useLocalSearchParams();
   const receiverIdNumber = Number(receiverId);
   const socket = getSocket();
   const router = useRouter();
@@ -49,7 +49,7 @@ const Message = () => {
     const res = await getMessages({
       receiver_id: receiverIdNumber,
       page: 1,
-      per_page: 100,
+      per_page: 60,
     });
     const messageList = res?.data?.data?.data || [];
     if (res?.data) {
@@ -131,14 +131,14 @@ const Message = () => {
             </TouchableOpacity>
             <Image
               style={tw`w-11 h-11 rounded-full `}
-              source={{ uri: ProfilerData?.data?.avatar }}
+              source={receiverImage}
               contentFit="cover"
             />
           </View>
           <Text
             style={tw`text-xl text-deepBlue400 font-DegularDisplayDemoBold`}
           >
-            {ProfilerData?.data?.name}
+            {receiverName}
           </Text>
         </View>
 

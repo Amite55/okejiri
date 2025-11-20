@@ -4,14 +4,18 @@ import {
   IconMultipleUserBlack,
   IconNewOrderPrimary,
   IconPendingBlue,
-  IconRightArrowCornerPrimaryColor
+  IconRightArrowCornerPrimaryColor,
 } from "@/assets/icons";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import TransactionsCard from "@/src/Components/TransactionsCard";
 import UserCard from "@/src/Components/UserCard";
 import tw from "@/src/lib/tailwind";
-import { useHomeDataQuery, useRecentOrderQuery, useRecentTransactionsQuery } from "@/src/redux/apiSlices/companyProvider/homeSlices";
+import {
+  useHomeDataQuery,
+  useRecentOrderQuery,
+  useRecentTransactionsQuery,
+} from "@/src/redux/apiSlices/companyProvider/homeSlices";
 import { useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/orderSlices";
 import { _WIDTH } from "@/utils/utils";
 import { router } from "expo-router";
@@ -28,41 +32,46 @@ const dropdownData = [
 ];
 
 const Home_Index_Company = () => {
-
-
-
-
   const [value, setValue] = useState("this_week");
   const [isFocus, setIsFocus] = useState(false);
 
-
   // data fetch - START
-  const { data: homeData, isLoading: homeDataLoading } = useHomeDataQuery(value);
+  const { data: homeData, isLoading: homeDataLoading } =
+    useHomeDataQuery(value);
 
-  const { data: recentOrder, isLoading: recentOrderLoading } = useRecentOrderQuery("New");
-  const { data: recentTransaction, isLoading: recentTransactionLoading } = useRecentTransactionsQuery({});
+  const { data: recentOrder, isLoading: recentOrderLoading } =
+    useRecentOrderQuery("New");
+  const { data: recentTransaction, isLoading: recentTransactionLoading } =
+    useRecentTransactionsQuery({});
   // const recentOrder = recentOrderData?.data?.data.slice(0,3) || [];
 
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
-
 
   // if()
   // console.log("++++++++++ recent order data =================== ", recentOrder);
   // console.log("++++++++++ recent transaction order data inside =================== ", recentTransaction?.data.data);
   // data fetch - END
 
-
   // state for fetch data;
   const formateDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    const options = { weekday: "short", day: "2-digit", month: "short", year: "numeric" };
+    const options = {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    };
     const parts = date.toLocaleDateString("en-US", options).split(" ");
     // console.log(date.toLocaleDateString("en-US", options))
-    const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${parts[3]}`;
+    const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${
+      parts[3]
+    }`;
     return formatted;
-  }
+  };
 
-  const [descriptions, setDescriptions] = useState<{ [key: string]: string }>({});
+  const [descriptions, setDescriptions] = useState<{ [key: string]: string }>(
+    {}
+  );
 
   useEffect(() => {
     if (recentOrder?.data?.data?.length) {
@@ -70,18 +79,20 @@ const Home_Index_Company = () => {
         for (const item of recentOrder.data.data) {
           try {
             const response = await fetchOrderItem(item.id).unwrap();
-            const count = response?.data?.provider?.provider_services?.length ?? 0;
-            setDescriptions(prev => ({ ...prev, [item.id]: `${count} ${count === 1 ? "service" : "services"}` }));
+            const count =
+              response?.data?.provider?.provider_services?.length ?? 0;
+            setDescriptions((prev) => ({
+              ...prev,
+              [item.id]: `${count} ${count === 1 ? "service" : "services"}`,
+            }));
           } catch (err) {
-            setDescriptions(prev => ({ ...prev, [item.id]: "N/A" }));
+            setDescriptions((prev) => ({ ...prev, [item.id]: "N/A" }));
           }
         }
       };
       fetchDescriptions();
     }
   }, [recentOrder]);
-
-
 
   // return: ==========================
   return (
@@ -99,8 +110,8 @@ const Home_Index_Company = () => {
           router.push({
             pathname: "/notification_Global/notifications",
             params: {
-              provider_type: "company"
-            }
+              provider_type: "company",
+            },
           })
         }
       />
@@ -152,7 +163,6 @@ const Home_Index_Company = () => {
           <View style={tw` justify-between items-center`}>
             <View />
             <SvgXml xml={IconMultipleUserBlack} />
-
           </View>
           <Text
             style={tw`font-DegularDisplayDemoRegular text-base text-regularText text-center`}
@@ -194,12 +204,14 @@ const Home_Index_Company = () => {
       </View>
 
       {/* ------------ new order and regrading order -------------- */}
-      <View style={tw`gap-4`}>
+      <View style={tw`gap-2`}>
         {/* -------------- new order ------------- */}
         <View style={tw`relative `}>
           <SvgXml xml={IconNewOrderPrimary} width={_WIDTH - _WIDTH * 0.09} />
           <View style={tw`absolute top-6 left-30 justify-center items-center`}>
-            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-white `}>
+            <Text
+              style={tw`font-DegularDisplayDemoMedium text-2xl text-white `}
+            >
               New order
             </Text>
             <Text
@@ -229,7 +241,9 @@ const Home_Index_Company = () => {
         <View style={tw`relative `}>
           <SvgXml xml={IconCompleteOrder} width={_WIDTH - _WIDTH * 0.09} />
           <View style={tw`absolute top-6 left-30 justify-center items-center`}>
-            <Text style={tw`font-DegularDisplayDemoRegular text-2xl text-white`}>
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-2xl text-white`}
+            >
               Completed order
             </Text>
             <Text
@@ -254,21 +268,24 @@ const Home_Index_Company = () => {
       {/*  resent order */}
       <View style={tw`gap-3 my-4`}>
         {recentOrder?.data?.data.slice(0, 3).map((item: any, index: any) => {
-
           return (
             <UserCard
               key={index}
               ProfileName={item.user.name}
-              isProfileBadge={item.user.kyc_status === "Verified" ? true : false}
+              isProfileBadge={
+                item.user.kyc_status === "Verified" ? true : false
+              }
               Date={formateDate(item.created_at)}
               Description={descriptions[item.id]}
               ImgProfileImg={item.user.avatar}
-              onPress={() => router.push({
-                pathname: "/service_provider/company/order_details_profile",
-                params: {
-                  id: item.id
-                }
-              })}
+              onPress={() =>
+                router.push({
+                  pathname: "/service_provider/company/order_details_profile",
+                  params: {
+                    id: item.id,
+                  },
+                })
+              }
             />
           );
         })}
