@@ -4,12 +4,12 @@ import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useLazyGetMyReferralsQuery } from "@/src/redux/apiSlices/userProvider/account/referralFriendsSlices";
 import * as Clipboard from "expo-clipboard";
+import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   RefreshControl,
   Text,
   TouchableOpacity,
@@ -59,8 +59,6 @@ const Refer_Friend = () => {
       const newData = responseData?.data || [];
       const currentPage = responseData?.current_page || pageNum;
       const lastPage = responseData?.last_page;
-
-      console.log("responseData ======>", responseData);
 
       if (isRefresh) {
         setReferrals(newData);
@@ -127,14 +125,16 @@ const Refer_Friend = () => {
       <View
         style={tw`flex-row justify-between items-center p-5 bg-white rounded-xl mb-3`}
       >
-        <View style={tw`flex-row items-center gap-3`}>
+        <View style={tw`flex-row items-center gap-3 flex-1`}>
           <Image
             style={tw`w-16 h-16 rounded-full`}
             source={
               typeof avatar === "string" ? { uri: avatar } : (avatar as any)
             }
+            contentFit="cover"
           />
-          <View>
+          <View style={tw`flex-1`}>
+            {/* inner view also flex-1 for safety */}
             <Text
               style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
               numberOfLines={1}
@@ -142,13 +142,14 @@ const Refer_Friend = () => {
               {name}
             </Text>
             <Text
-              style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+              style={tw`font-DegularDisplayDemoRegular text-base text-black`}
               numberOfLines={1}
             >
               {email}
             </Text>
           </View>
         </View>
+
         <Text style={tw`font-DegularDisplayDemoMedium text-xl text-success600`}>
           ₦{reward}
         </Text>
