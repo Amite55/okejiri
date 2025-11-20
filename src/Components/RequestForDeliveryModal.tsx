@@ -40,7 +40,7 @@ export default function RequestForDeliveryModal({ ref, id, onClose, onAccepted }
 
     const orders = orderDetailsData?.data;
     // console.log(" ============ id ================= ", id)
-    // console.log(" ================ Order details data ============ ", JSON.stringify(orderDetailsData, null, 2))
+    // console.log(" ================ Order details data ============ ", JSON.stringify(orders, null, 2))
     const firstBookingItem = orders?.booking_items?.[0];
 
 
@@ -112,73 +112,75 @@ export default function RequestForDeliveryModal({ ref, id, onClose, onAccepted }
                             ))}
                         </View>
                     </View>
-
-                    <View style={tw`flex-row gap-2`}>
-                        <TouchableOpacity
-                            onPress={async () => {
-                                try {
-                                    const response = await declineDeliveryRequest(id).unwrap();
-                                    if (response) {
+                    {orders?.status === "Pending" &&
+                        <View style={tw`flex-row gap-2`}>
+                            <TouchableOpacity
+                                onPress={async () => {
+                                    try {
+                                        const response = await declineDeliveryRequest(id).unwrap();
+                                        if (response) {
+                                            router.push({
+                                                pathname: "/Toaster",
+                                                params: {
+                                                    res: "Delivery Request Decline done!"
+                                                }
+                                            })
+                                            onClose();
+                                        }
+                                    }
+                                    catch (err) {
+                                        console.log("=== Delivery Request Decline error ", err)
                                         router.push({
                                             pathname: "/Toaster",
                                             params: {
-                                                res: "Delivery Request Decline done!"
+                                                res: "Delivery Request Decline failed!"
                                             }
                                         })
-                                        onClose();
                                     }
-                                }
-                                catch (err) {
-                                    console.log("=== Delivery Request Decline error ", err)
-                                    router.push({
-                                        pathname: "/Toaster",
-                                        params: {
-                                            res: "Delivery Request Decline failed!"
+
+
+                                }}
+                                style={tw`px-4 py-6 w-[48%]`}>
+                                <View style={tw`bg-redDeep py-4 rounded-full`}>
+                                    <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}>Decline</Text>
+                                </View>
+
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={async () => {
+                                    try {
+                                        // ***** TODO : Backend should enable stripe connect account
+
+                                        // "errors": "Your destination account needs to have at least one 
+                                        // of the following capabilities enabled: transfers, crypto_transfers, 
+                                        // legacy_payments", "message": "The request could not be processed due 
+                                        // to an error.", "status": "error", "status_code": 400
+                                        const response = await acceptDeliveryRequest(id).unwrap();
+                                        if (response) {
+                                            onAccepted();
                                         }
-                                    })
-                                }
-
-                                
-                            }}
-                            style={tw`px-4 py-6 w-[48%]`}>
-                            <View style={tw`bg-redDeep py-4 rounded-full`}>
-                                <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}>Decline</Text>
-                            </View>
-
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={async () => {
-                                try {
-                                    // ***** TODO : Backend should enable stripe connect account
-
-                                    // "errors": "Your destination account needs to have at least one 
-                                    // of the following capabilities enabled: transfers, crypto_transfers, 
-                                    // legacy_payments", "message": "The request could not be processed due 
-                                    // to an error.", "status": "error", "status_code": 400
-                                    const response = await acceptDeliveryRequest(id).unwrap();
-                                    if (response) {
-                                        onAccepted();
+                                    } catch (err) {
+                                        console.log(" =========== submit accepted error ======= ", err);
+                                        router.push({
+                                            pathname: "/Toaster",
+                                            params: {
+                                                res: "Request Delivery accepted Failed!"
+                                            }
+                                        })
                                     }
-                                } catch (err) {
-                                    console.log(" =========== submit accepted error ======= ", err);
-                                    router.push({
-                                        pathname: "/Toaster",
-                                        params: {
-                                            res: "Request Delivery accepted Failed!"
-                                        }
-                                    })
-                                }
 
 
-                            }}
-                            style={tw`px-4 py-6 w-[48%]`}>
-                            <View style={tw`bg-[#319F43] py-4 rounded-full`}>
-                                <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}>Accept</Text>
-                            </View>
+                                }}
+                                style={tw`px-4 py-6 w-[48%]`}>
+                                <View style={tw`bg-[#319F43] py-4 rounded-full`}>
+                                    <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}>Accept</Text>
+                                </View>
 
-                        </TouchableOpacity>
+                            </TouchableOpacity>
 
-                    </View>
+                        </View>
+                    }
+
 
 
 

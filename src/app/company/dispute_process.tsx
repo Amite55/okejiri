@@ -67,7 +67,7 @@ const Dispute_Process: React.FC = () => {
       quality: 0.7,
     });
     if (!result.canceled) {
-      setImages(result.assets.map((item) => item.uri));
+      setImages(result.assets.map((item) => item));
     }
   };
 
@@ -80,19 +80,27 @@ const Dispute_Process: React.FC = () => {
       });
       return;
     }
+
+    // console.log(images)
     try {
       let formData = new FormData();
       formData.append("booking_id", id);
       formData.append("reason", reason);
       formData.append("details", explanation);
       // ✅ Append multiple images properly
-      images.forEach((uri: any, index: any) => {
-        formData.append("attachments[]", {
-          uri,
-          name: `attachment_${index}.jpg`,
-          type: "image/jpeg",
+      images.forEach((image: any, index: any) => {
+        formData.append(`attachments[${index}]`, {
+          uri : image?.uri,
+          name: image?.fileName,
+          type: image?.mimeType,
         } as any);
       });
+
+      formData.forEach(item=>{
+        console.log(item)
+      })
+
+
       const response = await addDispute(formData).unwrap();
       if (response) {
         router.push({

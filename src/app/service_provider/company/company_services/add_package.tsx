@@ -180,6 +180,15 @@ const Add_Package = () => {
 
     return `${hoursStr}:${minutesStr} ${ampm}`;
   }
+  function convertTo24Hour(time12h: string) {
+    const [time, modifier] = time12h.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+
+    if (modifier === "PM" && hours !== 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
+  }
 
   const openFixedModal = () => {
     setModalType("fixed");
@@ -421,6 +430,7 @@ const Add_Package = () => {
                             <TouchableOpacity
                               style={tw`w-11 h-11 rounded-full border border-gray-300 justify-center items-center`}
                               onPress={() => {
+                                Keyboard.dismiss();
                                 const serviceInput = (values.temp_service_input ?? "").toString();
                                 // console.log(" ========== service input ============ ", JSON.stringify(serviceInput, null, 2))
                                 if (!serviceInput.trim()) {
@@ -534,11 +544,11 @@ const Add_Package = () => {
                 {/* ------------------- selected delivery hour -------------- */}
                 {/*  ------------ dropdown section j----------------- */}
                 <View style={tw`py-2`}>
-                  {/* <Text
+                  <Text
                     style={tw`font-DegularDisplayDemoMedium text-xl text-black mb-2 ml-2`}
                   >
-                    Reason
-                  </Text> */}
+                    Delivery time
+                  </Text>
                   <TouchableOpacity onPress={openFixedModal}>
                     <View style={tw`border  border-gray-300 rounded-full py-3 px-4 flex-row justify-between items-center`}>
                       <Text style={tw`font-DegularDisplayDemoRegular text-lg pb-1`}>{delivery_time || "Delivery time"}{" "}{delivery_time > "1" ? "hours" : "hour"}</Text>
@@ -610,6 +620,7 @@ const Add_Package = () => {
 
                             <SvgXml xml={IconEditPenBlack} width={15} />
                           </TouchableOpacity>
+
                           <TouchableOpacity
                             onPress={() => {
 
