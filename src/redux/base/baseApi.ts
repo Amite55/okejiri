@@ -114,6 +114,7 @@ export const api = createApi({
     "updatePortfolio",
     "deletePortfolios",
     "portfolio",
+    "boost",
   ],
 });
 export const imageUrl = "http://10.10.10.63:8001/api";

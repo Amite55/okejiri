@@ -1,19 +1,3 @@
-import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
-import tw from "@/src/lib/tailwind";
-import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Modal,
-  Pressable,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-
 import {
   IconCross,
   IconDeleteRed,
@@ -22,13 +6,28 @@ import {
   IconThreeWhite,
 } from "@/assets/icons";
 import PrimaryButton from "@/src/Components/PrimaryButton";
+import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
+import tw from "@/src/lib/tailwind";
 import {
   useAddPortfolioMutation,
   useDeletePortfoliosMutation,
   useLazyGetPortfoliosQuery,
   useUpdatePortfolioMutation,
 } from "@/src/redux/apiSlices/companyProvider/account/portfolioSlice";
+import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Modal,
+  Pressable,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Portfolio = () => {
@@ -45,6 +44,7 @@ const Portfolio = () => {
 
   const [imageAsset, setImageAsset] =
     React.useState<ImagePicker.ImagePickerAsset | null>(null);
+
   const [fetchPortfolios, { isLoading, isFetching }] =
     useLazyGetPortfoliosQuery();
   const [deletePortfolios] = useDeletePortfoliosMutation();
@@ -242,7 +242,9 @@ const Portfolio = () => {
     <View style={tw`flex-1 bg-base_color px-3 pb-2`}>
       <FlatList
         data={portfolios}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) =>
+          `${item?.id}-${item?.image}-${item?.updated_at}`
+        }
         ListHeaderComponent={
           <BackTitleButton
             pageName="Portfolio"
@@ -263,8 +265,12 @@ const Portfolio = () => {
         renderItem={({ item }: any) => (
           <View style={[tw`w-[48%] mb-3`, { height: 240 }]}>
             <Image
-              source={{ uri: item.image }}
-              resizeMode="cover"
+              source={{
+                uri: `${item.image}?refresh=${item.updated_at || Date.now()}`,
+              }}
+              contentFit="cover"
+              key={`${item.id}-${item.image}`}
+              cachePolicy={"none"}
               style={[tw`w-full rounded-2xl`, { height: 240 }]}
             />
             <TouchableOpacity
@@ -291,12 +297,12 @@ const Portfolio = () => {
         }
         ListEmptyComponent={
           !isFirstLoading && !refreshing ? (
-            <View style={tw`py-10 flex justify-center items-center`}>
-              <Text style={tw`text-gray-500 mb-32`}>No portfolio found</Text>
+            <View style={tw` flex-1 items-center`}>
+              <Text style={tw`text-gray-500 `}>No portfolio found</Text>
               <PrimaryButton
                 titleProps="Add Portfolio"
                 IconProps={IconPlus}
-                contentStyle={tw`mt-4`}
+                contentStyle={tw`mt-4 h-10`}
                 onPress={pickImageAddMore}
               />
             </View>
@@ -306,7 +312,7 @@ const Portfolio = () => {
 
       {/* Add More Button - Always visible at bottom */}
       {!isFirstLoading && !refreshing && portfolios.length > 0 && (
-        <View style={tw`absolute bottom-4 left-0 right-0 px-3`}>
+        <View style={tw`absolute bottom-0 left-0 right-0 px-3`}>
           <PrimaryButton
             titleProps="Add More"
             IconProps={IconPlus}
