@@ -8,10 +8,18 @@
     "scheme": "okejirimobileapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "edgeToEdgeEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yxltechnology.between",
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
     },
     "android": {
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/appAndroidIcon.png",
         "backgroundColor": "#ffffff"
