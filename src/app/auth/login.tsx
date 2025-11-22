@@ -41,13 +41,13 @@ const LoginIndex = () => {
 
   // ----------------- handel login ---------------------
   const handleLogin = async (formData: any) => {
-    Keyboard.dismiss();
-    const payload = {
-      ...formData,
-      role: roll,
-      provider_type: providerTypes ? providerTypes : "",
-    };
     try {
+      Keyboard.dismiss();
+      const payload = {
+        ...formData,
+        role: roll,
+        provider_type: providerTypes ? providerTypes : "",
+      };
       if (roll === "USER") {
         delete payload.provider_type;
         const res = await credentials(payload).unwrap();
@@ -107,12 +107,12 @@ const LoginIndex = () => {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "login fail -----");
       router.push({
         pathname: `/Toaster`,
         params: {
-          res: error?.message || error || "Login Fail Please Try Again",
+          res: error?.message || "Login Fail Please Try Again",
         },
       });
       if (error?.metadata?.redirect_verification === true) {
