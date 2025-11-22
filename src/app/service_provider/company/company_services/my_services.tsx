@@ -1,6 +1,7 @@
 import { IconDustBin, IconPlus } from "@/assets/icons";
 import { ImgEmptyService } from "@/assets/images/image";
 import AddServicesModal from "@/src/Components/AddServicesModal";
+import ServiceCardSkeleton from "@/src/Components/skeletons/ServiceCardSkeleton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useDeleteMyServicesMutation } from "@/src/redux/apiSlices/companyProvider/account/services/servicesSlice";
@@ -15,25 +16,27 @@ import {
   RefreshControl,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const My_Service = () => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  // const { data: userProfileInfo } = useProfileQuery({});
-  // const { stripe_account_id, stripe_payouts_enabled } =
-  //   userProfileInfo?.data || {};
 
-  // const [createConnectAccount] = useCreateConnectAccountMutation();
   //  ==================================== API
   const [fetchMyServices, { isFetching, isLoading: isLoadingFetchMyService }] =
     useLazyMy_servicesQuery();
-  const [deleteMyService, { data: deleteMyServiceData, isLoading: isLoadingMyService, isError: isErrorMyService }] = useDeleteMyServicesMutation();
+  const [
+    deleteMyService,
+    {
+      data: deleteMyServiceData,
+      isLoading: isLoadingMyService,
+      isError: isErrorMyService,
+    },
+  ] = useDeleteMyServicesMutation();
 
   // =================================== API end;
 
-  const [OnboardingUrl, setOnboardingUrl] = useState<string | null>(null);
   const [services, setServices] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -49,7 +52,6 @@ const My_Service = () => {
       if (!isRefresh) setLoadingMore(true);
 
       const res = await fetchMyServices(pageNum).unwrap();
-      // console.log("respos...........", JSON.stringify(res, null, 2));
 
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
@@ -73,7 +75,6 @@ const My_Service = () => {
       setLoadingMore(false);
     }
   };
-  // console.log("=============== services ================  ", JSON.stringify(services, null, 2))
   // ======================== REFRESH ==========================
   const handleRefresh = () => {
     setRefreshing(true);
@@ -101,36 +102,33 @@ const My_Service = () => {
 
     try {
       const response = await deleteMyService(id).unwrap();
-      console.log("============ res ======= ", response)
       if (response) {
         router.push({
           pathname: "/Toaster",
           params: {
             res: "Service Deleted Successfully",
-
-          }
-        })
-
+          },
+        });
       }
-
     } catch (err) {
-      console.log("error service delete !", err)
+      console.log("error service delete !", err);
     }
-  }
+  };
 
   const openSheet = () => {
-    console.log(" ================== open sheet ======= ")
     bottomSheetRef.current?.present();
-  }
+  };
 
   // ======================== RENDER SERVICE ITEM ==========================
   const renderServiceItem = (item: any) => {
-    // console.log(" ================== item my services ===============  ", JSON.stringify(item, null, 2))
     return (
       <View style={tw` w-[48%] p-1`}>
         <View style={tw`rounded-2xl`}>
           <View>
-            <Image source={{ uri: item?.service?.image }} style={tw`w-full h-50 rounded-2xl`} />
+            <Image
+              source={{ uri: item?.service?.image }}
+              style={tw`w-full h-50 rounded-2xl`}
+            />
             {/* <Image source={{ uri: item.}} /> */}
           </View>
           <TouchableOpacity
@@ -140,71 +138,57 @@ const My_Service = () => {
             <SvgXml xml={IconDustBin} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={()=> router.push({
-              pathname: "/service_provider/company/company_services/my_service_package",
-              params: {
-                id: item.service_id
-              }
-            })}
-            style={tw`absolute bottom-3 left-3 right-3   p-2   bg-black/20 rounded-full `}
+            onPress={() =>
+              router.push({
+                pathname:
+                  "/service_provider/company/company_services/my_service_package",
+                params: {
+                  id: item.service_id,
+                },
+              })
+            }
+            style={tw`absolute bottom-3 left-3 right-3 p-2 bg-black/20 rounded-full `}
           >
-            <Text style={tw`text-center text-white  font-DegularDisplayDemoRegular text-base`}>{item?.service?.name}</Text>
+            <Text
+              style={tw`text-center text-white  font-DegularDisplayDemoRegular text-base`}
+            >
+              {item?.service?.name}
+            </Text>
           </TouchableOpacity>
         </View>
-
       </View>
-    )
+    );
+  };
+
+  if (isLoadingFetchMyService) {
+    return <ServiceCardSkeleton />;
   }
-
-
-
-  // // ======================== WEBVIEW ==========================
-  // if (OnboardingUrl) {
-  //   return (
-  //     <View style={{ flex: 1 }}>
-  //       <WebView
-  //         source={{ uri: OnboardingUrl }}
-  //         startInLoadingState={true}
-  //         renderLoading={() => (
-  //           <ActivityIndicator size="large" color="#000" style={tw`mt-10`} />
-  //         )}
-  //         onError={(e) => {
-  //           console.log("WebView error:", e.nativeEvent);
-  //           setOnboardingUrl(null);
-  //         }}
-  //         style={{ flex: 1 }}
-  //       />
-  //     </View>
-  //   );
-  // }
 
   // ======================== MAIN RETURN ==========================
   return (
-    
-      <View style={tw`flex-1 bg-base_color`}>
-        <FlatList
-          data={services}
-          keyExtractor={(item) => item?.id.toString()}
-          renderItem={({ item }) => renderServiceItem(item)}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-          }
-          numColumns={2}
-          columnWrapperStyle={tw`justify-between`}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
-          contentContainerStyle={tw`px-5 pb-10`}
-          showsVerticalScrollIndicator={false}
+    <View style={tw`flex-1 bg-base_color`}>
+      <FlatList
+        data={services}
+        keyExtractor={(item) => item?.id.toString()}
+        renderItem={({ item }) => renderServiceItem(item)}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+        numColumns={2}
+        columnWrapperStyle={tw`justify-between`}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        contentContainerStyle={tw`px-5 pb-10`}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={() => (
+          <View>
+            <BackTitleButton
+              pageName="My services"
+              onPress={() => router.back()}
+              titleTextStyle={tw`text-xl`}
+            />
 
-          ListHeaderComponent={() => (
-            <View>
-              <BackTitleButton
-                pageName="My services"
-                onPress={() => router.back()}
-                titleTextStyle={tw`text-xl`}
-              />
-
-              {/* <View style={tw`flex-row justify-between items-center mt-3`}>
+            {/* <View style={tw`flex-row justify-between items-center mt-3`}>
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
               >
@@ -240,49 +224,52 @@ const My_Service = () => {
                 </TouchableOpacity>
               )}
             </View> */}
+          </View>
+        )}
+        ListFooterComponent={
+          loadingMore ? (
+            <View style={tw`mt-4 mb-8 justify-center items-center`}>
+              <ActivityIndicator size="small" color="#000" />
+              <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
             </View>
+          ) : !hasMore && services.length > 0 ? (
+            <Text style={tw`text-gray-500 text-center my-4 text-lg`}>
+              No more services
+            </Text>
+          ) : null
+        }
+        ListEmptyComponent={() => (
+          <View style={tw`flex-1 justify-center items-center gap-3`}>
+            <Image style={tw`w-full h-80`} source={ImgEmptyService} />
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-3xl text-black`}
+            >
+              Nothing to show here
+            </Text>
+            <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+              Please add a service to see them here.
+            </Text>
+          </View>
+        )}
+      />
+      <View style={tw`px-4`}>
+        <TouchableOpacity
+          onPress={openSheet}
+          style={tw`flex-row bg-primary py-4 justify-center rounded-full w-full px-4 gap-2 items-center`}
+        >
+          {isLoadingFetchMyService ? (
+            <ActivityIndicator size={"small"} color={"#fff"} />
+          ) : (
+            <SvgXml xml={IconPlus} width={15} />
           )}
-          ListFooterComponent={
-            loadingMore ? (
-              <View style={tw`mt-4 mb-8 justify-center items-center`}>
-                <ActivityIndicator size="small" color="#000" />
-                <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
-              </View>
-            ) : !hasMore && services.length > 0 ? (
-              <Text style={tw`text-gray-500 text-center my-4 text-lg`}>
-                No more services
-              </Text>
-            ) : null
-          }
-          ListEmptyComponent={() => (
-            <View style={tw`flex-1 justify-center items-center gap-3`}>
-              <Image style={tw`w-full h-80`} source={ImgEmptyService} />
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-3xl text-black`}
-              >
-                Nothing to show here
-              </Text>
-              <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-                Please add a service to see them here.
-              </Text>
-            </View>
-          )}
-        />
-        <View style={tw`px-4`}>
-          <TouchableOpacity
-            onPress={openSheet}
-            style={tw`flex-row bg-primary py-4 justify-center rounded-full w-full px-4 gap-2 items-center`}
-          >
-            {isLoadingFetchMyService ? <ActivityIndicator size={"small"} color={"#fff"}/> :<SvgXml xml={IconPlus} width={15} />}
-            <Text style={tw`text-white text-xl font-DegularDisplayDemoRegular`}>{isLoadingFetchMyService? "Adding more":"Add more"}</Text>
-          </TouchableOpacity>
-        </View>
-
-        <AddServicesModal ref={bottomSheetRef} exsiting_service={services}/>
-
+          <Text style={tw`text-white text-xl font-DegularDisplayDemoRegular`}>
+            {isLoadingFetchMyService ? "Adding more" : "Add more"}
+          </Text>
+        </TouchableOpacity>
       </View>
-    
 
+      <AddServicesModal ref={bottomSheetRef} exsiting_service={services} />
+    </View>
   );
 };
 

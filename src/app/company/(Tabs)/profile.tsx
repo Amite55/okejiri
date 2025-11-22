@@ -66,6 +66,7 @@ const Profile = () => {
           res?.data?.user?.provider_type
         );
         router.replace("/auth/contact");
+        // router.dismiss();
       }
     } catch (error) {
       console.log(error, "role not switched");

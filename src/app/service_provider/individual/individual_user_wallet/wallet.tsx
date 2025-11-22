@@ -87,6 +87,9 @@ const Wallet_Index = () => {
       return;
     }
     if (amountToWithdraw > totalBalance) {
+      if (isWithdrawModalVisible) {
+        setWithdrawModalVisible(false);
+      }
       router.push({
         pathname: "/Toaster",
         params: {
@@ -168,11 +171,11 @@ const Wallet_Index = () => {
     <ScrollView
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
-      style={tw`flex-1`}
+      style={tw`flex-1 bg-base_color`}
       contentContainerStyle={tw`pb-6 px-5 bg-base_color`}
     >
       <BackTitleButton
-        pageName={"Your wallet"}
+        pageName={"Your wallet ;laksdjf"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
@@ -252,7 +255,7 @@ const Wallet_Index = () => {
               },
             })
           }
-          style={tw`flex-row justify-center items-center gap-3 w-48 h-12 border border-gray-300 rounded-2xl`}
+          style={tw`flex-row justify-center items-center gap-3 w-[47%] h-12 border border-gray-300 rounded-2xl`}
         >
           <SvgXml xml={IconTransfer} />
           <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
@@ -262,7 +265,7 @@ const Wallet_Index = () => {
 
         <TouchableOpacity
           onPress={() => setWithdrawModalVisible(true)}
-          style={tw`flex-row justify-center items-center gap-3 w-48 h-12 border border-gray-300 rounded-2xl`}
+          style={tw`flex-row justify-center items-center gap-3 w-[47%] h-12 border border-gray-300 rounded-2xl`}
         >
           <SvgXml xml={IconWithdraw} />
           <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
@@ -346,7 +349,7 @@ const Wallet_Index = () => {
 
       {/* Withdraw Modal */}
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={isWithdrawModalVisible}
         onRequestClose={() => setWithdrawModalVisible(false)}

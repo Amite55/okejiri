@@ -266,7 +266,12 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   placeholderTextColor="#535353"
                   onChangeText={(text) => setUserName(text)}
                   value={userName}
-                  style={tw`flex-1 font-DegularDisplayDemoRegular text-base`}
+                  style={[
+                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
+                    userProfileInfo?.data?.kyc_status === "Verified"
+                      ? tw`text-gray-400`
+                      : tw`text-black text-base`,
+                  ]}
                   accessibilityLabel="Full name input"
                   accessibilityHint="Enter your full name"
                 />
@@ -291,7 +296,12 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   onChangeText={(text) => setPhoneNumber(text)}
                   value={phoneNumber}
                   keyboardType="phone-pad"
-                  style={tw`flex-1 font-DegularDisplayDemoRegular text-base`}
+                  style={[
+                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
+                    userProfileInfo?.data?.kyc_status === "Verified"
+                      ? tw`text-gray-400`
+                      : tw`text-black text-base`,
+                  ]}
                   accessibilityLabel="Contact number input"
                   accessibilityHint="Enter your contact number"
                 />
@@ -315,7 +325,12 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   placeholderTextColor="#535353"
                   onChangeText={(text) => setAddress(text)}
                   value={address}
-                  style={tw`flex-1 font-DegularDisplayDemoRegular text-base`}
+                  style={[
+                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
+                    userProfileInfo?.data?.kyc_status === "Verified"
+                      ? tw`text-gray-400`
+                      : tw`text-black text-base`,
+                  ]}
                   accessibilityLabel="address input"
                   accessibilityHint="Enter your address"
                 />
