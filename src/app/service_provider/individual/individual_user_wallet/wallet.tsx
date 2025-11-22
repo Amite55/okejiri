@@ -51,6 +51,7 @@ const Wallet_Index = () => {
   const earnedFormatted = earned;
   const referralFormatted = referralBonus;
   const totalBalance = earnedFormatted + referralFormatted;
+  console.log(totalBalance, "total balance");
 
   const [isWithdrawModalVisible, setWithdrawModalVisible] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -175,7 +176,7 @@ const Wallet_Index = () => {
       contentContainerStyle={tw`pb-6 px-5 bg-base_color`}
     >
       <BackTitleButton
-        pageName={"Your wallet ;laksdjf"}
+        pageName={"Your wallet "}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
