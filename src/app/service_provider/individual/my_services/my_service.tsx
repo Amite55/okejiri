@@ -25,7 +25,7 @@ const My_Service = () => {
     userProfileInfo?.data || {};
 
   const [createConnectAccount] = useCreateConnectAccountMutation();
-  const [fetchMyServicePackages, { isFetching }] =
+  const [fetchMyServicePackages, { isFetching, isLoading }] =
     useLazyMy_service_packagesQuery();
 
   const [OnboardingUrl, setOnboardingUrl] = useState<string | null>(null);
@@ -35,7 +35,6 @@ const My_Service = () => {
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const { id } = useLocalSearchParams();
-  console.log(id, "id");
 
   // ======================== LOAD SERVICE PACKAGES ==========================
   const loadServices = async (pageNum = 1, isRefresh = false) => {
@@ -44,7 +43,6 @@ const My_Service = () => {
       if (!isRefresh) setLoadingMore(true);
 
       const res = await fetchMyServicePackages({ pageNum, id }).unwrap();
-      console.log(res, "respos...........");
 
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
@@ -196,6 +194,11 @@ const My_Service = () => {
     );
   }
 
+  //  global loading ==================
+  // if (isLoading) {
+  //   return <ServiceCardSkeleton />;
+  // }
+
   // ======================== MAIN RETURN ==========================
   return (
     <View style={tw`flex-1 bg-base_color`}>
@@ -232,7 +235,7 @@ const My_Service = () => {
                       "/service_provider/individual/my_services/add_package"
                     )
                   }
-                  style={tw`flex-row justify-center items-center gap-2 w-40 h-14 bg-primary rounded-full`}
+                  style={tw`flex-row justify-center items-center gap-2 w-40 h-12 bg-primary rounded-full`}
                 >
                   <SvgXml xml={IconPlus} />
                   <Text
@@ -244,7 +247,7 @@ const My_Service = () => {
               ) : (
                 <TouchableOpacity
                   onPress={handelCannact}
-                  style={tw`flex-row justify-center items-center gap-2 w-40 h-14 bg-primary rounded-full`}
+                  style={tw`flex-row justify-center items-center gap-2 w-40 h-12 bg-primary rounded-full`}
                 >
                   <Text
                     style={tw`font-DegularDisplayDemoMedium text-xl text-white`}

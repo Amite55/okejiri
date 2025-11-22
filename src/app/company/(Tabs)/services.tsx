@@ -45,7 +45,14 @@ const Services = () => {
 
   const serviceItemRender = ({ item }: any) => {
     return (
-      <View
+      <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: "/company/categoryByService",
+            params: { categoryService: item?.name, service_id: item?.id },
+          })
+        }
+        activeOpacity={0.7}
         style={tw`relative justify-center items-center px-2 `}
         key={item?.id}
       >
@@ -80,7 +87,7 @@ const Services = () => {
               })
             }
             style={tw`flex-1 justify-center items-center`}
-            activeOpacity={0.7}
+            // activeOpacity={0.6}
           >
             <Text
               style={tw`font-DegularDisplayDemoMedium text-center text-xl text-white`}
@@ -89,7 +96,7 @@ const Services = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 

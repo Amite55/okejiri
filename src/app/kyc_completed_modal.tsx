@@ -23,7 +23,9 @@ const ExpoModalUserHome = () => {
 
         <View>
           <PrimaryButton
-            onPress={() => router.push("/KYC_auth/id_card")}
+            onPress={() => {
+              router.push("/KYC_auth/id_card");
+            }}
             textStyle={tw`font-DegularDisplayDemoMedium text-xl text-white `}
             contentStyle={tw`bg-primary mt-3 `}
             titleProps="Verify now"
