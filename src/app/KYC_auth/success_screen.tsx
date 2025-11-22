@@ -85,19 +85,11 @@ const Success_Screen = () => {
           >
             Your application is in review
           </Text>
-          <Text
-            style={tw`font-DegularDisplayDemoRegular text-base text-blue-950`}
-          >
-            Thank you for sharing the info. You'll get an email once we're done
-            reviewing.
-          </Text>
           <Text style={tw`font-DegularDisplayDemoMedium text-xl text-blue-950`}>
             Review time: 48 hours
           </Text>
         </View>
       </View>
-
-      {/*  */}
 
       <View>
         <PrimaryButton

@@ -208,7 +208,14 @@ const Account = () => {
         />
         <SettingsCard
           title="Refer a friend"
-          onPress={() => router.push("/company/refer_friend")}
+          onPress={() =>
+            router.push({
+              pathname: "/company/refer_friend",
+              params: {
+                referCode: userProfileInfo?.data?.referral_code,
+              },
+            })
+          }
           fastIcon={IconShare}
         />
         <SettingsCard
