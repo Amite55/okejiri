@@ -294,6 +294,7 @@ const Edit_Package = () => {
 
                 formData.append("service_id", String(id));
                 formData.append("title", values.title);
+                // TODO: 
                 console.log(" ======== values image ========== ", values.image, " ==== ", values.image.uri.startsWith("http"))
                 if (!values.image.uri.startsWith("http")) {
                   formData.append("image", {

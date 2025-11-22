@@ -3,6 +3,7 @@ import {
   IconChatsYellow,
   IconCross,
   IconCrossSolidRed,
+  IconDisputes,
   IconFileUpload,
   IconOrderCancelModalIcon,
   IconPlus,
@@ -345,12 +346,12 @@ const Booking_Service_Details = () => {
                         </Text>
                         {OrderDetailsData?.data?.provider?.kyc_status ===
                           "Verified" && (
-                          <SvgXml
-                            width={15}
-                            height={15}
-                            xml={IconProfileBadge}
-                          />
-                        )}
+                            <SvgXml
+                              width={15}
+                              height={15}
+                              xml={IconProfileBadge}
+                            />
+                          )}
                       </View>
                       <View style={tw`flex-row items-center gap-1`}>
                         <Text
@@ -475,16 +476,16 @@ const Booking_Service_Details = () => {
 
                 {(OrderDetailsData?.data?.status === "New" ||
                   OrderDetailsData?.data?.status === "Pending") && (
-                  <Text
-                    style={tw`font-PoppinsMedium text-lg text-regularText text-center mt-4`}
-                  >
-                    Service provider hasn’t responded yet. Please wait.
-                  </Text>
-                )}
+                    <Text
+                      style={tw`font-PoppinsMedium text-lg text-regularText text-center mt-4`}
+                    >
+                      Service provider hasn’t responded yet. Please wait.
+                    </Text>
+                  )}
 
                 {/* ----------------- if this user is new order ---------------- */}
                 {OrderDetailsData?.data?.status === "New" &&
-                timeDifferenceMs <= thirtyMinutesInMs ? (
+                  timeDifferenceMs <= thirtyMinutesInMs ? (
                   <PrimaryButton
                     onPress={() => setCancelModalVisible(true)}
                     IconFastProps={IconCrossSolidRed}
@@ -494,13 +495,30 @@ const Booking_Service_Details = () => {
                   />
                 ) : null}
                 {OrderDetailsData?.data?.status === "Pending" && (
-                  <PrimaryButton
-                    IconFastProps={IconReportBlack}
-                    titleProps="Report provider"
-                    contentStyle={tw`bg-transparent border border-red-700 gap-1 h-12 mt-4`}
-                    textStyle={tw`text-black`}
-                    onPress={() => handlePresentModalPress()}
-                  />
+                  <View>
+                    <PrimaryButton
+                      IconFastProps={IconReportBlack}
+                      titleProps="Report provider"
+                      contentStyle={tw`bg-transparent border border-red-700 gap-1 h-12 mt-4`}
+                      textStyle={tw`text-black`}
+                      onPress={() => handlePresentModalPress()}
+                    />
+                    <TouchableOpacity
+                      onPress={() => router.push({
+                        pathname: "/company/dispute_process",
+                        params: {
+                          id: id
+                        }
+                      })}
+                      style={tw`py-4 `}
+                    >
+                      <View style={tw`flex-row justify-center gap-2`}>
+                        <SvgXml xml={IconDisputes} />
+                        <Text style={tw`text-center font-DegularDisplayDemoMedium text-xl text-black`}>Request for dispute</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+
                 )}
               </View>
 
