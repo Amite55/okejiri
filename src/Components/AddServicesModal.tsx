@@ -3,13 +3,13 @@
 import { IconCheckBoxChecked, IconCheckBoxUnChecked } from '@/assets/icons';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import tw from '../lib/tailwind';
 import { useAddNewServicesMutation, useGetServicesQuery } from '../redux/apiSlices/companyProvider/account/services/servicesSlice';
 
-export default function AddServicesModal({ ref, exsiting_service = [] }: any) {
+export default function AddServicesModal({ ref, exsiting_service = [], onSuccess  }: any) {
     // const bottomSheetRef = useRef<BottomSheet>(null);
     const snapPoint = useMemo(() => ["50%", "80%"], [])
     const [selectedServices, setSelectedServices] = useState<number[]>([]);
@@ -32,11 +32,16 @@ export default function AddServicesModal({ ref, exsiting_service = [] }: any) {
     //     bottomSheetRef.current?.expand();
     // },[])
 
+    // console.log(" ================ existing service ========== ", JSON.stringify(exsiting_service, null, 2));
+    // console.log(" ================= service to add ================ ", JSON.stringify(serviceToAdd, null, 2));
+    // console.log(" ================== servies ==================== ", JSON.stringify(services, null, 2));
+
     const closeSheet = useCallback(() => {
         ref?.current?.close();
     }, [])
 
     const toggleService = (id: number) => {
+        console.log(" =================== id add service modal ================= ", id)
         setSelectedServices(prev =>
             prev.includes(id) ? prev.filter(sid => sid !== id) : [...prev, id]
         );
@@ -60,8 +65,14 @@ export default function AddServicesModal({ ref, exsiting_service = [] }: any) {
                     addNewService({ service_id: serviceId }).unwrap()
                 )
             );
+            
+            // selectedServices.map(serviceId =>
+            //        console.log("========= selected service id ======= ", serviceId)
+            //  )
 
+            setSelectedServices([])
             setScreenLoading(false);
+            onSuccess?.();
             router.push({ pathname: "/Toaster", params: { res: "Services added successfully" } });
 
             setTimeout(() => {
@@ -80,6 +91,9 @@ export default function AddServicesModal({ ref, exsiting_service = [] }: any) {
             return;
         }
     }
+    useEffect(()=>{
+         setSelectedServices([])
+    },[])
 
     return (
         <BottomSheetModalProvider>

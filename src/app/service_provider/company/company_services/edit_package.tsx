@@ -295,12 +295,12 @@ const Edit_Package = () => {
                 formData.append("service_id", String(id));
                 formData.append("title", values.title);
                 // TODO: 
-                console.log(" ======== values image ========== ", values.image, " ==== ", values.image.uri.startsWith("http"))
+                console.log(" ======== values image ========== ", values.image, " ==== ", values.image)
                 if (!values.image.uri.startsWith("http")) {
                   formData.append("image", {
                     uri: (values.image as any).uri,
-                    name: (values.image as any).name,
-                    type: (values.image as any).type
+                    name: (values.image as any).fileName,
+                    type: (values.image as any).mimeType
                   } as any);
                 }
 
@@ -312,20 +312,20 @@ const Edit_Package = () => {
 
 
                 console.log(" =============== form data ================", JSON.stringify(formData, null, 2));
-                // const response = await editPackage({ id: id, requestBody: formData }).unwrap();
+                const response = await editPackage({ id: id, requestBody: formData }).unwrap();
 
-                // if (response) {
-                //   router.push({
-                //     pathname: "/Toaster",
-                //     params: {
-                //       res: "My service package edited!",
-                //     }
-                //   })
-                //   // ()=> resetForm();
-                //   setTimeout(() => {
-                //     router.back();
-                //   }, 500)
-                // }
+                if (response) {
+                  router.push({
+                    pathname: "/Toaster",
+                    params: {
+                      res: "My service package edited!",
+                    }
+                  })
+                  // ()=> resetForm();
+                  setTimeout(() => {
+                    router.back();
+                  }, 500)
+                }
               } catch (err) {
                 console.log("My service package adding failed", JSON.stringify(err))
                 router.push({
