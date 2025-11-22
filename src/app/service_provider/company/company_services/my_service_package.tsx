@@ -11,7 +11,6 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-
   RefreshControl,
   Text,
   TouchableOpacity,
@@ -36,7 +35,6 @@ const My_Service_Package = () => {
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const { id } = useLocalSearchParams();
-  console.log("my service package service id         ======================  ", id);
 
   // ======================== LOAD SERVICE PACKAGES ==========================
   const loadServices = async (pageNum = 1, isRefresh = false) => {
@@ -44,8 +42,10 @@ const My_Service_Package = () => {
       if ((isFetching || loadingMore) && !isRefresh) return;
       if (!isRefresh) setLoadingMore(true);
 
-      const res = await fetchMyServicePackages({ pageNum, service_id: id }).unwrap();
-      console.log("respos...........", JSON.stringify(res, null, 2));
+      const res = await fetchMyServicePackages({
+        pageNum,
+        service_id: id,
+      }).unwrap();
 
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
@@ -106,15 +106,13 @@ const My_Service_Package = () => {
 
   // ======================== RENDER SERVICE ITEM ==========================
   const renderServiceItem = ({ item }: any) => {
-    console.log(" ============== image address ====================== ", item?.image)
     return (
-
       <View style={tw`bg-white p-4 rounded-2xl mb-4`}>
         {/* Image */}
         <View style={tw`justify-center items-center`}>
           <Image
             style={tw`h-44 w-[98%] rounded-2xl`}
-            source={item?.image }
+            source={item?.image}
             contentFit="cover"
           />
         </View>
@@ -130,10 +128,11 @@ const My_Service_Package = () => {
           <TouchableOpacity
             onPress={() =>
               router.push({
-                pathname: "/service_provider/company/company_services/edit_package",
+                pathname:
+                  "/service_provider/company/company_services/edit_package",
                 params: {
-                  id: item.id
-                }
+                  id: item.id,
+                },
               })
             }
             style={tw`p-2`}
@@ -188,8 +187,7 @@ const My_Service_Package = () => {
         </View>
       </View>
     );
-
-  }
+  };
 
   // ======================== WEBVIEW ==========================
   if (OnboardingUrl) {
@@ -210,11 +208,6 @@ const My_Service_Package = () => {
       </View>
     );
   }
-
-
-  //  ================= test console;
-  // console.log("==================== services  ========================= ", JSON.stringify(serviceData, null, 2))
-
 
   // ======================== MAIN RETURN ==========================
   return (
@@ -249,10 +242,11 @@ const My_Service_Package = () => {
                 <TouchableOpacity
                   onPress={() =>
                     router.push({
-                      pathname: "/service_provider/company/company_services/add_package",
+                      pathname:
+                        "/service_provider/company/company_services/add_package",
                       params: {
-                        id: id
-                      }
+                        id: id,
+                      },
                     })
                   }
                   style={tw`flex-row justify-center items-center gap-2 px-6 py-2 bg-primary rounded-full`}
