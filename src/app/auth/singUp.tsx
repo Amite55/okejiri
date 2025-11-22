@@ -2,7 +2,6 @@ import {
   IconBackLeftArrow,
   IconEyeClose,
   IconEyeShow,
-  IconGoogle,
   IconRightArrow,
 } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
@@ -325,13 +324,13 @@ const SingUp = () => {
                   <View style={tw`flex-1 h-px bg-gray-500`} />
                 </View>
 
-                <View style={tw`justify-center items-center`}>
+                {/* <View style={tw`justify-center items-center`}>
                   <TouchableOpacity
                     style={tw`w-14 h-14 bg-white rounded-full justify-center items-center `}
                   >
                     <SvgXml xml={IconGoogle} />
                   </TouchableOpacity>
-                </View>
+                </View> */}
               </View>
             )}
           </Formik>
