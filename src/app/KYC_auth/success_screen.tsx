@@ -4,6 +4,7 @@ import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { router } from "expo-router";
 import React from "react";
 import { Image, ScrollView, Text, View } from "react-native";
@@ -11,6 +12,12 @@ import { Image, ScrollView, Text, View } from "react-native";
 const Success_Screen = () => {
   const roll = useRoll();
   const providerTypes = useProviderTypes();
+
+  const {
+    data: userProfileInfo,
+    isLoading,
+    error,
+  } = useProfileQuery({}, { refetchOnMountOrArgChange: true });
 
   const handleRouting = () => {
     if (roll === "USER") {
@@ -50,13 +57,16 @@ const Success_Screen = () => {
           <Text
             style={tw`font-DegularDisplayDemoSemibold text-4xl text-blue-950 mt-3`}
           >
-            John Smith
+            {userProfileInfo?.data?.role === "PROVIDER" &&
+            userProfileInfo?.data?.provider_type === "Company"
+              ? userProfileInfo?.data?.company?.company_name
+              : userProfileInfo?.data?.name}
           </Text>
 
           <Text
             style={tw`font-DegularDisplayDemoMedium text-2xl text-blue-950`}
           >
-            example@gmail.com
+            {userProfileInfo?.data?.email}
           </Text>
           <View
             style={tw`w-32 h-8 rounded-xl bg-secondary justify-center items-center mt-2`}
