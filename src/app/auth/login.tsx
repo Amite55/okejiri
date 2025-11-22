@@ -1,4 +1,4 @@
-import { IconEyeClose, IconEyeShow, IconGoogle } from "@/assets/icons";
+import { IconEyeClose, IconEyeShow } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
 import { useProviderTypes } from "@/src/hooks/useProviderTypes";
@@ -41,13 +41,13 @@ const LoginIndex = () => {
 
   // ----------------- handel login ---------------------
   const handleLogin = async (formData: any) => {
-    Keyboard.dismiss();
-    const payload = {
-      ...formData,
-      role: roll,
-      provider_type: providerTypes ? providerTypes : "",
-    };
     try {
+      Keyboard.dismiss();
+      const payload = {
+        ...formData,
+        role: roll,
+        provider_type: providerTypes ? providerTypes : "",
+      };
       if (roll === "USER") {
         delete payload.provider_type;
         const res = await credentials(payload).unwrap();
@@ -107,12 +107,12 @@ const LoginIndex = () => {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "login fail -----");
       router.push({
         pathname: `/Toaster`,
         params: {
-          res: error?.message || error || "Login Fail Please Try Again",
+          res: error?.message || "Login Fail Please Try Again",
         },
       });
       if (error?.metadata?.redirect_verification === true) {
@@ -237,7 +237,7 @@ const LoginIndex = () => {
                 >
                   <TextInput
                     secureTextEntry={isVisible}
-                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    style={tw`flex-1 text-base font-PoppinsMedium text-black`}
                     placeholderTextColor="#777777"
                     placeholder="Enter your password"
                     value={values.password}
@@ -320,13 +320,13 @@ const LoginIndex = () => {
                   <View style={tw`flex-1 h-px bg-gray-500`} />
                 </View>
 
-                <View style={tw`justify-center items-center`}>
+                {/* <View style={tw`justify-center items-center`}>
                   <TouchableOpacity
                     style={tw`w-14 h-14 bg-white rounded-full justify-center items-center `}
                   >
                     <SvgXml xml={IconGoogle} />
                   </TouchableOpacity>
-                </View>
+                </View> */}
               </View>
             )}
           </Formik>

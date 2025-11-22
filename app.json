@@ -9,14 +9,20 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yxltechnology.between",
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
     },
     "android": {
+      "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/appAndroidIcon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.anonymous.okejiriMobileApp"
     },
     "web": {
@@ -49,7 +55,6 @@
           "recordAudioAndroid": true
         }
       ],
-
       [
         "expo-camera",
         {
@@ -57,7 +62,15 @@
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": true
         }
+      ],[
+         "expo-build-properties",
+         {
+           "android": {
+            "usesCleartextTraffic": true
+           }
+         }
       ]
+     
     ],
     "experiments": {
       "typedRoutes": true
