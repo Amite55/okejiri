@@ -30,18 +30,20 @@ const CategoryByService = () => {
   return (
     <FlatList
       data={PackagesByServiceData?.data?.packages}
-      renderItem={({ item, index }: any) => (
-        <ServiceCard
-          item={item}
-          index={index}
-          onPress={() =>
-            router.push({
-              pathname: "/company/serviceDetails",
-              params: { service_id: item?.id },
-            })
-          }
-        />
-      )}
+      renderItem={({ item, index }: any) => {
+        return (
+          <ServiceCard
+            item={item}
+            index={index}
+            onPress={() =>
+              router.push({
+                pathname: "/company/serviceDetails",
+                params: { id: item?.id },
+              })
+            }
+          />
+        );
+      }}
       ListHeaderComponent={() => (
         <BackTitleButton
           pageName={categoryService ? categoryService : "Services "}
