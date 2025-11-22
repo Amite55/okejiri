@@ -48,7 +48,7 @@ const Dispute_Process: React.FC = () => {
   const [images, setImages] = useState<any>(null);
   const [explanation, setExplanation] = useState<string>("");
   const { id } = useLocalSearchParams<{ id: string }>();
-  console.log(id, "thi is id --------------------->");
+  // console.log(id, "dispute screen order id --------------------->");
 
   //    ============== api end point -------------------------
   const [addDispute, { isLoading, isError, error }] = useAddDisputeMutation();
@@ -102,6 +102,7 @@ const Dispute_Process: React.FC = () => {
 
 
       const response = await addDispute(formData).unwrap();
+      console.log(" ============== reponse ========== ", response )
       if (response) {
         router.push({
           pathname: "/Toaster",
@@ -115,14 +116,14 @@ const Dispute_Process: React.FC = () => {
       console.log("error ", err, " isError ", isError, " error ", error);
       router.push({
         pathname: "/Toaster",
-        params: { res: err?.message || err },
+        params: { res: err?.message || "Dispute processing failed" },
       });
     }
   };
 
   return (
     <KeyboardAvoidingView
-      style={tw`flex-1`}
+      style={tw`flex-1 bg-base_color`}
       behavior={Platform.OS === "ios" ? "padding" : "position"} // iOS/Android different behavior
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -120}
     >
