@@ -1,4 +1,4 @@
-import { IconEditPenBlack, IconRightArrow } from "@/assets/icons";
+import { IconRightArrow } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import { useProviderTypes } from "@/src/hooks/useProviderTypes";
@@ -8,9 +8,7 @@ import { useCompleteKYCMutation } from "@/src/redux/apiSlices/personalizationSli
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
-import { SvgXml } from "react-native-svg";
+import { ScrollView, Text, View } from "react-native";
 
 const KYC_Confirmation = () => {
   const { fastPhotoUri, secondPhotoUri, selfiePhotoUri } =
@@ -21,7 +19,7 @@ const KYC_Confirmation = () => {
   const secondPhotoUriPerse = secondPhotoUri && JSON.parse(secondPhotoUri);
 
   // ================= api end point =================
-  const [sendKYC] = useCompleteKYCMutation();
+  const [sendKYC, { isLoading }] = useCompleteKYCMutation();
 
   const handleSubmitKYCProcess = async () => {
     try {
@@ -95,16 +93,16 @@ const KYC_Confirmation = () => {
         </View>
 
         <View style={tw`my-4 gap-4`}>
-          {providerTypes && (
+          {/* {providerTypes && (
             <View
               style={tw`border border-gray-300 rounded-full h-14 flex-row justify-between items-center px-4`}
             >
-              <TextInput style={tw`flex-1`} placeholder="Provider type" />
+              <TextInput style={tw`flex-1 text-black `} placeholder="Provider type" />
               <TouchableOpacity>
                 <SvgXml xml={IconEditPenBlack} />
               </TouchableOpacity>
             </View>
-          )}
+          )} */}
 
           <View style={tw`gap-4 justify-center items-center`}>
             <Image
@@ -128,8 +126,7 @@ const KYC_Confirmation = () => {
           onPress={() => {
             handleSubmitKYCProcess();
           }}
-          //   onPress={() => setModalVisible(true)}
-          titleProps="Submit  "
+          titleProps={isLoading ? "Loading..." : "Submit"}
           IconProps={IconRightArrow}
           contentStyle={tw`mt-4`}
         />

@@ -14,7 +14,7 @@ const Wallet_Layout = () => {
         }}
       >
         <Stack.Screen name="wallet" />
-        <Stack.Screen name="transfer_balance" />
+        {/* <Stack.Screen name="transfer_balance" /> */}
       </Stack>
     </View>
   );

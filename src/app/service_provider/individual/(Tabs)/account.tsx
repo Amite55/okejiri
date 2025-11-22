@@ -79,6 +79,7 @@ const Account = () => {
         await AsyncStorage.setItem("roll", res?.data?.user?.role);
         await AsyncStorage.removeItem("providerTypes");
         router.replace("/auth/contact");
+        // router.dismiss();
       }
     } catch (error) {
       console.log(error, "role not switched");
@@ -178,7 +179,7 @@ const Account = () => {
           title=" My services"
           onPress={() =>
             router.push(
-               "/service_provider/company/company_services/my_services"
+              "/service_provider/company/company_services/my_services"
             )
           }
           fastIcon={IconMyService}

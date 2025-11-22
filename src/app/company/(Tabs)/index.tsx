@@ -49,7 +49,17 @@ const Company_Home_Index = () => {
 
   const serviceItemRender = ({ item }) => {
     return (
-      <View style={tw`relative justify-center items-center`} key={item?.id}>
+      <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: "/company/categoryByService",
+            params: { categoryService: item?.name, service_id: item?.id },
+          })
+        }
+        activeOpacity={0.7}
+        style={tw`relative justify-center items-center`}
+        key={item?.id}
+      >
         <Image
           contentFit="cover"
           style={tw`w-44 h-40 rounded-lg `}
@@ -90,7 +100,7 @@ const Company_Home_Index = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
   // ================ this is skeleton loader ===================
