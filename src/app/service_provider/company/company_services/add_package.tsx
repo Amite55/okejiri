@@ -299,8 +299,8 @@ const Add_Package = () => {
                 formData.append("title", values.title);
                 formData.append("image", {
                   uri: (values.image as any).uri,
-                  name: (values.image as any).name || "photo.jpg",
-                  type: (values.image as any).type || "image/jpeg"
+                  name: (values.image as any).fileName || "photo.jpg",
+                  type: (values.image as any).mimeType || "image/jpeg"
                 } as any);
                 formData.append("price", values.price);
                 formData.append("delivery_time", delivery_time);

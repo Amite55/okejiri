@@ -103,6 +103,7 @@ const My_Service = () => {
     try {
       const response = await deleteMyService(id).unwrap();
       if (response) {
+        handleAddSuccess();
         router.push({
           pathname: "/Toaster",
           params: {
@@ -119,6 +120,14 @@ const My_Service = () => {
     bottomSheetRef.current?.present();
   };
 
+  const handleAddSuccess = () => {
+    loadServices(1, true);  // refresh after adding new service
+  };
+
+
+
+
+
   // ======================== RENDER SERVICE ITEM ==========================
   const renderServiceItem = (item: any) => {
     return (
@@ -131,12 +140,14 @@ const My_Service = () => {
             />
             {/* <Image source={{ uri: item.}} /> */}
           </View>
+
           <TouchableOpacity
             onPress={() => handleServiceDelete(item.id)}
             style={tw`p-2 bg-black/20 absolute right-3 top-3 rounded-lg`}
           >
             <SvgXml xml={IconDustBin} />
           </TouchableOpacity>
+
           <TouchableOpacity
             onPress={() =>
               router.push({
@@ -268,7 +279,7 @@ const My_Service = () => {
         </TouchableOpacity>
       </View>
 
-      <AddServicesModal ref={bottomSheetRef} exsiting_service={services} />
+      <AddServicesModal ref={bottomSheetRef} exsiting_service={services} onSuccess={handleAddSuccess}/>
     </View>
   );
 };
