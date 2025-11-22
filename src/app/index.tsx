@@ -32,7 +32,6 @@ export default function Index() {
         PoppinsThinItalic: require("@/assets/fonts/Poppins/Poppins-ThinItalic.ttf"),
 
         // ------------------- fonts degular display --------------------------
-
         DegularDisplayBlack: require("@/assets/fonts/degular/fonnts.com-DegularDisplayDemo-Black.otf"),
         DegularDisplayDemoBlackItalic: require("@/assets/fonts/degular/fonnts.com-DegularDisplayDemo-BlackItalic.otf"),
         DegularDisplayDemoBold: require("@/assets/fonts/degular/fonnts.com-DegularDisplayDemo-Bold.otf"),
@@ -79,8 +78,18 @@ export default function Index() {
         if (role === "PROVIDER") {
           if (type === "Individual") {
             router.replace("/service_provider/individual/(Tabs)/home");
+            if (userProfileInfo?.data?.kyc_status === "Unverified") {
+              setTimeout(() => {
+                router.push("/kyc_completed_modal");
+              }, 500);
+            }
           } else if (type === "Company") {
             router.replace("/service_provider/company/home");
+            if (userProfileInfo?.data?.kyc_status === "Unverified") {
+              setTimeout(() => {
+                router.push("/kyc_completed_modal");
+              }, 500);
+            }
           }
         }
       } catch (e) {

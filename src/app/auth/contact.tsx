@@ -97,7 +97,7 @@ const Contact = () => {
         // ------------ redirect ---------------------
         if (res?.status === "success") {
           router.replace("/company/(Tabs)");
-          if (getProfileData?.data?.kyc_status === "Unverified") {
+          if (res?.data?.kyc_status === "Unverified") {
             setTimeout(() => {
               router.push("/kyc_completed_modal");
             }, 500);
