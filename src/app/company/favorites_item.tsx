@@ -74,7 +74,7 @@ const Favorites_Item = () => {
   const renderFooter = () => {
     if (!isLoadingMore) return null;
     return (
-      <View style={tw`py-4 flex items-center`}>
+      <View style={tw`py-4  flex-1 bg-base_color items-center`}>
         <ActivityIndicator size="small" color={tw.color("primary")} />
         <Text style={tw`text-gray-500 mt-2`}>Loading more favorites...</Text>
       </View>
@@ -103,49 +103,41 @@ const Favorites_Item = () => {
   }
 
   return (
-    <View style={tw`flex-1 bg-base_color`}>
-      <FlatList
-        data={favorites}
-        renderItem={({ item }: any) => {
-          // console.log(item?.package?.service?.id, "this is item ------------");
-          return (
-            <ServiceCard
-              item={item?.package}
-              index={item?.id}
-              onPress={
-                () =>
-                  router.push({
-                    pathname: "/company/serviceDetails",
-                    params: { service_id: item?.package?.service?.id },
-                  })
-                // router.push({
-                //   pathname:
-                //     "/company/previous_item_Book/previous_booking_confirmation",
-                //   params: { id: item?.id },
-                // })
-              }
-            />
-          );
-        }}
-        ListHeaderComponent={() => (
-          <BackTitleButton
-            pageName={"Favorites"}
-            onPress={() => router.back()}
-            titleTextStyle={tw`text-xl`}
+    <FlatList
+      data={favorites}
+      renderItem={({ item }: any) => {
+        return (
+          <ServiceCard
+            item={item?.package}
+            index={item?.id}
+            onPress={() =>
+              router.push({
+                pathname: "/company/serviceDetails",
+                params: { id: item?.id },
+              })
+            }
           />
-        )}
-        ListFooterComponent={renderFooter}
-        ListEmptyComponent={!isLoading ? renderEmpty : null}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={tw`bg-base_color flex-1 px-5 gap-3 pb-10 `}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        refreshing={isRefreshing}
-        onRefresh={handleRefresh}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-      />
-    </View>
+        );
+      }}
+      ListHeaderComponent={() => (
+        <BackTitleButton
+          pageName={"Favorites"}
+          onPress={() => router.back()}
+          titleTextStyle={tw`text-xl`}
+        />
+      )}
+      ListFooterComponent={renderFooter}
+      ListEmptyComponent={!isLoading ? renderEmpty : null}
+      keyExtractor={(item) => item.id.toString()}
+      contentContainerStyle={tw` px-5 gap-3 pb-10 `}
+      style={tw`flex-1 bg-base_color`}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+      refreshing={isRefreshing}
+      onRefresh={handleRefresh}
+      onEndReached={handleLoadMore}
+      onEndReachedThreshold={0.5}
+    />
   );
 };
 

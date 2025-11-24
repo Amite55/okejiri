@@ -146,7 +146,7 @@ const Dispute_Appeal = () => {
                   Your explanation
                 </Text>
                 <TextInput
-                  style={styles.textArea}
+                  style={[styles.textArea, tw`text-black`]}
                   multiline={true}
                   numberOfLines={4}
                   placeholder="Type here"

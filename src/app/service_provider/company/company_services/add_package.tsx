@@ -1,11 +1,18 @@
-import { IconDeleteRed, IconEditPenBlack, IconPlusYellow, IconRightArrowBlack, IconUploadImage, IconWatch } from "@/assets/icons";
+import {
+  IconDeleteRed,
+  IconEditPenBlack,
+  IconPlusYellow,
+  IconRightArrowBlack,
+  IconUploadImage,
+  IconWatch,
+} from "@/assets/icons";
 import CustomTimeModal from "@/src/Components/CustomTimeModal";
 import DeliveryTimeModal from "@/src/Components/DeliveryTimeModal";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useMyServicePackageMutation } from "@/src/redux/apiSlices/companyProvider/account/services/packages/packageSlice";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
@@ -14,7 +21,6 @@ import React, { useRef, useState } from "react";
 // import { format } from "date-fns";
 import {
   ActivityIndicator,
-
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -28,7 +34,6 @@ import {
   View,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
-
 
 // ------------------ static dropdown value -----------------
 const dropdownData = [
@@ -46,7 +51,7 @@ type PackageFormValues = {
   available_time_from: string[];
   available_time_to: string[];
   delivery_time: string;
-}
+};
 const Add_Package = () => {
   const { id } = useLocalSearchParams();
 
@@ -58,12 +63,14 @@ const Add_Package = () => {
   const customModalRef = useRef<BottomSheetModal>(null);
   const [delivery_time, setDelivery_time] = useState<string>("");
   // ========================== api ========================= //
-  const [myServicePackage, {
-    isError: isErrorMyServicePackage,
-    isLoading: isLoadingMyServicePackage,
-    error: errorMyServicePackage
-  }] = useMyServicePackageMutation();
-
+  const [
+    myServicePackage,
+    {
+      isError: isErrorMyServicePackage,
+      isLoading: isLoadingMyServicePackage,
+      error: errorMyServicePackage,
+    },
+  ] = useMyServicePackageMutation();
 
   // ===================== validation ==========================
   const validation = (values: any) => {
@@ -71,12 +78,12 @@ const Add_Package = () => {
 
     if (!values.image) errors.image = "Service package image is required";
     if (!values.title) errors.title = "Title is required";
-    else if (values.title < 3) errors.title = "Title must be at least 3 letters";
+    else if (values.title < 3)
+      errors.title = "Title must be at least 3 letters";
 
     if (!values.price) {
       errors.price = "Service package price is required";
-    }
-    else if (values.price === 0) {
+    } else if (values.price === 0) {
       errors.price = "Service package price must be greater then 0";
     }
 
@@ -94,12 +101,8 @@ const Add_Package = () => {
       errors.delivery_time = "Delivery time is required";
     }
 
-
-
-
-
     return errors;
-  }
+  };
 
   // =========================== Image picker ============================ //
   // ---------------------- IMAGE PICKER -------------------------
@@ -139,15 +142,13 @@ const Add_Package = () => {
     }
   };
 
-
-
   //    ---------------- date picker -----------
 
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
   const [currentTimeIndex, setCurrentTimeIndex] = useState<number>(0);
-  const [editingField, setEditingField] = useState<"from" | "to">("from")
+  const [editingField, setEditingField] = useState<"from" | "to">("from");
 
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate;
@@ -179,7 +180,7 @@ const Add_Package = () => {
     const minutesStr = minutes.toString().padStart(2, "0");
 
     return `${hoursStr}:${minutesStr} ${ampm}`;
-  }
+  };
   function convertTo24Hour(time12h: string) {
     const [time, modifier] = time12h.split(" ");
     let [hours, minutes] = time.split(":").map(Number);
@@ -187,7 +188,9 @@ const Add_Package = () => {
     if (modifier === "PM" && hours !== 12) hours += 12;
     if (modifier === "AM" && hours === 12) hours = 0;
 
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:00`;
   }
   const isTimeGreater = (t1: any, t2: any) => {
     const d1 = new Date(`1970-01-01T${t1}`);
@@ -198,21 +201,20 @@ const Add_Package = () => {
   const openFixedModal = () => {
     setModalType("fixed");
     fixedModalRef.current?.present();
-  }
+  };
   const openCustomModal = () => {
     setModalType("custom");
     customModalRef.current?.present();
-  }
+  };
 
   const closeAllModal = () => {
     setModalType(null);
     fixedModalRef.current?.dismiss();
     customModalRef.current?.dismiss();
-  }
+  };
   const closeCustomModal = () => {
     customModalRef.current?.dismiss();
-  }
-
+  };
 
   return (
     // <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -221,9 +223,7 @@ const Add_Package = () => {
       behavior={Platform.OS === "ios" ? "padding" : "position"} // iOS/Android different behavior
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -120}
     >
-      <TouchableWithoutFeedback
-        onPress={Keyboard.dismiss} accessible={false}
-      >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
@@ -238,7 +238,7 @@ const Add_Package = () => {
           />
 
           {/* ------------------ Image upload ------------------ */}
-          <Formik <PackageFormValues>
+          <Formik<PackageFormValues>
             initialValues={{
               image: "",
               title: "",
@@ -250,29 +250,45 @@ const Add_Package = () => {
               delivery_time: "",
             }}
             onSubmit={async (values) => {
-              if (!id || !delivery_time || !values.image || !values.title || values.service_details.length === 0 || !values.available_time_from || !values.available_time_to) {
+              if (
+                !id ||
+                !delivery_time ||
+                !values.image ||
+                !values.title ||
+                values.service_details.length === 0 ||
+                !values.available_time_from ||
+                !values.available_time_to
+              ) {
                 router.push({
                   pathname: "/Toaster",
                   params: {
-                    res: "Fill up all required fields"
-                  }
-                })
+                    res: "Fill up all required fields",
+                  },
+                });
                 return;
               }
-              const pairedTimes = values.available_time_from.map((from, index) => ({
-                from: from?.trim() || "",
-                to: values.available_time_to[index]?.trim() || ""
-              }));
+              const pairedTimes = values.available_time_from.map(
+                (from, index) => ({
+                  from: from?.trim() || "",
+                  to: values.available_time_to[index]?.trim() || "",
+                })
+              );
 
-              const validTime = pairedTimes.filter(x => x.from && x.to);
+              const validTime = pairedTimes.filter((x) => x.from && x.to);
 
               // Check that each "from" is before its corresponding "to"
-              const invalidTimeIndex = validTime.findIndex(x => new Date(`1970-01-01T${x.from}`) >= new Date(`1970-01-01T${x.to}`));
+              const invalidTimeIndex = validTime.findIndex(
+                (x) =>
+                  new Date(`1970-01-01T${x.from}`) >=
+                  new Date(`1970-01-01T${x.to}`)
+              );
 
               if (validTime.length === 0) {
                 router.push({
                   pathname: "/Toaster",
-                  params: { res: "Please add at least one valid available time range" }
+                  params: {
+                    res: "Please add at least one valid available time range",
+                  },
                 });
                 return;
               }
@@ -280,17 +296,17 @@ const Add_Package = () => {
               if (invalidTimeIndex !== -1) {
                 router.push({
                   pathname: "/Toaster",
-                  params: { res: `Available time range #${invalidTimeIndex + 1} is invalid. "To" must be after "From"` }
+                  params: {
+                    res: `Available time range #${
+                      invalidTimeIndex + 1
+                    } is invalid. "To" must be after "From"`,
+                  },
                 });
                 return;
               }
 
-              const final_available_time_from = validTime.map(x => x.from);
-              const final_available_time_to = validTime.map(x => x.to);
-
-
-
-
+              const final_available_time_from = validTime.map((x) => x.from);
+              const final_available_time_to = validTime.map((x) => x.to);
 
               try {
                 const formData = new FormData();
@@ -300,26 +316,31 @@ const Add_Package = () => {
                 formData.append("image", {
                   uri: (values.image as any).uri,
                   name: (values.image as any).fileName || "photo.jpg",
-                  type: (values.image as any).mimeType || "image/jpeg"
+                  type: (values.image as any).mimeType || "image/jpeg",
                 } as any);
                 formData.append("price", values.price);
                 formData.append("delivery_time", delivery_time);
-
 
                 values.service_details.forEach((item, index) => {
                   formData.append(`service_details[${index}]`, item);
                 });
 
-                const normalizeTime = (time: string) => time.replace(/\u202F/g, " ");
+                const normalizeTime = (time: string) =>
+                  time.replace(/\u202F/g, " ");
 
                 final_available_time_from.forEach((from, index) => {
-                  formData.append(`available_time_from[${index}]`, normalizeTime(from));
+                  formData.append(
+                    `available_time_from[${index}]`,
+                    normalizeTime(from)
+                  );
                 });
 
                 final_available_time_to.forEach((to, index) => {
-                  formData.append(`available_time_to[${index}]`, normalizeTime(to));
+                  formData.append(
+                    `available_time_to[${index}]`,
+                    normalizeTime(to)
+                  );
                 });
-
 
                 // console.log(" =============== form data ================", JSON.stringify(formData, null, 2));
                 const response = await myServicePackage(formData).unwrap();
@@ -329,31 +350,38 @@ const Add_Package = () => {
                     pathname: "/Toaster",
                     params: {
                       res: "My service package added!",
-                    }
-                  })
+                    },
+                  });
                   setTimeout(() => {
-                  router.back();
-                }, 500)
+                    router.back();
+                  }, 500);
                   // ()=> resetForm();
-
                 }
                 setTimeout(() => {
                   router.back();
-                }, 200)
+                }, 200);
               } catch (err) {
                 router.push({
                   pathname: "/Toaster",
                   params: {
                     res: "My service package added Failed!",
-                  }
-                })
-                console.log("My service package adding failed", err)
+                  },
+                });
+                console.log("My service package adding failed", err);
               }
-              console.log("Pressed ")
+              console.log("Pressed ");
             }}
-
           >
-            {({ handleChange, errors, touched, setFieldTouched, setFieldValue, values, handleSubmit, resetForm }) => (
+            {({
+              handleChange,
+              errors,
+              touched,
+              setFieldTouched,
+              setFieldValue,
+              values,
+              handleSubmit,
+              resetForm,
+            }) => (
               <View>
                 <Pressable
                   onPress={() => pickImage(setFieldValue, setFieldTouched)}
@@ -365,31 +393,37 @@ const Add_Package = () => {
                       style={tw`h-32 w-32 rounded-3xl`}
                       contentFit="cover"
                     />
-                  ) :
+                  ) : (
                     <View>
                       <SvgXml xml={IconUploadImage} />
                       {/* <Text>Upload Files</Text> */}
                     </View>
-                  }
-                  {errors.image && touched.image && !values.image ?
-                    <Text style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}>
+                  )}
+                  {errors.image && touched.image && !values.image ? (
+                    <Text
+                      style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}
+                    >
                       {errors.image}
-                    </Text> :
-                    <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
-                      {!errors.image && values.image ? "Uploaded" : "Upload"} Service Package image
                     </Text>
-                  }
+                  ) : (
+                    <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
+                      {!errors.image && values.image ? "Uploaded" : "Upload"}{" "}
+                      Service Package image
+                    </Text>
+                  )}
 
-                  {!values.image &&
+                  {!values.image && (
                     <TouchableOpacity
                       onPress={() => pickImage(setFieldValue, setFieldTouched)}
                       style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
                     >
-                      <Text style={tw`font-DegularDisplayDemoRegular text-xl text-white`}>
+                      <Text
+                        style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
+                      >
                         Browse
                       </Text>
                     </TouchableOpacity>
-                  }
+                  )}
                 </Pressable>
 
                 {/*  ---------- message explanation --------------- */}
@@ -402,87 +436,103 @@ const Add_Package = () => {
                   </Text>
                   <TextInput
                     textAlign="left"
-                    style={tw`border border-gray-300 h-14 rounded-full px-4 justify-center items-center`}
+                    style={tw`border text-black border-gray-300 h-14 rounded-full px-4 justify-center items-center`}
                     placeholder="Service title goes here"
                     value={values.title}
                     onChangeText={handleChange("title")}
                     placeholderTextColor={"#535353"}
-                  // value={}
-                  // textAlignVertical="top"
+                    // value={}
+                    // textAlignVertical="top"
                   />
                 </View>
-
 
                 {/* ========== Service details */}
                 <View>
                   <View style={tw`py-2 px-2`}>
-                    <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
+                    <Text
+                      style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
+                    >
                       Service details
                     </Text>
                   </View>
 
                   <FieldArray
                     name="service_details"
-
                     render={(arrayHelper) => {
                       return (
-                        <View style={tw`border border-gray-300 rounded-3xl p-5 gap-3`}>
-                          <View style={tw`flex-row justify-between items-center`}>
+                        <View
+                          style={tw`border border-gray-300 rounded-3xl p-5 gap-3`}
+                        >
+                          <View
+                            style={tw`flex-row justify-between items-center`}
+                          >
                             <TextInput
                               placeholder="Type here"
                               placeholderTextColor={"#535353"}
                               value={values.temp_service_input}
-                              onChangeText={(text) => setFieldValue("temp_service_input", text)}
-                              style={tw`flex-1 mr-3`}
+                              onChangeText={(text) =>
+                                setFieldValue("temp_service_input", text)
+                              }
+                              style={tw`flex-1 mr-3 text-black`}
                             />
                             <TouchableOpacity
                               style={tw`w-11 h-11 rounded-full border border-gray-300 justify-center items-center`}
                               onPress={() => {
                                 Keyboard.dismiss();
-                                const serviceInput = (values.temp_service_input ?? "").toString();
+                                const serviceInput = (
+                                  values.temp_service_input ?? ""
+                                ).toString();
                                 // console.log(" ========== service input ============ ", JSON.stringify(serviceInput, null, 2))
                                 if (!serviceInput.trim()) {
                                   router.push({
                                     pathname: "/Toaster",
                                     params: {
-                                      res: "Add service package details"
-                                    }
-                                  })
+                                      res: "Add service package details",
+                                    },
+                                  });
                                   return;
                                 }
-                                arrayHelper.push(serviceInput.trim())
-                                setFieldValue("temp_service_input", "")
-                                setFieldTouched("service_details", true)
-
+                                arrayHelper.push(serviceInput.trim());
+                                setFieldValue("temp_service_input", "");
+                                setFieldTouched("service_details", true);
                               }}
                             >
                               <SvgXml xml={IconPlusYellow} />
                             </TouchableOpacity>
                           </View>
                           {/* vaildation error */}
-                          {errors.service_details && touched.service_details && (
-                            <Text style={tw`text-redDeep font-DegularDisplayDemoRegular`}>
-                              {errors.service_details}
-                            </Text>
-                          )}
-                          {/* render item for service details */}
-                          {values.service_details.length > 0 && values.service_details.map((item, index) => (
-                            <View
-                              key={index}
-                              style={tw`flex-row justify-between items-center`}
-                            >
-                              <View style={tw`flex-row items-center gap-2`}>
-                                <View style={tw`w-2 h-2 bg-black rounded-xl`} />
-                                <Text style={tw`text-base font-DegularDisplayDemoRegular pb-1`}>{item}</Text>
-                              </View>
-                              <TouchableOpacity
-                                onPress={() => arrayHelper.remove(index)}
+                          {errors.service_details &&
+                            touched.service_details && (
+                              <Text
+                                style={tw`text-redDeep font-DegularDisplayDemoRegular`}
                               >
-                                <SvgXml xml={IconDeleteRed} />
-                              </TouchableOpacity>
-                            </View>
-                          ))
-                          }
+                                {errors.service_details}
+                              </Text>
+                            )}
+                          {/* render item for service details */}
+                          {values.service_details.length > 0 &&
+                            values.service_details.map((item, index) => (
+                              <View
+                                key={index}
+                                style={tw`flex-row justify-between items-center`}
+                              >
+                                <View style={tw`flex-row items-center gap-2`}>
+                                  <View
+                                    style={tw`w-2 h-2 bg-black rounded-xl`}
+                                  />
+                                  <Text
+                                    style={tw`text-base font-DegularDisplayDemoRegular pb-1`}
+                                  >
+                                    {item}
+                                  </Text>
+                                </View>
+                                <TouchableOpacity
+                                  onPress={() => arrayHelper.remove(index)}
+                                >
+                                  <SvgXml xml={IconDeleteRed} />
+                                </TouchableOpacity>
+                              </View>
+                            ))}
 
                           {/* <View style={tw`flex-row justify-between items-center`}>
                             <View style={tw`flex-row items-center gap-2`}>
@@ -514,12 +564,9 @@ const Add_Package = () => {
                             </TouchableOpacity>
                           </View> */}
                         </View>
-                      )
+                      );
                     }}
                   />
-
-
-
                 </View>
 
                 <View style={tw`py-2`}>
@@ -532,14 +579,14 @@ const Add_Package = () => {
                     style={tw`border  border-gray-300 h-14 rounded-full px-4 flex-row justify-between items-center`}
                   >
                     <TextInput
-                      style={tw`flex-1`}
+                      style={tw`flex-1 text-black`}
                       placeholder="0.0"
                       value={values.price}
                       onChangeText={handleChange("price")}
                       placeholderTextColor={"#000"}
                       keyboardType="numeric"
-                    // value={}
-                    // textAlignVertical="top"
+                      // value={}
+                      // textAlignVertical="top"
                     />
                     <Text
                       style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
@@ -558,13 +605,18 @@ const Add_Package = () => {
                     Delivery time
                   </Text>
                   <TouchableOpacity onPress={openFixedModal}>
-                    <View style={tw`border  border-gray-300 rounded-full py-3 px-4 flex-row justify-between items-center`}>
-                      <Text style={tw`font-DegularDisplayDemoRegular text-lg pb-1`}>{delivery_time || "Delivery time"}{" "}{delivery_time > "1" ? "hours" : "hour"}</Text>
+                    <View
+                      style={tw`border  border-gray-300 rounded-full py-3 px-4 flex-row justify-between items-center`}
+                    >
+                      <Text
+                        style={tw`font-DegularDisplayDemoRegular text-lg pb-1`}
+                      >
+                        {delivery_time || "Delivery time"}{" "}
+                        {delivery_time > "1" ? "hours" : "hour"}
+                      </Text>
                       <SvgXml xml={IconRightArrowBlack} />
                     </View>
                   </TouchableOpacity>
-
-
                 </View>
 
                 {/* -------------- from time and to time ---------------- */}
@@ -572,7 +624,9 @@ const Add_Package = () => {
                   name="available_time_from"
                   render={(arrayHelper) => (
                     <View>
-                      <View style={tw`flex-row justify-between items-center px-2 py-2`}>
+                      <View
+                        style={tw`flex-row justify-between items-center px-2 py-2`}
+                      >
                         <Text
                           style={tw`font-DegularDisplayDemoMedium text-xl text-black  pb-1`}
                         >
@@ -581,68 +635,79 @@ const Add_Package = () => {
                         <TouchableOpacity
                           style={tw`w-11 h-11 rounded-full border border-gray-300 justify-center items-center`}
                           onPress={() => {
-                            arrayHelper.push(""); // new 
-                            setFieldValue("available_time_to", [...values.available_time_to, ""])
+                            arrayHelper.push(""); // new
+                            setFieldValue("available_time_to", [
+                              ...values.available_time_to,
+                              "",
+                            ]);
                           }}
                         >
                           <SvgXml xml={IconPlusYellow} />
                         </TouchableOpacity>
                       </View>
                       {/* render times */}
-                      {values.available_time_from.map((from: string, index: number) => (
-                        <View key={index} style={tw`flex-row justify-between items-center gap-2 py-2 px-2`}>
-
-                          <TouchableOpacity
-                            onPress={() => {
-                              setCurrentTimeIndex(index);
-                              setEditingField("from");
-                              showTimepicker();
-                            }}
-                            style={tw`flex-row  gap-2 w-[44%] py-2 justify-between px-3 items-center border border-gray-400 rounded-2xl`}
+                      {values.available_time_from.map(
+                        (from: string, index: number) => (
+                          <View
+                            key={index}
+                            style={tw`flex-row justify-between items-center gap-2 py-2 px-2`}
                           >
-                            <View style={tw`flex-row items-center justify-center gap-2`}>
-                              <SvgXml xml={IconWatch} />
-                              <Text style={tw`font-DegularDisplayDemoMedium text-lg pb-1`}>{from || "From"}</Text>
-                            </View>
-                            <View>
+                            <TouchableOpacity
+                              onPress={() => {
+                                setCurrentTimeIndex(index);
+                                setEditingField("from");
+                                showTimepicker();
+                              }}
+                              style={tw`flex-row  gap-2 w-[44%] py-2 justify-between px-3 items-center border border-gray-400 rounded-2xl`}
+                            >
+                              <View
+                                style={tw`flex-row items-center justify-center gap-2`}
+                              >
+                                <SvgXml xml={IconWatch} />
+                                <Text
+                                  style={tw`font-DegularDisplayDemoMedium text-lg pb-1`}
+                                >
+                                  {from || "From"}
+                                </Text>
+                              </View>
+                              <View>
+                                <SvgXml xml={IconEditPenBlack} width={15} />
+                              </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                              onPress={() => {
+                                setCurrentTimeIndex(index);
+                                setEditingField("to");
+                                showTimepicker();
+                              }}
+                              style={tw`flex-row justify-between px-3 items-center  w-[44%] gap-2  py-2 border border-gray-400 rounded-2xl`}
+                            >
+                              <View style={tw`flex-row items-center gap-2`}>
+                                <SvgXml xml={IconWatch} />
+                                <Text
+                                  style={tw`font-DegularDisplayDemoMedium text-lg pb-1`}
+                                >
+                                  {values.available_time_to[index] || "To"}
+                                </Text>
+                              </View>
+
                               <SvgXml xml={IconEditPenBlack} width={15} />
-                            </View>
+                            </TouchableOpacity>
 
-                          </TouchableOpacity>
-
-
-                          <TouchableOpacity
-                            onPress={() => {
-                              setCurrentTimeIndex(index);
-                              setEditingField("to");
-                              showTimepicker();
-                            }}
-                            style={tw`flex-row justify-between px-3 items-center  w-[44%] gap-2  py-2 border border-gray-400 rounded-2xl`}
-                          >
-                            <View style={tw`flex-row items-center gap-2`}>
-                              <SvgXml xml={IconWatch} />
-                              <Text style={tw`font-DegularDisplayDemoMedium text-lg pb-1`}>
-                                {values.available_time_to[index] || "To"}
-                              </Text>
-                            </View>
-
-                            <SvgXml xml={IconEditPenBlack} width={15} />
-                          </TouchableOpacity>
-
-                          <TouchableOpacity
-                            onPress={() => {
-
-                              arrayHelper.remove(index);
-                              const updatedTo = [...values.available_time_to];
-                              updatedTo.splice(index, 1);
-                              setFieldValue("available_time_to", updatedTo);
-
-                            }}
-                          >
-                            <SvgXml xml={IconDeleteRed} />
-                          </TouchableOpacity>
-                        </View>
-                      ))}
+                            <TouchableOpacity
+                              onPress={() => {
+                                arrayHelper.remove(index);
+                                const updatedTo = [...values.available_time_to];
+                                updatedTo.splice(index, 1);
+                                setFieldValue("available_time_to", updatedTo);
+                              }}
+                            >
+                              <SvgXml xml={IconDeleteRed} />
+                            </TouchableOpacity>
+                          </View>
+                        )
+                      )}
                       {/* show time picker */}
                       {show && (
                         <DateTimePicker
@@ -668,25 +733,31 @@ const Add_Package = () => {
                               // --- PREVENT ONLY WHEN BOTH HAVE VALUES ---
                               if (toTime) {
                                 const convertTo = convertTo24Hour(toTime);
-                                const convertFormated = convertTo24Hour(formated)
+                                const convertFormated =
+                                  convertTo24Hour(formated);
                                 if (isTimeGreater(convertTo, convertFormated)) {
                                   // valid
-                                  setFieldValue("available_time_from", updatedFrom);
+                                  setFieldValue(
+                                    "available_time_from",
+                                    updatedFrom
+                                  );
                                 } else {
                                   // prevent
                                   router.push({
                                     pathname: "/Toaster",
                                     params: {
-                                      res: "From time must be earlier than To time"
-                                    }
-                                  })
-
+                                      res: "From time must be earlier than To time",
+                                    },
+                                  });
 
                                   return;
                                 }
                               } else {
                                 // to blank → allow
-                                setFieldValue("available_time_from", updatedFrom);
+                                setFieldValue(
+                                  "available_time_from",
+                                  updatedFrom
+                                );
                               }
                             }
 
@@ -696,9 +767,13 @@ const Add_Package = () => {
 
                               // --- PREVENT ONLY WHEN BOTH HAVE VALUES ---
                               if (fromTime) {
-                                const convertFormate = convertTo24Hour(formated);
-                                const covertFromTime = convertTo24Hour(fromTime);
-                                if (isTimeGreater(convertFormate, covertFromTime)) {
+                                const convertFormate =
+                                  convertTo24Hour(formated);
+                                const covertFromTime =
+                                  convertTo24Hour(fromTime);
+                                if (
+                                  isTimeGreater(convertFormate, covertFromTime)
+                                ) {
                                   // valid
                                   setFieldValue("available_time_to", updatedTo);
                                 } else {
@@ -706,9 +781,9 @@ const Add_Package = () => {
                                   router.push({
                                     pathname: "/Toaster",
                                     params: {
-                                      res: "To time must be later than From time"
-                                    }
-                                  })
+                                      res: "To time must be later than From time",
+                                    },
+                                  });
                                   return;
                                 }
                               } else {
@@ -717,17 +792,11 @@ const Add_Package = () => {
                               }
                             }
                           }}
-
                         />
-                      )
-
-                      }
+                      )}
                     </View>
                   )}
-
                 />
-
-
 
                 {/* <View style={tw`flex-row justify-between items-center px-2 py-2`}>
                   <Text
@@ -783,13 +852,18 @@ const Add_Package = () => {
                 )} */}
 
                 {/* ----------------------- submit password -------------- */}
-                <TouchableOpacity
-                  onPress={handleSubmit}
-                  style={tw`px-2 py-4`}
-                >
-                  <View style={tw`flex-row bg-primary py-4 rounded-full justify-center gap-2 items-center`}>
-                    {isLoadingMyServicePackage && <ActivityIndicator size={"small"} color={"#fff"} />}
-                    <Text style={tw`text-white font-DegularDisplayDemoMedium text-lg`}>Add</Text>
+                <TouchableOpacity onPress={handleSubmit} style={tw`px-2 py-4`}>
+                  <View
+                    style={tw`flex-row bg-primary py-4 rounded-full justify-center gap-2 items-center`}
+                  >
+                    {isLoadingMyServicePackage && (
+                      <ActivityIndicator size={"small"} color={"#fff"} />
+                    )}
+                    <Text
+                      style={tw`text-white font-DegularDisplayDemoMedium text-lg`}
+                    >
+                      Add
+                    </Text>
                   </View>
                 </TouchableOpacity>
                 {/* <PrimaryButton
@@ -802,15 +876,9 @@ const Add_Package = () => {
                   contentStyle={tw`mt-4`}
                 /> */}
                 {/* <View style={tw`absolute`}> */}
-
-
               </View>
-            )
-
-            }
-
+            )}
           </Formik>
-
         </ScrollView>
       </TouchableWithoutFeedback>
       <DeliveryTimeModal
@@ -828,7 +896,6 @@ const Add_Package = () => {
       />
       {/* </View> */}
 
-
       <CustomTimeModal
         ref={customModalRef}
         onBack={() => {
@@ -844,7 +911,7 @@ const Add_Package = () => {
           fixedModalRef.current?.dismiss();
         }}
       />
-    </KeyboardAvoidingView >
+    </KeyboardAvoidingView>
     // </TouchableWithoutFeedback >
   );
 };

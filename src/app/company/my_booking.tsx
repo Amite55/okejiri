@@ -331,13 +331,12 @@ const My_Booking = () => {
                   <View style={tw``}>
                     <TextInput
                       style={[
-                        tw``,
+                        tw`text-black`,
                         {
                           borderWidth: 1,
                           borderColor: "gray",
                           paddingVertical: 18,
                           paddingHorizontal: 20,
-
                           minHeight: 280,
                           maxHeight: 400,
                           borderRadius: 30,

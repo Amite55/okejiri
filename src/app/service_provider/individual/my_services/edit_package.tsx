@@ -100,7 +100,7 @@ const Edit_Package = () => {
             </Text>
             <TextInput
               textAlign="left"
-              style={tw`border border-gray-300 h-14 rounded-full px-4 justify-center items-center`}
+              style={tw`border text-black border-gray-300 h-14 rounded-full px-4 justify-center items-center`}
               placeholder="Service title goes here"
               onChangeText={(newText) => console.log(newText)}
               placeholderTextColor={"#535353"}
@@ -119,6 +119,7 @@ const Edit_Package = () => {
                 <TextInput
                   placeholder="Type hare"
                   placeholderTextColor={"#535353"}
+                  style={tw`text-black `}
                 />
                 <TouchableOpacity
                   style={tw`w-11 h-11 rounded-full border border-gray-300 justify-center items-center`}
@@ -168,7 +169,7 @@ const Edit_Package = () => {
                 style={tw`border  border-gray-300 h-14 rounded-full px-4 flex-row justify-between items-center`}
               >
                 <TextInput
-                  style={tw`flex-1`}
+                  style={tw`flex-1 text-black`}
                   defaultValue="40.00"
                   //   placeholder="49.00"
                   onChangeText={(newText) => console.log(newText)}

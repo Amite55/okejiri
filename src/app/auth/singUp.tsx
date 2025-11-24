@@ -170,7 +170,7 @@ const SingUp = () => {
                 >
                   <TextInput
                     placeholderTextColor="#777777"
-                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    style={tw`flex-1 text-black text-base font-PoppinsMedium `}
                     placeholder="Enter your name"
                     value={values.name}
                     onChangeText={handleChange("name")}
@@ -191,7 +191,7 @@ const SingUp = () => {
                 >
                   <TextInput
                     placeholderTextColor="#777777"
-                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    style={tw`flex-1 text-black text-base font-PoppinsMedium `}
                     placeholder="Enter your email"
                     value={values.email}
                     onChangeText={handleChange("email")}
@@ -211,7 +211,7 @@ const SingUp = () => {
                 >
                   <TextInput
                     secureTextEntry={isVisible}
-                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    style={tw`flex-1 text-black text-base font-PoppinsMedium `}
                     placeholderTextColor="#777777"
                     placeholder="Enter your password"
                     value={values.password}
@@ -240,7 +240,7 @@ const SingUp = () => {
                 >
                   <TextInput
                     secureTextEntry={isVisibleCP}
-                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    style={tw`flex-1 text-black text-base font-PoppinsMedium `}
                     placeholderTextColor="#777777"
                     placeholder="confirm password"
                     value={values.password_confirmation}
@@ -269,7 +269,7 @@ const SingUp = () => {
                   style={tw`flex-row items-center gap-2 border h-12 rounded-full mb-3 px-3`}
                 >
                   <TextInput
-                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    style={tw`flex-1 text-black text-base font-PoppinsMedium `}
                     placeholderTextColor="#777777"
                     placeholder="454545"
                     value={values.referral_code}

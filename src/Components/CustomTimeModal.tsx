@@ -77,7 +77,7 @@ export default function CustomTimeModal({ ref, onBack, onSave, onClose }: any) {
                 placeholderTextColor={"#535353"}
                 value={deliveryTime}
                 onChangeText={(text) => setDeliveryTime(text)}
-                style={tw``}
+                style={tw`text-black`}
                 keyboardType="numeric"
               />
             </View>
