@@ -149,7 +149,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
         });
       }
     } else {
-      console.log("❌ Image selection cancelled");
+      console.log(" Image selection cancelled");
     }
   };
 

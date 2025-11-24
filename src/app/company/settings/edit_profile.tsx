@@ -245,36 +245,6 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   accessibilityHint="Enter your full name"
                 />
               </View>
-
-              {/* Full Name Input Field */}
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
-              >
-                User name
-              </Text>
-              <View
-                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
-              >
-                <TextInput
-                  editable={
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? false
-                      : true
-                  }
-                  placeholder="smith"
-                  placeholderTextColor="#535353"
-                  onChangeText={(text) => setUserName(text)}
-                  value={userName}
-                  style={[
-                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-400`
-                      : tw`text-black text-base`,
-                  ]}
-                  accessibilityLabel="Full name input"
-                  accessibilityHint="Enter your full name"
-                />
-              </View>
               {/* Contact Number Input Field */}
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
