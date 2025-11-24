@@ -140,12 +140,13 @@ const Order_Details_Profile = () => {
                 onPress={() => router.back()}
                 titleTextStyle={tw`text-xl`}
             />
-            {isLoadingFetchOrder || isFetchingFetchOrder ? (
+            {isLoadingFetchOrder && isFetchingFetchOrder && (
                 <View>
                     <ActivityIndicator size={"small"} color="#ff6600" />
 
                 </View>
-            ) : order ? (
+            ) }
+            { order && (
                 <View>
                     <View style={tw`flex-row justify-center items-center my-4`
 
@@ -425,7 +426,7 @@ const Order_Details_Profile = () => {
 
 
                 </View>
-            ) : null
+            ) 
 
             }
 

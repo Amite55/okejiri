@@ -247,30 +247,33 @@ const Order = () => {
             </Text>
           </View>
         )}
-      <View style={tw`gap-3 mt-4`}>
-        {fetchOrderItemsData?.data?.data.length > 0 &&
-          fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
+      {!isLoadingfetchOrderItems &&
+        !isFetchingOrderItems &&
+        fetchOrderItemsData?.data?.data?.length > 0 &&
+        <View style={tw`gap-3 mt-4`}>
+          {fetchOrderItemsData?.data?.data.length > 0 && (fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
+
             <UserCard
               key={index}
               ProfileName={item.user.name}
-              isProfileBadge={
-                item.user.kyc_status === "Verified" ? true : false
-              }
+              isProfileBadge={item.user.kyc_status === "Verified" ? true : false}
               Date={formateDate(item.created_at)}
               Description={descriptions[item.id]}
               ImgProfileImg={item.user.avatar}
-              onPress={() =>
-                router.push({
-                  pathname:
-                    "/service_provider/individual/order_details_profile",
-                  params: {
-                    id: item.id,
-                  },
-                })
-              }
+              onPress={() => router.push({
+                pathname: "/service_provider/individual/order_details_profile",
+                params: {
+                  id: item.id
+                }
+              })}
             />
-          ))}
-        {/* {[1, 2, 3, 4].map((index) => {
+
+
+          )))
+
+
+          }
+          {/* {[1, 2, 3, 4].map((index) => {
           return (
             <UserCard
               key={index}
@@ -282,7 +285,9 @@ const Order = () => {
             />
           );
         })} */}
-      </View>
+        </View>
+      }
+
     </ScrollView>
   );
 };
