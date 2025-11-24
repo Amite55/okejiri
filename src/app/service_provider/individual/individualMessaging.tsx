@@ -209,7 +209,7 @@ const IndividualMessaging = () => {
           ]}
         >
           <TextInput
-            style={tw`flex-1 px-4 rounded-md`}
+            style={tw`flex-1 px-4 rounded-md text-black`}
             placeholder="Type a message"
             placeholderTextColor={"#535353"}
             value={message}

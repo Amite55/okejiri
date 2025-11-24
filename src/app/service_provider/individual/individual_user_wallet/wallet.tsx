@@ -51,7 +51,6 @@ const Wallet_Index = () => {
   const earnedFormatted = earned;
   const referralFormatted = referralBonus;
   const totalBalance = earnedFormatted + referralFormatted;
-  console.log(totalBalance, "total balance");
 
   const [isWithdrawModalVisible, setWithdrawModalVisible] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -192,7 +191,7 @@ const Wallet_Index = () => {
         </View>
 
         {/*title */}
-        <Text style={tw`font-DegularDisplayDemoRegular text-black text-2xl`}>
+        <Text style={tw`font-normal text-black text-2xl`}>
           Available balance
         </Text>
 

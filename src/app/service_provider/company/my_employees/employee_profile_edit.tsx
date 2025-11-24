@@ -1,15 +1,21 @@
-import { IconLocationGray, IconPhoneGray, IconProfileImageEdit } from "@/assets/icons";
+import {
+  IconLocationGray,
+  IconPhoneGray,
+  IconProfileImageEdit,
+} from "@/assets/icons";
 import { ImgSuccessGIF } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import SuccessModal from "@/src/Components/SuccessModal";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useEditEmployeeMutation, useEmployeeDetailsQuery } from "@/src/redux/apiSlices/companyProvider/account/employeesSlice";
+import {
+  useEditEmployeeMutation,
+  useEmployeeDetailsQuery,
+} from "@/src/redux/apiSlices/companyProvider/account/employeesSlice";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -19,7 +25,7 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View
+  View,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 
@@ -36,20 +42,20 @@ const dropdownData = [
 const Employee_Profile_Edit = () => {
   const { id } = useLocalSearchParams();
 
-  // ========================== API 
-  const { data: employeeDetailsData, isLoading: isLoadingEmployeeDetails, isError: isErrorEmployeeDetails } = useEmployeeDetailsQuery(id)
+  // ========================== API
+  const {
+    data: employeeDetailsData,
+    isLoading: isLoadingEmployeeDetails,
+    isError: isErrorEmployeeDetails,
+  } = useEmployeeDetailsQuery(id);
   const employee = employeeDetailsData?.data;
 
-  const [editEmployee, { isLoading: isLoadingEditEmployee }] = useEditEmployeeMutation();
-  // console.log(" ==================== employee details =============== ", JSON.stringify(employeeDetailsData, null, 2))
-
-
+  const [editEmployee, { isLoading: isLoadingEditEmployee }] =
+    useEditEmployeeMutation();
 
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [successModalVisible, setSuccessModal] = useState<boolean>(false);
-
-
 
   const validation = (values: any) => {
     const errors: any = {};
@@ -63,10 +69,10 @@ const Employee_Profile_Edit = () => {
       errors.phone = "Enter a valid phone number";
     }
     if (!values.location) {
-      errors.location = "Location is required"
+      errors.location = "Location is required";
     }
     return errors;
-  }
+  };
 
   // ---------------------- IMAGE PICKER -------------------------
   const pickImage = async (setFieldValue: any, setFieldTouched: any) => {
@@ -107,20 +113,13 @@ const Employee_Profile_Edit = () => {
     }
   };
 
-
-
-
-
   return (
     <KeyboardAvoidingView
       style={tw`flex-1 bg-base_color`}
       behavior={Platform.OS === "ios" ? "padding" : "position"} // iOS/Android different behavior
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -120}
     >
-      <TouchableWithoutFeedback
-        onPress={Keyboard.dismiss} accessible={false}
-      >
-
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
@@ -133,59 +132,80 @@ const Employee_Profile_Edit = () => {
               pageName={"Edit employee"}
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
-            // contentStyle={tw`px-5`}
+              // contentStyle={tw`px-5`}
             />
-            {isLoadingEmployeeDetails && <ActivityIndicator size={"large"} color={"#FF6600"} />}
-            {!isLoadingEmployeeDetails && <Formik
-              enableReinitialize={true}
-              initialValues={{
-                image: employee?.image ? { uri: employee?.image, name: "existing.jpg", type: "image/jpeg" } : null,
-                name: employee?.name ?? "",
-                phone: employee?.phone ?? "",
-                location: employee?.location ?? ""
-              }}
-              // validate={validation}
-              onSubmit={async (values) => {
-                // console.log("=========== Final ", JSON.stringify(values, null, 2));
-                try {
-                  const formData = new FormData();
+            {isLoadingEmployeeDetails && (
+              <ActivityIndicator size={"large"} color={"#FF6600"} />
+            )}
+            {!isLoadingEmployeeDetails && (
+              <Formik
+                enableReinitialize={true}
+                initialValues={{
+                  image: employee?.image
+                    ? {
+                        uri: employee?.image,
+                        name: "existing.jpg",
+                        type: "image/jpeg",
+                      }
+                    : null,
+                  name: employee?.name ?? "",
+                  phone: employee?.phone ?? "",
+                  location: employee?.location ?? "",
+                }}
+                // validate={validation}
+                onSubmit={async (values) => {
+                  // console.log("=========== Final ", JSON.stringify(values, null, 2));
+                  try {
+                    const formData = new FormData();
 
-                  formData.append("image", {
-                    uri: (values.image as any).uri,
-                    name: (values.image as any).name || "photo.jpg",
-                    type: (values.image as any).type || "image/jpeg"
-                  } as any);
+                    formData.append("image", {
+                      uri: (values.image as any).uri,
+                      name: (values.image as any).name || "photo.jpg",
+                      type: (values.image as any).type || "image/jpeg",
+                    } as any);
 
+                    // if (values.name !== employee.name) {
+                    formData.append("name", values.name);
 
-                  // if (values.name !== employee.name) {
-                  formData.append("name", values.name);
+                    formData.append("location", values.location);
 
-                  formData.append("location", values.location);
+                    formData.append("phone", values.phone);
 
-                  formData.append("phone", values.phone);
+                    formData.append("_method", "PUT");
+                    console.log(
+                      "=========== Final ",
+                      JSON.stringify(formData, null, 2)
+                    );
 
+                    const response = await editEmployee({
+                      id: id,
+                      formData: formData,
+                    }).unwrap();
 
-                  formData.append("_method", "PUT");
-                  console.log("=========== Final ", JSON.stringify(formData, null, 2));
-
-                  const response = await editEmployee({ id: id, formData: formData }).unwrap();
-
-                  if (response) {
-                    setSuccessModal(true);
+                    if (response) {
+                      setSuccessModal(true);
+                    }
+                  } catch (err) {
+                    console.log(
+                      "Error form submited",
+                      err,
+                      " api error: ",
+                      isErrorEmployeeDetails
+                    );
                   }
-                } catch (err) {
-                  console.log("Error form submited", err, " api error: ", isErrorEmployeeDetails);
-                }
-
-
-
-              }}
-            >
-              {({ handleChange, handleSubmit, errors, touched, setFieldValue, values, setFieldTouched }) => (
-                <View
-
-                >
-                  {/* <Pressable
+                }}
+              >
+                {({
+                  handleChange,
+                  handleSubmit,
+                  errors,
+                  touched,
+                  setFieldValue,
+                  values,
+                  setFieldTouched,
+                }) => (
+                  <View>
+                    {/* <Pressable
                     onPress={() => pickImage(setFieldValue, setFieldTouched)}
                     style={tw`border border-dashed border-gray-500 rounded-3xl p-6 justify-center items-center mt-2  gap-2 `}
                   >
@@ -218,104 +238,110 @@ const Employee_Profile_Edit = () => {
                       </TouchableOpacity>
                     }
                   </Pressable> */}
-                  <View style={tw`bg-white  py-10 flex-row justify-center rounded-2xl`}>
-                    <View>
-                      <Image source={values.image?.uri} contentFit="cover" style={tw`rounded-full w-25 h-25`} />
-                    </View>
-                    <TouchableOpacity
-                      onPress={() => pickImage(setFieldValue, setFieldTouched)}
-                      style={tw`absolute w-full  items-end right-3 top-3`}
+                    <View
+                      style={tw`bg-white  py-10 flex-row justify-center rounded-2xl`}
                     >
-                      <View >
-                        <SvgXml xml={IconProfileImageEdit} />
+                      <View>
+                        <Image
+                          source={values.image?.uri}
+                          contentFit="cover"
+                          style={tw`rounded-full w-25 h-25`}
+                        />
                       </View>
-                    </TouchableOpacity>
-
-                  </View>
-
-
-                  <View style={tw`gap-1 mt-6 mb-3`}>
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-xl text-black  ml-2`}
-                    >
-                      Name
-                    </Text>
-
-                    <View style={tw`border border-gray-300 rounded-full px-4 py-2 h-14`}>
-                      <TextInput
-                        style={tw`flex-1`}
-                        placeholder="Employee name hare"
-                        value={values.name}
-                        onChangeText={handleChange("name")}
-                        placeholderTextColor={"#535353"}
-                      />
-                    </View>
-                    {errors.name && touched.name && (
-                      <Text style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}>
-                        {errors.name}
-                      </Text>
-                    )
-
-                    }
-                  </View>
-
-
-                  <View style={tw`gap-1 mt-6 mb-3`}>
-                    <View
-                      style={tw`border border-gray-300 rounded-full px-5 py-2 h-14 flex-row items-center gap-2`}
-                    >
-                      <SvgXml xml={IconPhoneGray} />
-                      <TextInput
-                        style={tw`flex-1`}
-                        placeholder="Phone number"
-                        placeholderTextColor={"#535353"}
-                        value={values.phone}
-                        onChangeText={handleChange("phone")}
-                        keyboardType="number-pad"
-                      />
-                    </View>
-                    {errors.phone && touched.phone && (
-                      <Text style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}>
-                        {errors.phone}
-                      </Text>
-                    )
-
-                    }
-                  </View>
-
-
-                  <View style={tw`gap-1 mt-6 mb-3`}>
-                    <View
-                      style={tw`border border-gray-300 rounded-full px-5 py-2 h-14 flex-row items-center gap-2`}
-                    >
-                      <SvgXml xml={IconLocationGray} />
-                      <TextInput
-                        style={tw`flex-1`}
-                        placeholder="Location"
-                        value={values.location}
-                        onChangeText={handleChange("location")}
-                      />
+                      <TouchableOpacity
+                        onPress={() =>
+                          pickImage(setFieldValue, setFieldTouched)
+                        }
+                        style={tw`absolute w-full  items-end right-3 top-3`}
+                      >
+                        <View>
+                          <SvgXml xml={IconProfileImageEdit} />
+                        </View>
+                      </TouchableOpacity>
                     </View>
 
-                    {errors.location && touched.location && (
-                      <Text style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}>
-                        {errors.location}
+                    <View style={tw`gap-1 mt-6 mb-3`}>
+                      <Text
+                        style={tw`font-DegularDisplayDemoMedium text-xl text-black  ml-2`}
+                      >
+                        Name
                       </Text>
-                    )
 
-                    }
+                      <View
+                        style={tw`border border-gray-300 rounded-full px-4 py-2 h-14`}
+                      >
+                        <TextInput
+                          style={tw`flex-1 text-black`}
+                          placeholder="Employee name hare"
+                          value={values.name}
+                          onChangeText={handleChange("name")}
+                          placeholderTextColor={"#535353"}
+                        />
+                      </View>
+                      {errors.name && touched.name && (
+                        <Text
+                          style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}
+                        >
+                          {errors.name}
+                        </Text>
+                      )}
+                    </View>
+
+                    <View style={tw`gap-1 mt-6 mb-3`}>
+                      <View
+                        style={tw`border border-gray-300 rounded-full px-5 py-2 h-14 flex-row items-center gap-2`}
+                      >
+                        <SvgXml xml={IconPhoneGray} />
+                        <TextInput
+                          style={tw`flex-1 text-black`}
+                          placeholder="Phone number"
+                          placeholderTextColor={"#535353"}
+                          value={values.phone}
+                          onChangeText={handleChange("phone")}
+                          keyboardType="number-pad"
+                        />
+                      </View>
+                      {errors.phone && touched.phone && (
+                        <Text
+                          style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}
+                        >
+                          {errors.phone}
+                        </Text>
+                      )}
+                    </View>
+
+                    <View style={tw`gap-1 mt-6 mb-3`}>
+                      <View
+                        style={tw`border border-gray-300 rounded-full px-5 py-2 h-14 flex-row items-center gap-2`}
+                      >
+                        <SvgXml xml={IconLocationGray} />
+                        <TextInput
+                          style={tw`flex-1 text-black`}
+                          placeholder="Location"
+                          value={values.location}
+                          onChangeText={handleChange("location")}
+                        />
+                      </View>
+
+                      {errors.location && touched.location && (
+                        <Text
+                          style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}
+                        >
+                          {errors.location}
+                        </Text>
+                      )}
+                    </View>
+                    {isLoadingEditEmployee && (
+                      <ActivityIndicator size={"large"} color={"#FF6600"} />
+                    )}
+                    <PrimaryButton
+                      titleProps="Save changes"
+                      onPress={handleSubmit}
+                    />
                   </View>
-                  {isLoadingEditEmployee &&
-                    <ActivityIndicator size={"large"} color={"#FF6600"} />
-                  }
-                  <PrimaryButton titleProps="Save changes" onPress={handleSubmit} />
-                </View>
-              )}
-
-
-
-            </Formik>}
-
+                )}
+              </Formik>
+            )}
           </View>
 
           {/* ---------------- primary button ---------------- */}
@@ -339,10 +365,7 @@ const Employee_Profile_Edit = () => {
           </SuccessModal>
         </ScrollView>
       </TouchableWithoutFeedback>
-
-
     </KeyboardAvoidingView>
-
   );
 };
 

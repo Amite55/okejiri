@@ -109,7 +109,10 @@ const Previous_Booking_Confirmation = () => {
             style={tw`border border-gray-300 w-full h-14 rounded-full flex-row justify-between items-center px-4 gap-2`}
           >
             <SvgXml xml={IconCardProfile} />
-            <TextInput defaultValue="Madhab Mozumder" style={tw`flex-1`} />
+            <TextInput
+              defaultValue="Madhab Mozumder"
+              style={tw`flex-1 text-black`}
+            />
             <SvgXml xml={IconEditPen} />
           </View>
 
@@ -118,7 +121,10 @@ const Previous_Booking_Confirmation = () => {
             style={tw`border border-gray-300 w-full h-14 rounded-full flex-row justify-between items-center px-4 gap-2`}
           >
             <SvgXml xml={IconEmailYellow} />
-            <TextInput defaultValue="example@gmail.com" style={tw`flex-1`} />
+            <TextInput
+              defaultValue="example@gmail.com"
+              style={tw`flex-1 text-black`}
+            />
             <SvgXml xml={IconEditPen} />
           </View>
 
@@ -127,7 +133,10 @@ const Previous_Booking_Confirmation = () => {
             style={tw`border border-gray-300 w-full h-14 rounded-full flex-row justify-between items-center px-4 gap-2`}
           >
             <SvgXml xml={IconPhoneYellow} />
-            <TextInput defaultValue="0121212121" style={tw`flex-1`} />
+            <TextInput
+              defaultValue="0121212121"
+              style={tw`flex-1 text-black`}
+            />
             <SvgXml xml={IconEditPen} />
           </View>
 
@@ -136,7 +145,10 @@ const Previous_Booking_Confirmation = () => {
             style={tw`border border-gray-300 w-full h-14 rounded-full flex-row justify-between items-center px-4 gap-2`}
           >
             <SvgXml xml={IconLocation} />
-            <TextInput defaultValue="Location 1" style={tw`flex-1`} />
+            <TextInput
+              defaultValue="Location 1"
+              style={tw`flex-1 text-black`}
+            />
             <SvgXml xml={IconEditPen} />
           </View>
         </View>
