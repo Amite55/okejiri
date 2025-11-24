@@ -246,7 +246,13 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 Business name
               </Text>
               <View
-                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
+                style={[
+                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
+                  userProfileInfo?.data?.kyc_status === "Verified" ||
+                  userProfileInfo?.data?.kyc_status === "In Review"
+                    ? tw`bg-gray-200 border-slate-100`
+                    : tw``,
+                ]}
               >
                 <TextInput
                   editable={
@@ -261,7 +267,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   style={[
                     tw`flex-1 font-DegularDisplayDemoRegular text-base`,
                     userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-400`
+                      ? tw`text-gray-600`
                       : tw`text-black text-base`,
                   ]}
                   accessibilityLabel="Full name input"
@@ -276,7 +282,13 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 User name
               </Text>
               <View
-                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
+                style={[
+                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
+                  userProfileInfo?.data?.kyc_status === "Verified" ||
+                  userProfileInfo?.data?.kyc_status === "In Review"
+                    ? tw`bg-gray-200 border-slate-100`
+                    : tw``,
+                ]}
               >
                 <TextInput
                   editable={
@@ -291,7 +303,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   style={[
                     tw`flex-1 font-DegularDisplayDemoRegular text-base`,
                     userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-400`
+                      ? tw`text-gray-600`
                       : tw`text-black text-base`,
                   ]}
                   accessibilityLabel="Full name input"
@@ -305,7 +317,13 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 Contact Number
               </Text>
               <View
-                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
+                style={[
+                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
+                  userProfileInfo?.data?.kyc_status === "Verified" ||
+                  userProfileInfo?.data?.kyc_status === "In Review"
+                    ? tw`bg-gray-200 border-slate-100`
+                    : tw``,
+                ]}
               >
                 <TextInput
                   editable={
@@ -321,7 +339,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   style={[
                     tw`flex-1 font-DegularDisplayDemoRegular text-base`,
                     userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-400`
+                      ? tw`text-gray-600`
                       : tw`text-black text-base`,
                   ]}
                   accessibilityLabel="Contact number input"
@@ -335,7 +353,13 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 Location
               </Text>
               <View
-                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
+                style={[
+                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
+                  userProfileInfo?.data?.kyc_status === "Verified" ||
+                  userProfileInfo?.data?.kyc_status === "In Review"
+                    ? tw`bg-gray-200 border-slate-100`
+                    : tw``,
+                ]}
               >
                 <TextInput
                   editable={
@@ -350,7 +374,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   style={[
                     tw`flex-1 font-DegularDisplayDemoRegular text-base`,
                     userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-400`
+                      ? tw`text-gray-600`
                       : tw`text-black text-base`,
                   ]}
                   accessibilityLabel="address input"
