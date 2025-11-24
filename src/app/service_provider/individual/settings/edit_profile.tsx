@@ -116,7 +116,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [16, 9],
+      aspect: [4, 3],
       quality: 1,
     });
     if (!result.canceled && result.assets.length > 0) {
@@ -149,7 +149,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
         });
       }
     } else {
-      console.log("❌ Image selection cancelled");
+      console.log(" Image selection cancelled");
     }
   };
 
@@ -167,7 +167,6 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
     };
   }, []);
 
-  // loading skeleton =================================s>
   if (isprofileLoading) {
     return <ProviderProfileSkeleton />;
   }
@@ -183,8 +182,8 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
           showsVerticalScrollIndicator={false}
           style={tw`flex-1 bg-base_color px-5`}
           contentContainerStyle={[
-            tw`justify-between flex-grow bg-base_color pb-1`,
-            isKeyboardVisible && tw`pb-16`,
+            tw`justify-between flex-grow bg-base_color`,
+            isKeyboardVisible ? tw`pb-16` : tw`pb-1`,
           ]}
         >
           {/* <View style={tw`flex-1 `}> */}

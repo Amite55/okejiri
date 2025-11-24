@@ -176,31 +176,6 @@ const Home_Index_Company = () => {
             {homeData?.data?.total_employee ?? 0}
           </Text>
         </View>
-
-        {/*  ---------- total active  employee -------------- */}
-        {/* <View
-          style={tw`flex-1 border border-gray-300 rounded-2xl h-40 p-5 gap-2`}
-        >
-          <View style={tw`flex-row justify-between items-center`}>
-            <View />
-            <SvgXml xml={IconMultipleUserBlack} />
-            <SvgXml xml={IconRightCornerArrow} />
-          </View>
-          <View style={tw`flex-row items-center gap-2 justify-center `}>
-            <View style={tw`w-2 h-2  rounded-full bg-success600`} />
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-base text-regularText text-center`}
-            >
-              Total employee
-            </Text>
-          </View>
-
-          <Text
-            style={tw`font-DegularDisplayDemoMedium text-4xl text-black text-center `}
-          >
-            {homeData?.data?.total_employee ?? 0}
-          </Text>
-        </View> */}
       </View>
 
       {/* ------------ new order and regrading order -------------- */}
@@ -299,23 +274,26 @@ const Home_Index_Company = () => {
         </Text>
 
         <View style={tw`gap-6 my-4`}>
-          {recentTransaction && recentTransaction?.data.data.map((item: any, index: any) => {
-            // console.log(" ========= transaction item ============ ", JSON.stringify(item!, null, 2))
-            return (
-              <TransactionsCard
-                key={index}
-                price={item?.amount}
-                profileBadge={item?.sender?.kyc_status === "Verified" ? true : false}
-                type={item?.direction}
-                varient={item?.transaction_type}
-                title="Service title goes here"
-                transactionIcon={IconRightArrowCornerPrimaryColor}
-                userName={item?.sender.name}
-                created_at={formateDate(item?.created_at)}
-                transaction_id={item?.transaction_id}
-              />
-            );
-          })}
+          {recentTransaction &&
+            recentTransaction?.data.data.map((item: any, index: any) => {
+              // console.log(" ========= transaction item ============ ", JSON.stringify(item!, null, 2))
+              return (
+                <TransactionsCard
+                  key={index}
+                  price={item?.amount}
+                  profileBadge={
+                    item?.sender?.kyc_status === "Verified" ? true : false
+                  }
+                  type={item?.direction}
+                  varient={item?.transaction_type}
+                  title="Service title goes here"
+                  transactionIcon={IconRightArrowCornerPrimaryColor}
+                  userName={item?.sender.name}
+                  created_at={formateDate(item?.created_at)}
+                  transaction_id={item?.transaction_id}
+                />
+              );
+            })}
         </View>
       </View>
     </ScrollView>

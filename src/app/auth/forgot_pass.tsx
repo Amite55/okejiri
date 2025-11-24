@@ -96,7 +96,7 @@ const Forgot_pass = () => {
                 >
                   <TextInput
                     placeholderTextColor="#777777"
-                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    style={tw`flex-1 text-black text-base font-PoppinsMedium `}
                     placeholder="Enter your email"
                     value={values.email}
                     onChangeText={handleChange("email")}

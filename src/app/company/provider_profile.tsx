@@ -369,7 +369,7 @@ const Provider_Profile = () => {
                         </TouchableOpacity>
                         <TextInput
                           style={[
-                            tw``,
+                            tw`text-black`,
                             {
                               borderWidth: 1,
                               borderColor: "gray",

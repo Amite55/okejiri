@@ -46,6 +46,7 @@ const My_Service_Package = () => {
         pageNum,
         service_id: id,
       }).unwrap();
+      console.log(res, "thi is response");
 
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
@@ -63,7 +64,7 @@ const My_Service_Package = () => {
       setHasMore(newData.length > 0 && currentPage < lastPage);
       setPage(currentPage + 1);
     } catch (err) {
-      console.log("❌ My Service Packages fetch error:", err);
+      console.log("❌ My Service Package", err);
     } finally {
       setRefreshing(false);
       setLoadingMore(false);
