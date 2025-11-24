@@ -1,6 +1,6 @@
 import { IconGetterThen } from "@/assets/icons";
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
@@ -22,7 +22,8 @@ const SettingsCard = ({
   contentStyle = "",
 }: ISettingsProps) => {
   return (
-    <Pressable
+    <TouchableOpacity
+      activeOpacity={0.6}
       onPress={onPress}
       style={[
         tw`flex-row justify-between bg-white rounded-full items-center w-full h-14 px-4`,
@@ -36,7 +37,7 @@ const SettingsCard = ({
         </Text>
       </View>
       <SvgXml xml={lastIcon || IconGetterThen} />
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

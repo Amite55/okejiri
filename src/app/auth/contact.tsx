@@ -37,8 +37,6 @@ const Contact = () => {
   const providerTypes = useProviderTypes();
   const { getLocation, location, loading: locatinLoading } = useCheckLocation();
 
-  // console.log(longitude, "status >>>>>>>");
-
   // ------------------------ api end point ---------------------
   const [information, { isLoading: isLoadingPersonalization }] =
     useCompletePersonalizationMutation({});
@@ -165,7 +163,7 @@ const Contact = () => {
             >
               <TextInput
                 placeholderTextColor="#777777"
-                style={tw`flex-1 text-base font-PoppinsMedium `}
+                style={tw`flex-1 text-black text-base font-PoppinsMedium `}
                 placeholder="Your number"
                 onChangeText={(value) => setPhone(value)}
                 keyboardType="numeric"
@@ -179,7 +177,7 @@ const Contact = () => {
             >
               <TextInput
                 placeholderTextColor="#777777"
-                style={tw`flex-1 text-base font-PoppinsMedium `}
+                style={tw`flex-1 text-black text-base font-PoppinsMedium `}
                 placeholder="Your location"
                 onChangeText={(value) => setAddress(value)}
               />
@@ -218,7 +216,7 @@ const Contact = () => {
                   <TextInput
                     placeholderTextColor="#777777"
                     textAlignVertical="top"
-                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    style={tw`flex-1  text-black text-base font-PoppinsMedium `}
                     placeholder="Write a bio about you"
                     onChangeText={(value) => setAbout(value)}
                     multiline

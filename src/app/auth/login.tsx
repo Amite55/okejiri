@@ -217,7 +217,7 @@ const LoginIndex = () => {
                 >
                   <TextInput
                     placeholderTextColor="#777777"
-                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    style={tw`flex-1 text-black text-base font-PoppinsMedium `}
                     placeholder="Enter your email"
                     value={values.email}
                     onChangeText={handleChange("email")}
@@ -237,7 +237,7 @@ const LoginIndex = () => {
                 >
                   <TextInput
                     secureTextEntry={isVisible}
-                    style={tw`flex-1 text-base font-PoppinsMedium text-black`}
+                    style={tw`flex-1  text-base font-PoppinsMedium text-black`}
                     placeholderTextColor="#777777"
                     placeholder="Enter your password"
                     value={values.password}

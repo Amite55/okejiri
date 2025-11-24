@@ -89,7 +89,6 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
         address: address,
         about: about,
       };
-      console.log(formData, "this fromdata --------->");
       if (userProfileInfo?.data?.role === "USER") {
         delete formData.about;
       }
@@ -120,7 +119,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [16, 9],
+      aspect: [4, 3],
       quality: 1,
     });
     if (!result.canceled && result.assets.length > 0) {
@@ -190,8 +189,8 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
           showsVerticalScrollIndicator={false}
           style={tw`flex-1 bg-base_color px-5`}
           contentContainerStyle={[
-            tw`justify-between flex-grow bg-base_color pb-1`,
-            isKeyboardVisible && tw`pb-10`,
+            tw`justify-between flex-grow bg-base_color`,
+            isKeyboardVisible ? tw`pb-16` : tw`pb-1`,
           ]}
         >
           {/* <View style={tw`flex-1 `}> */}
@@ -241,7 +240,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   placeholderTextColor="#535353"
                   onChangeText={(text) => setFullName(text)}
                   value={fullName}
-                  style={tw`flex-1 font-DegularDisplayDemoRegular text-base`}
+                  style={tw`flex-1 text-black font-DegularDisplayDemoRegular text-base`}
                   accessibilityLabel="Full name input"
                   accessibilityHint="Enter your full name"
                 />

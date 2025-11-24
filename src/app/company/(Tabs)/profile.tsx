@@ -32,7 +32,8 @@ const Profile = () => {
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
   const { data: userProfileInfo } = useProfileQuery({});
-  const [switchRole] = useRoleSwitchMutation();
+  const [switchRole, { isLoading: roleSwitchLoading }] =
+    useRoleSwitchMutation();
 
   // -------------- handle logout --------------
   const handleLogoutUser = async () => {
@@ -57,22 +58,38 @@ const Profile = () => {
   const handleRoleSwitch = async () => {
     try {
       const res = await switchRole({}).unwrap();
-
+      const user = res?.user || res?.data?.user;
       if (res) {
         await AsyncStorage.setItem("token", res?.data?.access_token);
-        await AsyncStorage.setItem("roll", res?.data?.user?.role);
+        await AsyncStorage.setItem("roll", user?.role);
         await AsyncStorage.setItem(
           "providerTypes",
-          res?.data?.user?.provider_type
+          user?.provider_type || "Individual"
         );
-        router.replace("/auth/contact");
-        // router.dismiss();
+
+        if (user?.is_personalization_complete === false) {
+          router.replace("/auth/contact");
+        } else if (user?.role === "PROVIDER") {
+          if (user?.has_service === false) {
+            router.replace({
+              pathname: "/auth/provide_service",
+              params: { from: "role_switch" },
+            });
+          }
+        } else {
+          router.replace("/service_provider/individual/(Tabs)/home");
+        }
       }
     } catch (error) {
-      console.log(error, "role not switched");
+      console.log(error, "role not switched role to Individual Provider");
       router.push({
         pathname: `/Toaster`,
-        params: { res: error?.message || error },
+        params: {
+          res:
+            error?.message ||
+            error ||
+            "Role not switched role to Individual Provider",
+        },
       });
     }
   };

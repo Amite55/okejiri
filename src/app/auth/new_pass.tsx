@@ -43,10 +43,10 @@ const New_pass = () => {
       if (res) {
         router.push("/chose_roll");
       }
-    } catch (error) {
+    } catch (error: any) {
       router.push({
         pathname: `/Toaster`,
-        params: { res: error?.message || error },
+        params: { res: error?.message || "Something went wrong" },
       });
     }
   };
@@ -108,7 +108,7 @@ const New_pass = () => {
                 >
                   <TextInput
                     secureTextEntry={isVisible}
-                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    style={tw`flex-1 text-black text-base font-PoppinsMedium `}
                     placeholderTextColor="#777777"
                     placeholder="Enter your password"
                     value={values.password}
@@ -137,7 +137,7 @@ const New_pass = () => {
                 >
                   <TextInput
                     secureTextEntry={isVisibleCP}
-                    style={tw`flex-1 text-base font-PoppinsMedium `}
+                    style={tw`flex-1 text-black text-base font-PoppinsMedium `}
                     placeholderTextColor="#777777"
                     placeholder="confirm password"
                     value={values.retype_password}
@@ -176,7 +176,7 @@ const New_pass = () => {
                       <Text
                         style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
                       >
-                        Change Password
+                        Loading ...
                       </Text>
                     </View>
                   ) : (

@@ -81,7 +81,7 @@ const Manage_Discounts = () => {
                 style={tw`border border-gray-300 h-14 rounded-full px-4 flex-row justify-between items-center`}
               >
                 <TextInput
-                  style={tw`flex-1`}
+                  style={tw`flex-1 text-black`}
                   keyboardType="numeric"
                   value={discountAmount}
                   onChangeText={setDiscountAmount}

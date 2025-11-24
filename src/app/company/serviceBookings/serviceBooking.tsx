@@ -45,15 +45,12 @@ const ServiceBooking = () => {
   const decimalDiscountCost = Math.round(
     Number(getProviderProfile?.data?.discount)
   );
-  const discountAmount =
-    getProviderProfile?.data?.discount > 0
-      ? (Number(cost) * decimalDiscountCost) / 100
-      : Number(cost);
+  const discountAmount = (Number(cost) * Number(decimalDiscountCost)) / 100;
+
+  const finalCost = Number(cost) - discountAmount;
 
   const totalCost =
-    isGroup === "Group"
-      ? Number(discountAmount) * numberOfPeople
-      : Number(cost);
+    isGroup === "Group" ? Number(finalCost) * numberOfPeople : Number(cost);
 
   // ================== handle next route ==================
   const handleNextRoute = () => {
@@ -222,11 +219,6 @@ const ServiceBooking = () => {
               style={tw`font-DegularDisplayDemoMedium  text-2xl text-primary`}
             >
               ₦ {Number(totalCost).toFixed(2)}
-              {/* {isGroup === "Group"
-                ? getProviderProfile?.data?.discount > 0
-                  ? (decimalDiscountCost * Number(cost)) / 100
-                  : cost
-                : cost} */}
             </Text>
           </View>
         }

@@ -2,7 +2,6 @@ import {
   Animated,
   Easing,
   NativeSyntheticEvent,
-  StyleProp,
   Text,
   TextInput,
   TextInputFocusEventData,

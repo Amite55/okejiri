@@ -115,7 +115,7 @@ const AddNewService = () => {
                     value={values.title}
                     placeholder="Package title goes here"
                     placeholderTextColor="#535353"
-                    style={tw`flex-1 text-regularText font-LufgaRegular text-base`}
+                    style={tw`flex-1 text-black text-regularText font-LufgaRegular text-base`}
                   />
                 </View>
                 {errors.title && touched.title && (
@@ -136,7 +136,7 @@ const AddNewService = () => {
                     value={values.about}
                     placeholder="Write something about this package"
                     placeholderTextColor="#535353"
-                    style={tw`flex-1 text-regularText font-LufgaRegular text-base`}
+                    style={tw`flex-1 text-black text-regularText font-LufgaRegular text-base`}
                   />
                 </View>
                 {errors.about && touched.about && (
@@ -156,7 +156,7 @@ const AddNewService = () => {
                     onChange={(text) => setServicesText(text.nativeEvent.text)}
                     placeholder="Type here..."
                     placeholderTextColor="#535353"
-                    style={tw`flex-1 text-regularText font-LufgaRegular text-base`}
+                    style={tw`flex-1 text-black text-regularText font-LufgaRegular text-base`}
                   />
                   <TouchableOpacity
                     activeOpacity={0.7}
@@ -210,7 +210,7 @@ const AddNewService = () => {
                     value={values.price}
                     placeholder="0.00"
                     placeholderTextColor="#535353"
-                    style={tw`flex-1 text-regularText font-LufgaRegular text-base`}
+                    style={tw`flex-1 text-black text-regularText font-LufgaRegular text-base`}
                   />
                   <Text
                     style={tw`text-regularText font-LufgaRegular text-base`}
