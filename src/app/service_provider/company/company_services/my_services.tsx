@@ -121,12 +121,8 @@ const My_Service = () => {
   };
 
   const handleAddSuccess = () => {
-    loadServices(1, true);  // refresh after adding new service
+    loadServices(1, true); // refresh after adding new service
   };
-
-
-
-
 
   // ======================== RENDER SERVICE ITEM ==========================
   const renderServiceItem = (item: any) => {
@@ -279,7 +275,11 @@ const My_Service = () => {
         </TouchableOpacity>
       </View>
 
-      <AddServicesModal ref={bottomSheetRef} exsiting_service={services} onSuccess={handleAddSuccess}/>
+      <AddServicesModal
+        ref={bottomSheetRef}
+        exsiting_service={services}
+        onSuccess={handleAddSuccess}
+      />
     </View>
   );
 };

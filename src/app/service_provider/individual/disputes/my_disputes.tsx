@@ -57,6 +57,7 @@ const My_Disputes = () => {
 
     return (
       <TouchableOpacity
+        activeOpacity={0.7}
         onPress={() =>
           router.push({
             pathname: "/service_provider/individual/disputes/disputes_status",

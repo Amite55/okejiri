@@ -32,7 +32,7 @@ const Disputes_Status = () => {
     return (
       <View style={tw`flex-1 justify-center items-center bg-white`}>
         <ActivityIndicator size="large" color="#" />
-        <Text style={tw`text-gray-600 text-base mt-3 font-poppins`}>
+        <Text style={tw`text-gray-600 text-base mt-3 font-PoppinsMedium`}>
           Loading dispute details...
         </Text>
       </View>

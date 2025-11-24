@@ -218,7 +218,7 @@ const Message = () => {
           ]}
         >
           <TextInput
-            style={tw`flex-1 px-4 rounded-md max-h-14`}
+            style={tw`flex-1 text-black px-4 rounded-md max-h-14`}
             placeholder="Type a message"
             multiline
             placeholderTextColor={"#535353"}
