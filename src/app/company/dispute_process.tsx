@@ -90,19 +90,18 @@ const Dispute_Process: React.FC = () => {
       // ✅ Append multiple images properly
       images.forEach((image: any, index: any) => {
         formData.append(`attachments[${index}]`, {
-          uri : image?.uri,
+          uri: image?.uri,
           name: image?.fileName,
           type: image?.mimeType,
         } as any);
       });
 
-      formData.forEach(item=>{
-        console.log(item)
-      })
-
+      formData.forEach((item) => {
+        console.log(item);
+      });
 
       const response = await addDispute(formData).unwrap();
-      console.log(" ============== reponse ========== ", response )
+      console.log(" ============== reponse ========== ", response);
       if (response) {
         router.push({
           pathname: "/Toaster",
@@ -183,7 +182,7 @@ const Dispute_Process: React.FC = () => {
                   Your explanation
                 </Text>
                 <TextInput
-                  style={styles.textArea}
+                  style={[styles.textArea, tw`text-black`]}
                   multiline={true}
                   numberOfLines={8}
                   placeholder="Type here"

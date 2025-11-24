@@ -16,11 +16,13 @@ import { SvgXml } from "react-native-svg";
 
 const Employees_Details = () => {
   const { id } = useLocalSearchParams();
-  console.log(" ============= id ", id)
-  const { data: employeeDetailsData, isLoading: isLoadingEmployeeDetails, isError: isErrorEmployeeDetails } = useEmployeeDetailsQuery(id)
+  console.log(" ============= id ", id);
+  const {
+    data: employeeDetailsData,
+    isLoading: isLoadingEmployeeDetails,
+    isError: isErrorEmployeeDetails,
+  } = useEmployeeDetailsQuery(id);
   const employee = employeeDetailsData?.data;
-
-  console.log(" ==================== employee details =============== ", JSON.stringify(employeeDetailsData, null, 2))
 
   return (
     <ScrollView
@@ -34,11 +36,14 @@ const Employees_Details = () => {
         pageName={"Employee details"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
-      // contentStyle={tw`px-5`}
+        // contentStyle={tw`px-5`}
       />
-      {isLoadingEmployeeDetails && <ActivityIndicator size={"large"} color="#FF6600" /> }
+      {isLoadingEmployeeDetails && (
+        <ActivityIndicator size={"large"} color="#FF6600" />
+      )}
 
-      {!isLoadingEmployeeDetails && <View style={tw`gap-3`}>
+      {!isLoadingEmployeeDetails && (
+        <View style={tw`gap-3`}>
           <View
             style={tw`px-4 py-5 bg-white rounded-2xl justify-center items-center gap-3`}
           >
@@ -70,14 +75,18 @@ const Employees_Details = () => {
           >
             <View style={tw`flex-row gap-3 items-center`}>
               <SvgXml xml={IconPhoneGray} />
-              <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+              <Text
+                style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+              >
                 {employee?.phone}
               </Text>
             </View>
 
             <View style={tw`flex-row gap-3 items-center`}>
               <SvgXml xml={IconLocationGray} />
-              <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+              <Text
+                style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+              >
                 {employee?.location}
               </Text>
             </View>
@@ -86,13 +95,12 @@ const Employees_Details = () => {
           <SettingsCard
             onPress={() =>
               router.push({
-                pathname: "/service_provider/company/my_employees/employee_profile_edit",
+                pathname:
+                  "/service_provider/company/my_employees/employee_profile_edit",
                 params: {
-                  id: id
-                }
-              }
-
-              )
+                  id: id,
+                },
+              })
             }
             fastIcon={IconEditPenBlack}
             title="Edit profile"
@@ -100,19 +108,18 @@ const Employees_Details = () => {
           <SettingsCard
             onPress={() =>
               router.push({
-                pathname: "/service_provider/company/my_employees/service_provided",
+                pathname:
+                  "/service_provider/company/my_employees/service_provided",
                 params: {
-                  id: id
-                }
+                  id: id,
+                },
               })
             }
             fastIcon={IconMyService}
             title="Service provided"
           />
-        </View>}
-        
-      
-
+        </View>
+      )}
     </ScrollView>
   );
 };

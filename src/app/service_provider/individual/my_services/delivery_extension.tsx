@@ -28,26 +28,30 @@ const Delivery_Extension = () => {
   const { id } = useLocalSearchParams();
   // console.log("Delivery extension === order id ", id);
 
-
-
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [reason, setReason] = useState("");
 
   // api
-  const [deliveryExtension, {
-    data: deliveryExtensionData,
-    isLoading: isLoadingDeliveryExtension,
-    isError: isErrorDeliveryExtension,
-    error: errorDeliveryExtension
-  }] = useRequestExtendDeliveryTimeMutation();
-
+  const [
+    deliveryExtension,
+    {
+      data: deliveryExtensionData,
+      isLoading: isLoadingDeliveryExtension,
+      isError: isErrorDeliveryExtension,
+      error: errorDeliveryExtension,
+    },
+  ] = useRequestExtendDeliveryTimeMutation();
 
   const handleRequest = async () => {
     // console.log("press================")
-    if (value &&  reason.trim().length > 3) {
+    if (value && reason.trim().length > 3) {
       try {
-        const requestBody = { time: Number(value), reason, booking_id: Number(id) };
+        const requestBody = {
+          time: Number(value),
+          reason,
+          booking_id: Number(id),
+        };
         // console.log("=========== requestbody ======= ", requestBody);
         const response = await deliveryExtension(requestBody).unwrap();
         // console.log("========== Response ======== ", response);
@@ -55,40 +59,40 @@ const Delivery_Extension = () => {
         // if (response.status === "success") {
         router.push({
           pathname: "/Toaster",
-          params: { res: response?.message || "Delivery extension request send" },
+          params: {
+            res: response?.message || "Delivery extension request send",
+          },
         });
         setTimeout(() => {
           router.back();
         }, 2000);
         // }
-      }
-      catch (err) {
+      } catch (err) {
         router.push({
           pathname: "/Toaster",
           params: { res: "Delivery extension request send failed" },
         });
-        console.log("Extension order error  ", err, " error ", errorDeliveryExtension)
+        console.log(
+          "Extension order error  ",
+          err,
+          " error ",
+          errorDeliveryExtension
+        );
         setTimeout(() => {
           router.back();
         }, 2000);
       }
-
-
-
+    } else {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: "Fillup all fields" },
+      });
+      // console.log("Extension order  ", err, " error ", errorDeliveryExtension)
+      setTimeout(() => {
+        router.back();
+      }, 2000);
     }
-    else{
-       router.push({
-          pathname: "/Toaster",
-          params: { res: "Fillup all fields" },
-        });
-        // console.log("Extension order  ", err, " error ", errorDeliveryExtension)
-        setTimeout(() => {
-          router.back();
-        }, 2000);
-    }
-  }
-
-
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -139,7 +143,7 @@ const Delivery_Extension = () => {
                 Reason
               </Text>
               <TextInput
-                style={styles.textArea}
+                style={[styles.textArea, tw`text-black`]}
                 multiline={true}
                 numberOfLines={4}
                 placeholder="Write a valid reason for extension"

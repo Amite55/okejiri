@@ -93,17 +93,6 @@ const KYC_Confirmation = () => {
         </View>
 
         <View style={tw`my-4 gap-4`}>
-          {/* {providerTypes && (
-            <View
-              style={tw`border border-gray-300 rounded-full h-14 flex-row justify-between items-center px-4`}
-            >
-              <TextInput style={tw`flex-1 text-black `} placeholder="Provider type" />
-              <TouchableOpacity>
-                <SvgXml xml={IconEditPenBlack} />
-              </TouchableOpacity>
-            </View>
-          )} */}
-
           <View style={tw`gap-4 justify-center items-center`}>
             <Image
               source={fastPhotoUriPerse}

@@ -43,7 +43,8 @@ const Account = () => {
   } = useGetAvailableBalanceQuery(String(stripeAccountId), {
     skip: !stripeAccountId,
   });
-  const [switchRole] = useRoleSwitchMutation();
+  const [switchRole, { isLoading: roleSwitchLoading }] =
+    useRoleSwitchMutation();
 
   const referralBonus = Number(userProfileInfo?.data?.referral_balance) || 0;
   const earned = Number(availableAmount?.data?.available?.[0]?.amount) || 0;
@@ -73,16 +74,18 @@ const Account = () => {
   const handleRoleSwitch = async () => {
     try {
       const res = await switchRole({}).unwrap();
-
       if (res) {
         await AsyncStorage.setItem("token", res?.data?.access_token);
         await AsyncStorage.setItem("roll", res?.data?.user?.role);
         await AsyncStorage.removeItem("providerTypes");
-        router.replace("/auth/contact");
-        // router.dismiss();
+        if (res?.data?.user?.is_personalization_complete === false) {
+          router.replace("/auth/contact");
+        } else {
+          router.replace("/company/(Tabs)");
+        }
       }
     } catch (error) {
-      console.log(error, "role not switched");
+      console.log(error, "role not switched role to user ");
       router.push({
         pathname: `/Toaster`,
         params: { res: error?.message || error },

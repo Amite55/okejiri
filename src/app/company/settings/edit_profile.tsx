@@ -89,7 +89,6 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
         address: address,
         about: about,
       };
-      console.log(formData, "this fromdata --------->");
       if (userProfileInfo?.data?.role === "USER") {
         delete formData.about;
       }
@@ -120,7 +119,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [16, 9],
+      aspect: [4, 3],
       quality: 1,
     });
     if (!result.canceled && result.assets.length > 0) {
@@ -190,8 +189,8 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
           showsVerticalScrollIndicator={false}
           style={tw`flex-1 bg-base_color px-5`}
           contentContainerStyle={[
-            tw`justify-between flex-grow bg-base_color pb-1`,
-            isKeyboardVisible && tw`pb-10`,
+            tw`justify-between flex-grow bg-base_color`,
+            isKeyboardVisible ? tw`pb-16` : tw`pb-1`,
           ]}
         >
           {/* <View style={tw`flex-1 `}> */}
@@ -241,37 +240,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                   placeholderTextColor="#535353"
                   onChangeText={(text) => setFullName(text)}
                   value={fullName}
-                  style={tw`flex-1 font-DegularDisplayDemoRegular text-base`}
-                  accessibilityLabel="Full name input"
-                  accessibilityHint="Enter your full name"
-                />
-              </View>
-
-              {/* Full Name Input Field */}
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
-              >
-                User name
-              </Text>
-              <View
-                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
-              >
-                <TextInput
-                  editable={
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? false
-                      : true
-                  }
-                  placeholder="smith"
-                  placeholderTextColor="#535353"
-                  onChangeText={(text) => setUserName(text)}
-                  value={userName}
-                  style={[
-                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-400`
-                      : tw`text-black text-base`,
-                  ]}
+                  style={tw`flex-1 text-black font-DegularDisplayDemoRegular text-base`}
                   accessibilityLabel="Full name input"
                   accessibilityHint="Enter your full name"
                 />

@@ -111,7 +111,7 @@ const Add_Package = () => {
             </Text>
             <TextInput
               textAlign="left"
-              style={tw`border border-gray-300 h-14 rounded-full px-4 justify-center items-center`}
+              style={tw`border text-black border-gray-300 h-14 rounded-full px-4 justify-center items-center`}
               placeholder="Service title goes here"
               onChangeText={(newText) => console.log(newText)}
               placeholderTextColor={"#535353"}
@@ -127,7 +127,7 @@ const Add_Package = () => {
               Service details
             </Text>
             <TextInput
-              style={styles.textArea}
+              style={[styles.textArea, tw`text-black`]}
               multiline={true}
               numberOfLines={4}
               placeholder="Type here"
@@ -148,7 +148,7 @@ const Add_Package = () => {
               style={tw`border  border-gray-300 h-14 rounded-full px-4 flex-row justify-between items-center`}
             >
               <TextInput
-                style={tw`flex-1`}
+                style={tw`flex-1 text-black`}
                 placeholder="Service title goes here"
                 onChangeText={(newText) => console.log(newText)}
                 placeholderTextColor={"#535353"}
