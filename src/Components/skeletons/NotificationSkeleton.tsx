@@ -3,8 +3,12 @@ import { Skeleton } from "moti/skeleton";
 import React from "react";
 import { ScrollView, View } from "react-native";
 
-const NotificationSkeleton = () => {
-  const dummyArray = [1, 2, 3, 4, 5];
+interface IProps {
+  dummyArray?: number;
+}
+
+const NotificationSkeleton = ({ dummyArray = 4 }: IProps) => {
+  // const dummyArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -21,7 +25,7 @@ const NotificationSkeleton = () => {
 
       {/* ---------- Notification Cards ---------- */}
       <View style={tw`gap-3`}>
-        {dummyArray.map((i) => (
+        {Array.from({ length: dummyArray }).map((_, i) => (
           <View
             key={i}
             style={tw`flex-row items-start bg-white bg-opacity-10 rounded-xl p-3 gap-3`}

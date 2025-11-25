@@ -5,7 +5,7 @@ import tw from "@/src/lib/tailwind";
 import { useForgotPasswordMutation } from "@/src/redux/apiSlices/authSlices";
 import { router } from "expo-router";
 import { Formik } from "formik";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -21,6 +21,7 @@ import {
 } from "react-native";
 
 const Forgot_pass = () => {
+  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
   // ========================= api end point =========================
   const [credentials, { isLoading: isLoadingLogin }] =
     useForgotPasswordMutation();
@@ -54,6 +55,20 @@ const Forgot_pass = () => {
     return errors;
   };
 
+  // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true)
+    );
+    const hide = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -61,9 +76,11 @@ const Forgot_pass = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <ScrollView style={tw`flex-1 bg-base_color px-5`}>
+        <ScrollView
+          style={tw`flex-1 bg-base_color px-5`}
+          contentContainerStyle={[isKeyboardVisible ? tw`pb-16` : tw`pb-0`]}
+        >
           <BackTitleButton onPress={() => router.back()} pageName={""} />
-
           <View style={tw`justify-center items-center mb-12`}>
             <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
             <AuthComponents
@@ -71,7 +88,6 @@ const Forgot_pass = () => {
               subTitle="Enter your email address that you provided during sign up. We will send you a 6 digit code through that email."
             />
           </View>
-
           <Formik
             initialValues={{ email: "" }}
             onSubmit={(values) => {
@@ -114,6 +130,7 @@ const Forgot_pass = () => {
                   onPress={() => {
                     handleSubmit();
                   }}
+                  disabled={isLoadingLogin}
                 >
                   {isLoadingLogin ? (
                     <View
@@ -131,7 +148,7 @@ const Forgot_pass = () => {
                     </View>
                   ) : (
                     <Text
-                      style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
+                      style={tw` text-center text-white text-base py-3  font-PoppinsBold`}
                     >
                       Send
                     </Text>

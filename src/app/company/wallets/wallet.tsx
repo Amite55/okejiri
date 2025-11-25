@@ -186,7 +186,7 @@ const Wallet_Index = () => {
   const ListHeader = () => (
     <View style={tw``}>
       <BackTitleButton
-        pageName={"Yourwalletasdfasdf"}
+        pageName={"Your Wallet"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />

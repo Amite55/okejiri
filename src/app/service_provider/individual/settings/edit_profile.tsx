@@ -189,7 +189,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
           {/* <View style={tw`flex-1 `}> */}
           <View>
             <BackTitleButton
-              pageName={"Edit profile"}
+              pageName={"Edit profile =="}
               onPress={handleBackPress}
               titleTextStyle={tw`text-xl`}
             />
@@ -227,14 +227,25 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 Full name
               </Text>
               <View
-                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
+                style={[
+                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
+                  userProfileInfo?.data?.kyc_status === "Verified" ||
+                  userProfileInfo?.data?.kyc_status === "In Review"
+                    ? tw`bg-gray-200 border-slate-100`
+                    : tw``,
+                ]}
               >
                 <TextInput
                   placeholder="John Smith"
                   placeholderTextColor="#535353"
                   onChangeText={(text) => setFullName(text)}
                   value={fullName}
-                  style={tw`flex-1 font-DegularDisplayDemoRegular text-black text-base`}
+                  style={[
+                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
+                    userProfileInfo?.data?.kyc_status === "Verified"
+                      ? tw`text-gray-600`
+                      : tw`text-black text-base`,
+                  ]}
                   accessibilityLabel="Full name input"
                   accessibilityHint="Enter your full name"
                 />
@@ -246,30 +257,14 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 Business name
               </Text>
               <View
-                style={[
-                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
-                  userProfileInfo?.data?.kyc_status === "Verified" ||
-                  userProfileInfo?.data?.kyc_status === "In Review"
-                    ? tw`bg-gray-200 border-slate-100`
-                    : tw``,
-                ]}
+                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
               >
                 <TextInput
-                  editable={
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? false
-                      : true
-                  }
                   placeholder="John Smith"
                   placeholderTextColor="#535353"
                   onChangeText={(text) => setBusinessName(text)}
                   value={businessName}
-                  style={[
-                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-600`
-                      : tw`text-black text-base`,
-                  ]}
+                  style={tw`flex-1 font-DegularDisplayDemoRegular text-black text-base`}
                   accessibilityLabel="Full name input"
                   accessibilityHint="Enter your full name"
                 />
@@ -282,30 +277,14 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 User name
               </Text>
               <View
-                style={[
-                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
-                  userProfileInfo?.data?.kyc_status === "Verified" ||
-                  userProfileInfo?.data?.kyc_status === "In Review"
-                    ? tw`bg-gray-200 border-slate-100`
-                    : tw``,
-                ]}
+                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
               >
                 <TextInput
-                  editable={
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? false
-                      : true
-                  }
                   placeholder="smith"
                   placeholderTextColor="#535353"
                   onChangeText={(text) => setUserName(text)}
                   value={userName}
-                  style={[
-                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-600`
-                      : tw`text-black text-base`,
-                  ]}
+                  style={tw`flex-1 font-DegularDisplayDemoRegular text-black text-base`}
                   accessibilityLabel="Full name input"
                   accessibilityHint="Enter your full name"
                 />
@@ -317,31 +296,15 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 Contact Number
               </Text>
               <View
-                style={[
-                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
-                  userProfileInfo?.data?.kyc_status === "Verified" ||
-                  userProfileInfo?.data?.kyc_status === "In Review"
-                    ? tw`bg-gray-200 border-slate-100`
-                    : tw``,
-                ]}
+                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
               >
                 <TextInput
-                  editable={
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? false
-                      : true
-                  }
                   placeholder="+12121212112"
                   placeholderTextColor="#535353"
                   onChangeText={(text) => setPhoneNumber(text)}
                   value={phoneNumber}
                   keyboardType="phone-pad"
-                  style={[
-                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-600`
-                      : tw`text-black text-base`,
-                  ]}
+                  style={tw`flex-1 font-DegularDisplayDemoRegular text-black text-base`}
                   accessibilityLabel="Contact number input"
                   accessibilityHint="Enter your contact number"
                 />
@@ -353,30 +316,14 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                 Location
               </Text>
               <View
-                style={[
-                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
-                  userProfileInfo?.data?.kyc_status === "Verified" ||
-                  userProfileInfo?.data?.kyc_status === "In Review"
-                    ? tw`bg-gray-200 border-slate-100`
-                    : tw``,
-                ]}
+                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
               >
                 <TextInput
-                  editable={
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? false
-                      : true
-                  }
                   placeholder="Dhaka, Bangladesh"
                   placeholderTextColor="#535353"
                   onChangeText={(text) => setAddress(text)}
                   value={address}
-                  style={[
-                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-600`
-                      : tw`text-black text-base`,
-                  ]}
+                  style={tw`flex-1 font-DegularDisplayDemoRegular text-black text-base`}
                   accessibilityLabel="address input"
                   accessibilityHint="Enter your address"
                 />
