@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 
 import { IconBackLeftArrow } from "@/assets/icons";
 import tw from "@/src/lib/tailwind";
@@ -21,6 +21,7 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SvgXml } from "react-native-svg";
 
+import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
 import {
   disconnectSocket,
   getSocket,
@@ -49,16 +50,17 @@ const Message = () => {
     const res = await getMessages({
       receiver_id: receiverIdNumber,
       page: 1,
-      per_page: 60,
+      per_page: 500,
     });
     const messageList = res?.data?.data?.data || [];
     if (res?.data) {
-      setAllMessages([...messageList].reverse());
+      setAllMessages(messageList);
+      // setAllMessages([...messageList].reverse());
     }
   };
 
   // ------------- fast render this screen connect to socket -----------------------------
-  useEffect(() => {
+  React.useLayoutEffect(() => {
     handleGetMessages();
     if (!ProfilerData?.data?.id) return; // wait for user data
     // connect only once
@@ -95,16 +97,14 @@ const Message = () => {
     }
   }, [message, receiverIdNumber, sendMessage, handleGetMessages]);
 
-  useEffect(() => {
+  React.useLayoutEffect(() => {
     socket?.on("private-message", (data) => {
-      if (receiverId) {
-        handleGetMessages();
-      }
+      handleGetMessages();
     });
   }, [socket]);
 
   // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
-  useEffect(() => {
+  React.useLayoutEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
       setKeyboardVisible(true)
     );
@@ -117,6 +117,10 @@ const Message = () => {
     };
   }, []);
 
+  if (messageResults.isLoading || isProfilerLoading) {
+    return <NotificationSkeleton dummyArray={8} />;
+  }
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -124,32 +128,35 @@ const Message = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
     >
       <View style={tw`bg-base_color flex-1`}>
-        <View style={tw`px-4 py-3 flex-row items-center gap-2 shadow`}>
+        <View style={tw`pr-4 py-2.5 flex-row items-center  shadow`}>
           <View style={tw`flex-row items-center gap-2`}>
-            <TouchableOpacity onPress={() => router.back()} style={tw`pr-3`}>
-              <SvgXml xml={IconBackLeftArrow} />
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={tw`p-4 justify-center items-center rounded-full `}
+            >
+              <SvgXml width={25} xml={IconBackLeftArrow} />
             </TouchableOpacity>
             <Image
-              style={tw`w-11 h-11 rounded-full `}
+              style={tw`w-12 h-12 rounded-full `}
               source={receiverImage}
               contentFit="cover"
             />
           </View>
           <Text
-            style={tw`text-xl text-deepBlue400 font-DegularDisplayDemoBold`}
+            style={tw`text-xl pl-2  text-deepBlue400 font-DegularDisplayDemoBold`}
           >
             {receiverName}
           </Text>
         </View>
 
         <FlatList
-          keyboardShouldPersistTaps="handled"
-          invertStickyHeaders
           inverted
+          keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           keyExtractor={(item) => item?.id.toString()}
           contentContainerStyle={tw`gap-5 py-6`}
-          data={allMessages?.sort((a, b) => b?.id - a?.id)}
+          data={Array.isArray(allMessages) ? [...allMessages]?.reverse() : []}
+          // data={allMessages}
           renderItem={({ item }) => {
             const isAuthUser =
               ProfilerData?.data?.id === item?.sender_id ? true : false;
@@ -174,7 +181,7 @@ const Message = () => {
                       </View>
                     </View>
                     <Image
-                      style={tw`w-10 h-10 rounded-full `}
+                      style={tw`w-6 h-6 -mt-1.5 rounded-full `}
                       source={{ uri: item?.sender?.avatar }}
                       contentFit="cover"
                     />
@@ -183,7 +190,7 @@ const Message = () => {
                 {!isAuthUser && (
                   <View style={tw` flex-row items-start gap-2 px-4`}>
                     <Image
-                      style={tw`w-10 h-10 rounded-full `}
+                      style={tw`w-6 h-6 rounded-full -mt-1.5`}
                       source={{ uri: item?.sender?.avatar }}
                       contentFit="cover"
                     />
@@ -214,7 +221,7 @@ const Message = () => {
         <View
           style={[
             tw`flex-row items-center border border-gray-200 mx-3 m-3 rounded-full gap-2 `,
-            isKeyboardVisible ? tw`mb-10` : tw`mb-0`,
+            isKeyboardVisible ? tw`mb-14` : tw`mb-0`,
           ]}
         >
           <TextInput

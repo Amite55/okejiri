@@ -33,6 +33,7 @@ const Setup_Business_Profile = () => {
   const [isFocus, setIsFocus] = useState(false);
   const [error, setError] = useState("");
   const stgValue = value.map(String);
+  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
 
   // ************************** api end point **************************
   const [information, { isLoading: isLoadingPersonalization }] =
@@ -66,12 +67,25 @@ const Setup_Business_Profile = () => {
       console.log(error, "not registered user");
       router.push({
         pathname: `/Toaster`,
-        params: { res: error?.message || error },
+        params: { res: error?.message || "Something went wrong" },
       });
     }
   };
   useEffect(() => {
     setValue([]);
+  }, []);
+  // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true)
+    );
+    const hide = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
   }, []);
   const validate = (values: any) => {
     const errors = {};
@@ -103,6 +117,7 @@ const Setup_Business_Profile = () => {
   if (isLoadingServices) {
     return <ProviderProfileSkeleton />;
   }
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -134,7 +149,10 @@ const Setup_Business_Profile = () => {
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
               style={tw`flex-1  bg-base_color`}
-              contentContainerStyle={tw`p-4 flex-grow justify-between `}
+              contentContainerStyle={[
+                tw`px-4 flex-grow justify-between `,
+                isKeyboardVisible ? tw`pb-16` : tw`pb-1`,
+              ]}
             >
               <View style={tw` mb-8`}>
                 <BackTitleButton
@@ -291,7 +309,7 @@ const Setup_Business_Profile = () => {
                 <PrimaryButton
                   onPress={() => handleSubmit()}
                   contentStyle={tw`h-12 `}
-                  titleProps="Sign up"
+                  titleProps="Submit"
                 />
               )}
             </ScrollView>

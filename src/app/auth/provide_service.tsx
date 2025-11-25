@@ -12,7 +12,10 @@ import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
-import { useCompletePersonalizationMutation } from "@/src/redux/apiSlices/personalizationSlice";
+import {
+  useCompletePersonalizationMutation,
+  useRequestAddServiceMutation,
+} from "@/src/redux/apiSlices/personalizationSlice";
 import { useServicesQuery } from "@/src/redux/apiSlices/userProvider/homeSlices";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -54,6 +57,8 @@ const Provide_Service = () => {
   const { data: getProfileData, isLoading: isLoadingProfile } = useProfileQuery(
     {}
   );
+  const [sendRequestService, { isLoading: isLoadingSendRequest }] =
+    useRequestAddServiceMutation({});
   const handleScreenInfo = async () => {
     try {
       if (value.length === 0) {
@@ -97,20 +102,38 @@ const Provide_Service = () => {
   };
 
   // ============================ request for new service ============================
-  const handleRequestService = () => {
+  const handleRequestService = async () => {
     try {
-      if (!sendRequest) {
-        setError("Please Enter your Service");
-        return;
+      if (sendRequest) {
+        const res = await sendRequestService({
+          service_name: sendRequest,
+        }).unwrap();
+        if (res) {
+          setSendRequest("");
+          setModalVisible(false);
+          router.push({
+            pathname: `/Toaster`,
+            params: {
+              res: "Service added successfully",
+            },
+          });
+        }
       } else {
-        setError("");
-        setModalVisible(false);
-        console.log(sendRequest, "this is value");
+        setSendRequest("");
+        setModalVisible(true);
+        router.push({
+          pathname: `/Toaster`,
+          params: {
+            res: "Please add your new service!",
+          },
+        });
       }
     } catch (error) {
       router.push({
         pathname: `/Toaster`,
-        params: { res: error?.message || error },
+        params: {
+          res: error?.message || "Something went wrong please try again",
+        },
       });
     }
   };
@@ -298,6 +321,7 @@ const Provide_Service = () => {
                       style={tw`border border-gray-400 h-14 text-black px-4 rounded-full mt-2 mx-4`}
                       placeholder="Type here..."
                       placeholderTextColor="#535353"
+                      value={sendRequest}
                       onChangeText={(i) => setSendRequest(i)}
                     />
                     {error && (
@@ -314,7 +338,7 @@ const Provide_Service = () => {
                       onPress={() => {
                         handleRequestService();
                       }}
-                      titleProps="Send request"
+                      titleProps={isLoadingSendRequest ? "Sending" : "Send"}
                     />
                   </View>
                 </View>

@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
+  ActivityIndicator,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -24,6 +25,8 @@ import { OtpInput } from "react-native-otp-entry";
 
 const RegisterOTP = () => {
   const { email } = useLocalSearchParams();
+  const [otp, setOtp] = React.useState("");
+  const [otpKey, setOtpKey] = React.useState(Date.now());
 
   // ------------------------ api end point ---------------------
   const [otpVerify, { isLoading: isLoadingRegister, reset }] =
@@ -32,6 +35,8 @@ const RegisterOTP = () => {
     useForgotPasswordMutation();
 
   const handleResendOtp = async () => {
+    setOtp("");
+    setOtpKey(Date.now());
     try {
       const response = await resendOtp({ email }).unwrap();
       if (response) {
@@ -71,6 +76,8 @@ const RegisterOTP = () => {
             <Text style={tw`mb-1`}>OTP</Text>
             <View style={tw`flex-row gap-5`}>
               <OtpInput
+                key={otpKey}
+                value={otp}
                 numberOfDigits={6}
                 focusColor={PrimaryColor}
                 autoFocus={false}
@@ -81,9 +88,9 @@ const RegisterOTP = () => {
                 type="numeric"
                 secureTextEntry={false}
                 focusStickBlinkingDuration={500}
-                // onTextChange={(text) => {
-                //   clg
-                // }}
+                onTextChange={(text) => {
+                  setOtp(text);
+                }}
                 onFilled={async (text) => {
                   try {
                     const res = await otpVerify({
@@ -125,9 +132,17 @@ const RegisterOTP = () => {
                   handleResendOtp();
                 }}
               >
-                <Text style={tw`text-primary font-semibold text-[12px]`}>
-                  Send Again
-                </Text>
+                {isLoadingResend ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={PrimaryColor}
+                    style={tw`mr-4`}
+                  />
+                ) : (
+                  <Text style={tw`text-primary font-semibold text-[12px]`}>
+                    Send Again
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
