@@ -6,7 +6,7 @@ import tw from "@/src/lib/tailwind";
 import { useResetPasswordMutation } from "@/src/redux/apiSlices/authSlices";
 import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -28,6 +28,7 @@ const New_pass = () => {
   const [isEyeShowCP, setIsEyeShowCP] = useState<boolean>(false);
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [isVisibleCP, setIsVisibleCP] = useState<boolean>(true);
+  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
 
   // ------------------------ api end point ---------------------
   const [credentials, { isLoading: isLoadingLogin }] =
@@ -63,6 +64,20 @@ const New_pass = () => {
     return errors;
   };
 
+  // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true)
+    );
+    const hide = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -70,7 +85,13 @@ const New_pass = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <ScrollView style={tw`flex-1 bg-base_color px-5`}>
+        <ScrollView
+          style={tw`flex-1 bg-base_color px-5`}
+          contentContainerStyle={[
+            tw``,
+            isKeyboardVisible ? tw`pb-16` : tw`pb-0`,
+          ]}
+        >
           <BackTitleButton onPress={() => router.back()} pageName={""} />
 
           <View style={tw`justify-center items-center mb-12`}>

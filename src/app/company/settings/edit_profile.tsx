@@ -228,107 +228,11 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
             <View style={tw`mt-4`}>
               {/* Full Name Input Field */}
               <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
-              >
-                Your full name
-              </Text>
-              <View
-                style={tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`}
-              >
-                <TextInput
-                  placeholder="John Smith"
-                  placeholderTextColor="#535353"
-                  onChangeText={(text) => setFullName(text)}
-                  value={fullName}
-                  style={tw`flex-1 text-black font-DegularDisplayDemoRegular text-base`}
-                  accessibilityLabel="Full name input"
-                  accessibilityHint="Enter your full name"
-                />
-              </View>
-
-              {/* Full Name Input Field */}
-              {userProfileInfo?.data?.role === "PROVIDER" && (
-                <View>
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
-                  >
-                    User name
-                  </Text>
-                  <View
-                    style={[
-                      tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
-                      userProfileInfo?.data?.kyc_status === "Verified" ||
-                      userProfileInfo?.data?.kyc_status === "In Review"
-                        ? tw`bg-gray-100 border-slate-100`
-                        : tw``,
-                    ]}
-                  >
-                    <TextInput
-                      editable={
-                        userProfileInfo?.data?.kyc_status === "Verified" ||
-                        userProfileInfo?.data?.kyc_status === "In Review"
-                          ? false
-                          : true
-                      }
-                      placeholder="smith"
-                      placeholderTextColor="#535353"
-                      onChangeText={(text) => setUserName(text)}
-                      value={userName}
-                      style={[
-                        tw`flex-1 font-DegularDisplayDemoRegular text-base`,
-                        userProfileInfo?.data?.kyc_status === "Verified"
-                          ? tw`text-gray-600`
-                          : tw`text-black text-base`,
-                      ]}
-                      accessibilityLabel="Full name input"
-                      accessibilityHint="Enter your full name"
-                    />
-                  </View>
-                </View>
-              )}
-
-              {/* Contact Number Input Field */}
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
-              >
-                Contact Number
-              </Text>
-              <View
                 style={[
-                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
-                  userProfileInfo?.data?.kyc_status === "Verified" ||
-                  userProfileInfo?.data?.kyc_status === "In Review"
-                    ? tw`bg-slate-100 border-slate-100`
-                    : tw``,
+                  tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`,
                 ]}
               >
-                <TextInput
-                  editable={
-                    userProfileInfo?.data?.kyc_status === "Verified" ||
-                    userProfileInfo?.data?.kyc_status === "In Review"
-                      ? false
-                      : true
-                  }
-                  placeholder="+12121212112"
-                  placeholderTextColor="#535353"
-                  onChangeText={(text) => setPhoneNumber(text)}
-                  value={phoneNumber}
-                  keyboardType="phone-pad"
-                  style={[
-                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-600`
-                      : tw`text-black text-base`,
-                  ]}
-                  accessibilityLabel="Contact number input"
-                  accessibilityHint="Enter your contact number"
-                />
-              </View>
-              {/* address Input Field */}
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
-              >
-                Address
+                Your full name
               </Text>
               <View
                 style={[
@@ -346,15 +250,94 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
                       ? false
                       : true
                   }
+                  placeholder="John Smith"
+                  placeholderTextColor="#535353"
+                  onChangeText={(text) => setFullName(text)}
+                  value={fullName}
+                  style={[
+                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
+                    userProfileInfo?.data?.kyc_status === "Verified"
+                      ? tw`text-gray-600`
+                      : tw`text-black text-base`,
+                  ]}
+                  accessibilityLabel="Full name input"
+                  accessibilityHint="Enter your full name"
+                />
+              </View>
+
+              {/* Full Name Input Field */}
+              {userProfileInfo?.data?.role === "PROVIDER" && (
+                <View>
+                  <Text
+                    style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
+                  >
+                    User name
+                  </Text>
+                  <View
+                    style={[
+                      tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
+                      ,
+                    ]}
+                  >
+                    <TextInput
+                      placeholder="smith"
+                      placeholderTextColor="#535353"
+                      onChangeText={(text) => setUserName(text)}
+                      value={userName}
+                      style={[
+                        tw`flex-1 font-DegularDisplayDemoRegular text-base text-black`,
+                      ]}
+                      accessibilityLabel="Full name input"
+                      accessibilityHint="Enter your full name"
+                    />
+                  </View>
+                </View>
+              )}
+
+              {/* Contact Number Input Field */}
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
+              >
+                Contact Number
+              </Text>
+              <View
+                style={[
+                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
+                  ,
+                ]}
+              >
+                <TextInput
+                  placeholder="+12121212112"
+                  placeholderTextColor="#535353"
+                  onChangeText={(text) => setPhoneNumber(text)}
+                  value={phoneNumber}
+                  keyboardType="phone-pad"
+                  style={[
+                    tw`flex-1 font-DegularDisplayDemoRegular text-base text-black`,
+                  ]}
+                  accessibilityLabel="Contact number input"
+                  accessibilityHint="Enter your contact number"
+                />
+              </View>
+              {/* address Input Field */}
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-black ml-2 mb-2`}
+              >
+                Address
+              </Text>
+              <View
+                style={[
+                  tw`w-full h-14 rounded-full border border-gray-300 px-4 justify-center mb-4`,
+                  ,
+                ]}
+              >
+                <TextInput
                   placeholder="Dhaka, Bangladesh"
                   placeholderTextColor="#535353"
                   onChangeText={(text) => setAddress(text)}
                   value={address}
                   style={[
-                    tw`flex-1 font-DegularDisplayDemoRegular text-base`,
-                    userProfileInfo?.data?.kyc_status === "Verified"
-                      ? tw`text-gray-600 `
-                      : tw`text-black `,
+                    tw`flex-1 font-DegularDisplayDemoRegular text-base text-black`,
                   ]}
                   accessibilityLabel="address input"
                   accessibilityHint="Enter your address"

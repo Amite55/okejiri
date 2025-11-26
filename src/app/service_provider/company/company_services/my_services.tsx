@@ -194,43 +194,6 @@ const My_Service = () => {
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
             />
-
-            {/* <View style={tw`flex-row justify-between items-center mt-3`}>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
-              >
-                {services.length} services
-              </Text>
-
-              {stripe_account_id && stripe_payouts_enabled === 1 ? (
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push(
-                      "/service_provider/individual/my_services/add_package"
-                    )
-                  }
-                  style={tw`flex-row justify-center items-center gap-2 w-40 h-14 bg-primary rounded-full`}
-                >
-                  <SvgXml xml={IconPlus} />
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
-                  >
-                    Add more
-                  </Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={handelCannact}
-                  style={tw`flex-row justify-center items-center gap-2 w-40 h-14 bg-primary rounded-full`}
-                >
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
-                  >
-                    Connect
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View> */}
           </View>
         )}
         ListFooterComponent={
@@ -270,7 +233,7 @@ const My_Service = () => {
             <SvgXml xml={IconPlus} width={15} />
           )}
           <Text style={tw`text-white text-xl font-DegularDisplayDemoRegular`}>
-            {isLoadingFetchMyService ? "Adding more" : "Add more"}
+            {isLoadingFetchMyService ? "Adding more .." : "Add more"}
           </Text>
         </TouchableOpacity>
       </View>

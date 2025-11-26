@@ -11,7 +11,7 @@ import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { useCompletePersonalizationMutation } from "@/src/redux/apiSlices/personalizationSlice";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -33,6 +33,7 @@ const Contact = () => {
   const [address, setAddress] = useState("");
   const [about, setAbout] = useState("");
   const [locationModalVisible, setLocationModal] = useState(false);
+  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
   const roll = useRoll();
   const providerTypes = useProviderTypes();
   const { getLocation, location, loading: locatinLoading } = useCheckLocation();
@@ -123,6 +124,20 @@ const Contact = () => {
     }
   };
 
+  // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true)
+    );
+    const hide = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+  // =================== loading end ===================
   if (isLoadingProfile || isLoadingPersonalization) {
     return <RoleChooseSkeleton />;
   }
@@ -138,7 +153,10 @@ const Contact = () => {
           style={tw`flex-1 bg-base_color px-5`}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={tw`pb-2 justify-between  flex-grow`}
+          contentContainerStyle={[
+            tw`pb-2 justify-between  flex-grow`,
+            isKeyboardVisible ? tw`pb-16` : tw`pb-0`,
+          ]}
         >
           <View>
             <BackTitleButton

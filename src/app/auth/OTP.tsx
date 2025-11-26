@@ -2,11 +2,15 @@ import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useVerifyOtpMutation } from "@/src/redux/apiSlices/authSlices";
+import {
+  useForgotPasswordMutation,
+  useVerifyOtpMutation,
+} from "@/src/redux/apiSlices/authSlices";
 import { PrimaryColor } from "@/utils/utils";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
+  ActivityIndicator,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -20,9 +24,33 @@ import { OtpInput } from "react-native-otp-entry";
 
 const OTP = () => {
   const { email } = useLocalSearchParams();
+  const [otp, setOtp] = React.useState("");
+  const [otpKey, setOtpKey] = React.useState(Date.now());
 
   // ------------------------ api end point ---------------------
   const [otpVerify, { isLoading: isLoadingRegister }] = useVerifyOtpMutation();
+  const [resendOtp, { isLoading: isLoadingResend }] =
+    useForgotPasswordMutation();
+
+  const handleResendOtp = async () => {
+    try {
+      setOtp("");
+      setOtpKey(Date.now());
+      const response = await resendOtp({ email }).unwrap();
+      if (response) {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: "OTP resent again" },
+        });
+      }
+    } catch (error) {
+      console.log("Error resending OTP:", error);
+      router.push({
+        pathname: "/Toaster",
+        params: { res: error?.message || error },
+      });
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -46,6 +74,9 @@ const OTP = () => {
             <Text style={tw`mb-1`}>OTP</Text>
             <View style={tw`flex-row gap-5`}>
               <OtpInput
+                key={otpKey}
+                value={otp}
+                onTextChange={(text) => setOtp(text)}
                 numberOfDigits={6}
                 focusColor={PrimaryColor}
                 autoFocus={false}
@@ -91,10 +122,25 @@ const OTP = () => {
             </View>
 
             <View style={tw`w-full items-end mt-1`}>
-              <TouchableOpacity style={tw``}>
-                <Text style={tw`text-primary font-semibold text-[12px]`}>
-                  Send Again
-                </Text>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  handleResendOtp();
+                }}
+                style={tw``}
+              >
+                {isLoadingResend ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={PrimaryColor}
+                    style={tw`mr-4`}
+                  />
+                ) : (
+                  <Text style={tw`text-primary font-semibold text-[12px]`}>
+                    Send Again
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
