@@ -109,7 +109,6 @@ const Contact = () => {
             params: { jsonContactInfo: JSON.stringify(info) },
           });
         } else if (providerTypes === "Company") {
-          console.log(info, "this is contact info");
           router.replace({
             pathname: "/auth/setup_business_profile",
             params: { jsonContactInfo: JSON.stringify(info) },

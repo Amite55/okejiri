@@ -47,11 +47,6 @@ const Home_Index_Company = () => {
 
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
 
-  // if()
-  // console.log("++++++++++ recent order data =================== ", recentOrder);
-  // console.log("++++++++++ recent transaction order data inside =================== ", recentTransaction?.data.data);
-  // data fetch - END
-
   // state for fetch data;
   const formateDate = (dateStr: string) => {
     const date = new Date(dateStr);

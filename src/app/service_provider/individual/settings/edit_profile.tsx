@@ -189,7 +189,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
           {/* <View style={tw`flex-1 `}> */}
           <View>
             <BackTitleButton
-              pageName={"Edit profile =="}
+              pageName={"Edit profile"}
               onPress={handleBackPress}
               titleTextStyle={tw`text-xl`}
             />
