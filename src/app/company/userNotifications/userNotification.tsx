@@ -1,23 +1,18 @@
-
-
-
-import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
-import tw from "@/src/lib/tailwind";
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
-
 import { IconDeliveryTimeExt } from "@/assets/icons";
 import AcceptedModal from "@/src/Components/AcceptedModal";
 import FeedbackModel from "@/src/Components/FeedbackModal";
 import ProviderNotificationCard from "@/src/Components/ProviderNotificationCard";
 import RequestDeliveryTimeExtModal from "@/src/Components/RequestDeliveryTimeExtModal";
 import RequestForDeliveryModal from "@/src/Components/RequestForDeliveryModal";
-
+import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
+import tw from "@/src/lib/tailwind";
 import {
   useGetNotificationsQuery,
   useSingleMarkMutation,
 } from "@/src/redux/apiSlices/notificationsSlices";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -37,7 +32,9 @@ const Notification = () => {
 
   // Selected IDs
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-  const [requestDeliveryExtId, setRequestDeliveryExtId] = useState<number | null>(null);
+  const [requestDeliveryExtId, setRequestDeliveryExtId] = useState<
+    number | null
+  >(null);
 
   const [acceptedModalShow, setAcceptedModalShow] = useState(false);
 
@@ -46,7 +43,6 @@ const Notification = () => {
     data: notificationData,
     isLoading: isLoadingNotification,
     isFetching: isFetchingNotification,
-
   } = useGetNotificationsQuery(page, {
     refetchOnMountOrArgChange: true,
   });
@@ -82,7 +78,7 @@ const Notification = () => {
     if (item.read_at === null) {
       try {
         await singleMark(item.id);
-      } catch { }
+      } catch {}
     }
 
     const type = item?.data?.type;
@@ -117,9 +113,9 @@ const Notification = () => {
         router.push({
           pathname: "/company/serviceBookings/order_approved",
           params: {
-            id: item.data.order_id
-          }
-        })
+            id: item.data.order_id,
+          },
+        });
         break;
 
       case "order_cancelled":
@@ -128,7 +124,7 @@ const Notification = () => {
           params: {
             title: item?.data?.title,
             subtitle: item?.data?.sub_title,
-            reason: item?.data?.reason
+            reason: item?.data?.reason,
           },
         });
         break;
@@ -138,11 +134,10 @@ const Notification = () => {
           params: {
             title: item?.data?.title,
             subtitle: item?.data?.sub_title,
-            reason: item?.data?.reason
+            reason: item?.data?.reason,
           },
         });
         break;
-
 
       case "warning":
         router.push("/service_provider/individual/warning");
@@ -162,8 +157,7 @@ const Notification = () => {
           params: {
             title: item?.data?.title,
             subtitle:
-              item?.data?.sub_title ||
-              item?.data?.data?.report_description,
+              item?.data?.sub_title || item?.data?.data?.report_description,
           },
         });
         break;
@@ -191,14 +185,14 @@ const Notification = () => {
       )}
 
       {/* ----------- Empty state ----------- */}
-      {!isLoadingNotification &&  ( notifications?.length === 0) && (
+      {!isLoadingNotification && notifications?.length === 0 && (
         <View style={tw`py-10 items-center`}>
           <Text style={tw`text-gray-500 text-base font-PoppinsBlack`}>
             No notifications found
           </Text>
         </View>
       )}
-      {notifications?.length > 0 &&
+      {notifications?.length > 0 && (
         <FlatList
           data={notifications}
           keyExtractor={(item, index) => `${item.id}-${index}`}
@@ -207,10 +201,15 @@ const Notification = () => {
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
-            isFetchMore ? (<ActivityIndicator size="large" color="#FF6600" />) : isFetchingNotification===false ?
+            isFetchMore ? (
+              <ActivityIndicator size="large" color="#FF6600" />
+            ) : isFetchingNotification === false ? (
               <View style={tw`items-center py-6`}>
-                <Text style={tw`text-gray-400 font-PoppinsMedium`}>No more notifications</Text>
-              </View>: null
+                <Text style={tw`text-gray-400 font-PoppinsMedium`}>
+                  No more notifications
+                </Text>
+              </View>
+            ) : null
           }
           renderItem={({ item }) => (
             <ProviderNotificationCard
@@ -219,8 +218,7 @@ const Notification = () => {
             />
           )}
         />
-      }
-
+      )}
 
       {/* ------------------- Delivery Request Modal ------------------ */}
       <RequestForDeliveryModal
@@ -270,4 +268,3 @@ const Notification = () => {
 };
 
 export default Notification;
-

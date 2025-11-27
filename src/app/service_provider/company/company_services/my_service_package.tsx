@@ -24,7 +24,8 @@ const My_Service_Package = () => {
   const { stripe_account_id, stripe_payouts_enabled } =
     userProfileInfo?.data || {};
 
-  const [createConnectAccount] = useCreateConnectAccountMutation();
+  const [createConnectAccount, { isLoading: isConnectingLoading }] =
+    useCreateConnectAccountMutation();
   const [fetchMyServicePackages, { data: serviceData, isFetching }] =
     useLazyMy_service_packagesQuery();
 
@@ -46,7 +47,6 @@ const My_Service_Package = () => {
         pageNum,
         service_id: id,
       }).unwrap();
-      console.log(res, "thi is response");
 
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
@@ -94,14 +94,19 @@ const My_Service_Package = () => {
   const handelCannact = async () => {
     const formData = new FormData();
     formData.append("country", "NG");
-    formData.append("return_url", "https://translate?success=true");
-    formData.append("refresh_url", "https://translate?success=false");
+    formData.append("return_url", "https://translate/?success=true");
+    formData.append("refresh_url", "https://translate/?success=false");
 
     try {
       const res = await createConnectAccount(formData);
-      setOnboardingUrl(res.data.data.onboarding_url);
+      setOnboardingUrl(res?.data?.data?.onboarding_url);
+      console.log(res, "this is stripe response ---------------------->");
     } catch (error) {
       console.log("Stripe connect error:", error);
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: error?.message || "Can't connect Please Try Again!" },
+      });
     }
   };
 
@@ -202,6 +207,10 @@ const My_Service_Package = () => {
           )}
           onError={(e) => {
             console.log("WebView error:", e.nativeEvent);
+            router.push({
+              pathname: "/Toaster",
+              params: { res: "success!" },
+            });
             setOnboardingUrl(null);
           }}
           style={{ flex: 1 }}
@@ -261,14 +270,19 @@ const My_Service_Package = () => {
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
+                  disabled={isConnectingLoading}
                   onPress={handelCannact}
                   style={tw`flex-row justify-center items-center gap-2 w-40 h-14 bg-primary rounded-full`}
                 >
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
-                  >
-                    Connect
-                  </Text>
+                  {isConnectingLoading ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Text
+                      style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
+                    >
+                      Connect
+                    </Text>
+                  )}
                 </TouchableOpacity>
               )}
             </View>
