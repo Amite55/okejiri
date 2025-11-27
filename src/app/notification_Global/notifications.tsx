@@ -5,260 +5,220 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 import ProviderNotificationCard from "@/src/Components/ProviderNotificationCard";
-import { useGetNotificationsQuery, useSingleMarkMutation } from "@/src/redux/apiSlices/notificationsSlices";
+import {
+  useGetNotificationsQuery,
+  useSingleMarkMutation,
+} from "@/src/redux/apiSlices/notificationsSlices";
 const Notification = () => {
-
   const { provider_type } = useLocalSearchParams();
-  // console.log("================ provider type ================= ", provider_type)
-
   const [page, setPage] = useState(1);
   const [notifications, setNotification] = useState<any[]>([]);
   const [isFetchMore, setIsFetchMore] = useState(false);
 
   // ------------------------------- API ------------------------------- //
-  const { data: notificationData, isLoading: isLoadingNotification, isError: isErrorLoadingNotification, isFetching: isFetchingNotification } = useGetNotificationsQuery(page, {
+  const {
+    data: notificationData,
+    isLoading: isLoadingNotification,
+    isError: isErrorLoadingNotification,
+    isFetching: isFetchingNotification,
+  } = useGetNotificationsQuery(page, {
     refetchOnMountOrArgChange: true,
   });
-  const [singleMark, { data: singleMarkData, isLoading: isLoadingSingleMarkData }] = useSingleMarkMutation();
+  const [
+    singleMark,
+    { data: singleMarkData, isLoading: isLoadingSingleMarkData },
+  ] = useSingleMarkMutation();
 
   // -------------------------------- Effect -------------------------- //
   useEffect(() => {
-    // console.log("===========  notification item =========== ", JSON.stringify(notificationData, null, 2))
     if (notificationData?.data?.notifications?.data) {
       if (page == 1) {
-        setNotification(notificationData.data.notifications.data)
+        setNotification(notificationData.data.notifications.data);
       } else {
         setNotification((prev) => [
-          ...prev, ...notificationData.data.notifications.data
-        ])
+          ...prev,
+          ...notificationData.data.notifications.data,
+        ]);
       }
     }
-  }, [notificationData])
+  }, [notificationData]);
 
   const loading_more = () => {
     if (!isFetchMore && notificationData?.data?.notifications?.next_page_url) {
       setIsFetchMore(true);
       setPage((prev) => prev + 1);
-      setTimeout(() => setIsFetchMore(false), 500)
+      setTimeout(() => setIsFetchMore(false), 500);
     }
-  }
+  };
 
   // -------------------------------- handler -------------------------- //
   // useEffect(()=>{
 
   // },[provider_type])
-  const values = notificationData?.data?.notifications?.data || [] // only for read_at, id 
-  const notificationDetails = values?.data
-  // console.log("values ================= ", JSON.stringify(notificationData?.data, null, 2))
-  // console.log("notifications =================== ", JSON.stringify(notificationDetails, null, 2));
-
-
+  const values = notificationData?.data?.notifications?.data || []; // only for read_at, id
+  const notificationDetails = values?.data;
   const handleNotification = (item: any) => {
-
     const handleMark = async () => {
       try {
-        // console.log(" ========================id =============== ", item.id)
-
-        const response = await singleMark(item.id);
-
-
+        await singleMark(item.id);
       } catch (err: any) {
         router.push({
           pathname: "/Toaster",
-          params: { res: "Failed to marking" }
-        })
+          params: { res: "Failed to marking" },
+        });
       }
-    }
+    };
 
     if (item.read_at === null) {
-      handleMark()
+      handleMark();
     }
-
-    // console.log(" ======== dispute id: ", item?.data)
-
-    // console.log(" ===== item for new order ============= ", JSON.stringify(item?.data, null, 2))
-
     if (item?.data?.type === "new_order") {
       if (provider_type === "individual") {
         router.push({
           pathname: "/service_provider/individual/order_details_profile",
           params: {
-            id: item.data.order_id || item.id
-          }
-        })
-      }
-      else {
+            id: item.data.order_id || item.id,
+          },
+        });
+      } else {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id
-          }
-        })
+            id: item.data.order_id || item.id,
+          },
+        });
       }
-
-    }
-    else if (item?.data?.type === "warning") {
+    } else if (item?.data?.type === "warning") {
       router.push("/service_provider/individual/warning");
-    }
-    else if (item?.data?.type === "new_dispute") {
-
+    } else if (item?.data?.type === "new_dispute") {
       router.push({
         pathname: "/service_provider/individual/disputes/dispute_review",
         params: {
-          id: item?.data?.dispute_id
-        }
-      })
-
-
+          id: item?.data?.dispute_id,
+        },
+      });
     } else if (item?.data?.type === "order_rejected") {
       if (provider_type === "individual") {
         router.push({
           pathname: "/service_provider/individual/order_details_profile",
           params: {
-            id: item.data.order_id || item.id
-          }
-        })
-      }
-      else {
+            id: item.data.order_id || item.id,
+          },
+        });
+      } else {
         // router.push("")
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item?.data?.order_id
-          }
-        })
+            id: item?.data?.order_id,
+          },
+        });
       }
-
-    }
-    else if (item?.data?.type === "delivery_request_sent") {
+    } else if (item?.data?.type === "delivery_request_sent") {
       if (provider_type === "individual") {
         router.push({
           pathname: "/service_provider/individual/order_details_profile",
           params: {
-            id: item.data.order_id || item.id
-          }
-        })
-      }
-      else {
+            id: item.data.order_id || item.id,
+          },
+        });
+      } else {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item?.data?.order_id
-          }
-        })
+            id: item?.data?.order_id,
+          },
+        });
       }
-
-    }
-    else if (item?.data?.type === "order_approved") {
+    } else if (item?.data?.type === "order_approved") {
       if (provider_type === "individual") {
         router.push({
           pathname: "/service_provider/individual/order_details_profile",
           params: {
-            id: item.data.order_id || item.id
-          }
-        })
-      }
-      else {
+            id: item.data.order_id || item.id,
+          },
+        });
+      } else {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item?.data?.order_id
-          }
-        })
+            id: item?.data?.order_id,
+          },
+        });
       }
-
-    }
-    else if (item?.data.type === "new_report") {
+    } else if (item?.data.type === "new_report") {
       router.push({
         pathname: "/service_provider/individual/warning",
         params: {
           title: item?.data.title,
-          subtitle: item?.data.sub_title
-        }
-      })
-    }
-    else if (item?.data.type === "report") {
+          subtitle: item?.data.sub_title,
+        },
+      });
+    } else if (item?.data.type === "report") {
       router.push({
         pathname: "/service_provider/individual/warning",
         params: {
           title: item?.data.title,
-          subtitle: item?.data.data?.report_description
-        }
-      })
-    }
-    else if (item?.data.type === "order_cancelled") {
+          subtitle: item?.data.data?.report_description,
+        },
+      });
+    } else if (item?.data.type === "order_cancelled") {
       if (provider_type === "individual") {
         router.push({
           pathname: "/service_provider/individual/order_details_profile",
           params: {
-            id: item.data.order_id || item.id
-          }
-        })
-      }
-      else {
+            id: item.data.order_id || item.id,
+          },
+        });
+      } else {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item?.data?.order_id
-          }
-        })
+            id: item?.data?.order_id,
+          },
+        });
       }
-
-    }
-    else if (item?.data.type === "delivery_request_decline") {
+    } else if (item?.data.type === "delivery_request_decline") {
       if (provider_type === "individual") {
         router.push({
           pathname: "/service_provider/individual/order_details_profile",
           params: {
-            id: item.data.order_id || item.id
-          }
-        })
-      }
-      else {
+            id: item.data.order_id || item.id,
+          },
+        });
+      } else {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item?.data?.order_id
-          }
-        })
+            id: item?.data?.order_id,
+          },
+        });
       }
-
-    }
-    else if (item?.data.type === "delivery_request_approved") {
+    } else if (item?.data.type === "delivery_request_approved") {
       if (provider_type === "individual") {
         router.push({
           pathname: "/service_provider/individual/order_details_profile",
           params: {
-            id: item.data.order_id || item.id
-          }
-        })
-      }
-      else {
+            id: item.data.order_id || item.id,
+          },
+        });
+      } else {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item?.data?.order_id
-          }
-        })
+            id: item?.data?.order_id,
+          },
+        });
       }
-
-    }
-    else {
+    } else {
       //
     }
-
-  }
-
-
+  };
 
   // console.log("")
   // console.log(NotificationData, "-------------------");
   return (
-    <View
-
-      style={tw`flex-1  bg-base_color px-5 `}
-
-    >
+    <View style={tw`flex-1  bg-base_color px-5 `}>
       <BackTitleButton
         pageName={"Notifications"}
         onPress={() => router.back()}
@@ -271,14 +231,14 @@ const Notification = () => {
       )}
 
       {/* ----------- Empty state ----------- */}
-      {!isLoadingNotification && (notifications?.length === 0) && (
+      {!isLoadingNotification && notifications?.length === 0 && (
         <View style={tw`py-10 items-center`}>
           <Text style={tw`text-gray-500 text-base font-PoppinsBlack`}>
             No notifications found
           </Text>
         </View>
       )}
-      {notifications?.length > 0 &&
+      {notifications?.length > 0 && (
         <FlatList
           data={notifications}
           keyExtractor={(item, index) => `${item.id}-${index}`}
@@ -290,22 +250,26 @@ const Notification = () => {
           windowSize={5}
           removeClippedSubviews={true}
           ListFooterComponent={
-            isFetchMore ? (<ActivityIndicator size="large" color="#FF6600" />) :
+            isFetchMore ? (
+              <ActivityIndicator size="large" color="#FF6600" />
+            ) : (
               <View style={tw`items-center py-6`}>
-                <Text style={tw`text-gray-400 font-PoppinsMedium`}>No more notifications</Text>
+                <Text style={tw`text-gray-400 font-PoppinsMedium`}>
+                  No more notifications
+                </Text>
               </View>
+            )
           }
           refreshing={isFetchMore}
           onRefresh={() => setPage(1)}
           renderItem={({ item }) => (
             <ProviderNotificationCard
               item={item}
-
               onPress={() => handleNotification(item)}
             />
           )}
         />
-      }
+      )}
 
       {/* <View style={tw`gap-3 py-2`}>
         {values && values.map((item: any, index: any) => {
