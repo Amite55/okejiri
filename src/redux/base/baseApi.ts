@@ -20,7 +20,8 @@ const baseQueryWithPath: BaseQueryFn<BaseQueryArgs, unknown, unknown> = async (
     const token = await AsyncStorage.getItem("token");
 
     const result: AxiosResponse = await axios({
-      baseURL: "http://103.186.20.114:8005/api",
+      // baseURL: "http://103.186.20.114:8005/api",
+      baseURL: "http://10.10.10.71:8000/api",
       ...args,
       url: args.url,
       method: args.method,
