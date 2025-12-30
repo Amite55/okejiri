@@ -10,7 +10,7 @@ import {
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useCreatePaymentIntentMutation } from "@/src/redux/apiSlices/stripeSlices";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import {
   useDepositSuccessMutation,
   useGetRecentTransactionsQuery,
@@ -20,8 +20,8 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetScrollView,
+  BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { useStripe } from "@stripe/stripe-react-native";
 import * as Clipboard from "expo-clipboard";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -33,14 +33,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import { SvgXml } from "react-native-svg";
+import PaymentWebview from "../serviceBookings/paymentWebview";
 
 const Wallet_Index = () => {
   const { wallet_address, wallet_balance } = useLocalSearchParams();
   const [balance, setBalance] = useState<number | null>(null);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  const [isWabViewOpen, setIsWebviewOpen] = useState(false);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -55,12 +55,13 @@ const Wallet_Index = () => {
   const [listData, setListData] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
-  // API
+  // API ------------------------------
   const { data: recentTransactions, isLoading } = useGetRecentTransactionsQuery(
     { per_page: 10, page }
   );
-  const [createPaymentIntent, { isLoading: paymentLoading }] =
-    useCreatePaymentIntentMutation();
+  const { data: profileData, isLoading: isProfileLoading } = useProfileQuery(
+    {}
+  );
   const [depositAmount, { isLoading: depositLoading }] =
     useDepositSuccessMutation();
 
@@ -78,65 +79,35 @@ const Wallet_Index = () => {
   }, [recentTransactions]);
 
   // ------------------ deposit function handler ====================
-  const handleDeposit = async () => {
+  const handleDeposit = async (res: any) => {
     try {
       const intentInfo = {
         amount: Number(balance),
         currency: "NGN",
       };
-      const res = await createPaymentIntent(intentInfo).unwrap();
-      if (res) {
-        bottomSheetModalRef.current?.dismiss();
-        const clientSecret = res?.data?.client_secret;
-        if (!clientSecret) {
-          router.push({
-            pathname: "/Toaster",
-            params: {
-              res: "Could not initialize payment sheet. Please try again.",
-            },
-          });
-          return;
-        }
-        // 1️⃣ Stripe sheet initialize with client secret
-        const { error: intError } = await initPaymentSheet({
-          paymentIntentClientSecret: clientSecret,
-          merchantDisplayName: "Okejiri Services",
-        });
-        // if when show error
-        if (intError) {
-          // handle error
-          router.push({
-            pathname: "/Toaster",
-            params: { res: intError?.message || intError },
-          });
-          return;
-        } else {
-          const { error } = await presentPaymentSheet();
-          if (
-            error?.code === "Canceled" ||
-            error?.code === "CanceledError" ||
-            error
-          ) {
-            router.push({
-              pathname: "/Toaster",
-              params: { res: error?.message || error },
-            });
-          } else {
-            const res = await depositAmount({
-              deposit_amount: Number(balance),
-            }).unwrap();
-            if (res) {
-              // ==================== stripe payment success ====================
-              if (res) {
-                setTimeout(() => {
-                  router.replace("/company/(Tabs)/profile");
-                }, 1500);
-              }
-            }
-          }
+      if (res.type === "cancel") {
+        console.log("User cancelled payment");
+        handleCloseModalPress();
+        setIsWebviewOpen(false);
+        setBalance(null);
+        return;
+      }
+      if (res.type === "success") {
+        const depositData = res.data;
+        const depositResponse = await depositAmount({
+          deposit_amount: intentInfo.amount,
+          currency: intentInfo.currency,
+          payment_intent_id: depositData?.transaction_id,
+        }).unwrap();
+        if (depositResponse) {
+          setTimeout(() => {
+            handleCloseModalPress();
+            setIsWebviewOpen(false);
+            router.replace("/company/(Tabs)");
+          }, 1000);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "Deposit not success =======>");
       router.push({
         pathname: `/Toaster`,
@@ -148,9 +119,9 @@ const Wallet_Index = () => {
   // === Copy text ===
   const copyToClipboard = async (text: string) => {
     await Clipboard.setStringAsync(text);
-    Toast.show({
-      type: ALERT_TYPE.SUCCESS,
-      title: "Copied to clipboard",
+    router.push({
+      pathname: "/Toaster",
+      params: { res: "Wallet address copied to clipboard" },
     });
   };
 
@@ -257,6 +228,42 @@ const Wallet_Index = () => {
     </View>
   );
 
+  const flutterwaveHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
+</head>
+<body>
+  <script>
+    FlutterwaveCheckout({
+      public_key: "FLWPUBK_TEST-8ae5ae7873e218ce9a69eadc088ca540-X",
+      tx_ref: "TX_${Date.now()}",
+      amount: ${balance},
+      currency: "NGN",
+      payment_options: "card,banktransfer,ussd",
+      customer: {
+        email:    "${profileData?.data?.email || ""}",
+        phone_number: "${profileData?.data?.phone || ""}",
+        name:  "${profileData?.data?.name || ""}",
+      },
+      callback: function (data) {
+        window.ReactNativeWebView.postMessage(
+          JSON.stringify({ type: "success", data: data })
+        );
+      },
+      onclose: function () {
+        window.ReactNativeWebView.postMessage(
+          JSON.stringify({ type: "cancel" })
+        );
+      }
+    });
+  </script>
+</body>
+</html>
+`;
+
   return (
     <>
       <FlatList
@@ -285,13 +292,18 @@ const Wallet_Index = () => {
         showsVerticalScrollIndicator={false}
         style={tw`flex-1 bg-base_color`}
       />
-
       {/* -0---------------------------- order address edit modal --------------------------- */}
-
       <BottomSheetModalProvider>
         <BottomSheetModal
+          onDismiss={() => {
+            setIsWebviewOpen(false);
+            setBalance(null);
+          }}
           ref={bottomSheetModalRef}
-          snapPoints={["95%"]}
+          snapPoints={["98%"]}
+          enableContentPanningGesture={false}
+          keyboardBehavior="interactive"
+          keyboardBlurBehavior="restore"
           containerStyle={tw`bg-gray-500 bg-opacity-20`}
           backdropComponent={(props) => (
             <BottomSheetBackdrop
@@ -302,66 +314,84 @@ const Wallet_Index = () => {
             />
           )}
         >
-          <BottomSheetScrollView
-            style={tw``}
-            contentContainerStyle={tw`flex-1  bg-white flex-grow justify-between`}
-          >
-            {/* ----------------- header title part ---------------- */}
-            <View>
-              <View
-                style={tw`flex-row items-center justify-between bg-primary py-2 px-4 rounded-t-2xl`}
-              >
-                <View />
-                <Text style={tw`font-PoppinsSemiBold text-base text-white`}>
-                  Enter Deposit Balance
-                </Text>
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => bottomSheetModalRef.current?.close()}
-                  style={tw`bg-slate-300 rounded-full p-2`}
-                >
-                  <SvgXml xml={IconCrossWhite} />
-                </TouchableOpacity>
-              </View>
-
-              <View style={tw`px-4 pt-6`}>
-                <Text
-                  style={tw`font-DegularDisplayDemoSemibold text-lg text-black pb-1`}
-                >
-                  Amount
-                </Text>
+          {isWabViewOpen ? (
+            <BottomSheetView style={{ flex: 1 }}>
+              <PaymentWebview
+                html={flutterwaveHTML}
+                onMessage={handleDeposit}
+              />
+            </BottomSheetView>
+          ) : (
+            <BottomSheetScrollView
+              style={tw`flex-1`}
+              contentContainerStyle={tw`  bg-white flex-grow justify-between`}
+            >
+              {/* ----------------- header title part ---------------- */}
+              <View>
                 <View
-                  style={tw`h-12 px-4 rounded-full border border-gray-300 flex-row justify-between items-center`}
+                  style={tw`flex-row items-center justify-between bg-primary py-2 px-4 rounded-t-2xl`}
                 >
-                  <TextInput
-                    keyboardType="number-pad"
-                    style={tw`flex-1 text-black text-lg font-DegularDisplayDemoMedium`}
-                    placeholder="0.00"
-                    placeholderTextColor={"#535353"}
-                    onChangeText={(value: any) => setBalance(value)}
-                  />
-
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
-                  >
-                    ₦
+                  <View />
+                  <Text style={tw`font-PoppinsSemiBold text-base text-white`}>
+                    Enter Deposit Balance
                   </Text>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => bottomSheetModalRef.current?.close()}
+                    style={tw`bg-slate-300 rounded-full p-2`}
+                  >
+                    <SvgXml xml={IconCrossWhite} />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={tw`px-4 pt-6`}>
+                  <Text
+                    style={tw`font-DegularDisplayDemoSemibold text-lg text-black pb-1`}
+                  >
+                    Amount
+                  </Text>
+                  <View
+                    style={tw`h-12 px-4 rounded-full border border-gray-300 flex-row justify-between items-center`}
+                  >
+                    <TextInput
+                      keyboardType="number-pad"
+                      style={tw`flex-1 text-black text-lg font-DegularDisplayDemoMedium`}
+                      placeholder="0.00"
+                      placeholderTextColor={"#535353"}
+                      onChangeText={(value: any) => setBalance(value)}
+                    />
+
+                    <Text
+                      style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
+                    >
+                      ₦
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
 
-            <View style={tw`px-4`}>
-              {paymentLoading ? (
-                <ActivityIndicator color={tw.color("primary")} size="large" />
-              ) : (
-                <PrimaryButton
-                  titleProps="Deposit"
-                  onPress={handleDeposit}
-                  contentStyle={tw`h-12 mt-6`}
-                />
-              )}
-            </View>
-          </BottomSheetScrollView>
+              <View style={tw`px-4`}>
+                {depositLoading ? (
+                  <ActivityIndicator color={tw.color("primary")} size="large" />
+                ) : (
+                  <PrimaryButton
+                    titleProps="Deposit"
+                    onPress={() => {
+                      if (balance >= 800) {
+                        setIsWebviewOpen(true);
+                      } else {
+                        router.push({
+                          pathname: `/Toaster`,
+                          params: { res: "Minimum deposit amount is ₦800" },
+                        });
+                      }
+                    }}
+                    contentStyle={tw`h-12 mt-6`}
+                  />
+                )}
+              </View>
+            </BottomSheetScrollView>
+          )}
         </BottomSheetModal>
       </BottomSheetModalProvider>
     </>
