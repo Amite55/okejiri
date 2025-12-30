@@ -80,7 +80,6 @@ const Make_Payment = () => {
             payment_intent_id: paymentData?.transaction_id,
             tx_ref: paymentData.tx_ref,
           });
-
           if (response) {
             setTimeout(() => {
               setModalVisible(false);

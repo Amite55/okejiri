@@ -21,7 +21,7 @@ const baseQueryWithPath: BaseQueryFn<BaseQueryArgs, unknown, unknown> = async (
 
     const result: AxiosResponse = await axios({
       // baseURL: "http://103.186.20.114:8005/api",
-      baseURL: "http://10.10.10.71:8000/api",
+      baseURL: "http://34.203.196.124.nip.io/api",
       ...args,
       url: args.url,
       method: args.method,
