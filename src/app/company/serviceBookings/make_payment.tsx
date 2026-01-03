@@ -27,7 +27,6 @@ const Make_Payment = () => {
   const { bookingInfoDetails } = useLocalSearchParams();
   const [isMakePayment, setIsMakePayment] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
   const perseBookingInfoDetails = JSON.parse(bookingInfoDetails as any);
 
   // ----------- api end point ----------

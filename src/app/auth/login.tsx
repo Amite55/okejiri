@@ -80,10 +80,6 @@ const LoginIndex = () => {
         }
       } else if (roll === "PROVIDER") {
         const res = await credentials(payload).unwrap();
-        // console.log(
-        //   res?.data?.user?.is_personalization_complete,
-        //   "this is individual provider response-----"
-        // );
         if (res?.data?.user?.is_personalization_complete === false) {
           await AsyncStorage.setItem("token", res?.data?.access_token);
           router.push("/auth/contact");

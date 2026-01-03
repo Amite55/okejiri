@@ -95,7 +95,7 @@ const SingUp = () => {
           params: { email: payload.email },
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "not registered user");
       router.push({
         pathname: `/Toaster`,

@@ -3,39 +3,66 @@ import { ImgEmptyService } from "@/assets/images/image";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
+import {
+  useCreateSubAccountMutation,
+  useGetBanksQuery,
+} from "@/src/redux/apiSlices/flutterwaveSlice";
 import { useLazyMy_service_packagesQuery } from "@/src/redux/apiSlices/IndividualProvider/account/MyServices/myServicesSlicel";
-import { useCreateConnectAccountMutation } from "@/src/redux/apiSlices/stripeSlices";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetScrollView,
+} from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   RefreshControl,
   Text,
+  TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
-import { WebView } from "react-native-webview";
 
 const My_Service_Package = () => {
-  const { data: userProfileInfo } = useProfileQuery({});
-  const { stripe_account_id, stripe_payouts_enabled } =
-    userProfileInfo?.data || {};
+  const BottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-  const [createConnectAccount, { isLoading: isConnectingLoading }] =
-    useCreateConnectAccountMutation();
-  const [fetchMyServicePackages, { data: serviceData, isFetching }] =
+  // ----------- api end point -----------------------
+  const [createSubAccount, { isLoading: isLoadingCreateConnectAccount }] =
+    useCreateSubAccountMutation();
+  const { data: userProfileInfo, isLoading: isProfileLoading } =
+    useProfileQuery({});
+  const { data: getBankData, isLoading: isLoadingGetBankData } =
+    useGetBanksQuery({});
+  const [fetchMyServicePackages, { isFetching }] =
     useLazyMy_service_packagesQuery();
 
-  const [OnboardingUrl, setOnboardingUrl] = useState<string | null>(null);
+  // ====================== state =========================
+  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
+  const [bankNumber, setBankNumber] = useState<string>("");
+  const [bankCode, setBankCode] = useState<string>("");
   const [services, setServices] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const { id } = useLocalSearchParams();
+
+  const handleModalOpen = useCallback(async () => {
+    BottomSheetModalRef.current?.present();
+  }, []);
+  const handleModalClose = useCallback(() => {
+    BottomSheetModalRef.current?.dismiss();
+  }, []);
 
   // ======================== LOAD SERVICE PACKAGES ==========================
   const loadServices = async (pageNum = 1, isRefresh = false) => {
@@ -64,7 +91,7 @@ const My_Service_Package = () => {
       setHasMore(newData.length > 0 && currentPage < lastPage);
       setPage(currentPage + 1);
     } catch (err) {
-      console.log("❌ My Service Package", err);
+      console.log(" My Service Package", err);
     } finally {
       setRefreshing(false);
       setLoadingMore(false);
@@ -85,27 +112,51 @@ const My_Service_Package = () => {
       loadServices(page);
     }
   };
-
+  // ================= initial render ==========================
   useEffect(() => {
     loadServices(1, true);
   }, []);
 
-  // ======================== STRIPE CONNECT ==========================
-  const handelCannact = async () => {
-    const formData = new FormData();
-    formData.append("country", "NG");
-    formData.append("return_url", "https://translate/?success=true");
-    formData.append("refresh_url", "https://translate/?success=false");
-
+  // ================== new sub account create ========================
+  const handleCreateSubAccount = async () => {
     try {
-      const res = await createConnectAccount(formData);
-      setOnboardingUrl(res?.data?.data?.onboarding_url);
-      console.log(res, "this is stripe response ---------------------->");
-    } catch (error) {
-      console.log("Stripe connect error:", error);
+      const payload = {
+        account_number: bankNumber,
+        bank_code: bankCode,
+      };
+      const res = await createSubAccount(payload).unwrap();
+      console.log(res, "this is account submmition response ----------->");
+      if (res?.data?.status === "success") {
+        setBankCode("");
+        setBankNumber("");
+        router.push({
+          pathname: "/Toaster",
+          params: {
+            res: "Bank account connected successfully",
+          },
+        });
+        setTimeout(() => {
+          handleModalClose();
+        }, 1500);
+      } else {
+        router.push({
+          pathname: "/Toaster",
+          params: {
+            res:
+              res?.error?.message ||
+              res?.message ||
+              res?.data?.message ||
+              "Account creation failed",
+          },
+        });
+      }
+    } catch (error: any) {
+      console.log(error, "Account Create not success ------------>");
       router.push({
-        pathname: `/Toaster`,
-        params: { res: error?.message || "Can't connect Please Try Again!" },
+        pathname: "/Toaster",
+        params: {
+          message: error?.message || "Account creation failed",
+        },
       });
     }
   };
@@ -195,126 +246,244 @@ const My_Service_Package = () => {
     );
   };
 
-  // ======================== WEBVIEW ==========================
-  if (OnboardingUrl) {
-    return (
-      <View style={{ flex: 1 }}>
-        <WebView
-          source={{ uri: OnboardingUrl }}
-          startInLoadingState={true}
-          renderLoading={() => (
-            <ActivityIndicator size="large" color="#000" style={tw`mt-10`} />
-          )}
-          onError={(e) => {
-            console.log("WebView error:", e.nativeEvent);
-            router.push({
-              pathname: "/Toaster",
-              params: { res: "success!" },
-            });
-            setOnboardingUrl(null);
-          }}
-          style={{ flex: 1 }}
-        />
-      </View>
+  // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true)
     );
-  }
+    const hide = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   // ======================== MAIN RETURN ==========================
   return (
-    <View style={tw`flex-1 bg-base_color`}>
-      <FlatList
-        data={services}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderServiceItem}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        contentContainerStyle={tw`px-5 pb-10`}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={() => (
-          <View>
-            <BackTitleButton
-              pageName="My services"
-              onPress={() => router.back()}
-              titleTextStyle={tw`text-xl`}
-            />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS/Android keyboard behavior
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={tw`flex-1 bg-base_color`}>
+          <FlatList
+            data={services}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderServiceItem}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            contentContainerStyle={tw`px-5 pb-10`}
+            showsVerticalScrollIndicator={false}
+            ListHeaderComponent={() => (
+              <View>
+                <BackTitleButton
+                  pageName="My services packages"
+                  onPress={() => router.back()}
+                  titleTextStyle={tw`text-xl`}
+                />
 
-            <View style={tw`flex-row justify-between items-center mt-3 py-2`}>
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
-              >
-                {services.length} services
-              </Text>
-
-              {stripe_account_id && stripe_payouts_enabled === 1 ? (
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push({
-                      pathname:
-                        "/service_provider/company/company_services/add_package",
-                      params: {
-                        id: id,
-                      },
-                    })
-                  }
-                  style={tw`flex-row justify-center items-center gap-2 px-6 py-2 bg-primary rounded-full`}
+                <View
+                  style={tw`flex-row justify-between items-center mt-3 py-2`}
                 >
-                  <SvgXml xml={IconPlus} width={10} />
                   <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
+                    style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
                   >
-                    Add more
+                    {services.length} services
                   </Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  disabled={isConnectingLoading}
-                  onPress={handelCannact}
-                  style={tw`flex-row justify-center items-center gap-2 w-40 h-14 bg-primary rounded-full`}
+
+                  {userProfileInfo?.data?.flutter_numeric_id ? (
+                    <TouchableOpacity
+                      onPress={() =>
+                        router.push({
+                          pathname:
+                            "/service_provider/company/company_services/add_package",
+                          params: {
+                            id: id,
+                          },
+                        })
+                      }
+                      style={tw`flex-row justify-center items-center gap-2 px-6 py-2 bg-primary rounded-full`}
+                    >
+                      <SvgXml xml={IconPlus} width={10} />
+                      {isProfileLoading ? (
+                        <ActivityIndicator size="small" color="#fff" />
+                      ) : (
+                        <Text
+                          style={tw`font-PoppinsRegular text-sm text-white`}
+                        >
+                          Add more
+                        </Text>
+                      )}
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      disabled={isLoadingGetBankData}
+                      onPress={handleModalOpen}
+                      activeOpacity={0.8}
+                      style={tw`flex-row justify-center items-center gap-2 w-32 h-10 bg-primary rounded-full`}
+                    >
+                      {isLoadingGetBankData ? (
+                        <ActivityIndicator size="small" color="#fff" />
+                      ) : (
+                        <Text
+                          style={tw`font-DegularDisplayDemoMedium text-lg text-white`}
+                        >
+                          Connect
+                        </Text>
+                      )}
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            )}
+            ListFooterComponent={
+              loadingMore ? (
+                <View style={tw`mt-4 mb-8 justify-center items-center`}>
+                  <ActivityIndicator size="small" color="#000" />
+                  <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
+                </View>
+              ) : !hasMore && services.length > 0 ? (
+                <Text style={tw`text-gray-500 text-center my-4 text-lg`}>
+                  No more services
+                </Text>
+              ) : null
+            }
+            ListEmptyComponent={() => (
+              <View style={tw`flex-1 justify-center items-center gap-3`}>
+                <Image style={tw`w-full h-80`} source={ImgEmptyService} />
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-3xl text-black`}
                 >
-                  {isConnectingLoading ? (
+                  Nothing to show here
+                </Text>
+                <Text
+                  style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                >
+                  Please add a service to see them here.
+                </Text>
+              </View>
+            )}
+          />
+
+          {/* ======================== bottom tab ========================== */}
+
+          <BottomSheetModalProvider>
+            <BottomSheetModal
+              ref={BottomSheetModalRef}
+              snapPoints={["98%"]}
+              containerStyle={tw`bg-gray-700 bg-opacity-20`}
+              backdropComponent={(props) => (
+                <BottomSheetBackdrop
+                  {...props}
+                  appearsOnIndex={0}
+                  disappearsOnIndex={-1}
+                  pressBehavior="close"
+                />
+              )}
+            >
+              <BottomSheetScrollView
+                contentContainerStyle={tw` px-4  flex-grow justify-between bg-base`}
+              >
+                <View style={tw`flex-1 py-4`}>
+                  <View style={tw`flex-row justify-between items-center`}>
+                    <Text style={tw`font-DegularDisplayDemoSemibold text-2xl `}>
+                      Connect with Your Bank
+                    </Text>
+                    <TouchableOpacity
+                      style={tw`p-2`}
+                      onPress={handleModalClose}
+                      activeOpacity={0.6}
+                    >
+                      <Text
+                        style={tw`font-DegularDisplayDemoBold text-xl text-red-600 `}
+                      >
+                        Close
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* =========== main content ========== */}
+                  <Text style={tw`font-DegularDisplayDemoBold text-lg mt-3`}>
+                    Network Code
+                  </Text>
+                  <View style={tw` h-14 rounded-lg  mt-1`}>
+                    <Dropdown
+                      style={tw.style(`h-14 rounded-lg px-4 bg-white border`)}
+                      placeholderStyle={tw`text-sm text-black`}
+                      selectedTextStyle={tw`text-base text-black`}
+                      containerStyle={tw`bg-white rounded-lg`}
+                      itemTextStyle={tw`text-black`}
+                      activeColor="#fff"
+                      placeholder="Choose Network Code"
+                      data={getBankData?.data}
+                      dropdownPosition="bottom"
+                      maxHeight={300}
+                      labelField="name"
+                      valueField="code"
+                      value={bankCode}
+                      onChange={(item) => {
+                        setBankCode(item?.code);
+                      }}
+                      renderItem={(item) => {
+                        return (
+                          <View style={tw`p-2 bg-slate-300  rounded-lg mt-1`}>
+                            <Text style={tw`text-black  `}>{item?.name}</Text>
+                          </View>
+                        );
+                      }}
+                    />
+                  </View>
+
+                  {/* ==================== input ================  */}
+                  <Text style={tw`font-DegularDisplayDemoBold text-lg mt-3`}>
+                    Account Number
+                  </Text>
+                  <View style={tw` h-16`}>
+                    <TextInput
+                      keyboardType="number-pad"
+                      style={tw`flex-1 text-black text-lg font-DegularDisplayDemoMedium border border-gray-300 rounded-lg px-4 py-2  mt-1 bg-stone-50`}
+                      placeholder="Account Number"
+                      placeholderTextColor={"#535353"}
+                      onChangeText={(value: any) => setBankNumber(value)}
+                      value={bankNumber}
+                    />
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  onPress={handleCreateSubAccount}
+                  disabled={isLoadingCreateConnectAccount}
+                  activeOpacity={0.8}
+                  style={[
+                    tw`flex-row justify-center items-center gap-2  h-12 bg-primary rounded-full`,
+                    isKeyboardVisible && tw`mb-12`,
+                  ]}
+                >
+                  {isLoadingCreateConnectAccount ? (
                     <ActivityIndicator size="small" color="#fff" />
                   ) : (
                     <Text
-                      style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
+                      style={tw`font-DegularDisplayDemoMedium text-lg text-white`}
                     >
-                      Connect
+                      Submit
                     </Text>
                   )}
                 </TouchableOpacity>
-              )}
-            </View>
-          </View>
-        )}
-        ListFooterComponent={
-          loadingMore ? (
-            <View style={tw`mt-4 mb-8 justify-center items-center`}>
-              <ActivityIndicator size="small" color="#000" />
-              <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
-            </View>
-          ) : !hasMore && services.length > 0 ? (
-            <Text style={tw`text-gray-500 text-center my-4 text-lg`}>
-              No more services
-            </Text>
-          ) : null
-        }
-        ListEmptyComponent={() => (
-          <View style={tw`flex-1 justify-center items-center gap-3`}>
-            <Image style={tw`w-full h-80`} source={ImgEmptyService} />
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-3xl text-black`}
-            >
-              Nothing to show here
-            </Text>
-            <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-              Please add a service to see them here.
-            </Text>
-          </View>
-        )}
-      />
-    </View>
+              </BottomSheetScrollView>
+            </BottomSheetModal>
+          </BottomSheetModalProvider>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
