@@ -60,7 +60,7 @@ const My_Service = () => {
       setHasMore(newData.length > 0 && currentPage < lastPage);
       setPage(currentPage + 1);
     } catch (err) {
-      console.log("❌ My Service Packages fetch error:", err);
+      console.log(" My Service Packages fetch error:", err);
     } finally {
       setRefreshing(false);
       setLoadingMore(false);

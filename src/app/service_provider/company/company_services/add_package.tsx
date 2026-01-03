@@ -17,8 +17,7 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { FieldArray, Formik } from "formik";
-import React, { useRef, useState } from "react";
-// import { format } from "date-fns";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Keyboard,
@@ -26,7 +25,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -35,13 +33,6 @@ import {
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 
-// ------------------ static dropdown value -----------------
-const dropdownData = [
-  { label: "1 hours", value: "1" },
-  { label: "2 hours", value: "2" },
-  { label: "3 hours", value: "3" },
-  { label: "6 hours", value: "4" },
-];
 type PackageFormValues = {
   image: any;
   title: string;
@@ -55,70 +46,25 @@ type PackageFormValues = {
 const Add_Package = () => {
   const { id } = useLocalSearchParams();
 
-  const [value, setValue] = useState(null);
-  const [isFocus, setIsFocus] = useState(false);
   const [modalType, setModalType] = useState<"fixed" | "custom" | null>(null);
-  // const [serviceDetails, setServiceDetails] = useState<string[]>([]);
   const fixedModalRef = useRef<BottomSheetModal>(null);
   const customModalRef = useRef<BottomSheetModal>(null);
   const [delivery_time, setDelivery_time] = useState<string>("");
   // ========================== api ========================= //
-  const [
-    myServicePackage,
-    {
-      isError: isErrorMyServicePackage,
-      isLoading: isLoadingMyServicePackage,
-      error: errorMyServicePackage,
-    },
-  ] = useMyServicePackageMutation();
-
-  // ===================== validation ==========================
-  const validation = (values: any) => {
-    const errors: any = {};
-
-    if (!values.image) errors.image = "Service package image is required";
-    if (!values.title) errors.title = "Title is required";
-    else if (values.title < 3)
-      errors.title = "Title must be at least 3 letters";
-
-    if (!values.price) {
-      errors.price = "Service package price is required";
-    } else if (values.price === 0) {
-      errors.price = "Service package price must be greater then 0";
-    }
-
-    if (!values.service_details) {
-      errors.service_details = "Service package service details is required";
-    }
-
-    if (!values.available_time_from) {
-      errors.available_time_from = "Available time from is required";
-    }
-    if (!values.available_time_to) {
-      errors.available_time_to = "Available time to is required";
-    }
-    if (!values.delivery_time) {
-      errors.delivery_time = "Delivery time is required";
-    }
-
-    return errors;
-  };
+  const [myServicePackage, { isLoading: isLoadingMyServicePackage }] =
+    useMyServicePackageMutation();
 
   // =========================== Image picker ============================ //
-  // ---------------------- IMAGE PICKER -------------------------
   const pickImage = async (setFieldValue: any, setFieldTouched: any) => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
     if (!permission.granted) {
       alert("Permission needed to access gallery");
       return;
     }
-
     const result: any = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       quality: 0.7,
     });
-
     if (!result.canceled) {
       const picked = result.assets[0];
 
@@ -143,26 +89,16 @@ const Add_Package = () => {
   };
 
   //    ---------------- date picker -----------
-
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
   const [currentTimeIndex, setCurrentTimeIndex] = useState<number>(0);
   const [editingField, setEditingField] = useState<"from" | "to">("from");
-
-  const onChange = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate;
-    setShow(false);
-    setDate(currentDate);
-  };
+  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
 
   const showMode = (currentMode: any) => {
     setShow(true);
     setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode("date");
   };
 
   const showTimepicker = () => {
@@ -202,33 +138,38 @@ const Add_Package = () => {
     setModalType("fixed");
     fixedModalRef.current?.present();
   };
-  const openCustomModal = () => {
-    setModalType("custom");
-    customModalRef.current?.present();
-  };
 
   const closeAllModal = () => {
     setModalType(null);
     fixedModalRef.current?.dismiss();
     customModalRef.current?.dismiss();
   };
-  const closeCustomModal = () => {
-    customModalRef.current?.dismiss();
-  };
 
+  // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true)
+    );
+    const hide = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
   return (
-    // <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <KeyboardAvoidingView
-      style={tw`flex-1 bg-base_color`}
-      behavior={Platform.OS === "ios" ? "padding" : "position"} // iOS/Android different behavior
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -120}
+      style={{ flex: 1, backgroundColor: "#FFF4ED" }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS/Android keyboard behavior
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
-          style={tw`flex-grow px-5`}
-          contentContainerStyle={tw`pb-6 gap-6`}
+          style={tw`flex-grow px-5 `}
+          contentContainerStyle={tw`pb-1 gap-6`}
           keyboardShouldPersistTaps="handled"
         >
           <BackTitleButton
@@ -380,7 +321,6 @@ const Add_Package = () => {
               setFieldValue,
               values,
               handleSubmit,
-              resetForm,
             }) => (
               <View>
                 <Pressable
@@ -414,8 +354,9 @@ const Add_Package = () => {
 
                   {!values.image && (
                     <TouchableOpacity
+                      activeOpacity={0.7}
                       onPress={() => pickImage(setFieldValue, setFieldTouched)}
-                      style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
+                      style={tw`bg-primary rounded-full w-48 h-10 justify-center items-center`}
                     >
                       <Text
                         style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
@@ -533,36 +474,6 @@ const Add_Package = () => {
                                 </TouchableOpacity>
                               </View>
                             ))}
-
-                          {/* <View style={tw`flex-row justify-between items-center`}>
-                            <View style={tw`flex-row items-center gap-2`}>
-                              <View style={tw`w-2 h-2 bg-black rounded-2xl`} />
-                              <Text
-                                style={tw`font-DegularDisplayDemoRegular text-lg text-regularText`}
-                              >
-                                Dusting of all surfaces
-                              </Text>
-                            </View>
-
-                            <TouchableOpacity style={tw`justify-center items-center`}>
-                              <SvgXml xml={IconDeleteRed} />
-                            </TouchableOpacity>
-                          </View>
-
-                          <View style={tw`flex-row justify-between items-center`}>
-                            <View style={tw`flex-row items-center gap-2`}>
-                              <View style={tw`w-2 h-2 bg-black rounded-2xl`} />
-                              <Text
-                                style={tw`font-DegularDisplayDemoRegular text-lg text-regularText`}
-                              >
-                                Dusting of all surfaces
-                              </Text>
-                            </View>
-
-                            <TouchableOpacity style={tw`justify-center items-center`}>
-                              <SvgXml xml={IconDeleteRed} />
-                            </TouchableOpacity>
-                          </View> */}
                         </View>
                       );
                     }}
@@ -585,8 +496,6 @@ const Add_Package = () => {
                       onChangeText={handleChange("price")}
                       placeholderTextColor={"#000"}
                       keyboardType="numeric"
-                      // value={}
-                      // textAlignVertical="top"
                     />
                     <Text
                       style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
@@ -596,7 +505,6 @@ const Add_Package = () => {
                   </View>
                 </View>
 
-                {/* ------------------- selected delivery hour -------------- */}
                 {/*  ------------ dropdown section j----------------- */}
                 <View style={tw`py-2`}>
                   <Text
@@ -798,63 +706,14 @@ const Add_Package = () => {
                   )}
                 />
 
-                {/* <View style={tw`flex-row justify-between items-center px-2 py-2`}>
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-black  pb-1`}
-                  >
-                    Available time
-                  </Text>
-                  <TouchableOpacity
-                    style={tw`w-11 h-11 rounded-full border border-gray-300 justify-center items-center`}
-                    onPress={() => {
-                      
-                    }}
-                  >
-                    <SvgXml xml={IconPlusYellow} />
-                  </TouchableOpacity>
-                </View>
-
-                <View style={tw`flex-row items-center gap-3`}>
-                  {/*  from time ------- */}
-                {/* <TouchableOpacity
-                  onPress={showTimepicker}
-                  style={tw`flex-1 flex-row justify-center items-center gap-2 border h-14 rounded-3xl border-gray-300`}
-                >
-                  <SvgXml xml={IconWatch} />
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-black `}
-                  >
-                    From
-                  </Text>
-                </TouchableOpacity> */}
-                {/*  to time  */}
-                {/* <TouchableOpacity
-                  onPress={showTimepicker}
-                  style={tw`flex-1 flex-row justify-center items-center gap-2 border h-14 rounded-3xl border-gray-300`}
-                >
-                  <SvgXml xml={IconWatch} />
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-black `}
-                  >
-                    To
-                  </Text>
-                </TouchableOpacity> */}
-                {/* </View> */}
-
-                {/* {show && (
-                  <DateTimePicker
-                    testID="dateTimePicker"
-                    value={date}
-                    mode={mode}
-                    is24Hour={true}
-                    onChange={onChange}
-                  />
-                )} */}
-
                 {/* ----------------------- submit password -------------- */}
-                <TouchableOpacity onPress={handleSubmit} style={tw`px-2 py-4`}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => handleSubmit()}
+                  style={tw` py-4`}
+                >
                   <View
-                    style={tw`flex-row bg-primary py-4 rounded-full justify-center gap-2 items-center`}
+                    style={tw`flex-row bg-primary py-3 rounded-full justify-center gap-2 items-center`}
                   >
                     {isLoadingMyServicePackage && (
                       <ActivityIndicator size={"small"} color={"#fff"} />
@@ -866,16 +725,6 @@ const Add_Package = () => {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                {/* <PrimaryButton
-                  onPress={handleSubmit}
-                  // onPress={() =>
-                  //   router.push("/service_provider/individual/my_services/my_service")
-                  // }
-                  titleProps="Add"
-                  // IconProps={IconRightArrow}
-                  contentStyle={tw`mt-4`}
-                /> */}
-                {/* <View style={tw`absolute`}> */}
               </View>
             )}
           </Formik>
@@ -912,37 +761,7 @@ const Add_Package = () => {
         }}
       />
     </KeyboardAvoidingView>
-    // </TouchableWithoutFeedback >
   );
 };
 
 export default Add_Package;
-
-const styles = StyleSheet.create({
-  dropdown: {
-    height: 50,
-    borderColor: "gray",
-    borderWidth: 0.5,
-    borderRadius: 100,
-    paddingHorizontal: 24,
-  },
-  icon: {
-    marginRight: 5,
-  },
-
-  placeholderStyle: {
-    fontSize: 18,
-  },
-  selectedTextStyle: {
-    fontSize: 18,
-  },
-  textArea: {
-    borderWidth: 1,
-    borderColor: "gray",
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    minHeight: 100,
-    maxHeight: 150,
-    borderRadius: 20,
-  },
-});

@@ -53,7 +53,7 @@ const Boost_sProfile = () => {
     >
       <View>
         <BackTitleButton
-          pageName={"Boost your profile"}
+          pageName={"Boost your profile individual"}
           onPress={() => router.back()}
           titleTextStyle={tw`text-xl`}
         />
@@ -220,7 +220,7 @@ const Boost_sProfile = () => {
           }}
           titleProps="Boost"
           IconProps={IconBoostingWhite}
-          contentStyle={tw`mt-4`}
+          contentStyle={tw`mt-4 h-12`}
         />
       </View>
     </ScrollView>
