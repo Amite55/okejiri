@@ -50,9 +50,7 @@ const My_Service = () => {
     try {
       if ((isFetching || loadingMore) && !isRefresh) return;
       if (!isRefresh) setLoadingMore(true);
-
       const res = await fetchMyServices(pageNum).unwrap();
-
       const responseData = res?.data || {};
       const newData = responseData?.data || [];
       const currentPage = responseData?.current_page || 1;
@@ -69,7 +67,7 @@ const My_Service = () => {
       setHasMore(newData.length > 0 && currentPage < lastPage);
       setPage(currentPage + 1);
     } catch (err) {
-      console.log("❌ My Service Packages fetch error:", err);
+      console.log(" My Service Packages fetch error:", err);
     } finally {
       setRefreshing(false);
       setLoadingMore(false);
@@ -94,12 +92,9 @@ const My_Service = () => {
     loadServices(1, true);
   }, []);
 
-  // // ======================== STRIPE CONNECT ==========================
-
   // ========================== Handler ====================================
   const handleServiceDelete = async (id: any) => {
     if (!id) return;
-
     try {
       const response = await deleteMyService(id).unwrap();
       if (response) {
@@ -138,6 +133,7 @@ const My_Service = () => {
           </View>
 
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => handleServiceDelete(item.id)}
             style={tw`p-2 bg-black/20 absolute right-3 top-3 rounded-lg`}
           >
@@ -145,6 +141,7 @@ const My_Service = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() =>
               router.push({
                 pathname:
@@ -190,7 +187,7 @@ const My_Service = () => {
         ListHeaderComponent={() => (
           <View>
             <BackTitleButton
-              pageName="My services"
+              pageName="My services company"
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
             />
@@ -225,14 +222,16 @@ const My_Service = () => {
       <View style={tw`px-4`}>
         <TouchableOpacity
           onPress={openSheet}
-          style={tw`flex-row bg-primary py-4 justify-center rounded-full w-full px-4 gap-2 items-center`}
+          activeOpacity={0.8}
+          disabled={isLoadingFetchMyService}
+          style={tw`flex-row bg-primary py-3 justify-center rounded-full w-full px-4 gap-2 items-center`}
         >
           {isLoadingFetchMyService ? (
             <ActivityIndicator size={"small"} color={"#fff"} />
           ) : (
             <SvgXml xml={IconPlus} width={15} />
           )}
-          <Text style={tw`text-white text-xl font-DegularDisplayDemoRegular`}>
+          <Text style={tw`text-white text-lg font-PoppinsRegular`}>
             {isLoadingFetchMyService ? "Adding more .." : "Add more"}
           </Text>
         </TouchableOpacity>
