@@ -1,11 +1,13 @@
 import {
   IconBackLeftArrow,
   IconChatsYellow,
+  IconCopy,
   IconCross,
   IconCrossSolidRed,
   IconDisputes,
   IconFileUpload,
   IconOrderCancelModalIcon,
+  IconPhoneGray,
   IconPlus,
   IconProfileBadge,
   IconReportBlack,
@@ -29,6 +31,7 @@ import {
   BottomSheetModalProvider,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
+import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
@@ -60,7 +63,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const Booking_Service_Details = () => {
-  const [tickmark, setTickMark] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [cancelModalVisible, setCancelModalVisible] = useState<boolean>(false);
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
@@ -292,6 +294,24 @@ const Booking_Service_Details = () => {
       console.log(error, "Booking fail --------");
     }
   };
+  // ================ handle copy to phone number ===================
+  const handleCopyToPhone = async (phone: any) => {
+    try {
+      await Clipboard.setStringAsync(phone);
+      router.push({
+        pathname: `/Toaster`,
+        params: { res: "Phone number copied to clipboard" },
+      });
+    } catch (error: any) {
+      router.push({
+        pathname: `/Toaster`,
+        params: {
+          res: "Not copied",
+        },
+      });
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={tw`flex-1`}
@@ -379,6 +399,10 @@ const Booking_Service_Details = () => {
                           pathname: "/company/messaging",
                           params: {
                             receiverId: OrderDetailsData?.data?.provider?.id,
+                            receiverName:
+                              OrderDetailsData?.data?.provider?.name,
+                            receiverImage:
+                              OrderDetailsData?.data?.provider?.avatar,
                           },
                         })
                       }
@@ -391,6 +415,32 @@ const Booking_Service_Details = () => {
                     </TouchableOpacity>
                   )}
                 </View>
+
+                {OrderDetailsData?.data?.status === "Pending" && (
+                  <View
+                    style={tw`flex-row  items-center justify-between px-2 py-3`}
+                  >
+                    <View style={tw`flex-row gap-3 items-center`}>
+                      <SvgXml xml={IconPhoneGray} />
+                      <Text
+                        style={tw`font-DegularDisplayDemoRegular text-xl text-regularText  my-2`}
+                      >
+                        {OrderDetailsData?.data?.provider?.phone}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleCopyToPhone(
+                          OrderDetailsData?.data?.provider?.phone
+                        );
+                      }}
+                      style={tw`p-2`}
+                      activeOpacity={0.7}
+                    >
+                      <SvgXml width={24} height={24} xml={IconCopy} />
+                    </TouchableOpacity>
+                  </View>
+                )}
 
                 {OrderDetailsData?.data?.status === "Completed" && (
                   <Text
