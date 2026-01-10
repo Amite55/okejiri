@@ -39,6 +39,21 @@ const LoginIndex = () => {
   const [credentials, { isLoading: isLoadingLogin }] = useLoginMutation();
   const { data: userProfileInfo, isLoading } = useProfileQuery({});
 
+  // =============== dynamic role title ==================
+  let roleTitle = "";
+  if (roll === "USER") {
+    roleTitle = "Login as a service user";
+  } else if (roll === "PROVIDER") {
+    roleTitle = "Login as a service provider";
+  }
+
+  // ============== remember me checkbox handler ================
+  const handleCheckBox = async () => {
+    const newValue = !isChecked;
+    setIsChecked(newValue);
+    await AsyncStorage.setItem("rememberMe", JSON.stringify(newValue));
+  };
+
   // ----------------- handel login ---------------------
   const handleLogin = async (formData: any) => {
     try {
@@ -63,7 +78,7 @@ const LoginIndex = () => {
         } else {
           await AsyncStorage.removeItem("loginInfo");
         }
-        // dynamic route change ========================😩
+        // dynamic route change ========================
         if (res?.data?.user?.is_personalization_complete === false) {
           await AsyncStorage.setItem("token", res?.data?.access_token);
           router.push("/auth/contact");
@@ -80,6 +95,18 @@ const LoginIndex = () => {
         }
       } else if (roll === "PROVIDER") {
         const res = await credentials(payload).unwrap();
+        // ------------- login info save async storage -------------
+        if (isChecked) {
+          await AsyncStorage.setItem(
+            "loginInfo",
+            JSON.stringify({
+              email: formData.email,
+              password: formData.password,
+            })
+          );
+        } else {
+          await AsyncStorage.removeItem("loginInfo");
+        }
         if (res?.data?.user?.is_personalization_complete === false) {
           await AsyncStorage.setItem("token", res?.data?.access_token);
           router.push("/auth/contact");
@@ -126,12 +153,6 @@ const LoginIndex = () => {
     }
   };
 
-  // ============== remember me checkbox handler ================
-  const handleCheckBox = async () => {
-    const newValue = !isChecked;
-    setIsChecked(newValue);
-    await AsyncStorage.setItem("rememberMe", JSON.stringify(newValue));
-  };
   // ================= form validation =====================
   const validate = (values: any) => {
     const errors: any = {};
@@ -177,16 +198,13 @@ const LoginIndex = () => {
         <ScrollView style={tw`px-5 bg-base_color `}>
           <BackTitleButton
             onPress={() => router.back()}
-            pageName={"Login as a service user"}
+            pageName={"Login"}
             titleTextStyle={tw`text-xl`}
           />
 
           <View style={tw`justify-center items-center mb-12`}>
             <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
-            <AuthComponents
-              title="Welcome back"
-              subTitle="Use your credentials to sign in"
-            />
+            <AuthComponents title="Welcome back" subTitle={roleTitle} />
           </View>
           <Formik
             enableReinitialize={true}

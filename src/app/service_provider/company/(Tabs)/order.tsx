@@ -16,12 +16,6 @@ import {
 } from "react-native";
 
 const Order = () => {
-  const [isNew, setIsNew] = useState<boolean>(true);
-  const [isPending, setIspending] = useState<boolean>(false);
-  const [isCompleted, setIsCompleted] = useState<boolean>(false);
-
-  const [isOnTime, setIsOnTime] = useState<boolean>(true);
-  const [isInstant, setInstant] = useState<boolean>(false);
   const [status, setStatus] = useState<"New" | "Pending" | "Completed">("New");
   const [bookingProcess, setBookingProcess] = useState<"instant" | "schedule">(
     "instant"
@@ -43,11 +37,6 @@ const Order = () => {
     }`;
     return formatted;
   };
-
-  // API State
-  // const [activeFilter, setActiveFilter] = useState({ status: "New", booking_process: "instant" });
-
-  // API START
 
   const [
     fetchOrderItems,
@@ -80,12 +69,10 @@ const Order = () => {
 
   useEffect(() => {
     fetchOrderItems({ status, booking_process: bookingProcess });
-    // console.log("fetch item screen render ===================== ", fetchOrderItemsData?.data?.data)
   }, []);
 
   useEffect(() => {
     fetchOrderItems({ status: status, booking_process: bookingProcess });
-    // console.log("fetch item refetch ===================== ", fetchOrderItemsData?.data?.data)
   }, [status, bookingProcess]);
 
   const [descriptions, setDescriptions] = useState<{ [key: string]: string }>(
@@ -276,18 +263,6 @@ const Order = () => {
                   }
                 />
               ))}
-            {/* {[1, 2, 3, 4].map((index) => {
-          return (
-            <UserCard
-              key={index}
-              ProfileName="John Doe"
-              isProfileBadge
-              Date="Mon, 12 Des 2025"
-              Description="Service title goes here"
-            // onPress={() => router.push("")}
-            />
-          );
-        })} */}
           </View>
         )}
     </ScrollView>
