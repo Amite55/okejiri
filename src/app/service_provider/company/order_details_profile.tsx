@@ -12,6 +12,7 @@ import AcceptedModal from "@/src/Components/AcceptedModal";
 import UserReviewCard from "@/src/Components/UserReviewCard";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import {
   useLazyOrderDetailsQuery,
   useOrderApproveMutation,
@@ -68,6 +69,9 @@ const Order_Details_Profile = () => {
   ] = useRequestForDeliveryMutation();
   const [orderRejected, { isLoading: isLoadingOrderRejected }] =
     useOrderRejectMutation();
+  const { data: profileData, isLoading: isProfileLoading } = useProfileQuery(
+    {}
+  );
 
   // api function
   const formatDate = (dateStr: string) => {
@@ -92,14 +96,23 @@ const Order_Details_Profile = () => {
   }, [id]);
   const order = fetchOrderData?.data;
 
-  // handlers: order aprove handler =========
+  // handlers: order approve handler =========
   const handleOrderApprove = async (orderId: any) => {
     if (!orderId) {
       return;
     }
     try {
-      await orderApprove(orderId).unwrap();
-      setApprovedModalShown(true);
+      const res = await orderApprove(orderId).unwrap();
+      if (res) {
+        if (profileData?.data?.provider_type === "Company") {
+          setApprovedModalShown(true);
+        } else {
+          router.push({
+            pathname: "/Toaster",
+            params: { res: res?.message || "Order approved" },
+          });
+        }
+      }
     } catch (err) {
       Alert.alert("Order approve failed!");
       console.log("Order approve order failed ", err, " ", errorOrderApproved);
