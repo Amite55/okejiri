@@ -45,6 +45,14 @@ const Contact = () => {
     {}
   );
 
+  // =============== dynamic role title ==================
+  let roleTitle = "";
+  if (roll === "USER") {
+    roleTitle = "Sing up as a service user";
+  } else if (roll === "PROVIDER") {
+    roleTitle = "Sing up as a service provider";
+  }
+
   const handleLocation = async () => {
     await getLocation();
 
@@ -160,7 +168,7 @@ const Contact = () => {
           <View>
             <BackTitleButton
               onPress={() => router.back()}
-              pageName={"Sign up as a service user"}
+              pageName={roleTitle}
               titleTextStyle={tw`text-lg`}
             />
 

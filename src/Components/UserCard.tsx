@@ -15,7 +15,7 @@ interface IProps {
   Date?: string;
   onPress?: () => void;
   isProfileBadge?: boolean;
-  ImgProfileImg?: string
+  ImgProfileImg?: string;
 }
 
 const UserCard = ({
@@ -24,21 +24,24 @@ const UserCard = ({
   Date,
   onPress,
   isProfileBadge,
-  ImgProfileImg
+  ImgProfileImg,
 }: IProps) => {
   return (
     <Pressable
-      // onPress={() =>
-      //   router.push("/service_provider/individual/order_details_profile")
-      // }
       style={tw`h-32 px-5 rounded-2xl bg-white flex-row justify-between items-center`}
     >
       <View style={tw`flex-row items-center gap-3`}>
-        {ImgProfileImg ? 
-          <Image style={tw`w-16 h-16 rounded-full `} source={{uri:ImgProfileImg}} /> :
-          <Image style={tw`h-16 w-16 rounded-full`} source={ImgProfileImgDefault}
+        {ImgProfileImg ? (
+          <Image
+            style={tw`w-16 h-16 rounded-full `}
+            source={{ uri: ImgProfileImg }}
           />
-        }
+        ) : (
+          <Image
+            style={tw`h-16 w-16 rounded-full`}
+            source={ImgProfileImgDefault}
+          />
+        )}
         <View style={tw`gap-1.5`}>
           <View style={tw`flex-row items-center gap-2`}>
             <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>

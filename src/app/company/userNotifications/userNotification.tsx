@@ -24,6 +24,7 @@ const Notification = () => {
   const [page, setPage] = useState(1);
   const [notifications, setNotification] = useState<any[]>([]);
   const [isFetchMore, setIsFetchMore] = useState(false);
+  console.log(notifications, "this is notification data ------------>");
 
   // Modal Refs
   const deliveryModalRef = useRef<BottomSheetModal>(null);
@@ -80,35 +81,19 @@ const Notification = () => {
         await singleMark(item.id);
       } catch {}
     }
-
     const type = item?.data?.type;
-
     // ---------------- Modal Types ---------------- //
     if (type === "delivery_request_sent") {
       setSelectedOrderId(item?.data?.order_id);
       deliveryModalRef.current?.present();
       return;
     }
-
     if (type === "extend_delivery_time") {
       setRequestDeliveryExtId(item?.data?.request_id);
       requestDeliveryTimeExtModalRef.current?.present();
       return;
     }
-
-    // ---------------- Routing Types ---------------- //
-    const navigateToOrder = () => {
-      router.push({
-        pathname:
-          provider_type === "individual"
-            ? "/service_provider/individual/order_details_profile"
-            : "/service_provider/company/order_details_profile",
-        params: { id: item.data.order_id || item.id },
-      });
-    };
-
     switch (type) {
-      // case "new_order":
       case "order_approved":
         router.push({
           pathname: "/company/serviceBookings/order_approved",
@@ -117,7 +102,6 @@ const Notification = () => {
           },
         });
         break;
-
       case "order_cancelled":
         router.push({
           pathname: "/company/serviceBookings/order_cancelled",
@@ -138,18 +122,15 @@ const Notification = () => {
           },
         });
         break;
-
       case "warning":
         router.push("/service_provider/individual/warning");
         break;
-
       case "new_dispute":
         router.push({
           pathname: "/service_provider/individual/disputes/dispute_review",
           params: { id: item?.data?.dispute_id },
         });
         break;
-
       case "report":
       case "new_report":
         router.push({
@@ -161,7 +142,6 @@ const Notification = () => {
           },
         });
         break;
-
       default:
         break;
     }

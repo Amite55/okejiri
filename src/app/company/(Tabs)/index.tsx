@@ -188,11 +188,19 @@ const Company_Home_Index = () => {
 
         <View style={tw`gap-3 mt-3`}>
           {CleaningData?.length === 0 ? (
-            <Text
-              style={tw`font-DegularDisplayDemoMedium text-xl text-deepBlue100 text-center`}
-            >
-              Your ServiCe No Data
-            </Text>
+            <View>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-deepBlue200 text-center`}
+              >
+                No services nearby yet
+              </Text>
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-sm text-deepBlue100 text-center`}
+              >
+                Okejiri has not reached this area for now, but we&apos;re
+                expanding fast
+              </Text>
+            </View>
           ) : (
             serviceNearbyData?.data?.data.map((item, index) => (
               <ServiceCard

@@ -20,8 +20,9 @@ const Terms_And_Condition = () => {
 
   if (isLoading) {
     return (
-      <View style={tw`flex-1 justify-center items-center`}>
-        <ActivityIndicator size="large" color="blue" />
+      <View style={tw`flex-1 justify-center items-center bg-base_color`}>
+        <ActivityIndicator size="large" color="orange" />
+        <Text style={tw`mt-3 text-sm text-primary`}>Loading...</Text>
       </View>
     );
   }

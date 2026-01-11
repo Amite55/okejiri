@@ -16,12 +16,6 @@ import {
 } from "react-native";
 
 const Order = () => {
-  const [isNew, setIsNew] = useState<boolean>(true);
-  const [isPending, setIspending] = useState<boolean>(false);
-  const [isCompleted, setIsCompleted] = useState<boolean>(false);
-
-  const [isOnTime, setIsOnTime] = useState<boolean>(true);
-  const [isInstant, setInstant] = useState<boolean>(false);
   const [status, setStatus] = useState<"New" | "Pending" | "Completed">("New");
   const [bookingProcess, setBookingProcess] = useState<"instant" | "schedule">(
     "instant"
@@ -37,16 +31,11 @@ const Order = () => {
       year: "numeric",
     };
     const parts = date.toLocaleDateString("en-US", options).split(" ");
-    // console.log(date.toLocaleDateString("en-US", options))
     const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${
       parts[3]
     }`;
     return formatted;
   };
-
-  // API State
-
-  // API START
 
   const [
     fetchOrderItems,
@@ -79,12 +68,10 @@ const Order = () => {
 
   useEffect(() => {
     fetchOrderItems({ status, booking_process: bookingProcess });
-    // console.log("fetch item screen render ===================== ", fetchOrderItemsData?.data?.data)
   }, []);
 
   useEffect(() => {
     fetchOrderItems({ status: status, booking_process: bookingProcess });
-    // console.log("fetch item refetch ===================== ", fetchOrderItemsData?.data?.data)
   }, [status, bookingProcess]);
 
   const [descriptions, setDescriptions] = useState<{ [key: string]: string }>(
@@ -127,7 +114,6 @@ const Order = () => {
       </Text>
 
       {/* ------------ order status --------------- */}
-
       <View
         style={tw`flex-row justify-center items-center flex-1 border rounded-xl border-gray-300 h-12`}
       >
@@ -243,51 +229,38 @@ const Order = () => {
             <Text
               style={tw`text-xl text-gray-600 font-DegularDisplayDemoMedium`}
             >
-              No {bookingProcess} {status.toLowerCase()} orders found.
+              No {bookingProcess} {status?.toLowerCase()} orders found.
             </Text>
           </View>
         )}
       {!isLoadingfetchOrderItems &&
         !isFetchingOrderItems &&
-        fetchOrderItemsData?.data?.data?.length > 0 &&
-        <View style={tw`gap-3 mt-4`}>
-          {fetchOrderItemsData?.data?.data.length > 0 && (fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
-
-            <UserCard
-              key={index}
-              ProfileName={item.user.name}
-              isProfileBadge={item.user.kyc_status === "Verified" ? true : false}
-              Date={formateDate(item.created_at)}
-              Description={descriptions[item.id]}
-              ImgProfileImg={item.user.avatar}
-              onPress={() => router.push({
-                pathname: "/service_provider/individual/order_details_profile",
-                params: {
-                  id: item.id
-                }
-              })}
-            />
-
-
-          )))
-
-
-          }
-          {/* {[1, 2, 3, 4].map((index) => {
-          return (
-            <UserCard
-              key={index}
-              ProfileName="John Doe"
-              isProfileBadge
-              Date="Mon, 12 Des 2025"
-              Description="Service title goes here"
-            // onPress={() => router.push("")}
-            />
-          );
-        })} */}
-        </View>
-      }
-
+        fetchOrderItemsData?.data?.data?.length > 0 && (
+          <View style={tw`gap-3 mt-4`}>
+            {fetchOrderItemsData?.data?.data.length > 0 &&
+              fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
+                <UserCard
+                  key={index}
+                  ProfileName={item?.user?.name}
+                  isProfileBadge={
+                    item?.user?.kyc_status === "Verified" ? true : false
+                  }
+                  Date={formateDate(item?.created_at)}
+                  Description={descriptions[item?.id]}
+                  ImgProfileImg={item?.user?.avatar}
+                  onPress={() =>
+                    router.push({
+                      pathname:
+                        "/service_provider/company/order_details_profile",
+                      params: {
+                        id: item?.id,
+                      },
+                    })
+                  }
+                />
+              ))}
+          </View>
+        )}
     </ScrollView>
   );
 };

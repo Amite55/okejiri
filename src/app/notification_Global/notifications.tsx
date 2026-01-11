@@ -15,6 +15,8 @@ const Notification = () => {
   const [notifications, setNotification] = useState<any[]>([]);
   const [isFetchMore, setIsFetchMore] = useState(false);
 
+  // console.log(notifications, "notifications data==================");
+
   // ------------------------------- API ------------------------------- //
   const {
     data: notificationData,
@@ -51,12 +53,7 @@ const Notification = () => {
     }
   };
 
-  // -------------------------------- handler -------------------------- //
-  // useEffect(()=>{
-
-  // },[provider_type])
-  const values = notificationData?.data?.notifications?.data || []; // only for read_at, id
-  const notificationDetails = values?.data;
+  // -------------------------------- handler -------------------------- /
   const handleNotification = (item: any) => {
     const handleMark = async () => {
       try {
@@ -75,7 +72,7 @@ const Notification = () => {
     if (item?.data?.type === "new_order") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
             id: item.data.order_id || item.id,
           },
@@ -100,13 +97,12 @@ const Notification = () => {
     } else if (item?.data?.type === "order_rejected") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
             id: item.data.order_id || item.id,
           },
         });
       } else {
-        // router.push("")
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
@@ -117,7 +113,7 @@ const Notification = () => {
     } else if (item?.data?.type === "delivery_request_sent") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
             id: item.data.order_id || item.id,
           },
@@ -133,7 +129,7 @@ const Notification = () => {
     } else if (item?.data?.type === "order_approved") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
             id: item.data.order_id || item.id,
           },
@@ -165,7 +161,7 @@ const Notification = () => {
     } else if (item?.data.type === "order_cancelled") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
             id: item.data.order_id || item.id,
           },
@@ -181,7 +177,7 @@ const Notification = () => {
     } else if (item?.data.type === "delivery_request_decline") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
             id: item.data.order_id || item.id,
           },
@@ -197,7 +193,7 @@ const Notification = () => {
     } else if (item?.data.type === "delivery_request_approved") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
             id: item.data.order_id || item.id,
           },
@@ -210,17 +206,13 @@ const Notification = () => {
           },
         });
       }
-    } else {
-      //
     }
   };
 
-  // console.log("")
-  // console.log(NotificationData, "-------------------");
   return (
     <View style={tw`flex-1  bg-base_color px-5 `}>
       <BackTitleButton
-        pageName={"Notifications"}
+        pageName={"Notifications global"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />

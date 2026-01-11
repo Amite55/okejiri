@@ -40,14 +40,8 @@ const Individual_Service_Provider_Index = () => {
     useRecentOrderQuery("New");
   const { data: recentTransaction, isLoading: recentTransactionLoading } =
     useRecentTransactionsQuery({});
-  // const recentOrder = recentOrderData?.data?.data.slice(0,3) || [];
 
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
-
-  // if()
-  // console.log("++++++++++ recent order data =================== ", recentOrder);
-  // console.log("++++++++++ recent transaction order data inside =================== ", recentTransaction?.data.data);
-  // data fetch - END
 
   // state for fetch data;
   const formateDate = (dateStr: string) => {
@@ -253,23 +247,26 @@ const Individual_Service_Provider_Index = () => {
         </Text>
 
         <View style={tw`gap-6 my-4`}>
-          {recentTransaction && recentTransaction?.data.data.map((item: any, index: any) => {
-            // console.log(" ========= transaction item ============ ", JSON.stringify(item!, null, 2))
-            return (
-              <TransactionsCard
-                key={index}
-                price={item?.amount}
-                profileBadge={item?.sender?.kyc_status === "Verified" ? true : false}
-                type={item?.direction}
-                varient={item?.transaction_type}
-                title="Service title goes here"
-                transactionIcon={IconRightArrowCornerPrimaryColor}
-                userName={item?.sender.name}
-                created_at={formateDate(item?.created_at)}
-                transaction_id={item?.transaction_id}
-              />
-            );
-          })}
+          {recentTransaction &&
+            recentTransaction?.data.data.map((item: any, index: any) => {
+              // console.log(" ========= transaction item ============ ", JSON.stringify(item!, null, 2))
+              return (
+                <TransactionsCard
+                  key={index}
+                  price={item?.amount}
+                  profileBadge={
+                    item?.sender?.kyc_status === "Verified" ? true : false
+                  }
+                  type={item?.direction}
+                  varient={item?.transaction_type}
+                  title="Service title goes here"
+                  transactionIcon={IconRightArrowCornerPrimaryColor}
+                  userName={item?.sender.name}
+                  created_at={formateDate(item?.created_at)}
+                  transaction_id={item?.transaction_id}
+                />
+              );
+            })}
         </View>
       </View>
     </ScrollView>
