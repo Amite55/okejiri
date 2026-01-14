@@ -84,7 +84,7 @@ const Account = () => {
           router.replace("/company/(Tabs)");
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "role not switched role to user ");
       router.push({
         pathname: `/Toaster`,
@@ -111,25 +111,36 @@ const Account = () => {
         <Image
           style={tw`w-28 h-28 rounded-full  `}
           source={userProfileInfo?.data?.avatar}
-          contentFit="contain"
+          contentFit="cover"
         />
         <Text
           style={tw`font-DegularDisplayDemoRegular text-2xl text-black text-center`}
         >
           {userProfileInfo?.data?.name}
         </Text>
-        <View
+        <TouchableOpacity
+          activeOpacity={0.6}
+          disabled={
+            userProfileInfo?.data?.kyc_status === "Verified" ||
+            userProfileInfo?.data?.kyc_status === "In Review"
+          }
+          onPress={() => {
+            router.push("/KYC_auth/id_card");
+          }}
           style={[
-            tw`w-32 h-8 rounded-2xl  justify-center items-center`,
-            userProfileInfo?.data?.kyc_status === "Verified"
-              ? tw`bg-blue100`
-              : tw`bg-red-600`,
+            tw`w-32 h-8 rounded-2xl  justify-center items-center  ${
+              userProfileInfo?.data?.kyc_status === "In Review"
+                ? "bg-secondary"
+                : userProfileInfo?.data?.kyc_status === "Verified"
+                ? "bg-violet"
+                : "bg-blueMagenta"
+            }`,
           ]}
         >
           <Text style={tw`font-DegularDisplayDemoMedium text-base text-white`}>
             {userProfileInfo?.data?.kyc_status}
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity

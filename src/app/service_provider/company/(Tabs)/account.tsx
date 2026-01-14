@@ -53,6 +53,11 @@ const Account = () => {
   const totalBalance = earnedFormatted + referralFormatted;
 
   const profile = userProfileInfo?.data;
+  const isDisabled =
+    isLoadingProfile ||
+    !profile?.kyc_status ||
+    profile?.kyc_status === "Verified" ||
+    profile?.kyc_status === "In Review";
   // -------------- handle logout --------------
   const handleLogoutUser = async () => {
     const token = await AsyncStorage.getItem("token");
@@ -63,7 +68,7 @@ const Account = () => {
       await AsyncStorage.removeItem("providerTypes");
       await AsyncStorage.removeItem("token");
       router.replace("/chose_roll");
-    } catch (e) {
+    } catch (e: any) {
       console.log("Error reading role from AsyncStorage", e);
       router.push({
         pathname: "/Toaster",
@@ -106,7 +111,12 @@ const Account = () => {
             ? profile?.company?.company_name
             : profile.name}
         </Text>
-        <View
+        <TouchableOpacity
+          activeOpacity={0.6}
+          disabled={isDisabled}
+          onPress={() => {
+            router.push("/KYC_auth/id_card");
+          }}
           style={tw`flex-row py-2 px-7 justify-between items-center gap-2 rounded-full ${
             profile?.kyc_status === "In Review"
               ? "bg-secondary"
@@ -118,7 +128,7 @@ const Account = () => {
           <Text style={tw`font-PoppinsMedium text-base text-white`}>
             {profile?.kyc_status}
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity
