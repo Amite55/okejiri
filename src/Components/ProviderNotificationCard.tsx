@@ -1,6 +1,6 @@
 import {
   IconCompleteKycNotification,
-  IconDeleteRed,
+  IconDeleteWhite,
   IconDeliveryApprovedNotification,
   IconExtension,
   IconNewDisputeNotification,
@@ -14,7 +14,8 @@ import {
 import { ImgLogo } from "@/assets/images/image";
 import { Image } from "expo-image";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
@@ -53,85 +54,109 @@ const textColorMap = {
   report: "#FF3A00",
 };
 
+interface Props {
+  item: any;
+  onPress: () => void;
+  onDelete?: () => void;
+  deleteLoading?: boolean;
+}
+interface RightActionProps {
+  onDelete: () => void;
+  deleteLoading?: boolean;
+}
+
+// ================= card right action ==================
+
+const RightAction = ({ onDelete, deleteLoading }: RightActionProps) => {
+  return (
+    <TouchableOpacity
+      onPress={onDelete}
+      disabled={deleteLoading}
+      activeOpacity={0.8}
+      style={tw`bg-red-500 w-20 justify-center items-center rounded-2xl ml-2`}
+    >
+      {deleteLoading ? (
+        <ActivityIndicator size={"small"} color="#fff" />
+      ) : (
+        <SvgXml xml={IconDeleteWhite} />
+      )}
+      <Text style={tw`text-white text-xs mt-1`}>Delete</Text>
+    </TouchableOpacity>
+  );
+};
+
 const ProviderNotificationCard = ({
   item,
   onPress,
   onDelete,
-}: {
-  item: any;
-  onPress: () => void;
-  onDelete?: () => void;
-}) => {
+  deleteLoading,
+}: Props) => {
   const Icon = iconMap[item?.data?.type];
   const textColor = textColorMap[item?.data?.type] || "#000000";
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.8}
-      style={[
-        tw`flex-row  items-center justify-between rounded-2xl py-6  px-4 relative shadow-md`,
-        item?.read_at ? tw`bg-white` : tw`bg-gray-200`,
-      ]}
+    <Swipeable
+      renderRightActions={() => RightAction({ onDelete, deleteLoading })}
+      overshootRight={false}
     >
-      <View style={tw`flex-row items-center gap-4 flex-1`}>
-        {/* ----------------------- notification icon ------------------------------ */}
-        {Icon ? (
-          <View
-            style={tw`w-14 h-14 rounded-full border-2  border-white shadow-sm shadow-slate-900 bg-base_color justify-center items-center`}
-          >
-            <SvgXml xml={Icon} />
-          </View>
-        ) : (
-          <Image
-            style={tw`w-14 h-14 rounded-full border border-white`}
-            source={ImgLogo}
-            contentFit="cover"
-          />
-        )}
-
-        <View style={tw`flex-1`}>
-          <Text
-            numberOfLines={2}
-            ellipsizeMode="clip"
-            style={[
-              tw`flex-1 font-DegularDisplayDemoMedium  text-xl mb-1`,
-              { color: textColor },
-            ]}
-          >
-            {item?.data?.title}
-          </Text>
-          {item?.data?.provider?.name ? (
-            <View style={tw`flex-row items-center gap-2`}>
-              <Text
-                style={tw`font-DegularDisplayDemoSemibold text-base text-black`}
-              >
-                {item?.data?.provider?.name || item?.data?.user?.name}
-              </Text>
-              {item?.data?.provider?.kyc_status === "Verified" ||
-              item?.data?.user?.kyc_status === "Verified" ? (
-                <SvgXml xml={IconProfileBadge} />
-              ) : null}
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={0.8}
+        style={[
+          tw`flex-row  items-center justify-between rounded-2xl py-6  px-4 relative shadow-md`,
+          item?.read_at ? tw`bg-white` : tw`bg-gray-200`,
+        ]}
+      >
+        <View style={tw`flex-row items-center gap-4 flex-1`}>
+          {/* ----------------------- notification icon ------------------------------ */}
+          {Icon ? (
+            <View
+              style={tw`w-14 h-14 rounded-full border-2  border-white shadow-sm shadow-slate-900 bg-base_color justify-center items-center`}
+            >
+              <SvgXml xml={Icon} />
             </View>
           ) : (
-            <Text
-              style={tw`font-DegularDisplayDemoRegular text-sm text-gray-700`}
-            >
-              Tap to see details
-            </Text>
+            <Image
+              style={tw`w-14 h-14 rounded-full border border-white`}
+              source={ImgLogo}
+              contentFit="cover"
+            />
           )}
+
+          <View style={tw`flex-1`}>
+            <Text
+              numberOfLines={2}
+              ellipsizeMode="clip"
+              style={[
+                tw`flex-1 font-DegularDisplayDemoMedium  text-xl mb-1`,
+                { color: textColor },
+              ]}
+            >
+              {item?.data?.title}
+            </Text>
+            {item?.data?.provider?.name ? (
+              <View style={tw`flex-row items-center gap-2`}>
+                <Text
+                  style={tw`font-DegularDisplayDemoSemibold text-base text-black`}
+                >
+                  {item?.data?.provider?.name || item?.data?.user?.name}
+                </Text>
+                {item?.data?.provider?.kyc_status === "Verified" ||
+                item?.data?.user?.kyc_status === "Verified" ? (
+                  <SvgXml xml={IconProfileBadge} />
+                ) : null}
+              </View>
+            ) : (
+              <Text
+                style={tw`font-DegularDisplayDemoRegular text-sm text-gray-700`}
+              >
+                Tap to see details
+              </Text>
+            )}
+          </View>
         </View>
-      </View>
-      {/* ================= DELETE BUTTON ================= */}
-      <TouchableOpacity
-        onPress={onDelete}
-        activeOpacity={0.7}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        style={tw`ml-3`}
-      >
-        <SvgXml xml={IconDeleteRed} />
       </TouchableOpacity>
-    </TouchableOpacity>
+    </Swipeable>
   );
 };
 
