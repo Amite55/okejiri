@@ -32,14 +32,8 @@ const My_Employee = () => {
     { isFetching: isFetchingMyEmployee, isLoading: isLoadingMyEmployee },
   ] = useLazyMyEmployeeQuery();
 
-  const [
-    deleteEmployee,
-    {
-      isLoading: isLoadingDeleteEmployee,
-      isError: isErrorDeleteEmployee,
-      error: errorDeleteEmployee,
-    },
-  ] = useDeleteEmployeeMutation();
+  const [deleteEmployee, { isLoading: isLoadingDeleteEmployee }] =
+    useDeleteEmployeeMutation();
 
   // ========================================= loadEmployeeData =----------------
   const loadEmployeeData = async (page = 1, isRefresh = false) => {
@@ -50,12 +44,16 @@ const My_Employee = () => {
       if (!isRefresh) {
         setLoadingMore(true);
       }
-      const response = await fetchMyEmployee(page).unwrap();
+      const response = await fetchMyEmployee({
+        page: 1,
+        per_page: 10,
+        search: "",
+        _timestamp: Date.now(),
+      }).unwrap();
       const responseData = response?.data || [];
       const newData = responseData?.data || [];
       const current_page = responseData?.current_page || 1;
       const lastPage = responseData?.last_page || current_page;
-
       if (isRefresh) {
         setEmployees(newData);
       } else {
@@ -87,7 +85,7 @@ const My_Employee = () => {
   };
   useEffect(() => {
     loadEmployeeData(1, true);
-  }, []);
+  }, [fetchMyEmployee]);
 
   return (
     <View style={tw`flex-1 bg-base_color`}>
@@ -187,7 +185,7 @@ const My_Employee = () => {
                             },
                           });
                         }
-                      } catch (err) {
+                      } catch (err: any) {
                         console.log("Employee deleted error ", err),
                           router.push({
                             pathname: "/Toaster",

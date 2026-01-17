@@ -27,12 +27,13 @@ const Bookings = () => {
     data: getMyBookingsData,
     isLoading: isMyBookingsLoading,
     refetch,
-  } = useMyBookingsQuery({ page: 1, per_page: 10 });
+  } = useMyBookingsQuery({ page: 1, per_page: 100 });
+
   const {
     data: getMyServiceBookingsData,
     isLoading: isMyServiceBookingsLoading,
     refetch: refetchBookingsHistory,
-  } = useBookingsHistoryQuery({ page: 1, per_page: 10 });
+  } = useBookingsHistoryQuery({ page: 1, per_page: 100 });
 
   const renderHeader = () => (
     <>
@@ -101,12 +102,7 @@ const Bookings = () => {
   const onRefresh = async () => {
     try {
       setRefreshing(true);
-      await Promise.all([
-        refetch,
-        refetchBookingsHistory,
-        getMyBookingsData,
-        getMyServiceBookingsData,
-      ]);
+      await Promise.all([refetch(), refetchBookingsHistory()]);
     } catch (error) {
       console.log(error, "refresh error");
     } finally {

@@ -17,21 +17,29 @@ const TakeSelfieCamera = () => {
     return <View />;
   }
 
-  // 📸 যদি permission denied হয়
+  // if permission denied =========
   if (!permission.granted) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text>Camera permission is required to continue</Text>
+      <View className="flex-1 justify-center items-center ">
+        <Text style={tw`text-center`}>
+          Camera permission is required to continue sss
+        </Text>
         <TouchableOpacity
+          activeOpacity={0.7}
           onPress={requestPermission}
-          style={{
-            backgroundColor: "#007bff",
-            padding: 10,
-            borderRadius: 5,
-            marginTop: 10,
-          }}
+          style={[
+            tw`mx-4`,
+            {
+              backgroundColor: "#007bff",
+              padding: 10,
+              borderRadius: 5,
+              marginTop: 10,
+            },
+          ]}
         >
-          <Text style={{ color: "#fff" }}>Grant Permission</Text>
+          <Text style={tw`text-white text-base text-center`}>
+            Grant Permission
+          </Text>
         </TouchableOpacity>
       </View>
     );

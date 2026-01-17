@@ -112,7 +112,7 @@ const Profile = () => {
         <Image
           style={tw`w-28 h-28 rounded-full  `}
           source={userProfileInfo?.data?.avatar}
-          contentFit="contain"
+          contentFit="cover"
         />
         <Text
           style={tw`font-DegularDisplayDemoSemibold text-2xl text-black text-center`}

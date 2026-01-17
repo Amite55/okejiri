@@ -39,7 +39,6 @@ const Company_Home_Index = () => {
   const {
     data: servicesData,
     isLoading: servicesLoading,
-    error,
     refetch: serviceRefetch,
   } = useServicesQuery({});
   const {

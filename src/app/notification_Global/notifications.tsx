@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 import ProviderNotificationCard from "@/src/Components/ProviderNotificationCard";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import {
   useGetNotificationsQuery,
   useSingleMarkMutation,
@@ -15,21 +16,14 @@ const Notification = () => {
   const [notifications, setNotification] = useState<any[]>([]);
   const [isFetchMore, setIsFetchMore] = useState(false);
 
-  // console.log(notifications, "notifications data==================");
-
   // ------------------------------- API ------------------------------- //
-  const {
-    data: notificationData,
-    isLoading: isLoadingNotification,
-    isError: isErrorLoadingNotification,
-    isFetching: isFetchingNotification,
-  } = useGetNotificationsQuery(page, {
-    refetchOnMountOrArgChange: true,
-  });
-  const [
-    singleMark,
-    { data: singleMarkData, isLoading: isLoadingSingleMarkData },
-  ] = useSingleMarkMutation();
+  const { data: notificationData, isLoading: isLoadingNotification } =
+    useGetNotificationsQuery(page, {
+      refetchOnMountOrArgChange: true,
+    });
+  const [singleMark] = useSingleMarkMutation();
+  const { data: userProfileInfo, isLoading: isProfileLoading } =
+    useProfileQuery({});
 
   // -------------------------------- Effect -------------------------- //
   useEffect(() => {
@@ -57,7 +51,7 @@ const Notification = () => {
   const handleNotification = (item: any) => {
     const handleMark = async () => {
       try {
-        await singleMark(item.id);
+        await singleMark(item?.id);
       } catch (err: any) {
         router.push({
           pathname: "/Toaster",
@@ -66,7 +60,7 @@ const Notification = () => {
       }
     };
 
-    if (item.read_at === null) {
+    if (item?.read_at === null) {
       handleMark();
     }
     if (item?.data?.type === "new_order") {
@@ -74,14 +68,14 @@ const Notification = () => {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       }
@@ -99,7 +93,7 @@ const Notification = () => {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
@@ -115,7 +109,7 @@ const Notification = () => {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
@@ -131,7 +125,7 @@ const Notification = () => {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
@@ -146,24 +140,24 @@ const Notification = () => {
       router.push({
         pathname: "/service_provider/individual/warning",
         params: {
-          title: item?.data.title,
+          title: item?.data?.title,
           subtitle: item?.data.sub_title,
         },
       });
-    } else if (item?.data.type === "report") {
+    } else if (item?.data?.type === "report") {
       router.push({
         pathname: "/service_provider/individual/warning",
         params: {
-          title: item?.data.title,
-          subtitle: item?.data.data?.report_description,
+          title: item?.data?.title,
+          subtitle: item?.data?.data?.report_description,
         },
       });
-    } else if (item?.data.type === "order_cancelled") {
+    } else if (item?.data?.type === "order_cancelled") {
       if (provider_type === "individual") {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
@@ -179,7 +173,7 @@ const Notification = () => {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
@@ -190,12 +184,12 @@ const Notification = () => {
           },
         });
       }
-    } else if (item?.data.type === "delivery_request_approved") {
+    } else if (item?.data?.type === "delivery_request_approved") {
       if (provider_type === "individual") {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
@@ -203,6 +197,20 @@ const Notification = () => {
           pathname: "/service_provider/company/order_details_profile",
           params: {
             id: item?.data?.order_id,
+          },
+        });
+      }
+    } else if (item?.data?.type === "complete_kyc") {
+      if (
+        userProfileInfo?.data?.kyc_status === "In Review" ||
+        userProfileInfo?.data?.kyc_status === "Unverified"
+      ) {
+        router.push("/KYC_auth/id_card");
+      } else {
+        router.push({
+          pathname: "/Toaster",
+          params: {
+            res: "You have already completed your KYC.",
           },
         });
       }
@@ -212,7 +220,7 @@ const Notification = () => {
   return (
     <View style={tw`flex-1  bg-base_color px-5 `}>
       <BackTitleButton
-        pageName={"Notifications global"}
+        pageName={"Notifications"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
@@ -233,7 +241,7 @@ const Notification = () => {
       {notifications?.length > 0 && (
         <FlatList
           data={notifications}
-          keyExtractor={(item, index) => `${item.id}-${index}`}
+          keyExtractor={(item, index) => `${item?.id}-${index}`}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={tw`gap-3 px-2 py-2`}
           onEndReached={loading_more}
@@ -262,20 +270,6 @@ const Notification = () => {
           )}
         />
       )}
-
-      {/* <View style={tw`gap-3 py-2`}>
-        {values && values.map((item: any, index: any) => {
-          return (
-            <ProviderNotificationCard
-              key={item.id}
-              item={item}
-              onPress={() => handleNotification(item)}
-
-           
-            />
-          );
-        })}
-      </View> */}
     </View>
   );
 };

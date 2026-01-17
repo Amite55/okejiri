@@ -43,10 +43,12 @@ export const companyEmployeesSlice = api.injectEndpoints({
       providesTags: ["settings"],
     }),
     myEmployee: builder.query({
-      query: ({ page, per_page, search }) => ({
-        url: `/my-employee?page=${page}&per_page=${per_page}&search=${search}`,
-        method: "GET",
-      }),
+      query: ({ page, per_page, search }) => {
+        return {
+          url: `/my-employee?page=${page}&per_page=${per_page}&search=${search}`,
+          method: "GET",
+        };
+      },
       providesTags: ["settings"],
     }),
     deleteEmployee: builder.mutation({

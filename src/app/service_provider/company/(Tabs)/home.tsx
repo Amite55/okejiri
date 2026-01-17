@@ -38,13 +38,10 @@ const Home_Index_Company = () => {
   // data fetch - START
   const { data: homeData, isLoading: homeDataLoading } =
     useHomeDataQuery(value);
-
   const { data: recentOrder, isLoading: recentOrderLoading } =
     useRecentOrderQuery("New");
   const { data: recentTransaction, isLoading: recentTransactionLoading } =
     useRecentTransactionsQuery({});
-  // const recentOrder = recentOrderData?.data?.data.slice(0,3) || [];
-
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
 
   // state for fetch data;

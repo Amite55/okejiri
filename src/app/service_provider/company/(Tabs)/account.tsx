@@ -90,7 +90,7 @@ const Account = () => {
       </Text>
       {/* ============================ profile info ============================== */}
       <View
-        style={tw`px-4 py-5 bg-white rounded-2xl justify-center items-center gap-3`}
+        style={tw`px-4 py-5 bg-white rounded-2xl justify-center items-center gap-2`}
       >
         <Image
           style={tw`w-28 h-28 rounded-full  `}
@@ -109,7 +109,12 @@ const Account = () => {
         >
           {profile?.role === "PROVIDER" && profile?.provider_type === "Company"
             ? profile?.company?.company_name
-            : profile.name}
+            : profile?.name}
+        </Text>
+        <Text
+          style={tw`font-DegularDisplayDemoRegular text-lg text-gray-400 text-center`}
+        >
+          {profile?.name}
         </Text>
         <TouchableOpacity
           activeOpacity={0.6}

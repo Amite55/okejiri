@@ -228,13 +228,13 @@ const Order_Details_Profile = () => {
               style={tw`flex-row py-1 px-4 justify-between items-center gap-2 rounded-full ${
                 order.user?.kyc_status === "In Review"
                   ? "bg-secondary"
-                  : order.status === "Verified"
+                  : order?.status === "Verified"
                   ? "bg-violet"
                   : "bg-blueMagenta"
               }`}
             >
               <Text style={tw`font-PoppinsRegular text-sm text-white`}>
-                {order.user.kyc_status}
+                {order?.user.kyc_status}
               </Text>
             </View>
           </View>
