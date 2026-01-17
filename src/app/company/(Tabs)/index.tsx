@@ -6,8 +6,10 @@ import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo"
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import UserHomeSkeleton from "@/src/Components/skeletons/UserHomeSkeleton";
 import UserCarousel from "@/src/Components/UserCarousel";
+import { useCheckLocation } from "@/src/hooks/useLocation";
 import CleaningData from "@/src/json/CleaningData.json";
 import tw from "@/src/lib/tailwind";
+import { useUpdateLatLongMutation } from "@/src/redux/apiSlices/authSlices";
 import { useBookingsHistoryQuery } from "@/src/redux/apiSlices/userProvider/bookingsSlices";
 import {
   useServiceNearbyQuery,
@@ -16,7 +18,7 @@ import {
 import { BlurView } from "@react-native-community/blur";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   FlatList,
   Platform,
@@ -29,6 +31,7 @@ import {
 
 const Company_Home_Index = () => {
   const [refreshing, setRefreshing] = React.useState(false);
+  const { getLocation, loading: locationLoading } = useCheckLocation();
 
   // ------------------ api end point ------------------
   const {
@@ -45,6 +48,31 @@ const Company_Home_Index = () => {
     data: getMyServiceBookingsData,
     isLoading: isMyServiceBookingsLoading,
   } = useBookingsHistoryQuery({ page: 1, per_page: 10 });
+  const [updateLatLong, { isLoading: isUpdateLatLongLoading }] =
+    useUpdateLatLongMutation();
+
+  // ================location update when render this screen ==================
+  const handleLocation = async () => {
+    const newLocation = await getLocation();
+    if (newLocation?.latitude && newLocation?.longitude) {
+      const response = await updateLatLong({
+        latitude: newLocation?.latitude,
+        longitude: newLocation?.longitude,
+      }).unwrap();
+      if (response) {
+        console.log("updated");
+      }
+    } else {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: "Failed to get location" },
+      });
+    }
+  };
+  // ===============location update when render this screen ==================
+  useEffect(() => {
+    handleLocation();
+  }, []);
 
   const serviceItemRender = ({ item }) => {
     return (
@@ -152,6 +180,7 @@ const Company_Home_Index = () => {
           placeholderTextColor={"#535353"}
         />
       </View> */}
+
       {/* ======================== benner section start hare ==================== */}
       <View style={tw`flex-1 justify-center items-center  pt-2`}>
         <UserCarousel />

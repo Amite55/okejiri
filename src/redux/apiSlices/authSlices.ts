@@ -109,6 +109,14 @@ const authSlices = api.injectEndpoints({
         }),
         invalidatesTags: ["profile"],
       }),
+      updateLatLong: builder.mutation({
+        query: (credentials) => ({
+          url: "/update-lat-long",
+          method: "POST",
+          body: credentials,
+        }),
+        invalidatesTags: ["profile", "servicePackages", "services"],
+      }),
     };
   },
 });
@@ -126,4 +134,5 @@ export const {
   useDeleteProfileMutation,
   useCheckTokenMutation,
   useLogoutMutation,
+  useUpdateLatLongMutation,
 } = authSlices;

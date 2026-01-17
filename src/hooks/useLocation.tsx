@@ -1,43 +1,40 @@
 import * as Location from "expo-location";
 import { router } from "expo-router";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 interface ILocation {
   longitude: number;
   latitude: number;
 }
 
-export const useCheckLocation = () => {
+export const useCheckLocation = (): {
+  location: ILocation | null;
+  loading: boolean;
+  getLocation: () => Promise<ILocation | null>;
+  setLoading: (loading: boolean) => void;
+  setLocation: (location: ILocation | null) => void;
+} => {
   const [location, setLocation] = useState<ILocation | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const getLocation = async () => {
+  const getLocation = useCallback(async (): Promise<ILocation | null> => {
     setLoading(true);
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      // router?.dismiss();
       setLoading(false);
-      router?.push({
+      router.push({
         pathname: "/Toaster",
         params: { res: "Location permission not granted" },
       });
-
-      await Location.requestBackgroundPermissionsAsync();
+      return null;
     }
+    const newLocation = await Location.getCurrentPositionAsync();
+    const { latitude, longitude } = newLocation.coords;
+    const loc = { latitude, longitude };
+    setLocation(loc);
+    setLoading(false);
+    return loc;
+  }, []);
 
-    let location = await Location.getCurrentPositionAsync();
-
-    const { latitude, longitude } = location.coords;
-
-    if (latitude && longitude) {
-      setLocation({
-        latitude,
-        longitude,
-      });
-      setLoading(false);
-    }
-  };
-
-  return { location, loading, getLocation, setLoading };
+  return { location, loading, getLocation, setLoading, setLocation };
 };

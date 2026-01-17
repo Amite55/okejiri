@@ -10,7 +10,9 @@ import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo"
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import TransactionsCard from "@/src/Components/TransactionsCard";
 import UserCard from "@/src/Components/UserCard";
+import { useCheckLocation } from "@/src/hooks/useLocation";
 import tw from "@/src/lib/tailwind";
+import { useUpdateLatLongMutation } from "@/src/redux/apiSlices/authSlices";
 import {
   useHomeDataQuery,
   useRecentOrderQuery,
@@ -34,6 +36,7 @@ const dropdownData = [
 const Home_Index_Company = () => {
   const [value, setValue] = useState("this_week");
   const [isFocus, setIsFocus] = useState(false);
+  const { getLocation, loading: locationLoading } = useCheckLocation();
 
   // data fetch - START
   const { data: homeData, isLoading: homeDataLoading } =
@@ -43,6 +46,31 @@ const Home_Index_Company = () => {
   const { data: recentTransaction, isLoading: recentTransactionLoading } =
     useRecentTransactionsQuery({});
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
+  const [updateLatLong, { isLoading: isUpdateLatLongLoading }] =
+    useUpdateLatLongMutation();
+
+  // ================location update when render this screen ==================
+  const handleLocation = async () => {
+    const newLocation = await getLocation();
+    if (newLocation?.latitude && newLocation?.longitude) {
+      const response = await updateLatLong({
+        latitude: newLocation?.latitude,
+        longitude: newLocation?.longitude,
+      }).unwrap();
+      if (response) {
+        console.log("updated");
+      }
+    } else {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: "Failed to get location" },
+      });
+    }
+  };
+  // ===============location update when render this screen ==================
+  useEffect(() => {
+    handleLocation();
+  }, []);
 
   // state for fetch data;
   const formateDate = (dateStr: string) => {
@@ -62,7 +90,7 @@ const Home_Index_Company = () => {
   };
 
   const [descriptions, setDescriptions] = useState<{ [key: string]: string }>(
-    {}
+    {},
   );
 
   useEffect(() => {
