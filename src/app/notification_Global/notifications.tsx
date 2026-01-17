@@ -1,15 +1,22 @@
+import ProviderNotificationCard from "@/src/Components/ProviderNotificationCard";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
-
-import ProviderNotificationCard from "@/src/Components/ProviderNotificationCard";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import {
+  useDeleteAllNotificationsMutation,
+  useDeleteSingleNotificationMutation,
   useGetNotificationsQuery,
   useSingleMarkMutation,
 } from "@/src/redux/apiSlices/notificationsSlices";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 const Notification = () => {
   const { provider_type } = useLocalSearchParams();
   const [page, setPage] = useState(1);
@@ -24,6 +31,28 @@ const Notification = () => {
   const [singleMark] = useSingleMarkMutation();
   const { data: userProfileInfo, isLoading: isProfileLoading } =
     useProfileQuery({});
+  useProfileQuery({});
+  const [deleteAllNotification, { isLoading: isAllNotificationLoading }] =
+    useDeleteAllNotificationsMutation();
+  const [
+    deleteNotification,
+    { isLoading: isDeleteSingleNotificationDeleteLoading },
+  ] = useDeleteSingleNotificationMutation();
+
+  // ===================== handle sing delete ===================== //
+  const handleDelete = async (id: any) => {
+    try {
+      const res = await deleteNotification(id).unwrap();
+      if (res) {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: res?.message || "Notification Deleted" },
+        });
+      }
+    } catch (error) {
+      console.log(error, "not Delete all item !");
+    }
+  };
 
   // -------------------------------- Effect -------------------------- //
   useEffect(() => {
@@ -224,6 +253,40 @@ const Notification = () => {
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
+      {notifications?.length > 0 && (
+        <TouchableOpacity
+          disabled={isAllNotificationLoading}
+          onPress={async () => {
+            try {
+              const res = await deleteAllNotification({}).unwrap();
+              if (res) {
+                router.push({
+                  pathname: "/Toaster",
+                  params: { res: res?.message || "All Notification Deleted" },
+                });
+              }
+            } catch (error: any) {
+              console.log(error, "all Notification no delete ");
+              router.push({
+                pathname: "/Toaster",
+                params: {
+                  res: error?.message || "All Notification Not Deleted",
+                },
+              });
+            }
+          }}
+          style={tw`p-1 self-end  mb-2`}
+          activeOpacity={0.6}
+        >
+          {isAllNotificationLoading ? (
+            <ActivityIndicator size="small" color="#FF6600" />
+          ) : (
+            <Text style={tw`underline text-red-600 font-semibold text-lg `}>
+              Clear all
+            </Text>
+          )}
+        </TouchableOpacity>
+      )}
       {isLoadingNotification && (
         <View style={tw`py-10 items-center`}>
           <ActivityIndicator size="large" color="#FF6600" />
@@ -266,6 +329,8 @@ const Notification = () => {
             <ProviderNotificationCard
               item={item}
               onPress={() => handleNotification(item)}
+              onDelete={() => handleDelete(item?.id)}
+              deleteLoading={isDeleteSingleNotificationDeleteLoading}
             />
           )}
         />

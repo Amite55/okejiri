@@ -45,4 +45,6 @@ export const {
   useGetNotificationsQuery,
   useSingleMarkMutation,
   useAllMarkMutation,
+  useDeleteAllNotificationsMutation,
+  useDeleteSingleNotificationMutation,
 } = notificationsSlices;
