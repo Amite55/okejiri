@@ -1,4 +1,5 @@
 import tw from "@/src/lib/tailwind";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Font from "expo-font";
 import { router, SplashScreen } from "expo-router";
 import React, { useEffect } from "react";
@@ -64,18 +65,24 @@ export default function Index() {
         if (!role) {
           router.replace("/chose_roll");
           return;
-        }
-
-        if (role === "USER") {
+        } else if (
+          role &&
+          userProfileInfo?.data?.is_personalization_complete === false
+        ) {
+          await AsyncStorage.setItem("roll", role);
+          await AsyncStorage.removeItem("providerTypes");
+          if (role === "PROVIDER") {
+            await AsyncStorage.setItem("providerTypes", type);
+          }
+          router.replace("/auth/contact");
+        } else if (role === "USER") {
           router.replace("/company/(Tabs)");
           if (kyc === "Unverified") {
             setTimeout(() => {
               router.push("/kyc_completed_modal");
             }, 300);
           }
-        }
-
-        if (role === "PROVIDER") {
+        } else if (role === "PROVIDER") {
           if (type === "Individual") {
             router.replace("/service_provider/individual/(Tabs)/home");
             if (userProfileInfo?.data?.kyc_status === "Unverified") {
@@ -92,7 +99,7 @@ export default function Index() {
             }
           }
         }
-      } catch (e) {
+      } catch (e: any) {
       } finally {
         await SplashScreen.hideAsync();
       }

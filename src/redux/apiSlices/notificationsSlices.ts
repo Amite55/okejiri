@@ -23,6 +23,20 @@ export const notificationsSlices = api.injectEndpoints({
       }),
       invalidatesTags: ["notifications"],
     }),
+    deleteAllNotifications: builder.mutation({
+      query: () => ({
+        url: `/delete-all-notifications`,
+        method: "POST",
+      }),
+      invalidatesTags: ["notifications"],
+    }),
+    deleteSingleNotification: builder.mutation({
+      query: (id) => ({
+        url: `/delete-notification/${id}`,
+        method: "POST",
+      }),
+      invalidatesTags: ["notifications"],
+    }),
   }),
   overrideExisting: true,
 });
@@ -31,4 +45,6 @@ export const {
   useGetNotificationsQuery,
   useSingleMarkMutation,
   useAllMarkMutation,
+  useDeleteAllNotificationsMutation,
+  useDeleteSingleNotificationMutation,
 } = notificationsSlices;

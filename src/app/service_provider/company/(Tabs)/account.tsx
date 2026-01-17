@@ -53,6 +53,11 @@ const Account = () => {
   const totalBalance = earnedFormatted + referralFormatted;
 
   const profile = userProfileInfo?.data;
+  const isDisabled =
+    isLoadingProfile ||
+    !profile?.kyc_status ||
+    profile?.kyc_status === "Verified" ||
+    profile?.kyc_status === "In Review";
   // -------------- handle logout --------------
   const handleLogoutUser = async () => {
     const token = await AsyncStorage.getItem("token");
@@ -63,7 +68,7 @@ const Account = () => {
       await AsyncStorage.removeItem("providerTypes");
       await AsyncStorage.removeItem("token");
       router.replace("/chose_roll");
-    } catch (e) {
+    } catch (e: any) {
       console.log("Error reading role from AsyncStorage", e);
       router.push({
         pathname: "/Toaster",
@@ -85,7 +90,7 @@ const Account = () => {
       </Text>
       {/* ============================ profile info ============================== */}
       <View
-        style={tw`px-4 py-5 bg-white rounded-2xl justify-center items-center gap-3`}
+        style={tw`px-4 py-5 bg-white rounded-2xl justify-center items-center gap-2`}
       >
         <Image
           style={tw`w-28 h-28 rounded-full  `}
@@ -104,9 +109,19 @@ const Account = () => {
         >
           {profile?.role === "PROVIDER" && profile?.provider_type === "Company"
             ? profile?.company?.company_name
-            : profile.name}
+            : profile?.name}
         </Text>
-        <View
+        <Text
+          style={tw`font-DegularDisplayDemoRegular text-lg text-gray-400 text-center`}
+        >
+          {profile?.name}
+        </Text>
+        <TouchableOpacity
+          activeOpacity={0.6}
+          disabled={isDisabled}
+          onPress={() => {
+            router.push("/KYC_auth/id_card");
+          }}
           style={tw`flex-row py-2 px-7 justify-between items-center gap-2 rounded-full ${
             profile?.kyc_status === "In Review"
               ? "bg-secondary"
@@ -118,7 +133,7 @@ const Account = () => {
           <Text style={tw`font-PoppinsMedium text-base text-white`}>
             {profile?.kyc_status}
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity

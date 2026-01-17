@@ -39,8 +39,7 @@ const providedServicesData = [
   },
 ];
 
-const renderServiceProvided = ({ item, name }: { item: any, name: string }) => {
-  console.log("============= item =============== ", JSON.stringify(item, null, 2))
+const renderServiceProvided = ({ item, name }: { item: any; name: string }) => {
   let statusStyle = "";
 
   if (item.status === "Pending") {
@@ -60,7 +59,11 @@ const renderServiceProvided = ({ item, name }: { item: any, name: string }) => {
       <View style={tw`flex-1 flex-row gap-3`}>
         <Image style={tw`w-20 h-20 rounded-xl`} source={ImgProfileImg} />
         <View style={tw`w-[65%]`}>
-          <Text numberOfLines={1} ellipsizeMode="clip" style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="clip"
+            style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+          >
             {item?.booking_items[0].package?.title}
           </Text>
           <View style={tw`flex-row items-center gap-2`}>
@@ -76,7 +79,9 @@ const renderServiceProvided = ({ item, name }: { item: any, name: string }) => {
             <Text
               style={tw`font-DegularDisplayDemoMedium text-xl text-primary`}
             >
-              {item?.review?.rating === 0 || item?.review === null ? "0.0" : Number(item?.review?.rating).toFixed(1)}
+              {item?.review?.rating === 0 || item?.review === null
+                ? "0.0"
+                : Number(item?.review?.rating).toFixed(1)}
             </Text>
           </View>
         </View>
@@ -104,10 +109,17 @@ const renderServiceProvided = ({ item, name }: { item: any, name: string }) => {
 
 const Service_Provided = () => {
   const { id } = useLocalSearchParams();
-  const { data: employeeDetailsData, isLoading: isLoadingEmployeeDetails, isError: isErrorEmployeeDetails } = useEmployeeDetailsQuery(id)
+  const {
+    data: employeeDetailsData,
+    isLoading: isLoadingEmployeeDetails,
+    isError: isErrorEmployeeDetails,
+  } = useEmployeeDetailsQuery(id);
   const employee = employeeDetailsData?.data;
-  console.log(" ============= employee id ============== ", id)
-  console.log(" =========================== employee id ===================== ", JSON.stringify(employee, null, 2));
+  console.log(" ============= employee id ============== ", id);
+  console.log(
+    " =========================== employee id ===================== ",
+    JSON.stringify(employee, null, 2)
+  );
 
   return (
     <FlatList
@@ -115,34 +127,38 @@ const Service_Provided = () => {
       contentContainerStyle={tw`px-5 gap-3 pb-4`}
       data={employee?.services_provided ?? []}
       keyExtractor={(item, index) => `${item.id}-${index}`}
-      renderItem={({ item }) => renderServiceProvided({ item, name: employee?.name })}
+      renderItem={({ item }) =>
+        renderServiceProvided({ item, name: employee?.name })
+      }
       ListHeaderComponent={() => (
         <View>
           <BackTitleButton
             pageName={"Service provided"}
             onPress={() => router.back()}
             titleTextStyle={tw`text-xl`}
-          // contentStyle={tw`px-5`}
+            // contentStyle={tw`px-5`}
           />
-         
-
         </View>
-
-
       )}
-      ListFooterComponent={ employee?.services_provided?.length > 0 ? (
+      ListFooterComponent={
+        employee?.services_provided?.length > 0 ? (
           <View style={tw`mt-4 mb-8 justify-center items-center`}>
-            <Text style={tw`text-gray-500 text-lg`}>No more services in the list</Text>
+            <Text style={tw`text-gray-500 text-lg`}>
+              No more services in the list
+            </Text>
           </View>
-        ): null
+        ) : null
       }
       ListEmptyComponent={() => (
         <View style={tw`flex-1 justify-center items-center  gap-3`}>
-          
-          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-gray-500`}>
+          <Text
+            style={tw`font-DegularDisplayDemoRegular text-xl text-gray-500`}
+          >
             Nothing to show here
           </Text>
-          <Text style={tw`font-DegularDisplayDemoRegular text-base text-gray-400`}>
+          <Text
+            style={tw`font-DegularDisplayDemoRegular text-base text-gray-400`}
+          >
             Please add a service for provider to see them here.
           </Text>
         </View>

@@ -30,15 +30,7 @@ import { SvgXml } from "react-native-svg";
 import { useAddEmployeeMutation } from "@/src/redux/apiSlices/companyProvider/account/employeesSlice";
 import * as ImagePicker from "expo-image-picker";
 
-// ------------------ static dropdown value -----------------
-const dropdownData = [
-  { label: "User", value: "1" },
-  { label: "Service Provider", value: "2" },
-];
-
 const Add_New_Employee = () => {
-  const [value, setValue] = useState(null);
-  const [isFocus, setIsFocus] = useState(false);
   const [successModalVisible, setSuccessModal] = useState<boolean>(false);
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
 
@@ -166,7 +158,7 @@ const Add_New_Employee = () => {
                 if (response) {
                   setSuccessModal(true);
                 }
-              } catch (err) {
+              } catch (err: any) {
                 console.log(
                   "Error form submited",
                   err,
@@ -308,6 +300,7 @@ const Add_New_Employee = () => {
 
                 {/*  =========== loading button   =========== */}
                 <PrimaryButton
+                  loading={isLoadingNewEmployee}
                   titleProps={isLoadingNewEmployee ? "Loading..." : "Add"}
                   onPress={handleSubmit}
                   contentStyle={tw`h-12 `}

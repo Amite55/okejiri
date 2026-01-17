@@ -7,23 +7,32 @@ import RequestForDeliveryModal from "@/src/Components/RequestForDeliveryModal";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import {
+  useDeleteAllNotificationsMutation,
+  useDeleteSingleNotificationMutation,
   useGetNotificationsQuery,
   useSingleMarkMutation,
 } from "@/src/redux/apiSlices/notificationsSlices";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const Notification = () => {
-  const { provider_type } = useLocalSearchParams();
-
   // ------------------------------- STATES ------------------------------- //
   const [page, setPage] = useState(1);
   const [notifications, setNotification] = useState<any[]>([]);
   const [isFetchMore, setIsFetchMore] = useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   // Modal Refs
   const deliveryModalRef = useRef<BottomSheetModal>(null);
@@ -43,11 +52,34 @@ const Notification = () => {
     data: notificationData,
     isLoading: isLoadingNotification,
     isFetching: isFetchingNotification,
+    refetch,
   } = useGetNotificationsQuery(page, {
     refetchOnMountOrArgChange: true,
   });
-
   const [singleMark] = useSingleMarkMutation();
+  const { data: userProfileInfo, isLoading: isProfileLoading } =
+    useProfileQuery({});
+  const [deleteAllNotification, { isLoading: isAllNotificationLoading }] =
+    useDeleteAllNotificationsMutation();
+  const [
+    deleteNotification,
+    { isLoading: isDeleteSingleNotificationDeleteLoading },
+  ] = useDeleteSingleNotificationMutation();
+
+  // ===================== handle sing delete ===================== //
+  const handleDelete = async (id: any) => {
+    try {
+      const res = await deleteNotification(id).unwrap();
+      if (res) {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: res?.message || "Notification Deleted" },
+        });
+      }
+    } catch (error) {
+      console.log(error, "not Delete all item !");
+    }
+  };
 
   // ------------------------------- EFFECT ------------------------------- //
   useEffect(() => {
@@ -72,43 +104,53 @@ const Notification = () => {
     }
   };
 
+  // [----------------- refresh function ----------------]
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([refetch()]);
+    } catch (error) {
+      console.log(error, "refresh error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   // ------------------------------- HANDLE PRESS ------------------------------- //
   const handleNotificationPress = async (item: any) => {
     // Mark notification as read
-    if (item.read_at === null) {
+    if (item?.read_at === null) {
       try {
-        await singleMark(item.id);
+        await singleMark(item?.id);
       } catch {}
     }
-
     const type = item?.data?.type;
-
     // ---------------- Modal Types ---------------- //
     if (type === "delivery_request_sent") {
       setSelectedOrderId(item?.data?.order_id);
       deliveryModalRef.current?.present();
       return;
     }
-
     if (type === "extend_delivery_time") {
       setRequestDeliveryExtId(item?.data?.request_id);
-      requestDeliveryTimeExtModalRef.current?.present();
+      requestDeliveryTimeExtModalRef?.current?.present();
       return;
+    } else if (type === "complete_kyc") {
+      if (
+        userProfileInfo?.data?.kyc_status === "In Review" ||
+        userProfileInfo?.data?.kyc_status === "Unverified"
+      ) {
+        router.push("/KYC_auth/id_card");
+      } else {
+        router.push({
+          pathname: "/Toaster",
+          params: {
+            res: "You have already completed your KYC.",
+          },
+        });
+      }
     }
-
-    // ---------------- Routing Types ---------------- //
-    const navigateToOrder = () => {
-      router.push({
-        pathname:
-          provider_type === "individual"
-            ? "/service_provider/individual/order_details_profile"
-            : "/service_provider/company/order_details_profile",
-        params: { id: item.data.order_id || item.id },
-      });
-    };
-
     switch (type) {
-      // case "new_order":
       case "order_approved":
         router.push({
           pathname: "/company/serviceBookings/order_approved",
@@ -117,7 +159,6 @@ const Notification = () => {
           },
         });
         break;
-
       case "order_cancelled":
         router.push({
           pathname: "/company/serviceBookings/order_cancelled",
@@ -138,18 +179,15 @@ const Notification = () => {
           },
         });
         break;
-
       case "warning":
         router.push("/service_provider/individual/warning");
         break;
-
       case "new_dispute":
         router.push({
           pathname: "/service_provider/individual/disputes/dispute_review",
           params: { id: item?.data?.dispute_id },
         });
         break;
-
       case "report":
       case "new_report":
         router.push({
@@ -161,7 +199,6 @@ const Notification = () => {
           },
         });
         break;
-
       default:
         break;
     }
@@ -178,6 +215,42 @@ const Notification = () => {
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
+
+      {notifications?.length > 0 && (
+        <TouchableOpacity
+          disabled={isAllNotificationLoading}
+          onPress={async () => {
+            try {
+              const res = await deleteAllNotification({}).unwrap();
+              if (res) {
+                router.push({
+                  pathname: "/Toaster",
+                  params: { res: res?.message || "All Notification Deleted" },
+                });
+              }
+            } catch (error: any) {
+              console.log(error, "all Notification no delete ");
+              router.push({
+                pathname: "/Toaster",
+                params: {
+                  res: error?.message || "All Notification Not Deleted",
+                },
+              });
+            }
+          }}
+          style={tw`p-1 self-end  mb-2`}
+          activeOpacity={0.6}
+        >
+          {isAllNotificationLoading ? (
+            <ActivityIndicator size="small" color="#FF6600" />
+          ) : (
+            <Text style={tw`underline text-red-600 font-semibold text-lg `}>
+              Clear all
+            </Text>
+          )}
+        </TouchableOpacity>
+      )}
+
       {isLoadingNotification && (
         <View style={tw`py-10 items-center`}>
           <ActivityIndicator size="large" color="#FF6600" />
@@ -198,6 +271,9 @@ const Notification = () => {
           keyExtractor={(item, index) => `${item.id}-${index}`}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={tw`gap-3 pb-5`}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
@@ -215,6 +291,8 @@ const Notification = () => {
             <ProviderNotificationCard
               item={item}
               onPress={() => handleNotificationPress(item)}
+              onDelete={() => handleDelete(item?.id)}
+              deleteLoading={isDeleteSingleNotificationDeleteLoading}
             />
           )}
         />

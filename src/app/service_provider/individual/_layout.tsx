@@ -13,13 +13,11 @@ const Individual_Layout = () => {
         }}
       >
         <Stack.Screen name="(Tabs)" />
-        <Stack.Screen name="order_details_profile" />
         <Stack.Screen name="individual_user_wallet" />
         <Stack.Screen name="manage_discounts" />
         <Stack.Screen name="portfolio" />
         <Stack.Screen name="disputes" />
         <Stack.Screen name="settings" />
-
         <Stack.Screen name="booking_cancel" />
         <Stack.Screen name="warning" />
         <Stack.Screen name="individualMessaging" />

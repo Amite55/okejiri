@@ -9,9 +9,7 @@ export const myServicesSlice = api.injectEndpoints({
       }),
       providesTags: ["services"],
     }),
-
     //................pakages all slice ...............//
-
     my_service_packages: builder.query({
       query: ({ page, service_id }) => ({
         url: `/my-service-package?page=${page}&service_id=${service_id}`,

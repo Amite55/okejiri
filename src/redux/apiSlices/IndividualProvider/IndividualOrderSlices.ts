@@ -7,14 +7,29 @@ export const individualOrderSlices = api.injectEndpoints({
         url: `/home-data?filter=${filter}`,
         method: "GET",
       }),
-      providesTags: ["order"],
+      providesTags: [
+        "order",
+        "booking",
+        "order_approve",
+        "order_reject",
+        "provider",
+        "notifications",
+        "payment",
+      ],
     }),
     order_details: builder.query({
       query: (id) => ({
         url: `/order-details/${id}`,
         method: "GET",
       }),
-      providesTags: ["order"],
+      providesTags: [
+        "order",
+        "booking",
+        "order_approve",
+        "order_reject",
+        "provider",
+        "notifications",
+      ],
     }),
     request_extend_delivery_time: builder.mutation({
       query: (data) => ({
@@ -22,15 +37,21 @@ export const individualOrderSlices = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["extend_delivery"],
+      invalidatesTags: [
+        "extend_delivery",
+        "booking",
+        "order_approve",
+        "order_reject",
+        "notifications",
+        "payment",
+      ],
     }),
     order_approve: builder.mutation({
       query: (id) => ({
         url: `/order-approve/${id}`,
         method: "POST",
       }),
-
-      invalidatesTags: ["order_approve"],
+      invalidatesTags: ["order_approve", "order_reject", "order"],
     }),
     add_dispute: builder.mutation({
       query: (data) => ({
@@ -39,7 +60,7 @@ export const individualOrderSlices = api.injectEndpoints({
         body: data,
       }),
 
-      invalidatesTags: ["add_dispute"],
+      invalidatesTags: ["add_dispute", "dispute", "order"],
     }),
     order_reject: builder.mutation({
       query: (id) => ({
@@ -47,14 +68,14 @@ export const individualOrderSlices = api.injectEndpoints({
         method: "POST",
       }),
 
-      invalidatesTags: ["order_reject"],
+      invalidatesTags: ["order_reject", "order", "dispute", "order_approve"],
     }),
     request_for_delivery: builder.mutation({
       query: (id) => ({
         url: `/order-reject/${id}`,
         method: "POST",
       }),
-      invalidatesTags: ["request_delivery"],
+      invalidatesTags: ["request_delivery", "order", "order_approve"],
     }),
   }),
   overrideExisting: true,

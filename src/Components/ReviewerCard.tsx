@@ -10,7 +10,7 @@ const ReviewerCard = (item: any) => {
     <View style={tw`bg-white shadow  w-80 h-72 rounded-lg p-6`}>
       <View style={tw`flex-row items-center gap-3`}>
         <Image
-          contentFit="contain"
+          contentFit="cover"
           style={tw`w-16 h-16 rounded-full `}
           source={item?.item?.item?.user?.avatar}
         />

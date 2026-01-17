@@ -38,6 +38,7 @@ const SingUp = () => {
 
   // ------------------------ api end point ---------------------
   const [credentials, { isLoading: isLoadingRegister }] = useRegisterMutation();
+
   // ------------------- validate formik ---------------------
   const validate = (values: any) => {
     const errors: any = {};

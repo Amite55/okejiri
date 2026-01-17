@@ -1,14 +1,22 @@
+import ProviderNotificationCard from "@/src/Components/ProviderNotificationCard";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
-
-import ProviderNotificationCard from "@/src/Components/ProviderNotificationCard";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import {
+  useDeleteAllNotificationsMutation,
+  useDeleteSingleNotificationMutation,
   useGetNotificationsQuery,
   useSingleMarkMutation,
 } from "@/src/redux/apiSlices/notificationsSlices";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 const Notification = () => {
   const { provider_type } = useLocalSearchParams();
   const [page, setPage] = useState(1);
@@ -16,18 +24,35 @@ const Notification = () => {
   const [isFetchMore, setIsFetchMore] = useState(false);
 
   // ------------------------------- API ------------------------------- //
-  const {
-    data: notificationData,
-    isLoading: isLoadingNotification,
-    isError: isErrorLoadingNotification,
-    isFetching: isFetchingNotification,
-  } = useGetNotificationsQuery(page, {
-    refetchOnMountOrArgChange: true,
-  });
+  const { data: notificationData, isLoading: isLoadingNotification } =
+    useGetNotificationsQuery(page, {
+      refetchOnMountOrArgChange: true,
+    });
+  const [singleMark] = useSingleMarkMutation();
+  const { data: userProfileInfo, isLoading: isProfileLoading } =
+    useProfileQuery({});
+  useProfileQuery({});
+  const [deleteAllNotification, { isLoading: isAllNotificationLoading }] =
+    useDeleteAllNotificationsMutation();
   const [
-    singleMark,
-    { data: singleMarkData, isLoading: isLoadingSingleMarkData },
-  ] = useSingleMarkMutation();
+    deleteNotification,
+    { isLoading: isDeleteSingleNotificationDeleteLoading },
+  ] = useDeleteSingleNotificationMutation();
+
+  // ===================== handle sing delete ===================== //
+  const handleDelete = async (id: any) => {
+    try {
+      const res = await deleteNotification(id).unwrap();
+      if (res) {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: res?.message || "Notification Deleted" },
+        });
+      }
+    } catch (error) {
+      console.log(error, "not Delete all item !");
+    }
+  };
 
   // -------------------------------- Effect -------------------------- //
   useEffect(() => {
@@ -51,16 +76,11 @@ const Notification = () => {
     }
   };
 
-  // -------------------------------- handler -------------------------- //
-  // useEffect(()=>{
-
-  // },[provider_type])
-  const values = notificationData?.data?.notifications?.data || []; // only for read_at, id
-  const notificationDetails = values?.data;
+  // -------------------------------- handler -------------------------- /
   const handleNotification = (item: any) => {
     const handleMark = async () => {
       try {
-        await singleMark(item.id);
+        await singleMark(item?.id);
       } catch (err: any) {
         router.push({
           pathname: "/Toaster",
@@ -69,22 +89,22 @@ const Notification = () => {
       }
     };
 
-    if (item.read_at === null) {
+    if (item?.read_at === null) {
       handleMark();
     }
     if (item?.data?.type === "new_order") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       }
@@ -100,13 +120,12 @@ const Notification = () => {
     } else if (item?.data?.type === "order_rejected") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
-        // router.push("")
         router.push({
           pathname: "/service_provider/company/order_details_profile",
           params: {
@@ -117,9 +136,9 @@ const Notification = () => {
     } else if (item?.data?.type === "delivery_request_sent") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
@@ -133,9 +152,9 @@ const Notification = () => {
     } else if (item?.data?.type === "order_approved") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
@@ -150,24 +169,24 @@ const Notification = () => {
       router.push({
         pathname: "/service_provider/individual/warning",
         params: {
-          title: item?.data.title,
+          title: item?.data?.title,
           subtitle: item?.data.sub_title,
         },
       });
-    } else if (item?.data.type === "report") {
+    } else if (item?.data?.type === "report") {
       router.push({
         pathname: "/service_provider/individual/warning",
         params: {
-          title: item?.data.title,
-          subtitle: item?.data.data?.report_description,
+          title: item?.data?.title,
+          subtitle: item?.data?.data?.report_description,
         },
       });
-    } else if (item?.data.type === "order_cancelled") {
+    } else if (item?.data?.type === "order_cancelled") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
@@ -181,9 +200,9 @@ const Notification = () => {
     } else if (item?.data.type === "delivery_request_decline") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
@@ -194,12 +213,12 @@ const Notification = () => {
           },
         });
       }
-    } else if (item?.data.type === "delivery_request_approved") {
+    } else if (item?.data?.type === "delivery_request_approved") {
       if (provider_type === "individual") {
         router.push({
-          pathname: "/service_provider/individual/order_details_profile",
+          pathname: "/service_provider/company/order_details_profile",
           params: {
-            id: item.data.order_id || item.id,
+            id: item?.data?.order_id || item?.id,
           },
         });
       } else {
@@ -210,13 +229,23 @@ const Notification = () => {
           },
         });
       }
-    } else {
-      //
+    } else if (item?.data?.type === "complete_kyc") {
+      if (
+        userProfileInfo?.data?.kyc_status === "In Review" ||
+        userProfileInfo?.data?.kyc_status === "Unverified"
+      ) {
+        router.push("/KYC_auth/id_card");
+      } else {
+        router.push({
+          pathname: "/Toaster",
+          params: {
+            res: "You have already completed your KYC.",
+          },
+        });
+      }
     }
   };
 
-  // console.log("")
-  // console.log(NotificationData, "-------------------");
   return (
     <View style={tw`flex-1  bg-base_color px-5 `}>
       <BackTitleButton
@@ -224,6 +253,40 @@ const Notification = () => {
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
+      {notifications?.length > 0 && (
+        <TouchableOpacity
+          disabled={isAllNotificationLoading}
+          onPress={async () => {
+            try {
+              const res = await deleteAllNotification({}).unwrap();
+              if (res) {
+                router.push({
+                  pathname: "/Toaster",
+                  params: { res: res?.message || "All Notification Deleted" },
+                });
+              }
+            } catch (error: any) {
+              console.log(error, "all Notification no delete ");
+              router.push({
+                pathname: "/Toaster",
+                params: {
+                  res: error?.message || "All Notification Not Deleted",
+                },
+              });
+            }
+          }}
+          style={tw`p-1 self-end  mb-2`}
+          activeOpacity={0.6}
+        >
+          {isAllNotificationLoading ? (
+            <ActivityIndicator size="small" color="#FF6600" />
+          ) : (
+            <Text style={tw`underline text-red-600 font-semibold text-lg `}>
+              Clear all
+            </Text>
+          )}
+        </TouchableOpacity>
+      )}
       {isLoadingNotification && (
         <View style={tw`py-10 items-center`}>
           <ActivityIndicator size="large" color="#FF6600" />
@@ -241,7 +304,7 @@ const Notification = () => {
       {notifications?.length > 0 && (
         <FlatList
           data={notifications}
-          keyExtractor={(item, index) => `${item.id}-${index}`}
+          keyExtractor={(item, index) => `${item?.id}-${index}`}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={tw`gap-3 px-2 py-2`}
           onEndReached={loading_more}
@@ -266,24 +329,12 @@ const Notification = () => {
             <ProviderNotificationCard
               item={item}
               onPress={() => handleNotification(item)}
+              onDelete={() => handleDelete(item?.id)}
+              deleteLoading={isDeleteSingleNotificationDeleteLoading}
             />
           )}
         />
       )}
-
-      {/* <View style={tw`gap-3 py-2`}>
-        {values && values.map((item: any, index: any) => {
-          return (
-            <ProviderNotificationCard
-              key={item.id}
-              item={item}
-              onPress={() => handleNotification(item)}
-
-           
-            />
-          );
-        })}
-      </View> */}
     </View>
   );
 };
