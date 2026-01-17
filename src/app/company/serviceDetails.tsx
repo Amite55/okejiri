@@ -123,7 +123,7 @@ const ServiceDetails = () => {
           params: { res: response?.message || response },
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "Delete Add to cart Warring !");
       router.push({
         pathname: `/Toaster`,
@@ -174,7 +174,7 @@ const ServiceDetails = () => {
           cost: cartReducePrice?.toFixed(2),
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "Booking fail -------->");
       router.push({
         pathname: `/Toaster`,
@@ -189,7 +189,9 @@ const ServiceDetails = () => {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         style={tw`flex-1 px-5`}
-        contentContainerStyle={tw`pb-6`}
+        contentContainerStyle={[
+          tw`${addToCartState.length > 0 ? "pb-32" : "pb-6"}`,
+        ]}
       >
         {/* -------------------- banner part ---------------- */}
         <View style={tw`relative`}>
@@ -262,7 +264,8 @@ const ServiceDetails = () => {
         {/* ----------------- price and add to cart part ---------------- */}
         <View style={tw`flex-row items-center gap-3 `}>
           <TouchableOpacity
-            style={tw`border flex-1 h-14 rounded-full justify-center items-center`}
+            disabled
+            style={tw`border flex-1 h-12 rounded-full justify-center items-center`}
           >
             <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
               ₦ {packageDetails?.data?.package_details?.price}
@@ -297,7 +300,7 @@ const ServiceDetails = () => {
         </View>
         {/* ---------------- distance part ---------------- */}
         <View
-          style={tw`border border-gray-400 rounded-full flex-row justify-center h-14 items-center gap-3 my-6`}
+          style={tw`border border-gray-400 rounded-full flex-row justify-center h-12 items-center gap-3 my-6`}
         >
           <SvgXml xml={IconLocation} />
           <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
@@ -322,7 +325,7 @@ const ServiceDetails = () => {
             <Image
               style={tw`w-11 h-11 rounded-full`}
               source={packageDetails?.data?.package_details?.provider?.avatar}
-              contentFit="contain"
+              contentFit="cover"
             />
             <View>
               <View style={tw`flex-row gap-1 items-center`}>
@@ -376,13 +379,6 @@ const ServiceDetails = () => {
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
         />
-        {/* ============== portfolio section ================ */}
-        {/* <ShortDataTitle
-          FastTitle="Service"
-          IconTitle="See all"
-          Icon={IconRightArrowCornerPrimaryColor}
-          SeeMorePathPress={() => router.push("/company/bookingsHistory")}
-        /> */}
         <Text
           style={tw`font-DegularDisplayDemoMedium text-2xl mt-2 text-black`}
         >

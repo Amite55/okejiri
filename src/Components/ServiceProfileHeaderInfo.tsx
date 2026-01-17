@@ -14,11 +14,10 @@ interface IProps {
 
 const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
   // ================== api end point ==================
-  const {
-    data: userProfileInfo,
-    isLoading,
-    error,
-  } = useProfileQuery({}, { refetchOnMountOrArgChange: true });
+  const { data: userProfileInfo, isLoading } = useProfileQuery(
+    {},
+    { refetchOnMountOrArgChange: true }
+  );
   const { data: notificationData, isLoading: isNotificationLoading } =
     useGetNotificationsQuery({ page: 1 });
 

@@ -12,14 +12,14 @@ export const bookingsSlice = api.injectEndpoints({
           Accept: "application/json",
         },
       }),
-      invalidatesTags: ["provider"],
+      invalidatesTags: ["provider", "notifications"],
     }),
     providerDiscount: builder.query({
       query: (id) => ({
         url: `/get-provider-discount?provider_id=${id}`,
         method: "GET",
       }),
-      providesTags: ["provider"],
+      providesTags: ["provider", "order", "services"],
     }),
     bookingSuccess: builder.mutation({
       query: (bookingInfo) => ({
@@ -27,72 +27,145 @@ export const bookingsSlice = api.injectEndpoints({
         method: "POST",
         body: bookingInfo,
       }),
-      invalidatesTags: ["booking"],
+      invalidatesTags: [
+        "booking",
+        "order",
+        "notifications",
+        "payment",
+        "balance",
+        "order_approve",
+        "order_reject",
+      ],
     }),
     deliveryTimeExtensionDetails: builder.query({
       query: (id) => ({
         url: `/delivery-time-extension_details/${id}`,
         method: "GET",
       }),
-      providesTags: ["delivery"],
+      providesTags: [
+        "delivery",
+        "order",
+        "services",
+        "booking",
+        "order_approve",
+        "order_reject",
+      ],
     }),
     acceptDeliveryTimeExtension: builder.mutation({
       query: (id) => ({
         url: `/delivery-time-extension/accept/${id}`,
         method: "POST",
       }),
-      invalidatesTags: ["delivery"],
+      invalidatesTags: [
+        "delivery",
+        "order",
+        "services",
+        "booking",
+        "order_approve",
+        "order_reject",
+      ],
     }),
     declineDeliveryTimeExtension: builder.mutation({
       query: (id) => ({
         url: `/delivery-time-extension/decline/${id}`,
         method: "POST",
       }),
-      invalidatesTags: ["delivery"],
+      invalidatesTags: [
+        "delivery",
+        "order",
+        "services",
+        "booking",
+        "order_approve",
+        "order_reject",
+      ],
     }),
     acceptDeliveryRequest: builder.mutation({
       query: (id) => ({
         url: `/accept-delivery-request/${id}`,
         method: "POST",
       }),
-      invalidatesTags: ["delivery"],
+      invalidatesTags: [
+        "delivery",
+        "order",
+        "services",
+        "booking",
+        "order_approve",
+        "order_reject",
+      ],
     }),
     declineDeliveryRequest: builder.mutation({
       query: (id) => ({
         url: `/decline-delivery-request/${id}`,
         method: "POST",
       }),
-      invalidatesTags: ["delivery"],
+      invalidatesTags: [
+        "delivery",
+        "order",
+        "services",
+        "booking",
+        "order_approve",
+        "order_reject",
+      ],
     }),
     orderDetails: builder.query({
       query: (id) => ({
         url: `/order-details/${id}`,
         method: "GET",
       }),
-      providesTags: ["order"],
+      providesTags: [
+        "delivery",
+        "order",
+        "services",
+        "booking",
+        "order_approve",
+        "order_reject",
+        "payment",
+      ],
     }),
     orderCancel: builder.mutation({
       query: (id) => ({
         url: `/order-cancel/${id}`,
         method: "POST",
       }),
-      invalidatesTags: ["order"],
+      invalidatesTags: [
+        "delivery",
+        "order",
+        "services",
+        "booking",
+        "order_approve",
+        "order_reject",
+        "profile",
+        "services",
+      ],
     }),
     myBookings: builder.query({
       query: ({ page, per_page }) => ({
         url: `/my-bookings?per_page=${per_page}&page=${page}`,
         method: "GET",
       }),
-      providesTags: ["booking"],
+      providesTags: [
+        "delivery",
+        "order",
+        "services",
+        "booking",
+        "order_approve",
+        "order_reject",
+      ],
     }),
     bookingsHistory: builder.query({
       query: ({ page, per_page }) => ({
         url: `/bookings-history?per_page=${per_page}&page=${page}`,
         method: "GET",
       }),
-      providesTags: ["booking"],
+      providesTags: [
+        "delivery",
+        "order",
+        "services",
+        "booking",
+        "order_approve",
+        "order_reject",
+      ],
     }),
-
     addDispute: builder.mutation({
       query: (formData) => {
         return {
@@ -104,7 +177,15 @@ export const bookingsSlice = api.injectEndpoints({
           },
         };
       },
-      invalidatesTags: ["dispute"],
+      invalidatesTags: [
+        "dispute",
+        "profile",
+        "settings",
+        "add_dispute",
+        "services",
+        "provider",
+        "notifications",
+      ],
     }),
   }),
   overrideExisting: true,

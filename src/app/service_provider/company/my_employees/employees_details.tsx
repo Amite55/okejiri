@@ -16,12 +16,8 @@ import { SvgXml } from "react-native-svg";
 
 const Employees_Details = () => {
   const { id } = useLocalSearchParams();
-  console.log(" ============= id ", id);
-  const {
-    data: employeeDetailsData,
-    isLoading: isLoadingEmployeeDetails,
-    isError: isErrorEmployeeDetails,
-  } = useEmployeeDetailsQuery(id);
+  const { data: employeeDetailsData, isLoading: isLoadingEmployeeDetails } =
+    useEmployeeDetailsQuery(id);
   const employee = employeeDetailsData?.data;
 
   return (
@@ -36,7 +32,6 @@ const Employees_Details = () => {
         pageName={"Employee details"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
-        // contentStyle={tw`px-5`}
       />
       {isLoadingEmployeeDetails && (
         <ActivityIndicator size={"large"} color="#FF6600" />
@@ -57,16 +52,6 @@ const Employees_Details = () => {
             >
               {employee?.name}
             </Text>
-            {/* <View
-            style={tw`w-32 h-8 rounded-xl border border-gray-300 flex-row justify-center gap-2 items-center`}
-          >
-            <View style={tw`w-2 h-2 rounded-full bg-success600`} />
-            <Text
-              style={tw`font-DegularDisplayDemoMedium text-base text-black`}
-            >
-              Cleaner
-            </Text>
-          </View> */}
           </View>
 
           {/* ------------------- contact info -------------- */}

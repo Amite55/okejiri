@@ -10,21 +10,27 @@ import {
   useGetNotificationsQuery,
   useSingleMarkMutation,
 } from "@/src/redux/apiSlices/notificationsSlices";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const Notification = () => {
-  const { provider_type } = useLocalSearchParams();
-
   // ------------------------------- STATES ------------------------------- //
   const [page, setPage] = useState(1);
   const [notifications, setNotification] = useState<any[]>([]);
   const [isFetchMore, setIsFetchMore] = useState(false);
-  console.log(notifications, "this is notification data ------------>");
+  const [refreshing, setRefreshing] = React.useState(false);
 
   // Modal Refs
   const deliveryModalRef = useRef<BottomSheetModal>(null);
@@ -44,11 +50,22 @@ const Notification = () => {
     data: notificationData,
     isLoading: isLoadingNotification,
     isFetching: isFetchingNotification,
+    refetch,
   } = useGetNotificationsQuery(page, {
     refetchOnMountOrArgChange: true,
   });
-
   const [singleMark] = useSingleMarkMutation();
+  const { data: userProfileInfo, isLoading: isProfileLoading } =
+    useProfileQuery({});
+
+  // ===================== handle sing delete ===================== //
+  const handleDelete = async () => {
+    try {
+      // await deleteCartResponse({}).unwrap();
+    } catch (error) {
+      console.log(error, "not Delete all item !");
+    }
+  };
 
   // ------------------------------- EFFECT ------------------------------- //
   useEffect(() => {
@@ -73,12 +90,24 @@ const Notification = () => {
     }
   };
 
+  // [----------------- refresh function ----------------]
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([refetch()]);
+    } catch (error) {
+      console.log(error, "refresh error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   // ------------------------------- HANDLE PRESS ------------------------------- //
   const handleNotificationPress = async (item: any) => {
     // Mark notification as read
-    if (item.read_at === null) {
+    if (item?.read_at === null) {
       try {
-        await singleMark(item.id);
+        await singleMark(item?.id);
       } catch {}
     }
     const type = item?.data?.type;
@@ -90,8 +119,22 @@ const Notification = () => {
     }
     if (type === "extend_delivery_time") {
       setRequestDeliveryExtId(item?.data?.request_id);
-      requestDeliveryTimeExtModalRef.current?.present();
+      requestDeliveryTimeExtModalRef?.current?.present();
       return;
+    } else if (type === "complete_kyc") {
+      if (
+        userProfileInfo?.data?.kyc_status === "In Review" ||
+        userProfileInfo?.data?.kyc_status === "Unverified"
+      ) {
+        router.push("/KYC_auth/id_card");
+      } else {
+        router.push({
+          pathname: "/Toaster",
+          params: {
+            res: "You have already completed your KYC.",
+          },
+        });
+      }
     }
     switch (type) {
       case "order_approved":
@@ -158,6 +201,13 @@ const Notification = () => {
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
+
+      <TouchableOpacity style={tw`p-1 self-end  mb-2`} activeOpacity={0.6}>
+        <Text style={tw`underline text-red-600 font-semibold text-lg `}>
+          Clear all
+        </Text>
+      </TouchableOpacity>
+
       {isLoadingNotification && (
         <View style={tw`py-10 items-center`}>
           <ActivityIndicator size="large" color="#FF6600" />
@@ -178,6 +228,9 @@ const Notification = () => {
           keyExtractor={(item, index) => `${item.id}-${index}`}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={tw`gap-3 pb-5`}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
           ListFooterComponent={

@@ -10,6 +10,7 @@ interface IPrimaryButtonProps {
   IconProps?: any;
   onPress?: () => void;
   IconFastProps?: any;
+  loading?: boolean;
 }
 
 const PrimaryButton = ({
@@ -19,9 +20,11 @@ const PrimaryButton = ({
   IconProps,
   onPress,
   IconFastProps,
+  loading = false,
 }: IPrimaryButtonProps) => {
   return (
     <TouchableOpacity
+      disabled={!onPress || loading}
       onPress={onPress}
       activeOpacity={0.7}
       style={[

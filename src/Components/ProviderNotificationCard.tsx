@@ -1,5 +1,6 @@
 import {
   IconCompleteKycNotification,
+  IconDeleteRed,
   IconDeliveryApprovedNotification,
   IconExtension,
   IconNewDisputeNotification,
@@ -8,11 +9,12 @@ import {
   IconPayoutRequestNotification,
   IconProfileBadge,
   IconRequestForDelivery,
-  IconWaringNotification
+  IconWaringNotification,
 } from "@/assets/icons";
-import { ImgCleaning } from "@/assets/images/image";
+import { ImgLogo } from "@/assets/images/image";
+import { Image } from "expo-image";
 import React from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
@@ -32,7 +34,6 @@ const iconMap = {
   extend_delivery_time: IconExtension,
   accept_extend_delivery_time: IconDeliveryApprovedNotification,
   report: IconWaringNotification,
-  
 };
 const textColorMap = {
   payout_request: "#4285F4",
@@ -44,44 +45,23 @@ const textColorMap = {
   order_cancelled: "#FF3A00",
   new_dispute: "#C88C00",
   warning: "#FF3A00",
-  order_approved:  "#008100",
+  order_approved: "#008100",
   new_report: "#FF3A00",
   delivery_request_sent: "#4285F4",
-  extend_delivery_time:  "#2577FF",
+  extend_delivery_time: "#2577FF",
   accept_extend_delivery_time: "#008100",
   report: "#FF3A00",
-  
 };
 
 const ProviderNotificationCard = ({
   item,
   onPress,
-
-
+  onDelete,
 }: {
   item: any;
   onPress: () => void;
-
-
+  onDelete?: () => void;
 }) => {
-  // Define allowed notification types for company/individual providers
-  const allowedProviderTypes = [
-    "payout_request",
-    "order_rejected",
-    "new_order",
-    "delivery_request_decline",
-    "delivery_request_approved",
-    "complete_kyc",
-    "order_cancel",
-    "new_dispute",
-    "warning",
-  ];
-
-  // const isAllowed = allowedProviderTypes.includes(item?.data?.type);
-  // if (!isAllowed) return null;
-
- 
-  // console.log("============= item =========", JSON.stringify(item, null, 2));
   const Icon = iconMap[item?.data?.type];
   const textColor = textColorMap[item?.data?.type] || "#000000";
 
@@ -90,53 +70,67 @@ const ProviderNotificationCard = ({
       onPress={onPress}
       activeOpacity={0.8}
       style={[
-        tw`flex-row  items-center gap-4 rounded-2xl py-6  px-4 relative shadow-md`,
+        tw`flex-row  items-center justify-between rounded-2xl py-6  px-4 relative shadow-md`,
         item?.read_at ? tw`bg-white` : tw`bg-gray-200`,
       ]}
     >
-      {/* ----------------------- notification icon ------------------------------ */}
-      {Icon ? (
-        <View
-          style={tw`w-14 h-14 rounded-full border-2  border-white shadow-sm shadow-slate-900 bg-base_color justify-center items-center`}
-        >
-          <SvgXml xml={Icon} />
-        </View>
-      ) : (
-        <Image
-          style={tw`w-14 h-14 rounded-full border border-white`}
-          source={ImgCleaning}
-        />
-      )}
-
-      <View style={tw`flex-1`}>
-        <Text
-          numberOfLines={2}
-          ellipsizeMode="clip"
-          style={[
-            tw`flex-1 font-DegularDisplayDemoMedium  text-xl mb-1`,
-            { color: textColor },
-          ]}
-        >
-          {item?.data?.title}
-        </Text>
-        {item?.data?.provider?.name ? (
-          <View style={tw`flex-row items-center gap-2`}>
-            <Text
-              style={tw`font-DegularDisplayDemoSemibold text-base text-black`}
-            >
-              {item?.data?.provider?.name || item?.data?.user?.name}
-            </Text>
-            {item?.data?.provider?.kyc_status === "Verified" || item?.data?.user?.kyc_status === "Verified"? <SvgXml xml={IconProfileBadge} /> : null}
-            
+      <View style={tw`flex-row items-center gap-4 flex-1`}>
+        {/* ----------------------- notification icon ------------------------------ */}
+        {Icon ? (
+          <View
+            style={tw`w-14 h-14 rounded-full border-2  border-white shadow-sm shadow-slate-900 bg-base_color justify-center items-center`}
+          >
+            <SvgXml xml={Icon} />
           </View>
         ) : (
-          <Text
-            style={tw`font-DegularDisplayDemoRegular text-sm text-gray-700`}
-          >
-            Tap to see details
-          </Text>
+          <Image
+            style={tw`w-14 h-14 rounded-full border border-white`}
+            source={ImgLogo}
+            contentFit="cover"
+          />
         )}
+
+        <View style={tw`flex-1`}>
+          <Text
+            numberOfLines={2}
+            ellipsizeMode="clip"
+            style={[
+              tw`flex-1 font-DegularDisplayDemoMedium  text-xl mb-1`,
+              { color: textColor },
+            ]}
+          >
+            {item?.data?.title}
+          </Text>
+          {item?.data?.provider?.name ? (
+            <View style={tw`flex-row items-center gap-2`}>
+              <Text
+                style={tw`font-DegularDisplayDemoSemibold text-base text-black`}
+              >
+                {item?.data?.provider?.name || item?.data?.user?.name}
+              </Text>
+              {item?.data?.provider?.kyc_status === "Verified" ||
+              item?.data?.user?.kyc_status === "Verified" ? (
+                <SvgXml xml={IconProfileBadge} />
+              ) : null}
+            </View>
+          ) : (
+            <Text
+              style={tw`font-DegularDisplayDemoRegular text-sm text-gray-700`}
+            >
+              Tap to see details
+            </Text>
+          )}
+        </View>
       </View>
+      {/* ================= DELETE BUTTON ================= */}
+      <TouchableOpacity
+        onPress={onDelete}
+        activeOpacity={0.7}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        style={tw`ml-3`}
+      >
+        <SvgXml xml={IconDeleteRed} />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 };
