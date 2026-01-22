@@ -8,17 +8,31 @@ import {
 } from "@/src/redux/apiSlices/messagingSlices";
 import { router } from "expo-router";
 import React, { useEffect } from "react";
-import { FlatList, Text, TextInput, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { SvgXml } from "react-native-svg";
 import { useDebounce } from "use-debounce";
 
 const Chats = () => {
   const [search, setSearch] = React.useState("");
   const [debouncedSearch] = useDebounce(search, 500);
+  const [isRefreshing, setRefreshing] = React.useState(false);
 
   // =============== API ===============
-  const [triggerSearch, { data: searchResult, isLoading: isSearchLoading }] =
-    useLazyGetChartListQuery();
+  const [
+    triggerSearch,
+    {
+      data: searchResult,
+      isLoading: isSearchLoading,
+      isFetching: isChatRefreshing,
+    },
+  ] = useLazyGetChartListQuery();
   const [markAsRead] = useMarkAsReadMutation();
 
   const listToRender = searchResult?.data?.data ?? [];
@@ -68,14 +82,46 @@ const Chats = () => {
     });
   };
 
+  // ================ hare is refresh function =================
+  const handleOnRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([isChatRefreshing]);
+      setRefreshing(false);
+    } catch (error: any) {
+      console.log(error, "Refresh not worked -> form provider home");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     <View style={tw`flex-1 bg-base_color px-5 pb-28`}>
       {/* ===== Header ===== */}
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleOnRefresh}
+          />
+        }
         data={listToRender || []}
         keyExtractor={(_, index) => index.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={tw`gap-2`}
+        ListEmptyComponent={
+          isSearchLoading ? (
+            <ActivityIndicator size={"small"} color={"#000"} />
+          ) : (
+            listToRender?.length === 0 && (
+              <Text
+                style={tw`font-DegularDisplayDemoMedium text-xl text-deepBlue100 text-center my-4`}
+              >
+                Your Chat List is Empty
+              </Text>
+            )
+          )
+        }
         ListHeaderComponent={
           <>
             <ServiceProfileHeaderInfo
@@ -104,14 +150,6 @@ const Chats = () => {
                 style={tw`flex-1 text-base text-black font-DegularDisplayDemoRegular`}
               />
             </View>
-
-            {listToRender?.length === 0 && (
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-deepBlue100 text-center my-4`}
-              >
-                Your Chat List
-              </Text>
-            )}
           </>
         }
         renderItem={({ item }) => {

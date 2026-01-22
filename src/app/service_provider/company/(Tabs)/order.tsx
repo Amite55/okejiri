@@ -10,6 +10,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   View,
@@ -18,8 +19,9 @@ import {
 const Order = () => {
   const [status, setStatus] = useState<"New" | "Pending" | "Completed">("New");
   const [bookingProcess, setBookingProcess] = useState<"instant" | "schedule">(
-    "instant"
+    "instant",
   );
+  const [refreshing, setRefreshing] = React.useState(false);
 
   // state for fetch data;
   const formateDate = (dateStr: string) => {
@@ -31,7 +33,6 @@ const Order = () => {
       year: "numeric",
     };
     const parts = date.toLocaleDateString("en-US", options).split(" ");
-    // console.log(date.toLocaleDateString("en-US", options))
     const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${
       parts[3]
     }`;
@@ -44,25 +45,24 @@ const Order = () => {
       data: fetchOrderItemsData,
       isLoading: isLoadingfetchOrderItems,
       isFetching: isFetchingOrderItems,
-      error: isErrorFetchOrderItems,
     },
   ] = useLazyGetProviderOrdersQuery();
-
-  const [fetchOrderItem] = useLazyOrderDetailsQuery();
+  const [fetchOrderItem, { isFetching: isFetchingOrderItem }] =
+    useLazyOrderDetailsQuery();
   const {
     data: allProvderOrdersDetail,
     isLoading: isLoadingAllProvderOrdersDetail,
-    isError: isErrorAllProvderOrdersDetail,
+    isFetching: isFetchingAllProvderOrdersDetail,
   } = useGetAllProviderOrdersQuery({});
 
   const orders = allProvderOrdersDetail?.data?.data || [];
   const { instantCount, scheduleCount } = useMemo(() => {
     const filtered = orders.filter((value: any) => value.status === status);
     const instant = filtered.filter(
-      (value: any) => value.booking_process === "instant"
+      (value: any) => value.booking_process === "instant",
     ).length;
     const schedule = filtered.filter(
-      (value: any) => value.booking_process === "schedule"
+      (value: any) => value.booking_process === "schedule",
     ).length;
     return { instantCount: instant, scheduleCount: schedule };
   }, [orders, status]);
@@ -76,7 +76,7 @@ const Order = () => {
   }, [status, bookingProcess]);
 
   const [descriptions, setDescriptions] = useState<{ [key: string]: string }>(
-    {}
+    {},
   );
 
   useEffect(() => {
@@ -100,10 +100,27 @@ const Order = () => {
     }
   }, [fetchOrderItemsData]);
 
-  // API END
+  // [----------------- refresh function ----------------]
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([
+        isFetchingOrderItems,
+        isFetchingOrderItem,
+        isFetchingAllProvderOrdersDetail,
+      ]);
+    } catch (error) {
+      console.log(error, "refresh error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return (
     <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       keyboardDismissMode="interactive"
@@ -115,9 +132,7 @@ const Order = () => {
       >
         Orders
       </Text>
-
       {/* ------------ order status --------------- */}
-
       <View
         style={tw`flex-row justify-center items-center flex-1 border rounded-xl border-gray-300 h-12`}
       >
