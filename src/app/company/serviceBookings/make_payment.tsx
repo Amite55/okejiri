@@ -39,6 +39,17 @@ const Make_Payment = () => {
 
   const handelPayment = async (res: any) => {
     try {
+      // ============= if when user has't verified his account ================
+      if (
+        getProfileData?.data?.kyc_status === "Unverified" ||
+        getProfileData?.data?.kyc_status === "In Review"
+      ) {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: "Please verify your account" },
+        });
+        return;
+      }
       const bookingInfo = {
         provider_id: perseBookingInfoDetails?.provider_id,
         booking_process:
@@ -201,7 +212,19 @@ const Make_Payment = () => {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => {
-                  setIsMakePayment(true);
+                  // ============= if when user has't verified his account ================
+                  if (
+                    getProfileData?.data?.kyc_status === "Unverified" ||
+                    getProfileData?.data?.kyc_status === "In Review"
+                  ) {
+                    router.push({
+                      pathname: "/Toaster",
+                      params: { res: "Please verify your account" },
+                    });
+                    return;
+                  } else {
+                    setIsMakePayment(true);
+                  }
                 }}
                 style={[
                   tw`w-44 h-full rounded-full justify-center items-center`,

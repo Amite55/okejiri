@@ -10,6 +10,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   View,
@@ -18,8 +19,9 @@ import {
 const Order = () => {
   const [status, setStatus] = useState<"New" | "Pending" | "Completed">("New");
   const [bookingProcess, setBookingProcess] = useState<"instant" | "schedule">(
-    "instant"
+    "instant",
   );
+  const [isRefreshing, setRefreshing] = useState(false);
 
   // state for fetch data;
   const formateDate = (dateStr: string) => {
@@ -37,31 +39,31 @@ const Order = () => {
     return formatted;
   };
 
+  // ==================== api end point ====================
   const [
     fetchOrderItems,
     {
       data: fetchOrderItemsData,
       isLoading: isLoadingfetchOrderItems,
       isFetching: isFetchingOrderItems,
-      error: isErrorFetchOrderItems,
     },
   ] = useLazyGetProviderOrdersQuery();
-
-  const [fetchOrderItem] = useLazyOrderDetailsQuery();
+  const [fetchOrderItem, { isFetching: isFetchingOrderItem }] =
+    useLazyOrderDetailsQuery();
   const {
     data: allProvderOrdersDetail,
     isLoading: isLoadingAllProvderOrdersDetail,
-    isError: isErrorAllProvderOrdersDetail,
+    refetch: refetchAllProvderOrdersDetail,
   } = useGetAllProviderOrdersQuery({});
 
   const orders = allProvderOrdersDetail?.data?.data || [];
   const { instantCount, scheduleCount } = useMemo(() => {
     const filtered = orders.filter((value: any) => value.status === status);
     const instant = filtered.filter(
-      (value: any) => value.booking_process === "instant"
+      (value: any) => value.booking_process === "instant",
     ).length;
     const schedule = filtered.filter(
-      (value: any) => value.booking_process === "schedule"
+      (value: any) => value.booking_process === "schedule",
     ).length;
     return { instantCount: instant, scheduleCount: schedule };
   }, [orders, status]);
@@ -75,7 +77,7 @@ const Order = () => {
   }, [status, bookingProcess]);
 
   const [descriptions, setDescriptions] = useState<{ [key: string]: string }>(
-    {}
+    {},
   );
 
   useEffect(() => {
@@ -99,6 +101,23 @@ const Order = () => {
     }
   }, [fetchOrderItemsData]);
 
+  // ================ hare is refresh function =================
+  const handleOnRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([
+        isFetchingOrderItems,
+        isFetchingOrderItem,
+        refetchAllProvderOrdersDetail(),
+      ]);
+      setRefreshing(false);
+    } catch (error: any) {
+      console.log(error, "Refresh not worked -> form provider home");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -106,6 +125,9 @@ const Order = () => {
       keyboardDismissMode="interactive"
       style={tw`flex-1 bg-base_color px-5 `}
       contentContainerStyle={tw`pb-28`}
+      refreshControl={
+        <RefreshControl refreshing={isRefreshing} onRefresh={handleOnRefresh} />
+      }
     >
       <Text
         style={tw`text-center font-DegularDisplayDemoRegular text-3xl my-4`}

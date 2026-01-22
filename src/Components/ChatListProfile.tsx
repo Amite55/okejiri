@@ -8,6 +8,7 @@ import tw from "../lib/tailwind";
 const ChatListProfile = ({ chatItem, onPress, isRead }: any) => {
   return (
     <TouchableOpacity
+      activeOpacity={0.8}
       onPress={onPress}
       style={[
         tw`flex-row justify-start items-center  border-gray-200 p-3.5 rounded-2xl border gap-1`,
