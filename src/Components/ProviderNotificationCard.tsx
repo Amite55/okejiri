@@ -1,5 +1,6 @@
 import {
   IconCompleteKycNotification,
+  IconCompleteKYCTick,
   IconDeleteWhite,
   IconDeliveryApprovedNotification,
   IconExtension,
@@ -35,6 +36,8 @@ const iconMap = {
   extend_delivery_time: IconExtension,
   accept_extend_delivery_time: IconDeliveryApprovedNotification,
   report: IconWaringNotification,
+  kyc_reject: IconWaringNotification,
+  kyc_approved: IconCompleteKYCTick,
 };
 const textColorMap = {
   payout_request: "#4285F4",
@@ -52,6 +55,8 @@ const textColorMap = {
   extend_delivery_time: "#2577FF",
   accept_extend_delivery_time: "#008100",
   report: "#FF3A00",
+  kyc_approved: "#008100",
+  kyc_reject: "#FF3A00",
 };
 
 interface Props {

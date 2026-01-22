@@ -6,6 +6,7 @@ import {
 import { ImgComplete, ImgNew, ImgPending } from "@/assets/images/image";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
+import UserHomeSkeleton from "@/src/Components/skeletons/UserHomeSkeleton";
 import TransactionsCard from "@/src/Components/TransactionsCard";
 import UserCard from "@/src/Components/UserCard";
 import { useCheckLocation } from "@/src/hooks/useLocation";
@@ -19,7 +20,14 @@ import {
 } from "@/src/redux/apiSlices/IndividualProvider/homeSlices";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
 
@@ -34,14 +42,24 @@ const Individual_Service_Provider_Index = () => {
   const [value, setValue] = useState("this_week");
   const [isFocus, setIsFocus] = useState(false);
   const { getLocation, loading: locationLoading } = useCheckLocation();
+  const [isRefreshing, setRefreshing] = useState(false);
 
   // data fetch - START
-  const { data: homeData, isLoading: homeDataLoading } =
-    useHomeDataQuery(value);
-  const { data: recentOrder, isLoading: recentOrderLoading } =
-    useRecentOrderQuery("New");
-  const { data: recentTransaction, isLoading: recentTransactionLoading } =
-    useRecentTransactionsQuery({});
+  const {
+    data: homeData,
+    isLoading: homeDataLoading,
+    refetch: refetchData,
+  } = useHomeDataQuery(value);
+  const {
+    data: recentOrder,
+    isLoading: recentOrderLoading,
+    refetch: refetchRecentOrder,
+  } = useRecentOrderQuery("New");
+  const {
+    data: recentTransaction,
+    isLoading: recentTransactionLoading,
+    refetch: refetchRecentTransaction,
+  } = useRecentTransactionsQuery({});
   const [fetchOrderItem] = useLazyOrderDetailsQuery();
   const [updateLatLong, { isLoading: isUpdateLatLongLoading }] =
     useUpdateLatLongMutation();
@@ -111,7 +129,29 @@ const Individual_Service_Provider_Index = () => {
     }
   }, [recentOrder]);
 
-  // console.log(" ===================== transaction ================ ", JSON.stringify(recentTransaction?.data?.data, null, 2))
+  // ================ hare is refresh function =================
+  const handleOnRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([
+        refetchRecentOrder(),
+        refetchRecentTransaction(),
+        refetchData(),
+      ]);
+      setRefreshing(false);
+    } catch (error: any) {
+      console.log(error, "Refresh not worked -> form provider home");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  // ================ loading state =================
+  if (recentTransactionLoading || recentOrderLoading || homeDataLoading) {
+    return <UserHomeSkeleton />;
+  }
+  // ================ loading state =================
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -119,6 +159,9 @@ const Individual_Service_Provider_Index = () => {
       keyboardDismissMode="interactive"
       style={tw`flex-1 bg-base_color px-5 `}
       contentContainerStyle={tw`pb-28`}
+      refreshControl={
+        <RefreshControl refreshing={isRefreshing} onRefresh={handleOnRefresh} />
+      }
     >
       {/* ----------------------- Profile header parts --------------  */}
       <ServiceProfileHeaderInfo
