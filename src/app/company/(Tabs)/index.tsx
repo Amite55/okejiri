@@ -47,6 +47,7 @@ const Company_Home_Index = () => {
   const {
     data: getMyServiceBookingsData,
     isLoading: isMyServiceBookingsLoading,
+    refetch: refetchBookingsHistory,
   } = useBookingsHistoryQuery({ page: 1, per_page: 10 });
   const [updateLatLong, { isLoading: isUpdateLatLongLoading }] =
     useUpdateLatLongMutation();
@@ -139,12 +140,7 @@ const Company_Home_Index = () => {
   const onRefresh = async () => {
     try {
       setRefreshing(true);
-      await Promise.all([
-        nearByServiceRefetch,
-        serviceRefetch,
-        serviceNearbyData,
-        servicesData,
-      ]);
+      await Promise.all([nearByServiceRefetch(), serviceRefetch()]);
     } catch (error) {
       console.log(error, "refresh error");
     } finally {

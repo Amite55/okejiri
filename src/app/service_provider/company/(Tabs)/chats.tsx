@@ -8,19 +8,25 @@ import {
 } from "@/src/redux/apiSlices/messagingSlices";
 import { router } from "expo-router";
 import React, { useEffect } from "react";
-import { FlatList, Text, TextInput, View } from "react-native";
+import { FlatList, RefreshControl, Text, TextInput, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { useDebounce } from "use-debounce";
 
 const Chats = () => {
   const [search, setSearch] = React.useState("");
   const [debouncedSearch] = useDebounce(search, 500);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   // =============== API ===============
-  const [triggerSearch, { data: searchResult, isLoading: isSearchLoading }] =
-    useLazyGetChartListQuery();
+  const [
+    triggerSearch,
+    {
+      data: searchResult,
+      isLoading: isSearchLoading,
+      isFetching: isChatRefreshing,
+    },
+  ] = useLazyGetChartListQuery();
   const [markAsRead] = useMarkAsReadMutation();
-
   const listToRender = searchResult?.data?.data ?? [];
 
   const readData = async () => {
@@ -68,10 +74,25 @@ const Chats = () => {
     });
   };
 
+  // [----------------- refresh function ----------------]
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([isChatRefreshing]);
+    } catch (error) {
+      console.log(error, "refresh error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     <View style={tw`flex-1 bg-base_color px-5 pb-28`}>
       {/* ===== Header ===== */}
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         data={listToRender || []}
         keyExtractor={(_, index) => index.toString()}
         showsVerticalScrollIndicator={false}
