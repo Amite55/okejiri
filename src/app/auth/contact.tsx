@@ -42,7 +42,7 @@ const Contact = () => {
   const [information, { isLoading: isLoadingPersonalization }] =
     useCompletePersonalizationMutation({});
   const { data: getProfileData, isLoading: isLoadingProfile } = useProfileQuery(
-    {}
+    {},
   );
 
   // =============== dynamic role title ==================
@@ -54,9 +54,8 @@ const Contact = () => {
   }
 
   const handleLocation = async () => {
-    await getLocation();
-
-    if (location?.latitude && location?.longitude) {
+    const newLocation = await getLocation();
+    if (newLocation?.latitude && newLocation?.longitude) {
       router.push({
         pathname: "/Toaster",
         params: { res: "Location captured successfully" },
@@ -134,10 +133,10 @@ const Contact = () => {
   // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
   useEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true)
+      setKeyboardVisible(true),
     );
     const hide = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false)
+      setKeyboardVisible(false),
     );
     return () => {
       show.remove();

@@ -8,9 +8,12 @@ import {
 } from "@/assets/icons";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
+import PackageDetailsSkeleton from "@/src/Components/skeletons/PackageDetailsSkeleton";
 import TransactionsCard from "@/src/Components/TransactionsCard";
 import UserCard from "@/src/Components/UserCard";
+import { useCheckLocation } from "@/src/hooks/useLocation";
 import tw from "@/src/lib/tailwind";
+import { useUpdateLatLongMutation } from "@/src/redux/apiSlices/authSlices";
 import {
   useHomeDataQuery,
   useRecentOrderQuery,
@@ -20,7 +23,13 @@ import { useLazyOrderDetailsQuery } from "@/src/redux/apiSlices/companyProvider/
 import { _WIDTH } from "@/utils/utils";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { SvgXml } from "react-native-svg";
 
@@ -34,15 +43,46 @@ const dropdownData = [
 const Home_Index_Company = () => {
   const [value, setValue] = useState("this_week");
   const [isFocus, setIsFocus] = useState(false);
+  const { getLocation, loading: locationLoading } = useCheckLocation();
+  const [refreshing, setRefreshing] = React.useState(false);
 
-  // data fetch - START
+  // data fetch - START--------------------------------
   const { data: homeData, isLoading: homeDataLoading } =
     useHomeDataQuery(value);
   const { data: recentOrder, isLoading: recentOrderLoading } =
     useRecentOrderQuery("New");
   const { data: recentTransaction, isLoading: recentTransactionLoading } =
     useRecentTransactionsQuery({});
-  const [fetchOrderItem] = useLazyOrderDetailsQuery();
+  const [
+    fetchOrderItem,
+    { isLoading: orderItemLoading, isFetching: isFetchingOrderItem },
+  ] = useLazyOrderDetailsQuery();
+
+  const [updateLatLong, { isLoading: isUpdateLatLongLoading }] =
+    useUpdateLatLongMutation();
+
+  // ================location update when render this screen ==================
+  const handleLocation = async () => {
+    const newLocation = await getLocation();
+    if (newLocation?.latitude && newLocation?.longitude) {
+      const response = await updateLatLong({
+        latitude: newLocation?.latitude,
+        longitude: newLocation?.longitude,
+      }).unwrap();
+      if (response) {
+        console.log("updated");
+      }
+    } else {
+      router.push({
+        pathname: "/Toaster",
+        params: { res: "Failed to get location" },
+      });
+    }
+  };
+  // ===============location update when render this screen ==================
+  useEffect(() => {
+    handleLocation();
+  }, []);
 
   // state for fetch data;
   const formateDate = (dateStr: string) => {
@@ -54,7 +94,6 @@ const Home_Index_Company = () => {
       year: "numeric",
     };
     const parts = date.toLocaleDateString("en-US", options).split(" ");
-    // console.log(date.toLocaleDateString("en-US", options))
     const formatted = `${parts[0]} ${parts[1]} ${parts[2].split(",")[0]} ${
       parts[3]
     }`;
@@ -62,7 +101,7 @@ const Home_Index_Company = () => {
   };
 
   const [descriptions, setDescriptions] = useState<{ [key: string]: string }>(
-    {}
+    {},
   );
 
   useEffect(() => {
@@ -86,9 +125,32 @@ const Home_Index_Company = () => {
     }
   }, [recentOrder]);
 
-  // return: ==========================
+  // [----------------- refresh function ----------------]
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([]);
+    } catch (error) {
+      console.log(error, "refresh error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  // ============= loading state =================
+  if (
+    homeDataLoading ||
+    recentOrderLoading ||
+    recentTransactionLoading ||
+    orderItemLoading
+  ) {
+    return <PackageDetailsSkeleton />;
+  }
   return (
     <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       keyboardDismissMode="interactive"

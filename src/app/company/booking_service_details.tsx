@@ -185,7 +185,7 @@ const Booking_Service_Details = () => {
   // -------------- sum price of add to cart ------------
   const cartReducePrice = getAddToCartItem?.data.reduce(
     (total: number, item: any) => total + Number(item?.package?.price || 0),
-    0
+    0,
   );
   // --------------------------- add to cart function delete and add this same function use for add to cart   ----------------
   const handleDeleteStoreCartItem = async (packageId: number) => {
@@ -196,14 +196,14 @@ const Booking_Service_Details = () => {
         if (
           addToCartState?.some(
             (cartItem: { package_id: number }) =>
-              cartItem?.package_id === packageId
+              cartItem?.package_id === packageId,
           )
         ) {
           setAddToCartState(
             addToCartState.filter(
               (cartItem: { package_id: number }) =>
-                cartItem?.package_id !== packageId
-            )
+                cartItem?.package_id !== packageId,
+            ),
           );
         } else {
           setAddToCartState([...addToCartState, { package_id: packageId }]);
@@ -332,7 +332,7 @@ const Booking_Service_Details = () => {
             >
               <View style={tw``}>
                 <BackTitleButton
-                  pageName={"Previous services"}
+                  pageName={"Previous services kffk"}
                   onPress={() => router.back()}
                   titleTextStyle={tw`text-xl`}
                 />
@@ -431,7 +431,7 @@ const Booking_Service_Details = () => {
                     <TouchableOpacity
                       onPress={() => {
                         handleCopyToPhone(
-                          OrderDetailsData?.data?.provider?.phone
+                          OrderDetailsData?.data?.provider?.phone,
                         );
                       }}
                       style={tw`p-2`}
@@ -464,7 +464,7 @@ const Booking_Service_Details = () => {
                             numberOfLines={1}
                             style={tw`font-DegularDisplayDemoMedium text-lg text-black`}
                           >
-                            {pkg.title.split(" ").slice(0, 2).join(" ")}
+                            {pkg?.title.split(" ").slice(0, 2).join(" ")}
                           </Text>
 
                           <Text
@@ -510,7 +510,7 @@ const Booking_Service_Details = () => {
                                   xml={
                                     addToCartState?.some(
                                       (cartItem: { package_id: number }) =>
-                                        cartItem?.package_id === pkg?.id
+                                        cartItem?.package_id === pkg?.id,
                                     )
                                       ? IconTick
                                       : IconPlus
@@ -524,6 +524,8 @@ const Booking_Service_Details = () => {
                   })}
                 </View>
 
+                {/* ============== this message will show when user is new order ans pending order and service provider hasn’t responded yet */}
+
                 {(OrderDetailsData?.data?.status === "New" ||
                   OrderDetailsData?.data?.status === "Pending") && (
                   <Text
@@ -533,9 +535,9 @@ const Booking_Service_Details = () => {
                   </Text>
                 )}
 
-                {/* ----------------- if this user is new order ---------------- */}
+                {/* ----------------- if this user is new order and when user need to cancel to after 20 minutes ---------------- */}
                 {OrderDetailsData?.data?.status === "New" &&
-                timeDifferenceMs <= thirtyMinutesInMs ? (
+                timeDifferenceMs >= thirtyMinutesInMs ? (
                   <PrimaryButton
                     onPress={() => setCancelModalVisible(true)}
                     IconFastProps={IconCrossSolidRed}
@@ -652,7 +654,7 @@ const Booking_Service_Details = () => {
                               <Text
                                 style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
                               >
-                                {detail.item}
+                                {detail?.item}
                               </Text>
                             </View>
                           ))}
@@ -897,7 +899,7 @@ const Booking_Service_Details = () => {
                                 `border w-5 h-5  justify-center items-center rounded-full`,
                                 selectedReport === item.reportName
                                   ? `bg-primary border-white`
-                                  : `bg-transparent`
+                                  : `bg-transparent`,
                               )}
                             ></TouchableOpacity>
                             <Text
