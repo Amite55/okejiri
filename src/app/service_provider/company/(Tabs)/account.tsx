@@ -24,11 +24,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Account = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
@@ -77,6 +84,17 @@ const Account = () => {
     }
   };
 
+  const onRefresh = React.useCallback(async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([userProfileInfo]);
+    } catch (error: any) {
+      console.log(error, "Profile Refresh not success!");
+    } finally {
+      setRefreshing(false);
+    }
+  }, [userProfileInfo]);
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -84,6 +102,9 @@ const Account = () => {
       keyboardDismissMode="interactive"
       style={tw`flex-1 bg-base_color px-5 `}
       contentContainerStyle={tw`pb-24`}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>
         Account
@@ -126,8 +147,8 @@ const Account = () => {
             profile?.kyc_status === "In Review"
               ? "bg-secondary"
               : profile?.kyc_status === "Verified"
-              ? "bg-violet"
-              : "bg-blueMagenta"
+                ? "bg-violet"
+                : "bg-blueMagenta"
           }`}
         >
           <Text style={tw`font-PoppinsMedium text-base text-white`}>
@@ -178,10 +199,10 @@ const Account = () => {
 
       <View style={tw`gap-3 mb-6`}>
         <SettingsCard
-          title="services"
+          title="Services"
           onPress={() =>
             router.push(
-              "/service_provider/company/company_services/my_services"
+              "/service_provider/company/company_services/my_services",
             )
           }
           fastIcon={IconMyService}
@@ -216,7 +237,7 @@ const Account = () => {
           title=" Boost profile"
           onPress={() =>
             router.push(
-              "/service_provider/individual/boost_profiles/boost_profile"
+              "/service_provider/individual/boost_profiles/boost_profile",
             )
           }
           fastIcon={IconBoostBlack}

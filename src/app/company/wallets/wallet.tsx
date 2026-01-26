@@ -28,6 +28,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   Text,
   TextInput,
   TouchableOpacity,
@@ -41,6 +42,7 @@ const Wallet_Index = () => {
   const [balance, setBalance] = useState<number | null>(null);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [isWabViewOpen, setIsWebviewOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -56,12 +58,16 @@ const Wallet_Index = () => {
   const [hasMore, setHasMore] = useState(true);
 
   // API ------------------------------
-  const { data: recentTransactions, isLoading } = useGetRecentTransactionsQuery(
-    { per_page: 10, page }
-  );
-  const { data: profileData, isLoading: isProfileLoading } = useProfileQuery(
-    {}
-  );
+  const {
+    data: recentTransactions,
+    isLoading,
+    isFetching: isTransactionsFetching,
+  } = useGetRecentTransactionsQuery({ per_page: 10, page });
+  const {
+    data: profileData,
+    isLoading: isProfileLoading,
+    isFetching: isProfileFetching,
+  } = useProfileQuery({});
   const [depositAmount, { isLoading: depositLoading }] =
     useDepositSuccessMutation();
 
@@ -77,6 +83,18 @@ const Wallet_Index = () => {
       }
     }
   }, [recentTransactions]);
+
+  // =================== handle refresh control ===================
+  const onRefresh = React.useCallback(async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([isTransactionsFetching, isProfileFetching]);
+    } catch (error: any) {
+      console.log(error, "Profile Refresh not success!");
+    } finally {
+      setRefreshing(false);
+    }
+  }, [isTransactionsFetching, isProfileFetching]);
 
   // ------------------ deposit function handler ====================
   const handleDeposit = async (res: any) => {
@@ -267,6 +285,9 @@ const Wallet_Index = () => {
   return (
     <>
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         data={listData}
         renderItem={renderTransaction}
         keyExtractor={(item, index) => index.toString()}

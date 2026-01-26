@@ -83,9 +83,9 @@ const Individual_Service_Provider_Index = () => {
     }
   };
   // ===============location update when render this screen ==================
-  useEffect(() => {
-    handleLocation();
-  }, []);
+  // useEffect(() => {
+  //   handleLocation();
+  // }, []);
 
   // state for fetch data;
   const formateDate = (dateStr: string) => {
