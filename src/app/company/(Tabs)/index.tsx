@@ -30,6 +30,7 @@ import {
 } from "react-native";
 
 const Company_Home_Index = () => {
+  const [isRadius, setIsRadius] = React.useState(15);
   const [refreshing, setRefreshing] = React.useState(false);
   const { getLocation, loading: locationLoading } = useCheckLocation();
 
@@ -38,7 +39,7 @@ const Company_Home_Index = () => {
     data: serviceNearbyData,
     isLoading: serviceNearbyLoading,
     refetch: nearByServiceRefetch,
-  } = useServiceNearbyQuery({ per_page: 10, page: 1 });
+  } = useServiceNearbyQuery({ per_page: 10, page: 1, radius: isRadius });
   const {
     data: servicesData,
     isLoading: servicesLoading,
@@ -47,7 +48,7 @@ const Company_Home_Index = () => {
   const {
     data: getMyServiceBookingsData,
     isLoading: isMyServiceBookingsLoading,
-    refetch: refetchBookingsHistory,
+    isFetching: isMyServiceBookingsFetching,
   } = useBookingsHistoryQuery({ page: 1, per_page: 10 });
   const [updateLatLong, { isLoading: isUpdateLatLongLoading }] =
     useUpdateLatLongMutation();
@@ -74,6 +75,12 @@ const Company_Home_Index = () => {
   useEffect(() => {
     handleLocation();
   }, []);
+
+  useEffect(() => {
+    if (serviceNearbyData?.data?.data?.length === 0) {
+      setIsRadius(25);
+    }
+  }, [serviceNearbyData?.data?.data, isRadius]);
 
   const serviceItemRender = ({ item }) => {
     return (
@@ -140,7 +147,11 @@ const Company_Home_Index = () => {
   const onRefresh = async () => {
     try {
       setRefreshing(true);
-      await Promise.all([nearByServiceRefetch(), serviceRefetch()]);
+      await Promise.all([
+        nearByServiceRefetch(),
+        serviceRefetch(),
+        isMyServiceBookingsFetching,
+      ]);
     } catch (error) {
       console.log(error, "refresh error");
     } finally {

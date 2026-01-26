@@ -20,6 +20,7 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Modal,
+  RefreshControl,
   ScrollView,
   Text,
   TextInput,
@@ -29,12 +30,18 @@ import {
 import { SvgXml } from "react-native-svg";
 
 const Wallet_Index = () => {
-  const { data: userProfileInfo, isLoading } = useProfileQuery({});
+  const [refreshing, setRefreshing] = useState(false);
+
+  const {
+    data: userProfileInfo,
+    isLoading,
+    isFetching: isFetchingProfile,
+  } = useProfileQuery({});
   const stripeAccountId = userProfileInfo?.data?.stripe_account_id;
   const {
     data: availableAmount,
     isLoading: availableAmountLoading,
-    refetch: refetchAvailableBalance,
+    isFetching: isFetchingAvailableBalance,
   } = useGetAvailableBalanceQuery(String(stripeAccountId), {
     skip: !stripeAccountId,
   });
@@ -44,6 +51,7 @@ const Wallet_Index = () => {
     data: transactionsData,
     isLoading: transactionsLoading,
     error: transactionsError,
+    isFetching: isFetchingTransactions,
   } = useRecent_transactionsQuery(1); // Start with page 1
 
   const referralBonus = Number(userProfileInfo?.data?.referral_balance) || 0;
@@ -59,6 +67,23 @@ const Wallet_Index = () => {
   // Get transactions from the API response
   const transactions = transactionsData?.data?.data || [];
 
+  // =============== on fresh ================
+  const onRefresh = React.useCallback(async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([
+        isFetchingProfile,
+        isFetchingTransactions,
+        isFetchingAvailableBalance,
+      ]);
+    } catch (error: any) {
+      console.log(error, "Profile Refresh not success!");
+    } finally {
+      setRefreshing(false);
+    }
+  }, [userProfileInfo, transactionsData, availableAmount]);
+
+  // ================ loading state =================
   if (isLoading || availableAmountLoading) {
     return (
       <View style={tw`flex-1 justify-center items-center`}>
@@ -173,6 +198,9 @@ const Wallet_Index = () => {
       showsVerticalScrollIndicator={false}
       style={tw`flex-1 bg-base_color`}
       contentContainerStyle={tw`pb-6 px-5 bg-base_color`}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <BackTitleButton
         pageName={"Your wallet "}

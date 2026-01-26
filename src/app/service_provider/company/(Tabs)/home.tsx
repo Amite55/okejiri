@@ -80,9 +80,9 @@ const Home_Index_Company = () => {
     }
   };
   // ===============location update when render this screen ==================
-  useEffect(() => {
-    handleLocation();
-  }, []);
+  // useEffect(() => {
+  //   handleLocation();
+  // }, []);
 
   // state for fetch data;
   const formateDate = (dateStr: string) => {
