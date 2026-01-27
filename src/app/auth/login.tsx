@@ -1,4 +1,4 @@
-import { IconEyeClose, IconEyeShow } from "@/assets/icons";
+import { IconEyeClose, IconEyeShow, IconGoogle } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
 import { useProviderTypes } from "@/src/hooks/useProviderTypes";
@@ -73,7 +73,7 @@ const LoginIndex = () => {
             JSON.stringify({
               email: formData.email,
               password: formData.password,
-            })
+            }),
           );
         } else {
           await AsyncStorage.removeItem("loginInfo");
@@ -102,7 +102,7 @@ const LoginIndex = () => {
             JSON.stringify({
               email: formData.email,
               password: formData.password,
-            })
+            }),
           );
         } else {
           await AsyncStorage.removeItem("loginInfo");
@@ -285,7 +285,7 @@ const LoginIndex = () => {
                       onPress={() => handleCheckBox()}
                       style={tw.style(
                         `border w-5 h-5  justify-center items-center rounded-sm`,
-                        isChecked ? `bg-primary border-0` : `bg-transparent`
+                        isChecked ? `bg-primary border-0` : `bg-transparent`,
                       )}
                     >
                       {isChecked ? (
@@ -337,14 +337,14 @@ const LoginIndex = () => {
                   <Text>or continue with</Text>
                   <View style={tw`flex-1 h-px bg-gray-500`} />
                 </View>
-
-                {/* <View style={tw`justify-center items-center`}>
+                {/* {============================= google login ===============================} */}
+                <View style={tw`justify-center items-center`}>
                   <TouchableOpacity
                     style={tw`w-14 h-14 bg-white rounded-full justify-center items-center `}
                   >
                     <SvgXml xml={IconGoogle} />
                   </TouchableOpacity>
-                </View> */}
+                </View>
               </View>
             )}
           </Formik>

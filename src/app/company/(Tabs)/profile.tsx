@@ -38,7 +38,7 @@ const Profile = () => {
 
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
-  const { data: userProfileInfo } = useProfileQuery({});
+  const { data: userProfileInfo, isFetching, refetch } = useProfileQuery({});
   const [switchRole, { isLoading: roleSwitchLoading }] =
     useRoleSwitchMutation();
 
@@ -52,7 +52,7 @@ const Profile = () => {
       await AsyncStorage.removeItem("providerTypes");
       await AsyncStorage.removeItem("token");
       router.replace("/chose_roll");
-    } catch (e) {
+    } catch (e: any) {
       console.log("Error reading role from AsyncStorage", e);
       router.push({
         pathname: "/Toaster",
@@ -104,7 +104,7 @@ const Profile = () => {
   const onRefresh = React.useCallback(async () => {
     try {
       setRefreshing(true);
-      await Promise.all([userProfileInfo]);
+      await Promise.all([refetch()]);
     } catch (error: any) {
       console.log(error, "Profile Refresh not success!");
     } finally {
@@ -156,7 +156,9 @@ const Profile = () => {
                 ? "bg-secondary"
                 : userProfileInfo?.data?.kyc_status === "Verified"
                   ? "bg-violet"
-                  : "bg-blueMagenta"
+                  : userProfileInfo?.data?.kyc_status === "Rejected"
+                    ? "bg-red-600"
+                    : "bg-blueMagenta"
             }`,
           ]}
         >
