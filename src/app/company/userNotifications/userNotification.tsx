@@ -125,6 +125,7 @@ const Notification = () => {
       } catch {}
     }
     const type = item?.data?.type;
+
     // ---------------- Modal Types ---------------- //
     if (type === "delivery_request_sent") {
       setSelectedOrderId(item?.data?.order_id);
@@ -137,18 +138,28 @@ const Notification = () => {
       return;
     } else if (type === "complete_kyc") {
       if (
-        userProfileInfo?.data?.kyc_status === "In Review" ||
-        userProfileInfo?.data?.kyc_status === "Unverified"
+        // userProfileInfo?.data?.kyc_status === "In Review" ||
+        userProfileInfo?.data?.kyc_status === "Unverified" ||
+        userProfileInfo?.data?.kyc_status === "Rejected"
       ) {
         router.push("/KYC_auth/id_card");
       } else {
         router.push({
           pathname: "/Toaster",
           params: {
-            res: "You have already completed your KYC.",
+            res: "You have already completed your KYC Please wait for approval",
           },
         });
       }
+    } else if (type === "kyc_approved") {
+      router.push({
+        pathname: "/Toaster",
+        params: {
+          res: "Your KYC is approved.",
+        },
+      });
+    } else if (type === "kyc_reject") {
+      router.push("/KYC_auth/id_card");
     }
     switch (type) {
       case "order_approved":

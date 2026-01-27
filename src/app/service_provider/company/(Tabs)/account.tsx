@@ -19,7 +19,6 @@ import {
   useLogoutMutation,
   useProfileQuery,
 } from "@/src/redux/apiSlices/authSlices";
-import { useGetAvailableBalanceQuery } from "@/src/redux/apiSlices/stripeSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -43,23 +42,10 @@ const Account = () => {
   const {
     data: userProfileInfo,
     isLoading: isLoadingProfile,
-    isError: isErrorProfile,
+    refetch,
   } = useProfileQuery({});
-  const stripeAccountId = userProfileInfo?.data?.stripe_account_id;
-  const {
-    data: availableAmount,
-    isLoading: availableAmountLoading,
-    refetch: refetchAvailableBalance,
-  } = useGetAvailableBalanceQuery(String(stripeAccountId), {
-    skip: !stripeAccountId,
-  });
-  const referralBonus = Number(userProfileInfo?.data?.referral_balance) || 0;
-  const earned = Number(availableAmount?.data?.available?.[0]?.amount) || 0;
-  const earnedFormatted = earned;
-  const referralFormatted = referralBonus;
-  const totalBalance = earnedFormatted + referralFormatted;
-
   const profile = userProfileInfo?.data;
+
   const isDisabled =
     isLoadingProfile ||
     !profile?.kyc_status ||
@@ -87,7 +73,7 @@ const Account = () => {
   const onRefresh = React.useCallback(async () => {
     try {
       setRefreshing(true);
-      await Promise.all([userProfileInfo]);
+      await Promise.all([refetch()]);
     } catch (error: any) {
       console.log(error, "Profile Refresh not success!");
     } finally {
@@ -148,7 +134,9 @@ const Account = () => {
               ? "bg-secondary"
               : profile?.kyc_status === "Verified"
                 ? "bg-violet"
-                : "bg-blueMagenta"
+                : profile?.kyc_status === "Rejected"
+                  ? "bg-red-600"
+                  : "bg-blueMagenta"
           }`}
         >
           <Text style={tw`font-PoppinsMedium text-base text-white`}>
@@ -183,7 +171,9 @@ const Account = () => {
               Available balance
             </Text>
             <Text style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}>
-              ₦{totalBalance ? totalBalance : 0}
+              ₦{" "}
+              {Number(profile?.wallet_balance) +
+                Number(profile?.referral_balance) || 0}
             </Text>
           </View>
         </View>

@@ -13,7 +13,6 @@ import {
   useRecent_transactionsQuery,
   useWithdrawMutation,
 } from "@/src/redux/apiSlices/IndividualProvider/account/availableBalanceSlice";
-import { useGetAvailableBalanceQuery } from "@/src/redux/apiSlices/stripeSlices";
 import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -37,14 +36,9 @@ const Wallet_Index = () => {
     isLoading,
     isFetching: isFetchingProfile,
   } = useProfileQuery({});
-  const stripeAccountId = userProfileInfo?.data?.stripe_account_id;
-  const {
-    data: availableAmount,
-    isLoading: availableAmountLoading,
-    isFetching: isFetchingAvailableBalance,
-  } = useGetAvailableBalanceQuery(String(stripeAccountId), {
-    skip: !stripeAccountId,
-  });
+  const totalBalance =
+    Number(userProfileInfo?.data?.wallet_balance) +
+    Number(userProfileInfo?.data?.referral_balance);
 
   // Add the recent transactions query
   const {
@@ -53,12 +47,6 @@ const Wallet_Index = () => {
     error: transactionsError,
     isFetching: isFetchingTransactions,
   } = useRecent_transactionsQuery(1); // Start with page 1
-
-  const referralBonus = Number(userProfileInfo?.data?.referral_balance) || 0;
-  const earned = Number(availableAmount?.data?.available?.[0]?.amount) || 0;
-  const earnedFormatted = earned;
-  const referralFormatted = referralBonus;
-  const totalBalance = earnedFormatted + referralFormatted;
 
   const [isWithdrawModalVisible, setWithdrawModalVisible] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -71,20 +59,16 @@ const Wallet_Index = () => {
   const onRefresh = React.useCallback(async () => {
     try {
       setRefreshing(true);
-      await Promise.all([
-        isFetchingProfile,
-        isFetchingTransactions,
-        isFetchingAvailableBalance,
-      ]);
+      await Promise.all([isFetchingProfile, isFetchingTransactions]);
     } catch (error: any) {
       console.log(error, "Profile Refresh not success!");
     } finally {
       setRefreshing(false);
     }
-  }, [userProfileInfo, transactionsData, availableAmount]);
+  }, [userProfileInfo, transactionsData]);
 
   // ================ loading state =================
-  if (isLoading || availableAmountLoading) {
+  if (isLoading) {
     return (
       <View style={tw`flex-1 justify-center items-center`}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -140,7 +124,6 @@ const Wallet_Index = () => {
       });
       setWithdrawModalVisible(false);
       setWithdrawAmount("");
-      refetchAvailableBalance();
     } catch (error: any) {
       console.error("Withdrawal error:", error);
       router.push({
@@ -203,7 +186,7 @@ const Wallet_Index = () => {
       }
     >
       <BackTitleButton
-        pageName={"Your wallet "}
+        pageName={"Your wallet --"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
@@ -225,17 +208,17 @@ const Wallet_Index = () => {
 
         {/* ✅ total balance = earned + referral */}
         <Text style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}>
-          ₦{totalBalance.toFixed(2)}
+          ₦ {totalBalance}
         </Text>
 
         <View style={tw`flex-row items-center`}>
           <Text
             style={tw`font-DegularDisplayDemoRegular text-base text-regularText`}
           >
-            Earned:
+            Earned:{" "}
           </Text>
           <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-            ₦{earnedFormatted.toFixed(2)}
+            ₦ {Number(userProfileInfo?.data?.wallet_balance) || 0}
           </Text>
         </View>
 
@@ -243,10 +226,10 @@ const Wallet_Index = () => {
           <Text
             style={tw`font-DegularDisplayDemoRegular text-base text-regularText`}
           >
-            Referral bonus:
+            Referral bonus:{" "}
           </Text>
           <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-            ₦{referralFormatted.toFixed(2)}
+            ₦ {Number(userProfileInfo?.data?.referral_balance) || 0}
           </Text>
         </View>
       </View>

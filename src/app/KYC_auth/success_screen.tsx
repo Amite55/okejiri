@@ -13,18 +13,14 @@ const Success_Screen = () => {
   const roll = useRoll();
   const providerTypes = useProviderTypes();
 
-  const {
-    data: userProfileInfo,
-    isLoading,
-    error,
-  } = useProfileQuery({}, { refetchOnMountOrArgChange: true });
+  const { data: userProfileInfo } = useProfileQuery(
+    {},
+    { refetchOnMountOrArgChange: true },
+  );
 
   const handleRouting = () => {
     if (roll === "USER") {
       router.push("/company/(Tabs)");
-      setTimeout(() => {
-        router.push("/kyc_completed_modal");
-      }, 500);
     } else if (roll === "PROVIDER") {
       if (providerTypes === "Individual") {
         router.push("/service_provider/individual/(Tabs)/home");
