@@ -15,7 +15,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import { SvgXml } from "react-native-svg";
 
 const Refer_Friend = () => {
@@ -36,9 +35,9 @@ const Refer_Friend = () => {
   // ================== copy to clipboard ==================
   const copyToClipboard = async (text: string) => {
     await Clipboard.setStringAsync(text);
-    Toast.show({
-      type: ALERT_TYPE.SUCCESS,
-      title: "Copied to clipboard",
+    router.push({
+      pathname: "/Toaster",
+      params: { res: "Copied to clipboard!" },
     });
   };
 
@@ -66,7 +65,7 @@ const Refer_Friend = () => {
         setReferrals((prev) => {
           const existingIds = new Set(prev.map((item: any) => item.id));
           const uniqueNew = newData.filter(
-            (item: any) => !existingIds.has(item.id)
+            (item: any) => !existingIds.has(item.id),
           );
           if (uniqueNew.length === 0) {
             setHasMore(false);

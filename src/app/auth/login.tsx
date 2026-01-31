@@ -10,7 +10,10 @@ import {
   useProfileQuery,
 } from "@/src/redux/apiSlices/authSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Google from "expo-auth-session/providers/google";
+import Constants from "expo-constants";
 import { Link, router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import {
@@ -27,6 +30,9 @@ import {
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
+
+WebBrowser.maybeCompleteAuthSession();
+
 const LoginIndex = () => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [isEyeShow, setIsEyeShow] = useState<boolean>(false);
@@ -38,6 +44,21 @@ const LoginIndex = () => {
   // ------------------------ api end point ---------------------
   const [credentials, { isLoading: isLoadingLogin }] = useLoginMutation();
   const { data: userProfileInfo, isLoading } = useProfileQuery({});
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId: Constants.expoConfig?.extra?.googleWebClientId,
+    androidClientId: Constants.expoConfig?.extra?.googleAndroidClientId,
+    scopes: ["profile", "email"],
+  });
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { id_token } = response.params;
+      console.log("Google ID Token:", id_token);
+
+      // NEXT STEP: backend এ পাঠাবো
+    }
+  }, [response]);
 
   // =============== dynamic role title ==================
   let roleTitle = "";
@@ -340,6 +361,7 @@ const LoginIndex = () => {
                 {/* {============================= google login ===============================} */}
                 <View style={tw`justify-center items-center`}>
                   <TouchableOpacity
+                    onPress={() => promptAsync()}
                     style={tw`w-14 h-14 bg-white rounded-full justify-center items-center `}
                   >
                     <SvgXml xml={IconGoogle} />
