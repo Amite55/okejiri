@@ -1,5 +1,6 @@
+import SkeletonBox from "@/src/lib/CustomSkeleton/SkeletonBox";
+import SkeletonCircle from "@/src/lib/CustomSkeleton/SkeletonCircle";
 import tw from "@/src/lib/tailwind";
-import { Skeleton } from "moti/skeleton";
 import React from "react";
 import { ScrollView, View } from "react-native";
 
@@ -13,19 +14,19 @@ const RoleChooseSkeleton = () => {
     >
       {/* ---------- Logo ---------- */}
       <View style={tw`items-center mt-6`}>
-        <Skeleton height={45} width={180} colorMode="light" />
+        <SkeletonBox height={45} width={180} />
       </View>
 
       {/* ---------- Banner Image ---------- */}
       <View style={tw`mt-6`}>
-        <Skeleton height={260} width={"100%"} radius={20} colorMode="light" />
+        <SkeletonBox height={260} width="100%" radius={20} />
       </View>
 
       {/* ---------- Text Section ---------- */}
       <View style={tw`items-center mt-8 gap-3`}>
-        <Skeleton height={28} width={"70%"} colorMode="light" />
-        <Skeleton height={18} width={"90%"} colorMode="light" />
-        <Skeleton height={18} width={"80%"} colorMode="light" />
+        <SkeletonBox height={28} width="70%" />
+        <SkeletonBox height={18} width="90%" />
+        <SkeletonBox height={18} width="80%" />
       </View>
 
       {/* ---------- USER Button Skeleton ---------- */}
@@ -34,13 +35,13 @@ const RoleChooseSkeleton = () => {
       >
         <View style={tw`flex-row items-center gap-4`}>
           {/* Icon circle */}
-          <Skeleton height={64} width={64} radius={"round"} colorMode="light" />
+          <SkeletonCircle size={64} />
           {/* Text */}
-          <Skeleton height={22} width={120} colorMode="light" />
+          <SkeletonBox height={22} width={120} />
         </View>
 
         {/* Arrow */}
-        <Skeleton height={22} width={22} radius={"round"} colorMode="light" />
+        <SkeletonCircle size={22} />
       </View>
 
       {/* ---------- PROVIDER Button Skeleton ---------- */}
@@ -49,13 +50,13 @@ const RoleChooseSkeleton = () => {
       >
         <View style={tw`flex-row items-center gap-4`}>
           {/* Icon circle */}
-          <Skeleton height={64} width={64} radius={"round"} colorMode="light" />
+          <SkeletonCircle size={64} />
           {/* Text */}
-          <Skeleton height={22} width={150} colorMode="light" />
+          <SkeletonBox height={22} width={150} />
         </View>
 
         {/* Arrow */}
-        <Skeleton height={22} width={22} radius={"round"} colorMode="light" />
+        <SkeletonCircle size={22} />
       </View>
     </ScrollView>
   );
