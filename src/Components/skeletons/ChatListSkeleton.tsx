@@ -1,9 +1,10 @@
+import SkeletonBox from "@/src/lib/CustomSkeleton/SkeletonBox";
+import SkeletonCircle from "@/src/lib/CustomSkeleton/SkeletonCircle";
 import tw from "@/src/lib/tailwind";
-import { Skeleton } from "moti/skeleton";
 import React from "react";
 import { ScrollView, View } from "react-native";
 
-const ChatListSkeleton = () => {
+const ChatListSkeletonCustom = () => {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -12,20 +13,20 @@ const ChatListSkeleton = () => {
     >
       {/* ---------- Header Skeleton ---------- */}
       <View style={tw`flex-row items-center gap-3 mt-5`}>
-        <Skeleton height={56} width={56} radius={"round"} colorMode="light" />
+        <SkeletonCircle size={56} />
 
         <View style={tw`gap-2`}>
-          <Skeleton height={16} width={140} colorMode="light" />
-          <Skeleton height={16} width={100} colorMode="light" />
+          <SkeletonBox height={16} width={140} />
+          <SkeletonBox height={16} width={100} />
         </View>
       </View>
 
       {/* ---------- Title: Chats ---------- */}
-      <Skeleton height={28} width={120} colorMode="light" />
+      <SkeletonBox height={28} width={120} />
 
       {/* ---------- Search Bar ---------- */}
       <View style={tw`mt-3`}>
-        <Skeleton height={56} width={"100%"} radius={28} colorMode="light" />
+        <SkeletonBox height={56} width="100%" radius={28} />
       </View>
 
       {/* ---------- Chat List Items ---------- */}
@@ -36,21 +37,16 @@ const ChatListSkeleton = () => {
             style={tw`flex-row items-center bg-white p-3 rounded-2xl gap-3`}
           >
             {/* Avatar */}
-            <Skeleton
-              height={56}
-              width={56}
-              radius={"round"}
-              colorMode="light"
-            />
+            <SkeletonCircle size={56} />
 
             {/* Texts */}
             <View style={tw`flex-1 gap-2`}>
-              <Skeleton height={16} width={"70%"} colorMode="light" />
-              <Skeleton height={14} width={"50%"} colorMode="light" />
+              <SkeletonBox height={16} width="70%" />
+              <SkeletonBox height={14} width="50%" />
             </View>
 
             {/* Time */}
-            <Skeleton height={14} width={40} colorMode="light" />
+            <SkeletonBox height={14} width={40} />
           </View>
         ))}
       </View>
@@ -58,4 +54,4 @@ const ChatListSkeleton = () => {
   );
 };
 
-export default ChatListSkeleton;
+export default ChatListSkeletonCustom;

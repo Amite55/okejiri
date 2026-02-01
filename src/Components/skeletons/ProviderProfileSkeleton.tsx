@@ -1,67 +1,50 @@
-import { Skeleton } from "moti/skeleton";
+import SkeletonBox from "@/src/lib/CustomSkeleton/SkeletonBox";
+import SkeletonCircle from "@/src/lib/CustomSkeleton/SkeletonCircle";
+import tw from "@/src/lib/tailwind";
 import React from "react";
-import { View } from "react-native";
-import tw from "../../lib/tailwind";
+import { ScrollView, View } from "react-native";
 
-const ProviderProfileSkeleton = () => {
+const ProviderProfileSkeletonCustom = () => {
   return (
-    <View style={tw`flex-1 bg-base_color px-4`}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+      style={tw`flex-1 bg-base_color px-4`}
+      contentContainerStyle={tw`pb-10`}
+    >
       {/* ---------- Cover Image ---------- */}
-      <Skeleton
-        height={200}
-        width={"100%"}
-        colorMode="light"
-        transition={{ type: "timing" }}
-      />
+      <SkeletonBox height={200} width="100%" radius={0} />
 
       {/* ---------- Profile Image + Name ---------- */}
       <View style={tw`items-center mt-[-40px]`}>
-        <Skeleton
-          height={100}
-          width={100}
-          radius={"round"}
-          colorMode="light"
-          transition={{ type: "timing" }}
-        />
+        <SkeletonCircle size={100} />
         <View style={tw`mt-3 items-center gap-2`}>
-          <Skeleton height={20} width={160} colorMode="light" />
-          <Skeleton height={16} width={100} colorMode="light" />
+          <SkeletonBox height={20} width={160} />
+          <SkeletonBox height={16} width={100} />
         </View>
       </View>
 
       {/* ---------- Rating Section ---------- */}
       <View style={tw`mt-3 flex-row justify-center items-center gap-2`}>
-        <Skeleton height={14} width={30} colorMode="light" />
-        <Skeleton height={14} width={14} radius={"round"} colorMode="light" />
-        <Skeleton height={14} width={40} colorMode="light" />
+        <SkeletonBox height={14} width={30} />
+        <SkeletonCircle size={14} />
+        <SkeletonBox height={14} width={40} />
       </View>
 
       {/* ---------- Report & Message Buttons ---------- */}
       <View style={tw`mt-10 flex-row gap-4`}>
-        <Skeleton
-          height={48}
-          width={"48%"}
-          radius={"round"}
-          colorMode="light"
-          transition={{ type: "timing" }}
-        />
-        <Skeleton
-          height={48}
-          width={"48%"}
-          radius={"round"}
-          colorMode="light"
-          transition={{ type: "timing" }}
-        />
+        <SkeletonBox height={48} width="48%" radius={24} />
+        <SkeletonBox height={48} width="48%" radius={24} />
       </View>
 
       {/* ---------- Provider Details Card ---------- */}
       <View style={tw`mt-10 border border-gray-300 rounded-lg p-3 gap-3`}>
-        <Skeleton height={16} width={"80%"} colorMode="light" />
-        <Skeleton height={16} width={"60%"} colorMode="light" />
-        <Skeleton height={16} width={"90%"} colorMode="light" />
+        <SkeletonBox height={16} width="80%" />
+        <SkeletonBox height={16} width="60%" />
+        <SkeletonBox height={16} width="90%" />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
-export default ProviderProfileSkeleton;
+export default ProviderProfileSkeletonCustom;

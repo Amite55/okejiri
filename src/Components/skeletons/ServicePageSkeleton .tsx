@@ -1,4 +1,5 @@
-import { Skeleton } from "moti/skeleton";
+import SkeletonBox from "@/src/lib/CustomSkeleton/SkeletonBox";
+import SkeletonCircle from "@/src/lib/CustomSkeleton/SkeletonCircle";
 import React from "react";
 import { FlatList, ScrollView, View } from "react-native";
 import tw from "../../lib/tailwind";
@@ -14,12 +15,12 @@ const ServicePageSkeleton = () => {
       <View style={tw`mt-3`}>
         {/* Profile & Notification buttons */}
         <View style={tw`flex-row justify-between items-center mb-3`}>
-          <Skeleton width={44} height={44} radius={"round"} colorMode="light" />
-          <Skeleton width={44} height={44} radius={"round"} colorMode="light" />
+          <SkeletonCircle size={44} />
+          <SkeletonCircle size={44} />
         </View>
 
         {/* Page Title */}
-        <Skeleton height={32} width={"40%"} colorMode="light" />
+        <SkeletonBox height={32} width="40%" />
       </View>
 
       {/* ---------- Services Grid ---------- */}
@@ -32,11 +33,11 @@ const ServicePageSkeleton = () => {
         renderItem={() => (
           <View style={tw`relative items-center`}>
             {/* Service Image */}
-            <Skeleton height={190} width={160} radius={16} colorMode="light" />
+            <SkeletonBox height={190} width={160} radius={16} />
 
-            {/* Service Name overlay (bottom text blur position er jonno) */}
+            {/* Service Name overlay */}
             <View style={tw`absolute bottom-3`}>
-              <Skeleton height={36} width={120} radius={12} colorMode="light" />
+              <SkeletonBox height={36} width={120} radius={12} />
             </View>
           </View>
         )}

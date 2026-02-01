@@ -10,8 +10,9 @@ import {
   useProfileQuery,
 } from "@/src/redux/apiSlices/authSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as AuthSession from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
-import Constants from "expo-constants";
+import { default as Constants } from "expo-constants";
 import { Link, router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { Formik } from "formik";
@@ -48,6 +49,10 @@ const LoginIndex = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: Constants.expoConfig?.extra?.googleWebClientId,
     androidClientId: Constants.expoConfig?.extra?.googleAndroidClientId,
+    redirectUri: AuthSession.makeRedirectUri({
+      scheme: "okejirimobileapp",
+      path: "redirect",
+    }),
     scopes: ["profile", "email"],
   });
 

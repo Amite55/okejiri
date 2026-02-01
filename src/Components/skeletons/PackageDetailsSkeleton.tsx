@@ -1,9 +1,10 @@
-import { Skeleton } from "moti/skeleton";
+import SkeletonBox from "@/src/lib/CustomSkeleton/SkeletonBox";
+import SkeletonCircle from "@/src/lib/CustomSkeleton/SkeletonCircle";
 import React from "react";
 import { ScrollView, View } from "react-native";
 import tw from "../../lib/tailwind";
 
-const PackageDetailsSkeleton = () => {
+const PackageDetailsSkeletonCustom = () => {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -12,68 +13,60 @@ const PackageDetailsSkeleton = () => {
     >
       {/* ---------- Banner part ---------- */}
       <View style={tw`relative`}>
-        <Skeleton height={240} width={"100%"} colorMode="light" />
+        <SkeletonBox height={240} width="100%" radius={0} />
 
         {/* Back button */}
         <View style={tw`absolute top-2 left-1`}>
-          <Skeleton width={56} height={56} radius={"round"} colorMode="light" />
+          <SkeletonCircle size={56} />
         </View>
 
         {/* Favorite button */}
         <View style={tw`absolute bottom-3 right-2`}>
-          <Skeleton width={56} height={56} radius={"round"} colorMode="light" />
+          <SkeletonCircle size={56} />
         </View>
       </View>
 
       {/* ---------- Title: Services details ---------- */}
-      <Skeleton
-        height={28}
-        width={"60%"}
-        colorMode="light"
-        style={tw`self-center mt-2`}
-      />
+      <View style={tw`self-center mt-2`}>
+        <SkeletonBox height={28} width="60%" />
+      </View>
 
       {/* ---------- Package detail items ---------- */}
       <View style={tw`gap-3 mt-2`}>
         {[1, 2, 3, 4, 5].map((_, i) => (
           <View key={i} style={tw`flex-row items-center gap-3`}>
-            <Skeleton width={8} height={8} radius={"round"} colorMode="light" />
-            <Skeleton height={20} width={"85%"} colorMode="light" />
+            <SkeletonCircle size={8} />
+            <SkeletonBox height={20} width="85%" />
           </View>
         ))}
       </View>
 
       {/* ---------- Price and Add to cart ---------- */}
       <View style={tw`flex-row items-center gap-3`}>
-        <Skeleton
-          height={56}
-          width={"75%"}
-          radius={"round"}
-          colorMode="light"
-        />
-        <Skeleton height={56} width={56} radius={"round"} colorMode="light" />
+        <SkeletonBox height={56} width="75%" radius={28} />
+        <SkeletonCircle size={56} />
       </View>
 
       {/* ---------- Distance ---------- */}
       <View style={tw`mt-4`}>
-        <Skeleton height={56} width={"100%"} colorMode="light" />
+        <SkeletonBox height={56} width="100%" />
       </View>
 
       {/* ---------- Provider info ---------- */}
       <View style={tw`flex-row items-center justify-between mt-4`}>
         <View style={tw`flex-row items-center gap-3`}>
-          <Skeleton width={44} height={44} radius={"round"} colorMode="light" />
+          <SkeletonCircle size={44} />
           <View style={tw`gap-2`}>
-            <Skeleton height={16} width={100} colorMode="light" />
-            <Skeleton height={16} width={80} colorMode="light" />
+            <SkeletonBox height={16} width={100} />
+            <SkeletonBox height={16} width={80} />
           </View>
         </View>
 
         {/* message button */}
-        <Skeleton height={44} width={100} colorMode="light" />
+        <SkeletonBox height={44} width={100} radius={12} />
       </View>
     </ScrollView>
   );
 };
 
-export default PackageDetailsSkeleton;
+export default PackageDetailsSkeletonCustom;
