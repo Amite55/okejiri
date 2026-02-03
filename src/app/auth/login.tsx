@@ -1,6 +1,7 @@
-import { IconEyeClose, IconEyeShow, IconGoogle } from "@/assets/icons";
+import { IconEyeClose, IconEyeShow } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
+import GoogleLogin from "@/src/Components/GoogleLogin";
 import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
@@ -8,13 +9,11 @@ import tw from "@/src/lib/tailwind";
 import {
   useLoginMutation,
   useProfileQuery,
+  useSocialLoginMutation,
 } from "@/src/redux/apiSlices/authSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as AuthSession from "expo-auth-session";
-import * as Google from "expo-auth-session/providers/google";
-import { default as Constants } from "expo-constants";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Link, router } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import {
@@ -32,8 +31,6 @@ import {
 import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
-WebBrowser.maybeCompleteAuthSession();
-
 const LoginIndex = () => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [isEyeShow, setIsEyeShow] = useState<boolean>(false);
@@ -45,25 +42,60 @@ const LoginIndex = () => {
   // ------------------------ api end point ---------------------
   const [credentials, { isLoading: isLoadingLogin }] = useLoginMutation();
   const { data: userProfileInfo, isLoading } = useProfileQuery({});
+  const [socialLogin, { isLoading: isLoadingSocialLogin }] =
+    useSocialLoginMutation();
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: Constants.expoConfig?.extra?.googleWebClientId,
-    androidClientId: Constants.expoConfig?.extra?.googleAndroidClientId,
-    redirectUri: AuthSession.makeRedirectUri({
-      scheme: "okejirimobileapp",
-      path: "redirect",
-    }),
-    scopes: ["profile", "email"],
-  });
-
+  // social login setup ==================
   useEffect(() => {
-    if (response?.type === "success") {
-      const { id_token } = response.params;
-      console.log("Google ID Token:", id_token);
+    GoogleSignin.configure({
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+      offlineAccess: true,
+    });
+  }, []);
 
-      // NEXT STEP: backend এ পাঠাবো
+  async function onGoogleButtonPress() {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const googleResponse = await GoogleSignin.signIn();
+      const user = googleResponse?.data?.user;
+      if (!user) {
+        router.push({
+          pathname: "/Toaster",
+          params: {
+            res:
+              googleResponse?.type === "cancelled"
+                ? "You are cancelled your login request"
+                : "Something went wrong",
+          },
+        });
+        return;
+      }
+      // ================= prepare form data ===================
+      // =================== convert image url to file ===================
+      const imageUrl = user?.photo;
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const file = {
+        uri: imageUrl,
+        name: "profile.jpg",
+        type: blob.type || "image/jpeg",
+      };
+      // =================== append form data ===================
+      const formData = new FormData();
+      formData.append("photo", file as any);
+      formData.append("name", user?.givenName + " " + user?.familyName);
+      formData.append("email", user?.email);
+      formData.append("google_id", user?.id);
+      formData.append("role", roll);
+      if (roll === "PROVIDER") {
+        formData.append("provider_type", providerTypes ? providerTypes : "");
+      }
+      // =================== social login api call ===================
+      const res = await socialLogin(formData).unwrap();
+    } catch (error: any) {
+      console.log("Google Login Error__________: ", error);
     }
-  }, [response]);
+  }
 
   // =============== dynamic role title ==================
   let roleTitle = "";
@@ -356,22 +388,21 @@ const LoginIndex = () => {
                   )}
                 </TouchableOpacity>
 
-                <View
-                  style={tw`flex-row justify-between items-center gap-4 my-6`}
-                >
-                  <View style={tw`flex-1 h-px bg-gray-500`} />
-                  <Text>or continue with</Text>
-                  <View style={tw`flex-1 h-px bg-gray-500`} />
-                </View>
-                {/* {============================= google login ===============================} */}
-                <View style={tw`justify-center items-center`}>
-                  <TouchableOpacity
-                    onPress={() => promptAsync()}
-                    style={tw`w-14 h-14 bg-white rounded-full justify-center items-center `}
+                {roll === "USER" && (
+                  <View
+                    style={tw`flex-row justify-between items-center gap-4 my-6`}
                   >
-                    <SvgXml xml={IconGoogle} />
-                  </TouchableOpacity>
-                </View>
+                    <View style={tw`flex-1 h-px bg-gray-500`} />
+                    <Text>or continue with</Text>
+                    <View style={tw`flex-1 h-px bg-gray-500`} />
+                  </View>
+                )}
+                {/* {============================= google login ===============================} */}
+                {roll === "USER" && (
+                  <View style={tw`justify-center items-center`}>
+                    <GoogleLogin roll={roll} providerTypes={providerTypes} />
+                  </View>
+                )}
               </View>
             )}
           </Formik>
