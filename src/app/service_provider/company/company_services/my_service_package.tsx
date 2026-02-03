@@ -125,7 +125,6 @@ const My_Service_Package = () => {
         bank_code: bankCode,
       };
       const res = await createSubAccount(payload).unwrap();
-      console.log(res, "this is account submmition response ----------->");
       if (res?.data?.status === "success") {
         setBankCode("");
         setBankNumber("");
@@ -218,7 +217,7 @@ const My_Service_Package = () => {
         <TouchableOpacity
           onPress={() =>
             router.push(
-              "/service_provider/individual/my_services/delivery_extension"
+              "/service_provider/individual/my_services/delivery_extension",
             )
           }
           style={tw`flex-row justify-between items-center px-3 my-3 py-2`}
@@ -249,10 +248,10 @@ const My_Service_Package = () => {
   // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
   useEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true)
+      setKeyboardVisible(true),
     );
     const hide = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false)
+      setKeyboardVisible(false),
     );
     return () => {
       show.remove();
