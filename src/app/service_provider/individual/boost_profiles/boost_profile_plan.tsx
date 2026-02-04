@@ -9,7 +9,6 @@ import {
   useBoostMyProfilePostMutation,
   useGetSettingQuery,
 } from "@/src/redux/apiSlices/companyProvider/account/boostProfileSlice";
-import { useCreatePaymentIntentMutation } from "@/src/redux/apiSlices/stripeSlices";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -48,7 +47,6 @@ const Boost_Profile_Plan = () => {
   const [isWabViewOpen, setIsWebviewOpen] = useState(false);
 
   // ..................payment works.................//
-  const [createPaymentIntent] = useCreatePaymentIntentMutation();
   const [boostMyProfilePost, { isLoading: isBoostLoading }] =
     useBoostMyProfilePostMutation();
 
@@ -56,7 +54,7 @@ const Boost_Profile_Plan = () => {
   const { data: settingProfile, isLoading: settingProfileLoading } =
     useGetSettingQuery({});
   const { data: profileData, isLoading: isProfileLoading } = useProfileQuery(
-    {}
+    {},
   );
 
   // callbacks
@@ -114,7 +112,7 @@ const Boost_Profile_Plan = () => {
         if (response) {
           handleCloseModalPress();
           router.replace(
-            "/service_provider/individual/boost_profiles/boost_profile"
+            "/service_provider/individual/boost_profiles/boost_profile",
           );
           router.push({
             pathname: "/Toaster",

@@ -20,18 +20,26 @@ import {
 } from "@/src/redux/apiSlices/authSlices";
 import { useRoleSwitchMutation } from "@/src/redux/apiSlices/userProvider/account/roleSwitchSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Profile = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
-  const { data: userProfileInfo } = useProfileQuery({});
+  const { data: userProfileInfo, isFetching, refetch } = useProfileQuery({});
   const [switchRole, { isLoading: roleSwitchLoading }] =
     useRoleSwitchMutation();
 
@@ -39,13 +47,14 @@ const Profile = () => {
   const handleLogoutUser = async () => {
     const token = await AsyncStorage.getItem("token");
     try {
+      await GoogleSignin.signOut();
       setModalVisible(false);
       await logout(token).unwrap();
       await AsyncStorage.removeItem("roll");
       await AsyncStorage.removeItem("providerTypes");
       await AsyncStorage.removeItem("token");
       router.replace("/chose_roll");
-    } catch (e) {
+    } catch (e: any) {
       console.log("Error reading role from AsyncStorage", e);
       router.push({
         pathname: "/Toaster",
@@ -64,7 +73,7 @@ const Profile = () => {
         await AsyncStorage.setItem("roll", user?.role);
         await AsyncStorage.setItem(
           "providerTypes",
-          user?.provider_type || "Individual"
+          user?.provider_type || "Individual",
         );
 
         if (user?.is_personalization_complete === false) {
@@ -94,6 +103,17 @@ const Profile = () => {
     }
   };
 
+  const onRefresh = React.useCallback(async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([refetch()]);
+    } catch (error: any) {
+      console.log(error, "Profile Refresh not success!");
+    } finally {
+      setRefreshing(false);
+    }
+  }, [userProfileInfo]);
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -101,6 +121,9 @@ const Profile = () => {
       keyboardDismissMode="interactive"
       style={tw`flex-1 bg-base_color px-5 `}
       contentContainerStyle={tw`pb-24`}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>
         Account
@@ -134,8 +157,10 @@ const Profile = () => {
               userProfileInfo?.data?.kyc_status === "In Review"
                 ? "bg-secondary"
                 : userProfileInfo?.data?.kyc_status === "Verified"
-                ? "bg-violet"
-                : "bg-blueMagenta"
+                  ? "bg-violet"
+                  : userProfileInfo?.data?.kyc_status === "Rejected"
+                    ? "bg-red-600"
+                    : "bg-blueMagenta"
             }`,
           ]}
         >

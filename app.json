@@ -4,17 +4,24 @@
     "slug": "okejiriMobileApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/splashScreen.png",
+    "icon": "./assets/images/splashSquire.png",
     "scheme": "okejirimobileapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d07b47a6-f66a-4962-ab36-4b06e293ebd2"
+      }
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.yxltechnology.between",
       "infoPlist": {
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true
-        }
+        },
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -23,9 +30,12 @@
         "foregroundImage": "./assets/images/appAndroidIcon.png",
         "backgroundColor": "#ffffff"
       },
-
-      
-      "package": "com.anonymous.okejiriMobileApp"
+      "package": "com.anonymous.okejiriMobileApp",
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -37,8 +47,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/androidSplashScreen.png",
-          "imageWidth": 124,
+          "image": "./assets/images/splashSquire.png",
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
@@ -58,21 +67,19 @@
         }
       ],
       [
-        "expo-camera",
+        "expo-build-properties",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-          "recordAudioAndroid": true
-        }
-      ],[
-         "expo-build-properties",
-         {
-           "android": {
+          "android": {
             "usesCleartextTraffic": true
-           }
-         }
-      ]
-     
+          }
+        }
+      ],
+      "expo-web-browser",
+      "@react-native-community/datetimepicker",
+      "expo-font",
+      "@react-native-firebase/app",
+      "@react-native-google-signin/google-signin",
+      "@react-native-firebase/auth"
     ],
     "experiments": {
       "typedRoutes": true

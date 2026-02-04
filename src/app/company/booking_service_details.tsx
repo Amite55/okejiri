@@ -332,7 +332,7 @@ const Booking_Service_Details = () => {
             >
               <View style={tw``}>
                 <BackTitleButton
-                  pageName={"Previous services kffk"}
+                  pageName={"Previous services "}
                   onPress={() => router.back()}
                   titleTextStyle={tw`text-xl`}
                 />

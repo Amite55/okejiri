@@ -5,19 +5,31 @@ import tw from "@/src/lib/tailwind";
 import { useServiceNearbyQuery } from "@/src/redux/apiSlices/userProvider/homeSlices";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  View,
+} from "react-native";
 
 const ServiceNearbyHistory = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [hasMorePages, setHasMorePages] = useState<boolean>(true);
   const [nearByData, setNearByData] = useState<any[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isRadius, setIsRadius] = React.useState(15);
 
   // ------------------ api end point ------------------
   const {
     data: nearByServiceData,
     isLoading: isNearByServiceLoading,
     isFetching,
-  } = useServiceNearbyQuery({ per_page: 10, page: currentPage });
+  } = useServiceNearbyQuery({
+    per_page: 10,
+    page: currentPage,
+    radius: isRadius,
+  });
   // -------------------- pagination ---------------------
   useEffect(() => {
     if (nearByServiceData?.data?.data?.length > 0) {
@@ -26,6 +38,25 @@ const ServiceNearbyHistory = () => {
       setHasMorePages(false);
     }
   }, [nearByServiceData]);
+
+  useEffect(() => {
+    if (nearByServiceData?.data?.data?.length === 0) {
+      setIsRadius(25);
+    }
+  }, [nearByServiceData?.data?.data, isRadius]);
+
+  // =================== handle refresh control ===================
+  const onRefresh = React.useCallback(async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([isFetching]);
+    } catch (error: any) {
+      console.log(error, "Profile Refresh not success!");
+    } finally {
+      setRefreshing(false);
+    }
+  }, [nearByServiceData]);
+
   // --------------------- skeleton ---------------------
   if (isFetching && currentPage === 1) {
     return <ServiceCardSkeleton />;
@@ -38,15 +69,18 @@ const ServiceNearbyHistory = () => {
       </View>
     );
   }
+
   return (
     <FlatList
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       onEndReachedThreshold={0.3}
       onEndReached={() => {
         if (hasMorePages && !isFetching) {
           setCurrentPage((prev) => prev + 1);
         }
       }}
-      // data={nearByServiceData?.data?.data}
       data={nearByData}
       renderItem={({ item, index }: any) => (
         <ServiceCard

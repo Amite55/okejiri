@@ -1,5 +1,6 @@
+import SkeletonBox from "@/src/lib/CustomSkeleton/SkeletonBox";
+import SkeletonCircle from "@/src/lib/CustomSkeleton/SkeletonCircle";
 import tw from "@/src/lib/tailwind";
-import { Skeleton } from "moti/skeleton";
 import React from "react";
 import { ScrollView, View } from "react-native";
 
@@ -7,8 +8,7 @@ interface IProps {
   dummyArray?: number;
 }
 
-const NotificationSkeleton = ({ dummyArray = 4 }: IProps) => {
-  // const dummyArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const NotificationSkeletonCustom = ({ dummyArray = 4 }: IProps) => {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -18,9 +18,9 @@ const NotificationSkeleton = ({ dummyArray = 4 }: IProps) => {
       contentContainerStyle={tw`pb-5`}
     >
       {/* ---------- Header Section ---------- */}
-      <View style={tw`flex-row items-center mb-5`}>
-        <Skeleton width={36} height={36} radius={"round"} colorMode="light" />
-        <Skeleton height={24} width={160} colorMode="light" />
+      <View style={tw`flex-row items-center mb-5 gap-3`}>
+        <SkeletonCircle size={36} />
+        <SkeletonBox height={24} width={160} />
       </View>
 
       {/* ---------- Notification Cards ---------- */}
@@ -31,18 +31,13 @@ const NotificationSkeleton = ({ dummyArray = 4 }: IProps) => {
             style={tw`flex-row items-start bg-white bg-opacity-10 rounded-xl p-3 gap-3`}
           >
             {/* Avatar/Icon */}
-            <Skeleton
-              height={48}
-              width={48}
-              radius={"round"}
-              colorMode="light"
-            />
+            <SkeletonCircle size={48} />
 
             {/* Text Content */}
             <View style={tw`flex-1 gap-2`}>
-              <Skeleton height={16} width={"75%"} colorMode="light" />
-              <Skeleton height={14} width={"90%"} colorMode="light" />
-              <Skeleton height={12} width={"40%"} colorMode="light" />
+              <SkeletonBox height={16} width="75%" />
+              <SkeletonBox height={14} width="90%" />
+              <SkeletonBox height={12} width="40%" />
             </View>
           </View>
         ))}
@@ -51,4 +46,4 @@ const NotificationSkeleton = ({ dummyArray = 4 }: IProps) => {
   );
 };
 
-export default NotificationSkeleton;
+export default NotificationSkeletonCustom;

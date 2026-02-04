@@ -19,38 +19,29 @@ import {
   useLogoutMutation,
   useProfileQuery,
 } from "@/src/redux/apiSlices/authSlices";
-import { useGetAvailableBalanceQuery } from "@/src/redux/apiSlices/stripeSlices";
 import { useRoleSwitchMutation } from "@/src/redux/apiSlices/userProvider/account/roleSwitchSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const Account = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   // ============================ api end point ==============================//
-
   const [logout] = useLogoutMutation({});
-  const { data: userProfileInfo } = useProfileQuery({});
-  const stripeAccountId = userProfileInfo?.data?.stripe_account_id;
-  const {
-    data: availableAmount,
-    isLoading: availableAmountLoading,
-    refetch: refetchAvailableBalance,
-  } = useGetAvailableBalanceQuery(String(stripeAccountId), {
-    skip: !stripeAccountId,
-  });
+  const { data: userProfileInfo, refetch } = useProfileQuery({});
   const [switchRole, { isLoading: roleSwitchLoading }] =
     useRoleSwitchMutation();
-
-  const referralBonus = Number(userProfileInfo?.data?.referral_balance) || 0;
-  const earned = Number(availableAmount?.data?.available?.[0]?.amount) || 0;
-  const earnedFormatted = earned;
-  const referralFormatted = referralBonus;
-  const totalBalance = earnedFormatted + referralFormatted;
   // -------------- handle logout --------------
   const handleLogoutUser = async () => {
     const token = await AsyncStorage.getItem("token");
@@ -93,6 +84,17 @@ const Account = () => {
     }
   };
 
+  const onRefresh = React.useCallback(async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([refetch()]);
+    } catch (error: any) {
+      console.log(error, "Profile Refresh not success!");
+    } finally {
+      setRefreshing(false);
+    }
+  }, [userProfileInfo]);
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -100,6 +102,9 @@ const Account = () => {
       keyboardDismissMode="interactive"
       style={tw`flex-1 bg-base_color px-5 `}
       contentContainerStyle={tw`pb-24`}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>
         Account
@@ -132,8 +137,10 @@ const Account = () => {
               userProfileInfo?.data?.kyc_status === "In Review"
                 ? "bg-secondary"
                 : userProfileInfo?.data?.kyc_status === "Verified"
-                ? "bg-violet"
-                : "bg-blueMagenta"
+                  ? "bg-violet"
+                  : userProfileInfo?.data?.kyc_status === "Rejected"
+                    ? "bg-red-600"
+                    : "bg-blueMagenta"
             }`,
           ]}
         >
@@ -169,7 +176,9 @@ const Account = () => {
               Available balance
             </Text>
             <Text style={tw`font-DegularDisplayDemoMedium text-3xl text-black`}>
-              ₦{totalBalance ? totalBalance : 0}
+              ₦{" "}
+              {Number(userProfileInfo?.data?.referral_balance) +
+                Number(userProfileInfo?.data?.wallet_balance) || 0}
             </Text>
           </View>
         </View>
@@ -193,7 +202,7 @@ const Account = () => {
           title=" My services"
           onPress={() =>
             router.push(
-              "/service_provider/company/company_services/my_services"
+              "/service_provider/company/company_services/my_services",
             )
           }
           fastIcon={IconMyService}
@@ -214,7 +223,7 @@ const Account = () => {
           title=" Boost profile"
           onPress={() =>
             router.push(
-              "/service_provider/individual/boost_profiles/boost_profile"
+              "/service_provider/individual/boost_profiles/boost_profile",
             )
           }
           fastIcon={IconBoostBlack}

@@ -1,6 +1,7 @@
 import { IconEyeClose, IconEyeShow } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import AuthComponents from "@/src/Components/AuthComponents";
+import GoogleLogin from "@/src/Components/GoogleLogin";
 import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
@@ -27,6 +28,7 @@ import {
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
+
 const LoginIndex = () => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [isEyeShow, setIsEyeShow] = useState<boolean>(false);
@@ -73,7 +75,7 @@ const LoginIndex = () => {
             JSON.stringify({
               email: formData.email,
               password: formData.password,
-            })
+            }),
           );
         } else {
           await AsyncStorage.removeItem("loginInfo");
@@ -83,7 +85,7 @@ const LoginIndex = () => {
           await AsyncStorage.setItem("token", res?.data?.access_token);
           router.push("/auth/contact");
         } else {
-          if (res?.data?.user?.role === roll) {
+          if (res?.data?.user?.role === "USER") {
             await AsyncStorage.setItem("token", res?.data?.access_token);
             router.replace("/company/(Tabs)");
             if (userProfileInfo?.data?.kyc_status === "Unverified") {
@@ -102,7 +104,7 @@ const LoginIndex = () => {
             JSON.stringify({
               email: formData.email,
               password: formData.password,
-            })
+            }),
           );
         } else {
           await AsyncStorage.removeItem("loginInfo");
@@ -285,7 +287,7 @@ const LoginIndex = () => {
                       onPress={() => handleCheckBox()}
                       style={tw.style(
                         `border w-5 h-5  justify-center items-center rounded-sm`,
-                        isChecked ? `bg-primary border-0` : `bg-transparent`
+                        isChecked ? `bg-primary border-0` : `bg-transparent`,
                       )}
                     >
                       {isChecked ? (
@@ -330,21 +332,21 @@ const LoginIndex = () => {
                   )}
                 </TouchableOpacity>
 
-                <View
-                  style={tw`flex-row justify-between items-center gap-4 my-6`}
-                >
-                  <View style={tw`flex-1 h-px bg-gray-500`} />
-                  <Text>or continue with</Text>
-                  <View style={tw`flex-1 h-px bg-gray-500`} />
-                </View>
-
-                {/* <View style={tw`justify-center items-center`}>
-                  <TouchableOpacity
-                    style={tw`w-14 h-14 bg-white rounded-full justify-center items-center `}
+                {roll === "USER" && (
+                  <View
+                    style={tw`flex-row justify-between items-center gap-4 my-6`}
                   >
-                    <SvgXml xml={IconGoogle} />
-                  </TouchableOpacity>
-                </View> */}
+                    <View style={tw`flex-1 h-px bg-gray-500`} />
+                    <Text>or continue with</Text>
+                    <View style={tw`flex-1 h-px bg-gray-500`} />
+                  </View>
+                )}
+                {/* {============================= google login ===============================} */}
+                {roll === "USER" && (
+                  <View style={tw`justify-center items-center`}>
+                    <GoogleLogin roll={roll} providerTypes={providerTypes} />
+                  </View>
+                )}
               </View>
             )}
           </Formik>

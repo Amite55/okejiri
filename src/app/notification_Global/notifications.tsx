@@ -231,8 +231,9 @@ const Notification = () => {
       }
     } else if (item?.data?.type === "complete_kyc") {
       if (
-        userProfileInfo?.data?.kyc_status === "In Review" ||
-        userProfileInfo?.data?.kyc_status === "Unverified"
+        // userProfileInfo?.data?.kyc_status === "In Review" ||
+        userProfileInfo?.data?.kyc_status === "Unverified" ||
+        userProfileInfo?.data?.kyc_status === "Rejected"
       ) {
         router.push("/KYC_auth/id_card");
       } else {
@@ -243,6 +244,15 @@ const Notification = () => {
           },
         });
       }
+    } else if (item?.data?.type === "kyc_approved") {
+      router.push({
+        pathname: "/Toaster",
+        params: {
+          res: "Your KYC is approved.",
+        },
+      });
+    } else if (item?.data?.type === "kyc_reject") {
+      router.push("/KYC_auth/id_card");
     }
   };
 
