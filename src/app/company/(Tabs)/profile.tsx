@@ -20,6 +20,7 @@ import {
 } from "@/src/redux/apiSlices/authSlices";
 import { useRoleSwitchMutation } from "@/src/redux/apiSlices/userProvider/account/roleSwitchSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -46,6 +47,7 @@ const Profile = () => {
   const handleLogoutUser = async () => {
     const token = await AsyncStorage.getItem("token");
     try {
+      await GoogleSignin.signOut();
       setModalVisible(false);
       await logout(token).unwrap();
       await AsyncStorage.removeItem("roll");

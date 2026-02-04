@@ -1,4 +1,5 @@
 import { IconGoogle } from "@/assets/icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { router } from "expo-router";
 import React from "react";
@@ -51,9 +52,25 @@ const GoogleLogin = ({ roll, providerTypes }: any) => {
       }
       // =================== social login api call ===================
       const res = await socialLogin(formData).unwrap();
-      console.log("Google Login Response__________: ", res?.data);
+      if (res?.data?.access_token) {
+        if (res?.data?.user?.is_personalization_complete) {
+          await AsyncStorage.setItem("token", res?.data?.access_token);
+          router.replace("/company/(Tabs)");
+          if (res?.data?.user?.kyc_status === "Unverified") {
+            setTimeout(() => {
+              router.push("/kyc_completed_modal");
+            }, 500);
+          }
+        } else {
+          router.push("/auth/contact");
+        }
+      }
     } catch (error: any) {
       console.log("Google Login Error__________: ", error);
+      router.push({
+        pathname: "/Toaster",
+        params: { res: error?.message || "Google Login Error" },
+      });
     }
   }
 
