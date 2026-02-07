@@ -4,6 +4,7 @@ import {
   IconUser,
 } from "@/assets/icons";
 import { ImgChoseRoll, ImgLogo } from "@/assets/images/image";
+import { useNotification } from "@/context/NotificationContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -13,6 +14,14 @@ import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
 const Chose_roll = () => {
+  const { notification, expoPushToken, error } = useNotification();
+  if (error) {
+    console.log(error, "some error with role screen ");
+  }
+
+  if (notification) {
+    console.log("Notification:________ role screen", notification);
+  }
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
