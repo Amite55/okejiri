@@ -10,8 +10,16 @@ import React, {
   useState,
 } from "react";
 
+interface DeviceDetails {
+  fcm_token: string;
+  device_id: string;
+  device_type: string;
+  device_name: string;
+}
+
 interface NotificationContextType {
   expoPushToken: string | null;
+  deviceDetails: DeviceDetails | null;
   notification: Notifications.Notification | null;
   error: Error | null;
 }
@@ -21,23 +29,22 @@ const NotificationContext = createContext<NotificationContextType | undefined>(
 );
 
 export const useNotification = () => {
-  const context = useContext(NotificationContext);
-  if (context === undefined) {
+  const contextInfo = useContext(NotificationContext);
+  if (contextInfo === undefined) {
     throw new Error(
       "useNotification must be used within a NotificationProvider",
     );
   }
-  return context;
+  return contextInfo;
 };
 
-interface NotificationProviderProps {
-  children: ReactNode;
-}
-
-export const NotificationProvider: React.FC<NotificationProviderProps> = ({
+export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
+  const [deviceDetails, setDeviceDetails] = useState<DeviceDetails | null>(
+    null,
+  );
   const [notification, setNotification] =
     useState<Notifications.Notification | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -46,10 +53,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const responseListener = useRef<Subscription>();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(
-      (token) => setExpoPushToken(token),
-      (error) => setError(error),
-    );
+    registerForPushNotificationsAsync()
+      .then((data) => {
+        if (data) {
+          setExpoPushToken(data.fcm_token);
+          setDeviceDetails(data);
+        }
+      })
+      .catch((err) => setError(err));
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
@@ -59,29 +70,22 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(
-          "🔔 Notification Response: ",
-          JSON.stringify(response, null, 2),
-          JSON.stringify(response.notification.request.content.data, null, 2),
-        );
-        // Handle the notification response here
+        console.log("🔔 Notification Response Received");
       });
 
     return () => {
-      if (notificationListener.current) {
+      if (notificationListener.current)
         Notifications.removeNotificationSubscription(
           notificationListener.current,
         );
-      }
-      if (responseListener.current) {
+      if (responseListener.current)
         Notifications.removeNotificationSubscription(responseListener.current);
-      }
     };
   }, []);
 
   return (
     <NotificationContext.Provider
-      value={{ expoPushToken, notification, error }}
+      value={{ expoPushToken, deviceDetails, notification, error }}
     >
       {children}
     </NotificationContext.Provider>

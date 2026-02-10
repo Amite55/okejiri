@@ -31,6 +31,7 @@ export async function registerForPushNotificationsAsync() {
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
+
     if (existingStatus !== "granted") {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
@@ -44,20 +45,25 @@ export async function registerForPushNotificationsAsync() {
     const projectId =
       Constants?.expoConfig?.extra?.eas?.projectId ??
       Constants?.easConfig?.projectId;
+
     if (!projectId) {
       handleRegistrationError("Project ID not found");
     }
+
     try {
       const pushTokenString = (
         await Notifications.getExpoPushTokenAsync({
           projectId,
         })
       ).data;
-      console.log(
-        pushTokenString,
-        "push token from registerForPushNotificationsAsync",
-      );
-      return pushTokenString;
+
+      // return pushTokenString;
+      return {
+        fcm_token: pushTokenString,
+        device_id: Device.osBuildId || "unknown_id",
+        device_type: Device?.osName || "Unknown OS",
+        device_name: Device.deviceName || "Unknown Device",
+      };
     } catch (e: unknown) {
       handleRegistrationError(`${e}`);
     }

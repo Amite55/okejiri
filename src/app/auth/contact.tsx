@@ -10,7 +10,7 @@ import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { useCompletePersonalizationMutation } from "@/src/redux/apiSlices/personalizationSlice";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -28,6 +28,7 @@ import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const Contact = () => {
+  const { googleLogId } = useLocalSearchParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -90,7 +91,7 @@ const Contact = () => {
         phone,
         address,
         about,
-        id: getProfileData?.data?.id,
+        id: getProfileData ? getProfileData?.data?.id : googleLogId,
         latitude: location ? location.latitude : null,
         longitude: location ? location.longitude : null,
         role: roll,
@@ -123,6 +124,7 @@ const Contact = () => {
         }
       }
     } catch (error) {
+      console.log(error, "personal info error");
       router.push({
         pathname: "/Toaster",
         params: { res: error?.message || error },
