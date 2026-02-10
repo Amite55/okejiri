@@ -11,7 +11,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "d07b47a6-f66a-4962-ab36-4b06e293ebd2"
+        "projectId": "511875f9-9c03-4895-869c-e4670da67d0e"
       }
     },
     "ios": {
@@ -30,7 +30,7 @@
         "foregroundImage": "./assets/images/appAndroidIcon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.okejiriMobileApp",
+      "package": "com.okejiri.app",
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "android.permission.RECORD_AUDIO",
@@ -83,6 +83,7 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "owner": "m_amite"
   }
 }

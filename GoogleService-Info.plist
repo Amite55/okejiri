@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>962463984346-tf35kbapuv0uvq66omv2bed4o5aatse7.apps.googleusercontent.com</string>
+	<string>13412975616-umdu7bsje7bdv64f7p255pt5kqojvj4k.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.962463984346-tf35kbapuv0uvq66omv2bed4o5aatse7</string>
+	<string>com.googleusercontent.apps.13412975616-umdu7bsje7bdv64f7p255pt5kqojvj4k</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>962463984346-gqddnpu4u4nbua3p4pm35qajicup3peo.apps.googleusercontent.com</string>
+	<string>13412975616-p3m92no4alrcrm8rji1k4gpbbjdfvjng.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBm5uXqVs54pADFR2NdKYKWoH7uHxMNU5E</string>
+	<string>AIzaSyCSDznD7iVjTsKifKX9NTdk9yaig6oiqmg</string>
 	<key>GCM_SENDER_ID</key>
-	<string>962463984346</string>
+	<string>13412975616</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>okejiri-ios-login</string>
+	<string>com.okejiri.app</string>
 	<key>PROJECT_ID</key>
-	<string>okejiri-app</string>
+	<string>okejir-app</string>
 	<key>STORAGE_BUCKET</key>
-	<string>okejiri-app.firebasestorage.app</string>
+	<string>okejir-app.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:962463984346:ios:2241713234abb060ee53e3</string>
+	<string>1:13412975616:ios:42d50121bdd71e045704e5</string>
 </dict>
 </plist>

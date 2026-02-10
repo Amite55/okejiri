@@ -18,8 +18,6 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
-# okejiri-app-firebase-adminsdk-fbsvc-2f45280b65.json
-
 # Metro
 .metro-health-check*
 
@@ -42,5 +40,4 @@ app-example
 
 .vscode
 
-
-okejiri-app-firebase-adminsdk-fbsvc-8e279cec0e.json
+okejir-app-firebase-adminsdk-fbsvc-f21f3a17ac.json

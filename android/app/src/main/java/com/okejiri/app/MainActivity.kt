@@ -1,4 +1,4 @@
-package com.anonymous.okejiriMobileApp
+package com.okejiri.app
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
