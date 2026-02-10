@@ -120,6 +120,14 @@ const authSlices = api.injectEndpoints({
         }),
         invalidatesTags: ["profile", "servicePackages", "services"],
       }),
+      updateFCMToken: builder.mutation({
+        query: (data) => ({
+          url: "/fcm-token",
+          method: "POST",
+          body: data,
+        }),
+        invalidatesTags: ["profile", "servicePackages", "services"],
+      }),
     };
   },
 });
@@ -138,4 +146,5 @@ export const {
   useCheckTokenMutation,
   useLogoutMutation,
   useUpdateLatLongMutation,
+  useUpdateFCMTokenMutation,
 } = authSlices;

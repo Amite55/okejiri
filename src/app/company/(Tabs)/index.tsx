@@ -1,7 +1,7 @@
 import { IconRightArrowCornerPrimaryColor } from "@/assets/icons";
+import { useNotification } from "@/context/NotificationContext";
 import BookingCard from "@/src/Components/BookingCard";
 import ServiceCard from "@/src/Components/ServiceCard";
-
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ShortDataTitle from "@/src/Components/ShortDataTitle";
 import UserHomeSkeleton from "@/src/Components/skeletons/UserHomeSkeleton";
@@ -9,7 +9,10 @@ import UserCarousel from "@/src/Components/UserCarousel";
 import { useCheckLocation } from "@/src/hooks/useLocation";
 import CleaningData from "@/src/json/CleaningData.json";
 import tw from "@/src/lib/tailwind";
-import { useUpdateLatLongMutation } from "@/src/redux/apiSlices/authSlices";
+import {
+  useUpdateFCMTokenMutation,
+  useUpdateLatLongMutation,
+} from "@/src/redux/apiSlices/authSlices";
 import { useBookingsHistoryQuery } from "@/src/redux/apiSlices/userProvider/bookingsSlices";
 import {
   useServiceNearbyQuery,
@@ -20,6 +23,7 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useEffect } from "react";
 import {
+  Button,
   FlatList,
   Platform,
   RefreshControl,
@@ -30,6 +34,10 @@ import {
 } from "react-native";
 
 const Company_Home_Index = () => {
+  const { notification, deviceDetails, expoPushToken, error } =
+    useNotification();
+  console.log(deviceDetails, "this is device selected >>>>>>>>>>");
+
   const [isRadius, setIsRadius] = React.useState(15);
   const [refreshing, setRefreshing] = React.useState(false);
   const { getLocation, loading: locationLoading } = useCheckLocation();
@@ -52,6 +60,28 @@ const Company_Home_Index = () => {
   } = useBookingsHistoryQuery({ page: 1, per_page: 10 });
   const [updateLatLong, { isLoading: isUpdateLatLongLoading }] =
     useUpdateLatLongMutation();
+  // ============== api end point for fcm token update ==============
+  const [updateFCMToken, { isLoading, isError, isSuccess }] =
+    useUpdateFCMTokenMutation();
+
+  const handleUpdateFCMToken = async () => {
+    try {
+      const response = await updateFCMToken(deviceDetails).unwrap();
+      console.log(
+        response,
+        "this is fcm token response from chose roll screen ---------->",
+      );
+      if (response) {
+        console.log(response, "FCM token updated successfully ---------->");
+        router.push({
+          pathname: "/Toaster",
+          params: { res: "FCM token updated successfully" },
+        });
+      }
+    } catch (error: any) {
+      console.log(error, "this is update FCM token failed ---------->");
+    }
+  };
 
   // ================location update when render this screen ==================
   const handleLocation = async () => {
@@ -192,6 +222,13 @@ const Company_Home_Index = () => {
       <View style={tw`flex-1 justify-center items-center  pt-2`}>
         <UserCarousel />
       </View>
+      <Button
+        title="Press to Send Notification"
+        onPress={handleUpdateFCMToken}
+        // onPress={async () => {
+        //   await sendPushNotification(expoPushToken);
+        // }}
+      />
 
       {/* ================== services =================== */}
       <View style={tw``}>

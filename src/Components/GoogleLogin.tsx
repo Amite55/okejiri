@@ -2,7 +2,7 @@ import { IconGoogle } from "@/assets/icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
@@ -12,6 +12,14 @@ const GoogleLogin = ({ roll, providerTypes }: any) => {
   // ------------------------ api end point ---------------------
   const [socialLogin, { isLoading: isLoadingSocialLogin }] =
     useSocialLoginMutation();
+
+  // ------------------------ Google Configure -----------------
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "",
+      offlineAccess: true,
+    });
+  }, []);
 
   async function onGoogleButtonPress() {
     try {
@@ -53,8 +61,8 @@ const GoogleLogin = ({ roll, providerTypes }: any) => {
       // =================== social login api call ===================
       const res = await socialLogin(formData).unwrap();
       if (res?.data?.access_token) {
+        await AsyncStorage.setItem("token", res?.data?.access_token);
         if (res?.data?.user?.is_personalization_complete) {
-          await AsyncStorage.setItem("token", res?.data?.access_token);
           router.replace("/company/(Tabs)");
           if (res?.data?.user?.kyc_status === "Unverified") {
             setTimeout(() => {
@@ -62,7 +70,10 @@ const GoogleLogin = ({ roll, providerTypes }: any) => {
             }, 500);
           }
         } else {
-          router.push("/auth/contact");
+          router.push({
+            pathname: "/auth/contact",
+            params: { googleLogId: res?.data?.user?.id },
+          });
         }
       }
     } catch (error: any) {
