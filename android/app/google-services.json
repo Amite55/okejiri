@@ -1,48 +1,48 @@
 {
   "project_info": {
-    "project_number": "962463984346",
-    "project_id": "okejiri-app",
-    "storage_bucket": "okejiri-app.firebasestorage.app"
+    "project_number": "13412975616",
+    "project_id": "okejir-app",
+    "storage_bucket": "okejir-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:962463984346:android:368b8f9ae9e388aaee53e3",
+        "mobilesdk_app_id": "1:13412975616:android:1a38bb99a974d3ef5704e5",
         "android_client_info": {
-          "package_name": "com.anonymous.okejiriMobileApp"
+          "package_name": "com.okejiri.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "962463984346-sm69ucccumg91kos15pfjoh5o6hq6lh5.apps.googleusercontent.com",
+          "client_id": "13412975616-bmd4aadet56c4atabh3r8bmif4pm5uf3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.anonymous.okejiriMobileApp",
+            "package_name": "com.okejiri.app",
             "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
         {
-          "client_id": "962463984346-7u2dr116k3lb8l694cagvicvb5kp7qss.apps.googleusercontent.com",
+          "client_id": "13412975616-45aa04gjh52t9derok36rcqsntabs119.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCRPawcuKLaNjoW3uu5-goFgDsonK0a_7o"
+          "current_key": "AIzaSyCpRjuq19mzwlM4tg45lP2sbBgOurIKjME"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "962463984346-7u2dr116k3lb8l694cagvicvb5kp7qss.apps.googleusercontent.com",
+              "client_id": "13412975616-45aa04gjh52t9derok36rcqsntabs119.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "962463984346-tf35kbapuv0uvq66omv2bed4o5aatse7.apps.googleusercontent.com",
+              "client_id": "13412975616-umdu7bsje7bdv64f7p255pt5kqojvj4k.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "okejiri-ios-login"
+                "bundle_id": "com.okejiri.app"
               }
             }
           ]
