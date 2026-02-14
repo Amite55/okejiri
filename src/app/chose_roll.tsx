@@ -24,7 +24,7 @@ const Chose_roll = () => {
     console.log("Notification:________ role screen", notification);
   }
 
-  async function sendPushNotification(expoPushToken: string) {
+  async function handleSendPushNotification(expoPushToken: string) {
     // console.log(expoPushToken, "this is expo push token jj------------>");
     const message = {
       to: expoPushToken,
@@ -78,7 +78,7 @@ const Chose_roll = () => {
         <Button
           title="Press to Send Notification"
           onPress={async () => {
-            await sendPushNotification(expoPushToken);
+            await handleSendPushNotification(expoPushToken);
           }}
         />
 

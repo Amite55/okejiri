@@ -1,5 +1,6 @@
 import { IconEyeClose, IconEyeShow } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
+import { useNotification } from "@/context/NotificationContext";
 import AuthComponents from "@/src/Components/AuthComponents";
 import GoogleLogin from "@/src/Components/GoogleLogin";
 import { useProviderTypes } from "@/src/hooks/useProviderTypes";
@@ -9,6 +10,7 @@ import tw from "@/src/lib/tailwind";
 import {
   useLoginMutation,
   useProfileQuery,
+  useUpdateFCMTokenMutation,
 } from "@/src/redux/apiSlices/authSlices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, router } from "expo-router";
@@ -30,6 +32,8 @@ import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const LoginIndex = () => {
+  const { notification, deviceDetails, expoPushToken, error } =
+    useNotification();
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [isEyeShow, setIsEyeShow] = useState<boolean>(false);
   const [isVisible, setIsVisible] = useState<boolean>(true);
@@ -40,6 +44,11 @@ const LoginIndex = () => {
   // ------------------------ api end point ---------------------
   const [credentials, { isLoading: isLoadingLogin }] = useLoginMutation();
   const { data: userProfileInfo, isLoading } = useProfileQuery({});
+  // ============== api end point for fcm token update ==============
+  const [
+    updateFCMToken,
+    { isLoading: isUpdateFCMTokenLoading, isError, isSuccess },
+  ] = useUpdateFCMTokenMutation();
 
   // =============== dynamic role title ==================
   let roleTitle = "";
@@ -68,6 +77,11 @@ const LoginIndex = () => {
       if (roll === "USER") {
         delete payload.provider_type;
         const res = await credentials(payload).unwrap();
+        const fcmResponse = await updateFCMToken(deviceDetails).unwrap();
+        console.log(
+          fcmResponse,
+          "this is fcm token response from login screen ---------->",
+        );
         // ------------- login info save async storage -------------
         if (isChecked) {
           await AsyncStorage.setItem(
@@ -97,6 +111,11 @@ const LoginIndex = () => {
         }
       } else if (roll === "PROVIDER") {
         const res = await credentials(payload).unwrap();
+        const fcmResponse = await updateFCMToken(deviceDetails).unwrap();
+        console.log(
+          fcmResponse,
+          "this is fcm token response from login screen ---------->",
+        );
         // ------------- login info save async storage -------------
         if (isChecked) {
           await AsyncStorage.setItem(
@@ -306,10 +325,10 @@ const LoginIndex = () => {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   style={tw`bg-primary rounded-full`}
-                  disabled={isLoadingLogin}
+                  disabled={isLoadingLogin || isUpdateFCMTokenLoading}
                   onPress={() => handleSubmit()}
                 >
-                  {isLoadingLogin ? (
+                  {isLoadingLogin || isUpdateFCMTokenLoading ? (
                     <View
                       style={tw`flex-row justify-center items-center gap-3`}
                     >
