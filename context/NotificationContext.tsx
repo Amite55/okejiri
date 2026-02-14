@@ -73,13 +73,15 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
         console.log("🔔 Notification Response Received");
       });
 
-    return () => {
+    return async () => {
       if (notificationListener.current)
-        Notifications.removeNotificationSubscription(
+        await Notifications.removeNotificationSubscription(
           notificationListener.current,
         );
       if (responseListener.current)
-        Notifications.removeNotificationSubscription(responseListener.current);
+        await Notifications.removeNotificationSubscription(
+          responseListener.current,
+        );
     };
   }, []);
 
