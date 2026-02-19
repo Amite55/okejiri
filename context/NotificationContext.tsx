@@ -64,7 +64,10 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
-        console.log("🔔 Notification Received: ", notification);
+        console.log(
+          "🔔 Notification Received: ",
+          notification?.request?.content?.data,
+        );
         setNotification(notification);
       });
 

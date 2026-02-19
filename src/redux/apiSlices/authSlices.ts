@@ -12,11 +12,13 @@ const authSlices = api.injectEndpoints({
         invalidatesTags: ["register"],
       }),
       login: builder.mutation({
-        query: (credentials) => ({
-          url: "/auth/login",
-          method: "POST",
-          body: credentials,
-        }),
+        query: (credentials) => {
+          return {
+            url: "/auth/login",
+            method: "POST",
+            body: credentials,
+          };
+        },
         invalidatesTags: ["login"],
       }),
       socialLogin: builder.mutation({

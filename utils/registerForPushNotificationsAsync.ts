@@ -56,10 +56,14 @@ export async function registerForPushNotificationsAsync() {
           projectId,
         })
       ).data;
+      const pureToken = pushTokenString
+        .replace("ExponentPushToken[", "")
+        .replace("]", "");
 
+      console.log(pushTokenString, "push token string");
       // return pushTokenString;
       return {
-        fcm_token: pushTokenString,
+        fcm_token: pureToken,
         device_id: Device.osBuildId || "unknown_id",
         device_type: Device?.osName || "Unknown OS",
         device_name: Device.deviceName || "Unknown Device",

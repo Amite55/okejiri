@@ -77,11 +77,7 @@ const LoginIndex = () => {
       if (roll === "USER") {
         delete payload.provider_type;
         const res = await credentials(payload).unwrap();
-        const fcmResponse = await updateFCMToken(deviceDetails).unwrap();
-        console.log(
-          fcmResponse,
-          "this is fcm token response from login screen ---------->",
-        );
+
         // ------------- login info save async storage -------------
         if (isChecked) {
           await AsyncStorage.setItem(
@@ -111,11 +107,7 @@ const LoginIndex = () => {
         }
       } else if (roll === "PROVIDER") {
         const res = await credentials(payload).unwrap();
-        const fcmResponse = await updateFCMToken(deviceDetails).unwrap();
-        console.log(
-          fcmResponse,
-          "this is fcm token response from login screen ---------->",
-        );
+
         // ------------- login info save async storage -------------
         if (isChecked) {
           await AsyncStorage.setItem(
@@ -171,6 +163,12 @@ const LoginIndex = () => {
           });
         }, 1000);
       }
+    } finally {
+      const fcmResponse = await updateFCMToken(deviceDetails).unwrap();
+      console.log(
+        fcmResponse,
+        "this is fcm token response from login screen ---------->",
+      );
     }
   };
 

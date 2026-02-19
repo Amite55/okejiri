@@ -17,9 +17,9 @@ const Chose_roll = () => {
   const { notification, deviceDetails, expoPushToken, error } =
     useNotification();
 
-  if (deviceDetails) {
-    console.log(deviceDetails, "device details from role screen");
-  }
+  // if (deviceDetails) {
+  //   console.log(deviceDetails, "device details from role screen");
+  // }
   if (notification) {
     console.log("Notification:________ role screen", notification);
   }
