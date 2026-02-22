@@ -34,6 +34,8 @@ const Chose_roll = () => {
       data: { someData: "goes here" },
     };
 
+    // ================= there is push notification sdk key ================= //
+
     const response = await fetch("https://exp.host/--/api/v2/push/send", {
       method: "POST",
       headers: {
