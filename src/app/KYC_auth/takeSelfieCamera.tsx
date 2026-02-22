@@ -12,7 +12,7 @@ const TakeSelfieCamera = () => {
   const [selfiePhotoUri, setSelfiePhotoUri] = useState<string | null>(null);
   const cameraRef = useRef(null);
 
-  // 📸 যদি permission এখনো না নেয়া হয়
+  // if when you not permmited
   if (!permission) {
     return <View />;
   }
