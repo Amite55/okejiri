@@ -1,9 +1,11 @@
 import { ImgLogo } from "@/assets/images/image";
+import { useNotification } from "@/context/NotificationContext";
 import AuthComponents from "@/src/Components/AuthComponents";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import {
   useForgotPasswordMutation,
+  useUpdateFCMTokenMutation,
   useVerifyOtpMutation,
 } from "@/src/redux/apiSlices/authSlices";
 import { PrimaryColor } from "@/utils/utils";
@@ -24,6 +26,8 @@ import {
 import { OtpInput } from "react-native-otp-entry";
 
 const RegisterOTP = () => {
+  const { notification, deviceDetails, expoPushToken, error } =
+    useNotification();
   const { email } = useLocalSearchParams();
   const [otp, setOtp] = React.useState("");
   const [otpKey, setOtpKey] = React.useState(Date.now());
@@ -33,6 +37,10 @@ const RegisterOTP = () => {
     useVerifyOtpMutation();
   const [resendOtp, { isLoading: isLoadingResend }] =
     useForgotPasswordMutation();
+  const [
+    updateFCMToken,
+    { isLoading: isUpdateFCMTokenLoading, isError, isSuccess },
+  ] = useUpdateFCMTokenMutation();
 
   const handleResendOtp = async () => {
     setOtp("");
@@ -45,7 +53,7 @@ const RegisterOTP = () => {
           params: { res: "OTP resent again" },
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("Error resending OTP:", error);
       router.push({
         pathname: "/Toaster",
@@ -100,16 +108,23 @@ const RegisterOTP = () => {
                     if (res.status) {
                       await AsyncStorage.setItem(
                         "token",
-                        res?.data?.access_token
+                        res?.data?.access_token,
                       );
                       router.replace("/auth/contact");
                     }
-                  } catch (error) {
+                  } catch (error: any) {
                     console.log(error, "OTP not verified ");
                     router.push({
                       pathname: `/Toaster`,
                       params: { res: error?.message || error },
                     });
+                  } finally {
+                    const fcmResponse =
+                      await updateFCMToken(deviceDetails).unwrap();
+                    console.log(
+                      fcmResponse,
+                      "this is fcm token response from login screen ---------->",
+                    );
                   }
                 }}
                 textInputProps={{

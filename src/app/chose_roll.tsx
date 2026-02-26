@@ -4,53 +4,15 @@ import {
   IconUser,
 } from "@/assets/icons";
 import { ImgChoseRoll, ImgLogo } from "@/assets/images/image";
-import { useNotification } from "@/context/NotificationContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import React from "react";
-import { Button, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
 const Chose_roll = () => {
-  const { notification, deviceDetails, expoPushToken, error } =
-    useNotification();
-
-  // if (deviceDetails) {
-  //   console.log(deviceDetails, "device details from role screen");
-  // }
-  if (notification) {
-    console.log("Notification:________ role screen", notification);
-  }
-
-  async function handleSendPushNotification(expoPushToken: string) {
-    // console.log(expoPushToken, "this is expo push token jj------------>");
-    const message = {
-      to: expoPushToken,
-      sound: "default",
-      title: "Original Title",
-      body: "And here is the body!",
-      data: { someData: "goes here" },
-    };
-
-    // ================= there is push notification sdk key ================= //
-
-    const response = await fetch("https://exp.host/--/api/v2/push/send", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Accept-encoding": "gzip, deflate",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(message),
-    });
-
-    // Check the response status
-    const data = await response.json();
-    console.log("🔔 Expo Server Response Data:", JSON.stringify(data, null, 2));
-  }
-
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -77,12 +39,6 @@ const Chose_roll = () => {
             as a Service Provider on Okejiri.
           </Text>
         </View>
-        <Button
-          title="Press to Send Notification"
-          onPress={async () => {
-            await handleSendPushNotification(expoPushToken);
-          }}
-        />
 
         <TouchableOpacity
           onPress={() => {
