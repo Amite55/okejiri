@@ -11,6 +11,7 @@ import {
   IconShare,
   IconSwitch,
 } from "@/assets/icons";
+import { useNotification } from "@/context/NotificationContext";
 import LogoutModal from "@/src/Components/LogoutModal";
 import SettingsCard from "@/src/Components/SettingsCard";
 import tw from "@/src/lib/tailwind";
@@ -36,6 +37,8 @@ import { SvgXml } from "react-native-svg";
 const Profile = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState(false);
+  const { notification, deviceDetails, expoPushToken, error } =
+    useNotification();
 
   // ============================ api end point ==============================
   const [logout] = useLogoutMutation({});
@@ -43,13 +46,17 @@ const Profile = () => {
   const [switchRole, { isLoading: roleSwitchLoading }] =
     useRoleSwitchMutation();
 
+  const deviceId = deviceDetails?.device_id || "unknown_device_id";
+
   // -------------- handle logout --------------
   const handleLogoutUser = async () => {
     const token = await AsyncStorage.getItem("token");
     try {
-      await GoogleSignin.signOut();
+      if (userProfileInfo?.data?.google_id) {
+        await GoogleSignin.signOut();
+      }
       setModalVisible(false);
-      await logout(token).unwrap();
+      await logout({ device_id: deviceId, token }).unwrap();
       await AsyncStorage.removeItem("roll");
       await AsyncStorage.removeItem("providerTypes");
       await AsyncStorage.removeItem("token");
