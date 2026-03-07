@@ -34,6 +34,8 @@ const Notification = () => {
   const [isFetchMore, setIsFetchMore] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
 
+  // console.log(notifications, "this is notification data ------------------>");
+
   // Modal Refs
   const deliveryModalRef = useRef<BottomSheetModal>(null);
   const feedbackModalRef = useRef<BottomSheetModal>(null);

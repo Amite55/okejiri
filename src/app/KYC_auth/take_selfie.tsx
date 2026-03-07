@@ -11,7 +11,6 @@ import { ScrollView, Text, View } from "react-native";
 const Take_Selfie = () => {
   const { selfiePhotoUri, fastPhotoUri, secondPhotoUri } =
     useLocalSearchParams();
-  console.log(fastPhotoUri, "\n", secondPhotoUri);
   const selfiePhotoURIPerse = selfiePhotoUri && JSON.parse(selfiePhotoUri);
 
   return (

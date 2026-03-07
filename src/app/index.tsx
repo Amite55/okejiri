@@ -3,7 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Font from "expo-font";
 import { router, SplashScreen } from "expo-router";
 import React, { useEffect } from "react";
-import { ActivityIndicator, Image, SafeAreaView, View } from "react-native";
+import { ActivityIndicator, Image, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useProfileQuery } from "../redux/apiSlices/authSlices";
 
 export default function Index() {

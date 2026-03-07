@@ -1,3 +1,4 @@
+import { useNotification } from "@/context/NotificationContext";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import ProviderProfileSkeleton from "@/src/Components/skeletons/ProviderProfileSkeleton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
@@ -5,6 +6,7 @@ import tw from "@/src/lib/tailwind";
 import {
   useEditProfilePictureMutation,
   useProfileQuery,
+  useUpdateFCMTokenMutation,
 } from "@/src/redux/apiSlices/authSlices";
 import { useGetServicesQuery } from "@/src/redux/apiSlices/companyProvider/account/services/servicesSlice";
 import { useCompletePersonalizationMutation } from "@/src/redux/apiSlices/personalizationSlice";
@@ -27,6 +29,12 @@ import { MultiSelect } from "react-native-element-dropdown";
 import { TextInput } from "react-native-gesture-handler";
 
 const Setup_Business_Profile = () => {
+  const {
+    notification,
+    deviceDetails,
+    expoPushToken,
+    error: notificationError,
+  } = useNotification();
   const { jsonContactInfo } = useLocalSearchParams();
   const contactInfo = JSON.parse(jsonContactInfo as any);
   const [value, setValue] = useState([]);
@@ -46,6 +54,10 @@ const Setup_Business_Profile = () => {
     useEditProfilePictureMutation();
   const { data: userProfileInfo, isLoading: isprofileLoading } =
     useProfileQuery({});
+  const [
+    updateFCMToken,
+    { isLoading: isUpdateFCMTokenLoading, isError, isSuccess },
+  ] = useUpdateFCMTokenMutation();
 
   // -------------------- image picker ---------------------
   const pickImage = async () => {
@@ -103,6 +115,12 @@ const Setup_Business_Profile = () => {
           service_id: stgValue,
         };
         const res = await information(payload).unwrap();
+        // ------------- fcm token update ---------------------
+        const fcmResponse = await updateFCMToken(deviceDetails).unwrap();
+        console.log(
+          fcmResponse,
+          "this is fcm token response from login screen ---------->",
+        );
         if (res?.status === "success") {
           router.replace("/service_provider/company/(Tabs)/home");
           if (res?.data?.kyc_status === "Unverified") {
@@ -126,10 +144,10 @@ const Setup_Business_Profile = () => {
   // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
   useEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true)
+      setKeyboardVisible(true),
     );
     const hide = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false)
+      setKeyboardVisible(false),
     );
     return () => {
       show.remove();

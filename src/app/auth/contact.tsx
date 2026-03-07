@@ -1,5 +1,6 @@
 import { IconLocation, IconRightArrow } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
+import { useNotification } from "@/context/NotificationContext";
 import AuthComponents from "@/src/Components/AuthComponents";
 import LocationAccessModal from "@/src/Components/LocationAccessModal";
 import RoleChooseSkeleton from "@/src/Components/skeletons/RoleChooseSkeleton";
@@ -8,7 +9,10 @@ import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
+import {
+  useProfileQuery,
+  useUpdateFCMTokenMutation,
+} from "@/src/redux/apiSlices/authSlices";
 import { useCompletePersonalizationMutation } from "@/src/redux/apiSlices/personalizationSlice";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -28,6 +32,8 @@ import { TextInput } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
 
 const Contact = () => {
+  const { notification, deviceDetails, expoPushToken, error } =
+    useNotification();
   const { googleLogId } = useLocalSearchParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [phone, setPhone] = useState("");
@@ -45,6 +51,10 @@ const Contact = () => {
   const { data: getProfileData, isLoading: isLoadingProfile } = useProfileQuery(
     {},
   );
+  const [
+    updateFCMToken,
+    { isLoading: isUpdateFCMTokenLoading, isError, isSuccess },
+  ] = useUpdateFCMTokenMutation();
 
   // =============== dynamic role title ==================
   let roleTitle = "";
@@ -101,6 +111,12 @@ const Contact = () => {
         delete info.about;
         delete info.provider_type;
         const res = await information(info).unwrap();
+        // ------------- fcm token update ---------------------
+        const fcmResponse = await updateFCMToken(deviceDetails).unwrap();
+        console.log(
+          fcmResponse,
+          "this is fcm token response from login screen ---------->",
+        );
         // ------------ redirect ---------------------
         if (res?.status === "success") {
           router.replace("/company/(Tabs)");
@@ -257,7 +273,7 @@ const Contact = () => {
             onPress={() => {
               handlePersonalInfo();
             }}
-            disabled={isLoading}
+            disabled={isLoading || isUpdateFCMTokenLoading}
           >
             {isLoading ? (
               <View style={tw`flex-row justify-center items-center gap-3 h-12`}>
