@@ -126,8 +126,7 @@ const Notification = () => {
         await singleMark(item?.id);
       } catch {}
     }
-    const type = item?.data?.type;
-
+    const type = item?.data?.data?.type;
     // ---------------- Modal Types ---------------- //
     if (type === "delivery_request_sent") {
       setSelectedOrderId(item?.data?.order_id);

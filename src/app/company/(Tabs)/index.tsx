@@ -61,7 +61,7 @@ const Company_Home_Index = () => {
         longitude: newLocation?.longitude,
       }).unwrap();
       if (response) {
-        console.log("updated");
+        console.log("updated location ----->");
       }
     } else {
       router.push({

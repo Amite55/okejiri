@@ -25,7 +25,11 @@ const Id_Card = () => {
       <View>
         <BackTitleButton
           pageName={"KYC process"}
-          onPress={() => router.back()}
+          onPress={() => {
+            router.canGoBack()
+              ? router.back()
+              : router.replace("/company/(Tabs)");
+          }}
           titleTextStyle={tw`text-xl`}
         />
         <View style={tw`justify-center items-center mt-14`}>
