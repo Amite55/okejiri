@@ -108,7 +108,7 @@ const ProviderNotificationCard = ({
         onPress={onPress}
         activeOpacity={0.8}
         style={[
-          tw`flex-row  items-center justify-between rounded-2xl py-6  px-4 relative shadow-md`,
+          tw`flex-row  items-center justify-between rounded-2xl py-6  px-2 relative shadow-md`,
           item?.read_at ? tw`bg-white` : tw`bg-gray-200`,
         ]}
       >

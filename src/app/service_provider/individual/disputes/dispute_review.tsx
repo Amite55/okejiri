@@ -1,5 +1,8 @@
 import { IconCrossWhite, IconProfileBadge } from "@/assets/icons";
 import PrimaryButton from "@/src/Components/PrimaryButton";
+import { useDynamicBack } from "@/src/hooks/useDynamicBack";
+import { useProviderType } from "@/src/hooks/useProviderType";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useDisputeDetailsQuery } from "@/src/redux/apiSlices/companyProvider/account/myDisputeSlice";
@@ -19,10 +22,15 @@ import {
 import { SvgXml } from "react-native-svg";
 
 const Dispute_Review = () => {
-  // =========================================== API ======================================== //
-  // disput
   const { id } = useLocalSearchParams();
+  // ============== hooks ==================
+  const roll = useRoll() || "";
+  const providerType = useProviderType();
 
+  // =========== call dynamic touting hooks ------------
+  const handleBack = useDynamicBack(roll, providerType);
+
+  // =========================================== API ======================================== //
   const {
     data: disputeReviewData,
     isLoading: isLoadingDisputeReview,
@@ -43,7 +51,9 @@ const Dispute_Review = () => {
     >
       <BackTitleButton
         pageName={"Dispute review"}
-        onPress={() => router.back()}
+        onPress={() => {
+          handleBack();
+        }}
         titleTextStyle={tw`text-xl`}
       />
 

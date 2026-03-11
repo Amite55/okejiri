@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { useEffect } from "react";
 
 export const useNotificationHandler = (userProfileInfo: any) => {
-  // ================= Foreground — when your app open in foreground =================
+  // ================= Foreground — when your app is open =================
   useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(
       (response) => {
@@ -15,6 +15,7 @@ export const useNotificationHandler = (userProfileInfo: any) => {
     return () => subscription.remove();
   }, [userProfileInfo]);
 
+  // ================= Cold Start — app opened from killed state =================
   useEffect(() => {
     const handleColdStart = async () => {
       const lastNotification =
@@ -24,7 +25,6 @@ export const useNotificationHandler = (userProfileInfo: any) => {
       const data = lastNotification.notification.request.content.data;
       if (!data?.type) return;
 
-      //  ============== if the user is login in this app then this code will run ==============
       setTimeout(() => {
         handleNotificationNavigation(data, userProfileInfo);
       }, 500);
@@ -36,65 +36,51 @@ export const useNotificationHandler = (userProfileInfo: any) => {
   }, [userProfileInfo]);
 };
 
-//  hare is all routing in notification -------------------------
+// ===================== Navigation Handler =====================
 const handleNotificationNavigation = (data: any, userInfo: any) => {
   const type = data?.type;
   const role = userInfo?.data?.role;
   const provider_type = userInfo?.data?.provider_type;
   const kycStatus = userInfo?.data?.kyc_status;
 
-  let defaultPath = "/notification_Global/notifications";
-
-  if (role === "USER") {
-    defaultPath = "/company/userNotifications/userNotification";
-  } else if (role === "PROVIDER") {
-    defaultPath = "/notification_Global/notifications";
+  // ── KYC routes (role-independent, handle first & return) ──
+  if (type === "kyc_reject") {
+    router.replace("/KYC_auth/id_card");
+    return;
   }
 
-  switch (type) {
-    case "kyc_reject":
+  if (type === "complete_kyc") {
+    if (kycStatus === "Unverified" || kycStatus === "Rejected") {
       router.replace("/KYC_auth/id_card");
-      break;
-    case "complete_kyc":
-      if (kycStatus === "Unverified" || kycStatus === "Rejected") {
-        router.replace("/KYC_auth/id_card");
-      } else {
-        if (role === "USER") {
-          router.replace("/company/userNotifications/userNotification");
-        } else {
-          router.replace("/notification_Global/notifications");
-        }
-      }
-      break;
-    case "kyc_approved":
-      if (role === "USER") {
-        router.replace("/company/userNotifications/userNotification");
-      } else {
-        router.replace("/notification_Global/notifications");
-      }
-
-      break;
-
-    default:
-      if (role === "USER") {
-        router.replace("/company/userNotifications/userNotification");
-      } else {
-        router.replace("/notification_Global/notifications");
-      }
-      break;
+    } else {
+      router.replace(
+        role === "USER"
+          ? "/company/userNotifications/userNotification"
+          : "/notification_Global/notifications",
+      );
+    }
+    return;
   }
 
+  if (type === "kyc_approved") {
+    router.replace(
+      role === "USER"
+        ? "/company/userNotifications/userNotification"
+        : "/notification_Global/notifications",
+    );
+    return;
+  }
+
+  // ── USER role routing ──
   if (role === "USER") {
-    // ============== user role notification routing ==============
     switch (type) {
       case "order_approved":
         router.replace({
           pathname: "/company/serviceBookings/order_approved",
-          params: {
-            id: data.order_id,
-          },
+          params: { id: data?.order_id },
         });
         break;
+
       case "order_cancelled":
         router.replace({
           pathname: "/company/serviceBookings/order_cancelled",
@@ -105,6 +91,7 @@ const handleNotificationNavigation = (data: any, userInfo: any) => {
           },
         });
         break;
+
       case "order_rejected":
         router.replace({
           pathname: "/company/serviceBookings/order_cancelled",
@@ -115,15 +102,18 @@ const handleNotificationNavigation = (data: any, userInfo: any) => {
           },
         });
         break;
+
       case "warning":
         router.replace("/service_provider/individual/warning");
         break;
+
       case "new_dispute":
         router.replace({
           pathname: "/service_provider/individual/disputes/dispute_review",
           params: { id: data?.dispute_id },
         });
         break;
+
       case "report":
       case "new_report":
         router.replace({
@@ -134,94 +124,75 @@ const handleNotificationNavigation = (data: any, userInfo: any) => {
           },
         });
         break;
-      // ============ next time change this default code -==========
+
       default:
+        router.replace("/company/userNotifications/userNotification");
         break;
     }
-  } else if (role === "PROVIDER") {
-    if (provider_type === "Individual") {
-      if (type === "new_order") {
-        if (provider_type === "individual") {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id || data?.id,
-            },
-          });
-        } else {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id || data?.id,
-            },
-          });
-        }
-      } else if (type === "warning") {
+    return;
+  }
+
+  // ── PROVIDER role routing ──
+  if (role === "PROVIDER") {
+    // helper — most PROVIDER routes go to order_details_profile
+    const goToOrderDetails = (id: string | undefined) => {
+      router.replace({
+        pathname: "/service_provider/company/order_details_profile",
+        params: { id },
+      });
+    };
+
+    switch (type) {
+      case "new_order":
+        goToOrderDetails(data?.order_id || data?.id);
+        break;
+
+      case "order_approved":
+        goToOrderDetails(data?.order_id || data?.id);
+        break;
+
+      case "order_rejected":
+        goToOrderDetails(data?.order_id || data?.id);
+        break;
+
+      case "order_cancelled":
+        goToOrderDetails(data?.order_id || data?.id);
+        break;
+
+      case "delivery_request_sent":
+        goToOrderDetails(data?.order_id || data?.id);
+        break;
+
+      case "delivery_request_decline":
+        goToOrderDetails(data?.order_id || data?.id);
+        break;
+
+      case "delivery_request_approved":
+        goToOrderDetails(data?.order_id || data?.id);
+        break;
+
+      case "warning":
         router.replace("/service_provider/individual/warning");
-      } else if (type === "new_dispute") {
+        break;
+
+      case "new_dispute":
         router.replace({
           pathname: "/service_provider/individual/disputes/dispute_review",
-          params: {
-            id: data?.dispute_id,
-          },
+          params: { id: data?.dispute_id },
         });
-      } else if (type === "order_rejected") {
-        if (provider_type === "individual") {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id || data?.id,
-            },
-          });
-        } else {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id,
-            },
-          });
-        }
-      } else if (type === "delivery_request_sent") {
-        if (provider_type === "individual") {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id || data?.id,
-            },
-          });
-        } else {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id,
-            },
-          });
-        }
-      } else if (type === "order_approved") {
-        if (provider_type === "individual") {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id || data?.id,
-            },
-          });
-        } else {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id,
-            },
-          });
-        }
-      } else if (type === "new_report") {
+        break;
+
+      case "new_report":
         router.replace({
           pathname: "/service_provider/individual/warning",
           params: {
             title: data?.title,
-            subtitle: data.sub_title,
+            subtitle: data?.sub_title,
           },
         });
-      } else if (type === "report") {
+        break;
+
+      case "report":
         router.replace({
           pathname: "/service_provider/individual/warning",
           params: {
@@ -229,55 +200,15 @@ const handleNotificationNavigation = (data: any, userInfo: any) => {
             subtitle: data?.data?.report_description,
           },
         });
-      } else if (type === "order_cancelled") {
-        if (provider_type === "individual") {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id || data?.id,
-            },
-          });
-        } else {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id,
-            },
-          });
-        }
-      } else if (type === "delivery_request_decline") {
-        if (provider_type === "individual") {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id || data?.id,
-            },
-          });
-        } else {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id,
-            },
-          });
-        }
-      } else if (type === "delivery_request_approved") {
-        if (provider_type === "individual") {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id || data?.id,
-            },
-          });
-        } else {
-          router.replace({
-            pathname: "/service_provider/company/order_details_profile",
-            params: {
-              id: data?.order_id,
-            },
-          });
-        }
-      }
+        break;
+
+      default:
+        router.replace("/notification_Global/notifications");
+        break;
     }
+    return;
   }
+
+  // ── Fallback (no role matched) ──
+  router.replace("/notification_Global/notifications");
 };

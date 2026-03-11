@@ -5,6 +5,9 @@ import {
   IconStar,
 } from "@/assets/icons";
 import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
+import { useDynamicBack } from "@/src/hooks/useDynamicBack";
+import { useProviderType } from "@/src/hooks/useProviderType";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import tw from "@/src/lib/tailwind";
 import { useOrderDetailsQuery } from "@/src/redux/apiSlices/userProvider/bookingsSlices";
 import { Image } from "expo-image";
@@ -15,6 +18,12 @@ import { SvgXml } from "react-native-svg";
 
 export default function OrderApproved() {
   const { id } = useLocalSearchParams();
+  // ============== hooks ==================
+  const roll = useRoll() || "";
+  const providerType = useProviderType();
+
+  // =========== call dynamic touting hooks ------------
+  const handleBack = useDynamicBack(roll, providerType);
 
   const { data: orderDetailsData, isLoading: isLoadingOrderDetails } =
     useOrderDetailsQuery(id);
@@ -33,7 +42,9 @@ export default function OrderApproved() {
         />
         <View style={tw`absolute py-4 px-4`}>
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => {
+              handleBack();
+            }}
             style={tw` bg-white p-5 rounded-full`}
           >
             <SvgXml xml={IconBackLeftArrow} />

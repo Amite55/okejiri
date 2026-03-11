@@ -24,6 +24,9 @@ import {
 } from "react-native";
 
 import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
+import { useDynamicBack } from "@/src/hooks/useDynamicBack";
+import { useProviderType } from "@/src/hooks/useProviderType";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
@@ -33,8 +36,12 @@ const Notification = () => {
   const [notifications, setNotification] = useState<any[]>([]);
   const [isFetchMore, setIsFetchMore] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
+  // ============== hooks ==================
+  const roll = useRoll() || "";
+  const providerType = useProviderType();
 
-  // console.log(notifications, "this is notification data ------------------>");
+  // =========== call dynamic touting hooks ------------
+  const handleBack = useDynamicBack(roll, providerType);
 
   // Modal Refs
   const deliveryModalRef = useRef<BottomSheetModal>(null);
@@ -224,7 +231,9 @@ const Notification = () => {
     <View style={tw`flex-1 bg-base_color px-5`}>
       <BackTitleButton
         pageName={"Notifications"}
-        onPress={() => router.back()}
+        onPress={() => {
+          handleBack();
+        }}
         titleTextStyle={tw`text-xl`}
       />
 

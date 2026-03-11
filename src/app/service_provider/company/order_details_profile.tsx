@@ -10,6 +10,9 @@ import {
 } from "@/assets/icons";
 import AcceptedModal from "@/src/Components/AcceptedModal";
 import UserReviewCard from "@/src/Components/UserReviewCard";
+import { useDynamicBack } from "@/src/hooks/useDynamicBack";
+import { useProviderType } from "@/src/hooks/useProviderType";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
@@ -39,6 +42,12 @@ const Order_Details_Profile = () => {
   // screen state
   const [approvedModalShown, setApprovedModalShown] = useState(false);
   const { id } = useLocalSearchParams();
+  // ============== hooks ==================
+  const roll = useRoll() || "";
+  const providerType = useProviderType();
+
+  // =========== call dynamic touting hooks ------------
+  const handleBack = useDynamicBack(roll, providerType);
 
   const handleAssignPress = () => {
     setApprovedModalShown(false);
@@ -70,7 +79,7 @@ const Order_Details_Profile = () => {
   const [orderRejected, { isLoading: isLoadingOrderRejected }] =
     useOrderRejectMutation();
   const { data: profileData, isLoading: isProfileLoading } = useProfileQuery(
-    {}
+    {},
   );
 
   // api function
@@ -139,7 +148,7 @@ const Order_Details_Profile = () => {
         "Extension order error  ",
         err,
         " error ",
-        errorRequestForDelivery
+        errorRequestForDelivery,
       );
       setTimeout(() => {
         router.back();
@@ -177,7 +186,9 @@ const Order_Details_Profile = () => {
       {/* btn header */}
       <BackTitleButton
         pageName="Order Details"
-        onPress={() => router.back()}
+        onPress={() => {
+          handleBack();
+        }}
         titleTextStyle={tw`text-xl`}
       />
       {isLoadingFetchOrder && isFetchingFetchOrder && (
@@ -193,10 +204,10 @@ const Order_Details_Profile = () => {
                 order?.status === "New"
                   ? "bg-primary"
                   : order?.status === "Pending"
-                  ? "bg-violet"
-                  : order?.status === "Cancelled"
-                  ? "bg-[#FF3A00]"
-                  : "bg-success600"
+                    ? "bg-violet"
+                    : order?.status === "Cancelled"
+                      ? "bg-[#FF3A00]"
+                      : "bg-success600"
               }`}
             >
               <SvgXml xml={IconWhiteDot} />
@@ -229,8 +240,8 @@ const Order_Details_Profile = () => {
                 order.user?.kyc_status === "In Review"
                   ? "bg-secondary"
                   : order?.status === "Verified"
-                  ? "bg-violet"
-                  : "bg-blueMagenta"
+                    ? "bg-violet"
+                    : "bg-blueMagenta"
               }`}
             >
               <Text style={tw`font-PoppinsRegular text-sm text-white`}>

@@ -28,10 +28,11 @@ const Disputes_Status = () => {
       </View>
     );
   }
-  console.log("DisputeDetails", DisputeDetails, "DisputeDetails");
   const handelDeleted = async () => {
     const res = await disputeDelete(id).unwrap();
-    if (res.status === "") {
+    if (res) {
+      setModalVisible(false);
+      router.back();
     }
   };
 

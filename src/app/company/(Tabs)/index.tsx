@@ -29,7 +29,7 @@ import {
 } from "react-native";
 
 const Company_Home_Index = () => {
-  const [isRadius, setIsRadius] = React.useState(15);
+  const [isRadius, setIsRadius] = React.useState(2500);
   const [refreshing, setRefreshing] = React.useState(false);
   const { getLocation, loading: locationLoading } = useCheckLocation();
 
