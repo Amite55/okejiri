@@ -39,10 +39,16 @@ const My_Service_Package = () => {
   // ----------- api end point -----------------------
   const [createSubAccount, { isLoading: isLoadingCreateConnectAccount }] =
     useCreateSubAccountMutation();
-  const { data: userProfileInfo, isLoading: isProfileLoading } =
-    useProfileQuery({});
-  const { data: getBankData, isLoading: isLoadingGetBankData } =
-    useGetBanksQuery({});
+  const {
+    data: userProfileInfo,
+    isLoading: isProfileLoading,
+    isFetching: isProfileFetching,
+  } = useProfileQuery({});
+  const {
+    data: getBankData,
+    isLoading: isLoadingGetBankData,
+    isFetching: isFetchingBanks,
+  } = useGetBanksQuery({});
   const [fetchMyServicePackages, { isFetching }] =
     useLazyMy_service_packagesQuery();
 
@@ -98,14 +104,6 @@ const My_Service_Package = () => {
     }
   };
 
-  // ======================== REFRESH ==========================
-  const handleRefresh = () => {
-    setRefreshing(true);
-    setPage(1);
-    setHasMore(true);
-    loadServices(1, true);
-  };
-
   // ======================== LOAD MORE ==========================
   const handleLoadMore = () => {
     if (!loadingMore && hasMore && !isFetching) {
@@ -125,6 +123,7 @@ const My_Service_Package = () => {
         bank_code: bankCode,
       };
       const res = await createSubAccount(payload).unwrap();
+      console.log(res, "this is response");
       if (res?.data?.status === "success") {
         setBankCode("");
         setBankNumber("");
@@ -157,6 +156,18 @@ const My_Service_Package = () => {
           message: error?.message || "Account creation failed",
         },
       });
+    }
+  };
+
+  // ================== onrefresh ========================
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await Promise.all([loadServices(1, true), isProfileFetching]);
+    } catch (error) {
+      console.log(error, "refresh error");
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -273,10 +284,7 @@ const My_Service_Package = () => {
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderServiceItem}
             refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-              />
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
             onEndReached={handleLoadMore}
             onEndReachedThreshold={0.5}
@@ -296,7 +304,7 @@ const My_Service_Package = () => {
                   <Text
                     style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}
                   >
-                    {services.length} services
+                    {services?.length} services
                   </Text>
 
                   {userProfileInfo?.data?.flutter_numeric_id ? (

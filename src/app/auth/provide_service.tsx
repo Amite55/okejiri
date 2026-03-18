@@ -80,7 +80,10 @@ const Provide_Service = () => {
           }),
           service_id: [value],
         };
+
+        console.log(payload, "this is payload =-==");
         const res = await information(payload).unwrap();
+        console.log(res, "here is response --------------------->F");
         if (res) {
           router.replace("/service_provider/individual/(Tabs)/home");
           if (res?.data?.kyc_status === "Unverified") {
@@ -124,7 +127,7 @@ const Provide_Service = () => {
         router.push({
           pathname: `/Toaster`,
           params: {
-            res: "Please add your new service!",
+            res: "Failed to add service",
           },
         });
       }
@@ -343,10 +346,11 @@ const Provide_Service = () => {
 
                   <View style={tw`px-4 pb-6`}>
                     <PrimaryButton
+                      loading={isLoadingSendRequest}
                       onPress={() => {
                         handleRequestService();
                       }}
-                      titleProps={isLoadingSendRequest ? "Sending" : "Send"}
+                      titleProps={isLoadingSendRequest ? "Sending..." : "Send"}
                     />
                   </View>
                 </View>

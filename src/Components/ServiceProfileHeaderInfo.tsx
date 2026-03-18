@@ -13,27 +13,25 @@ interface IProps {
 }
 
 const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
-  // ================== api end point ==================
   const { data: userProfileInfo, isLoading } = useProfileQuery(
     {},
-    { refetchOnMountOrArgChange: true }
+    { refetchOnMountOrArgChange: true },
   );
-  const { data: notificationData, isLoading: isNotificationLoading } =
-    useGetNotificationsQuery({ page: 1 });
-
+  const { data: notificationData } = useGetNotificationsQuery({ page: 1 });
   const notificationCounter =
     notificationData?.data?.unread_notifications_count;
+
   return (
     <View
-      style={tw`py-3 flex-1 bg-base_color flex-row items-center justify-between `}
+      style={tw`py-3 bg-base_color flex-row items-center justify-between gap-3`}
     >
       <Pressable
         onPress={onPress}
-        style={tw`flex-row justify-start items-center  gap-4`}
+        style={tw`flex-1 flex-row items-center gap-3`}
       >
-        <View style={tw` `}>
+        <View style={tw`shrink-0`}>
           <Image
-            style={tw`w-14 h-14 rounded-full `}
+            style={tw`w-14 h-14 rounded-full`}
             source={
               userProfileInfo?.data?.role === "PROVIDER" &&
               userProfileInfo?.data?.provider_type === "Company"
@@ -44,21 +42,24 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
           />
         </View>
 
-        <View style={tw` items-start gap-1`}>
+        <View style={tw`flex-1`}>
           <Text
-            style={tw`font-DegularDisplayDemoSemibold flex-row items-center text-black text-xl`}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={tw`font-DegularDisplayDemoSemibold text-black text-xl`}
           >
             {userProfileInfo?.data?.role === "PROVIDER" &&
             userProfileInfo?.data?.provider_type === "Company"
               ? userProfileInfo?.data?.company?.company_name
               : userProfileInfo?.data?.name}
           </Text>
-          <View style={tw`flex-row justify-start items-center gap-1`}>
+
+          <View style={tw`flex-row items-center gap-1`}>
             <SvgXml xml={IconLocation} />
             <Text
               numberOfLines={1}
-              ellipsizeMode="clip"
-              style={tw`font-DegularDisplayDemoRegular text-base text-black`}
+              ellipsizeMode="tail"
+              style={tw`flex-1 font-DegularDisplayDemoRegular text-base text-black`}
             >
               {userProfileInfo?.data?.role === "PROVIDER" &&
               userProfileInfo?.data?.provider_type === "Company"
@@ -71,12 +72,12 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
 
       <TouchableOpacity
         onPress={onPressNotification}
-        style={tw`w-14 h-14 p-3 text-center bg-white rounded-full justify-center items-center`}
+        style={tw`shrink-0 w-14 h-14 bg-white rounded-full justify-center items-center`}
       >
         <SvgXml xml={IconNotificationDark} />
         {notificationCounter > 0 && (
           <View
-            style={tw`absolute top-0 right-0 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center p-1`}
+            style={tw`absolute top-0 right-0 w-6 h-6 rounded-full bg-red-500 items-center justify-center`}
           >
             <Text style={tw`text-white text-xs font-bold`}>
               {notificationCounter > 9 ? "9+" : notificationCounter}

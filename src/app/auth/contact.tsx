@@ -45,6 +45,8 @@ const Contact = () => {
   const providerTypes = useProviderTypes();
   const { getLocation, location, loading: locatinLoading } = useCheckLocation();
 
+  console.log(location?.latitude, location?.longitude);
+
   // ------------------------ api end point ---------------------
   const [information, { isLoading: isLoadingPersonalization }] =
     useCompletePersonalizationMutation({});
@@ -90,7 +92,7 @@ const Contact = () => {
         });
         return;
       }
-      if (!location.latitude || !location.longitude) {
+      if (!location) {
         router.push({
           pathname: "/Toaster",
           params: { res: "Please allow location access" },
@@ -139,7 +141,7 @@ const Contact = () => {
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "personal info error");
       router.push({
         pathname: "/Toaster",
