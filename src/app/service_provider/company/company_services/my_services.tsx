@@ -187,7 +187,7 @@ const My_Service = () => {
         ListHeaderComponent={() => (
           <View>
             <BackTitleButton
-              pageName="My services company"
+              pageName="My services "
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
             />

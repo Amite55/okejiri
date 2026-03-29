@@ -16,7 +16,7 @@ const ExpoModalUserHome = () => {
           <Image resizeMode="contain" source={ImgexpoModalUserHome} />
         </View>
         <Text
-          style={tw`font-DegularDisplayDemoRegular text-2xl text-black text-center`}
+          style={tw`font-DegularDisplayDemoRegular text-xl text-black text-center`}
         >
           Complete your kyc to access all the features of this app
         </Text>
@@ -26,14 +26,14 @@ const ExpoModalUserHome = () => {
             onPress={() => {
               router.push("/KYC_auth/id_card");
             }}
-            textStyle={tw`font-DegularDisplayDemoMedium text-xl text-white `}
-            contentStyle={tw`bg-primary mt-3 `}
+            textStyle={tw`flex-1 font-DegularDisplayDemoMedium text-lg text-white `}
+            contentStyle={tw`bg-primary mt-3 h-12`}
             titleProps="Verify now"
           />
           <PrimaryButton
             onPress={() => router.back()}
-            textStyle={tw`font-DegularDisplayDemoMedium text-xl text-success600 `}
-            contentStyle={tw`bg-transparent border border-gray-300 mt-3 `}
+            textStyle={tw`flex-1 font-DegularDisplayDemoMedium text-lg text-success600 `}
+            contentStyle={tw`bg-transparent border border-slate-300 mt-3  h-12`}
             titleProps="Skip for now"
           />
         </View>

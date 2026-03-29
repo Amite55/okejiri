@@ -73,8 +73,10 @@ const Account = () => {
         await AsyncStorage.setItem("roll", res?.data?.user?.role);
         await AsyncStorage.removeItem("providerTypes");
         if (res?.data?.user?.is_personalization_complete === false) {
+          router.dismiss();
           router.replace("/auth/contact");
         } else {
+          router.dismiss();
           router.replace("/company/(Tabs)");
         }
       }

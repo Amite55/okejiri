@@ -84,15 +84,18 @@ const Profile = () => {
         );
 
         if (user?.is_personalization_complete === false) {
+          router.dismiss();
           router.replace("/auth/contact");
         } else if (user?.role === "PROVIDER") {
           if (user?.has_service === false) {
+            router.dismiss();
             router.replace({
               pathname: "/auth/provide_service",
               params: { from: "role_switch" },
             });
           }
         } else {
+          router.dismiss();
           router.replace("/service_provider/individual/(Tabs)/home");
         }
       }

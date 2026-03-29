@@ -17,6 +17,7 @@ const ServiceProfileHeaderInfo = ({ onPress, onPressNotification }: IProps) => {
     {},
     { refetchOnMountOrArgChange: true },
   );
+
   const { data: notificationData } = useGetNotificationsQuery({ page: 1 });
   const notificationCounter =
     notificationData?.data?.unread_notifications_count;

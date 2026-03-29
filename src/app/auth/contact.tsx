@@ -186,7 +186,7 @@ const Contact = () => {
         >
           <View>
             <BackTitleButton
-              onPress={() => router.back()}
+              onPress={() => router.replace("/chose_roll")}
               pageName={roleTitle}
               titleTextStyle={tw`text-lg`}
             />

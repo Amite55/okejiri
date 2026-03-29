@@ -1,3 +1,4 @@
+import CameraPermissionComponent from "@/src/Components/CameraPermissionComponent";
 import tw from "@/src/lib/tailwind";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { Image } from "expo-image";
@@ -17,32 +18,9 @@ const TakeSelfieCamera = () => {
     return <View />;
   }
 
-  // if permission denied =========
+  //  if permission denied  =======
   if (!permission.granted) {
-    return (
-      <View className="flex-1 justify-center items-center ">
-        <Text style={tw`text-center`}>
-          Camera permission is required to continue sss
-        </Text>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={requestPermission}
-          style={[
-            tw`mx-4`,
-            {
-              backgroundColor: "#007bff",
-              padding: 10,
-              borderRadius: 5,
-              marginTop: 10,
-            },
-          ]}
-        >
-          <Text style={tw`text-white text-base text-center`}>
-            Grant Permission
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
+    return <CameraPermissionComponent requestPermission={requestPermission} />;
   }
 
   if (selfiePhotoUri) {

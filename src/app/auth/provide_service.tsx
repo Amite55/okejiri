@@ -80,8 +80,6 @@ const Provide_Service = () => {
           }),
           service_id: [value],
         };
-
-        console.log(payload, "this is payload =-==");
         const res = await information(payload).unwrap();
         console.log(res, "here is response --------------------->F");
         if (res) {
@@ -260,25 +258,20 @@ const Provide_Service = () => {
               onPress={handleScreenInfo}
               disabled={isLoadingPersonalization}
             >
-              {isLoadingPersonalization ? (
-                <View style={tw`flex-row justify-center items-center gap-3`}>
-                  <ActivityIndicator size={"small"} color={tw.color("white")} />
-                  <Text
-                    style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
-                  >
-                    {from === "role_switch" ? "Updating" : "Sign up"}
-                  </Text>
-                </View>
-              ) : (
-                <View style={tw`flex-row justify-center items-center gap-4`}>
-                  <Text
-                    style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
-                  >
-                    {from === "role_switch" ? "Update" : "Sign up"}
-                  </Text>
+              <View style={tw`flex-row justify-center items-center gap-3 py-4`}>
+                {isLoadingPersonalization ? (
+                  <ActivityIndicator size="small" color={tw.color("white")} />
+                ) : (
                   <SvgXml xml={IconRightArrow} />
-                </View>
-              )}
+                )}
+                <Text style={tw`text-white text-base font-PoppinsBold`}>
+                  {from === "role_switch"
+                    ? isLoadingPersonalization
+                      ? "Updating"
+                      : "Update"
+                    : "Sign up"}
+                </Text>
+              </View>
             </TouchableOpacity>
           </ScrollView>
           {/* ------------------------------- cancel modal ---------------------------------- */}
