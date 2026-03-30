@@ -50,7 +50,10 @@ const Account = () => {
     const token = await AsyncStorage.getItem("token");
     try {
       setModalVisible(false);
-      await logout({ device_id: deviceDetails?.device_id, token }).unwrap();
+      await logout({
+        device_id: deviceDetails?.device_id,
+        token,
+      }).unwrap();
       await AsyncStorage.removeItem("roll");
       await AsyncStorage.removeItem("providerTypes");
       await AsyncStorage.removeItem("token");

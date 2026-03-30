@@ -5,7 +5,6 @@ import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import {
   useEditProfilePictureMutation,
-  useProfileQuery,
   useUpdateFCMTokenMutation,
 } from "@/src/redux/apiSlices/authSlices";
 import { useGetServicesQuery } from "@/src/redux/apiSlices/companyProvider/account/services/servicesSlice";
@@ -50,14 +49,9 @@ const Setup_Business_Profile = () => {
     useCompletePersonalizationMutation({});
   const { data: getServiceData, isLoading: isLoadingServices } =
     useGetServicesQuery({});
-  const [editProfilePicture, { isLoading: isLoadingProfileImage }] =
-    useEditProfilePictureMutation();
-  const { data: userProfileInfo, isLoading: isprofileLoading } =
-    useProfileQuery({});
-  const [
-    updateFCMToken,
-    { isLoading: isUpdateFCMTokenLoading, isError, isSuccess },
-  ] = useUpdateFCMTokenMutation();
+  const [editProfilePicture] = useEditProfilePictureMutation();
+
+  const [updateFCMToken] = useUpdateFCMTokenMutation();
 
   // -------------------- image picker ---------------------
   const pickImage = async () => {

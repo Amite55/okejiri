@@ -51,9 +51,12 @@ const Provide_Service = () => {
 
   // -------------------- api end point ---------------------
   const { data: getServiceData, isLoading: isLoadingServices } =
-    useServicesQuery(undefined);
-  const { data: getProfileData, isLoading: isLoadingProfile } =
-    useProfileQuery(undefined);
+    useServicesQuery({
+      refetchOnMountOrArgChange: true,
+    });
+  const { data: getProfileData } = useProfileQuery({
+    refetchOnMountOrArgChange: true,
+  });
   const [information, { isLoading: isLoadingPersonalization }] =
     useCompletePersonalizationMutation();
   const [sendRequestService, { isLoading: isLoadingSendRequest }] =
@@ -81,7 +84,6 @@ const Provide_Service = () => {
           service_id: [value],
         };
         const res = await information(payload).unwrap();
-        console.log(res, "here is response --------------------->F");
         if (res) {
           router.replace("/service_provider/individual/(Tabs)/home");
           if (res?.data?.kyc_status === "Unverified") {
@@ -115,7 +117,7 @@ const Provide_Service = () => {
           router.push({
             pathname: `/Toaster`,
             params: {
-              res: "Service added successfully",
+              res: "Your request has been sent successfully",
             },
           });
         }
@@ -179,11 +181,6 @@ const Provide_Service = () => {
             ]}
           >
             <View>
-              {/* <BackTitleButton
-                onPress={() => router.back()}
-                pageName={"Sign up as a service provider"}
-                titleTextStyle={tw`text-lg`}
-              /> */}
               <View style={tw`justify-center items-center mb-12 mt-12`}>
                 <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
                 <AuthComponents
@@ -215,6 +212,11 @@ const Provide_Service = () => {
                   style={tw`text-red-500 ml-3 mt-[-12px] mb-4 text-sm pt-4`}
                 >
                   {error}
+                </Text>
+              )}
+              {getServiceData?.data?.services?.length === 0 && (
+                <Text style={tw`text-center font-PoppinsMedium text-red-400`}>
+                  No service available. Please request to add your service.
                 </Text>
               )}
 
@@ -253,12 +255,12 @@ const Provide_Service = () => {
             </View>
 
             <TouchableOpacity
-              style={tw`bg-primary rounded-full my-4`}
+              style={tw`bg-primary rounded-full mt-4`}
               activeOpacity={0.8}
               onPress={handleScreenInfo}
               disabled={isLoadingPersonalization}
             >
-              <View style={tw`flex-row justify-center items-center gap-3 py-4`}>
+              <View style={tw`flex-row justify-center items-center gap-3 py-3`}>
                 {isLoadingPersonalization ? (
                   <ActivityIndicator size="small" color={tw.color("white")} />
                 ) : (

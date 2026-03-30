@@ -115,7 +115,17 @@ const authSlices = api.injectEndpoints({
             body: data,
           };
         },
-        invalidatesTags: ["profile"],
+        invalidatesTags: [
+          "profile",
+          "login",
+          "register",
+          "logout",
+          "request_delivery",
+          "user",
+          "notifications",
+          "message",
+          "settings",
+        ],
       }),
       updateLatLong: builder.mutation({
         query: (credentials) => ({

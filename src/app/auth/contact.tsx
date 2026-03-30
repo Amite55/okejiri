@@ -1,8 +1,9 @@
-import { IconLocation, IconRightArrow } from "@/assets/icons";
+import { IconLocation } from "@/assets/icons";
 import { ImgLogo } from "@/assets/images/image";
 import { useNotification } from "@/context/NotificationContext";
 import AuthComponents from "@/src/Components/AuthComponents";
 import LocationAccessModal from "@/src/Components/LocationAccessModal";
+import PrimaryButton from "@/src/Components/PrimaryButton";
 import RoleChooseSkeleton from "@/src/Components/skeletons/RoleChooseSkeleton";
 import { useCheckLocation } from "@/src/hooks/useLocation";
 import { useProviderTypes } from "@/src/hooks/useProviderTypes";
@@ -45,18 +46,16 @@ const Contact = () => {
   const providerTypes = useProviderTypes();
   const { getLocation, location, loading: locatinLoading } = useCheckLocation();
 
-  console.log(location?.latitude, location?.longitude);
-
   // ------------------------ api end point ---------------------
   const [information, { isLoading: isLoadingPersonalization }] =
     useCompletePersonalizationMutation({});
   const { data: getProfileData, isLoading: isLoadingProfile } = useProfileQuery(
-    {},
+    {
+      refetchOnMountOrArgChange: true,
+    },
   );
-  const [
-    updateFCMToken,
-    { isLoading: isUpdateFCMTokenLoading, isError, isSuccess },
-  ] = useUpdateFCMTokenMutation();
+  const [updateFCMToken, { isLoading: isUpdateFCMTokenLoading }] =
+    useUpdateFCMTokenMutation();
 
   // =============== dynamic role title ==================
   let roleTitle = "";
@@ -65,7 +64,7 @@ const Contact = () => {
   } else if (roll === "PROVIDER") {
     roleTitle = "Sing up as a service provider";
   }
-
+  // ================= handle location =================
   const handleLocation = async () => {
     const newLocation = await getLocation();
     if (newLocation?.latitude && newLocation?.longitude) {
@@ -81,7 +80,7 @@ const Contact = () => {
       });
     }
   };
-
+  // ============ handle personal info and personalization  =================
   const handlePersonalInfo = async () => {
     try {
       // -------------- validation ---------------------
@@ -130,12 +129,12 @@ const Contact = () => {
         }
       } else if (roll === "PROVIDER") {
         if (providerTypes === "Individual") {
-          router.replace({
+          router.push({
             pathname: "/auth/provide_service",
             params: { jsonContactInfo: JSON.stringify(info) },
           });
         } else if (providerTypes === "Company") {
-          router.replace({
+          router.push({
             pathname: "/auth/setup_business_profile",
             params: { jsonContactInfo: JSON.stringify(info) },
           });
@@ -270,36 +269,15 @@ const Contact = () => {
             )}
           </View>
 
-          <TouchableOpacity
-            style={tw`bg-primary rounded-full my-2`}
+          <PrimaryButton
+            loading={isLoading || isUpdateFCMTokenLoading}
             onPress={() => {
               handlePersonalInfo();
             }}
-            disabled={isLoading || isUpdateFCMTokenLoading}
-          >
-            {isLoading ? (
-              <View style={tw`flex-row justify-center items-center gap-3 h-12`}>
-                <ActivityIndicator size={"small"} color={tw.color("white")} />{" "}
-                <Text
-                  style={tw` text-center text-white text-base font-PoppinsBold`}
-                >
-                  Continue
-                </Text>
-              </View>
-            ) : (
-              <View style={tw`flex-row justify-center items-center gap-4 h-12`}>
-                <Text
-                  style={tw` text-center text-white text-base  font-PoppinsBold`}
-                >
-                  Continue
-                </Text>
-                <SvgXml xml={IconRightArrow} />
-              </View>
-            )}
-          </TouchableOpacity>
+            titleProps="Continue"
+          />
 
           {/*  n================= access your current location allow ------------------------- */}
-
           <LocationAccessModal
             setLocationModalVisible={setLocationModal}
             locationModalVisible={locationModalVisible}

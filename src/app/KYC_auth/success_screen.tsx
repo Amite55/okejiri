@@ -51,7 +51,7 @@ const Success_Screen = () => {
           />
 
           <Text
-            style={tw`font-DegularDisplayDemoSemibold text-4xl text-blue-950 mt-3`}
+            style={tw`font-DegularDisplayDemoSemibold text-2xl text-blue-950 mt-3`}
           >
             {userProfileInfo?.data?.role === "PROVIDER" &&
             userProfileInfo?.data?.provider_type === "Company"
@@ -59,9 +59,7 @@ const Success_Screen = () => {
               : userProfileInfo?.data?.name}
           </Text>
 
-          <Text
-            style={tw`font-DegularDisplayDemoMedium text-2xl text-blue-950`}
-          >
+          <Text style={tw`font-DegularDisplayDemoMedium text-xl text-blue-950`}>
             {userProfileInfo?.data?.email}
           </Text>
           <View
@@ -92,7 +90,6 @@ const Success_Screen = () => {
           onPress={() => {
             handleRouting();
           }}
-          //   onPress={() => setModalVisible(true)}
           titleProps="Go to home  "
           contentStyle={tw`mt-4 bg-transparent border border-blue-950`}
           textStyle={tw`text-primary`}
