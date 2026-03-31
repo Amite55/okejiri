@@ -34,7 +34,7 @@ const Favorites_Item = () => {
         if (isRefresh) return newFavorites;
         const existingIds = new Set(prev.map((fav) => fav.id));
         const uniqueFavorites = newFavorites.filter(
-          (fav: any) => !existingIds.has(fav.id)
+          (fav: any) => !existingIds.has(fav.id),
         );
         return [...prev, ...uniqueFavorites];
       });
@@ -92,11 +92,16 @@ const Favorites_Item = () => {
 
   if (isLoading && favorites.length === 0) {
     return (
-      <View style={tw` bg-base_color`}>
+      <View style={tw`flex-1 bg-base_color`}>
         <BackTitleButton
           pageName={"Favorites"}
           onPress={() => router.back()}
           titleTextStyle={tw`text-xl`}
+        />
+        <ActivityIndicator
+          size="large"
+          color={tw.color("primary")}
+          style={tw`mt-10`}
         />
       </View>
     );

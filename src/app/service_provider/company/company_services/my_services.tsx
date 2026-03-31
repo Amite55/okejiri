@@ -4,10 +4,11 @@ import AddServicesModal from "@/src/Components/AddServicesModal";
 import ServiceCardSkeleton from "@/src/Components/skeletons/ServiceCardSkeleton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { useDeleteMyServicesMutation } from "@/src/redux/apiSlices/companyProvider/account/services/servicesSlice";
 import { useLazyMy_servicesQuery } from "@/src/redux/apiSlices/IndividualProvider/account/MyServices/myServicesSlicel";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -26,15 +27,8 @@ const My_Service = () => {
   //  ==================================== API
   const [fetchMyServices, { isFetching, isLoading: isLoadingFetchMyService }] =
     useLazyMy_servicesQuery();
-  const [
-    deleteMyService,
-    {
-      data: deleteMyServiceData,
-      isLoading: isLoadingMyService,
-      isError: isErrorMyService,
-    },
-  ] = useDeleteMyServicesMutation();
-
+  const [deleteMyService] = useDeleteMyServicesMutation();
+  const { data: userProfileInfo, refetch } = useProfileQuery({});
   // =================================== API end;
 
   const [services, setServices] = useState<any[]>([]);
@@ -42,8 +36,6 @@ const My_Service = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const { id } = useLocalSearchParams();
-  // console.log(id, "id");
 
   // ======================== LOAD SERVICE PACKAGES ==========================
   const loadServices = async (pageNum = 1, isRefresh = false) => {
@@ -74,11 +66,12 @@ const My_Service = () => {
     }
   };
   // ======================== REFRESH ==========================
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
     setPage(1);
     setHasMore(true);
     loadServices(1, true);
+    await refetch();
   };
 
   // ======================== LOAD MORE ==========================
@@ -116,7 +109,7 @@ const My_Service = () => {
   };
 
   const handleAddSuccess = () => {
-    loadServices(1, true); // refresh after adding new service
+    loadServices(1, true);
   };
 
   // ======================== RENDER SERVICE ITEM ==========================
@@ -142,15 +135,24 @@ const My_Service = () => {
 
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() =>
-              router.push({
-                pathname:
-                  "/service_provider/company/company_services/my_service_package",
-                params: {
-                  id: item.service_id,
-                },
-              })
-            }
+            onPress={() => {
+              if (userProfileInfo?.data?.kyc_status === "Verified") {
+                router.push({
+                  pathname:
+                    "/service_provider/company/company_services/my_service_package",
+                  params: {
+                    id: item.service_id,
+                  },
+                });
+              } else {
+                router.push({
+                  pathname: "/Toaster",
+                  params: {
+                    res: "Please complete your KYC to add package",
+                  },
+                });
+              }
+            }}
             style={tw`absolute bottom-3 left-3 right-3 p-2 bg-black/20 rounded-full `}
           >
             <Text

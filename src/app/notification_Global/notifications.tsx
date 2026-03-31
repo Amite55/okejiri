@@ -44,8 +44,7 @@ const Notification = () => {
     refetchOnMountOrArgChange: true,
   });
   const [singleMark] = useSingleMarkMutation();
-  const { data: userProfileInfo, isLoading: isProfileLoading } =
-    useProfileQuery({});
+  const { data: userProfileInfo } = useProfileQuery({});
   useProfileQuery({});
   const [deleteAllNotification, { isLoading: isAllNotificationLoading }] =
     useDeleteAllNotificationsMutation();
@@ -96,7 +95,7 @@ const Notification = () => {
     const item = items?.data;
     const handleMark = async () => {
       try {
-        await singleMark(item?.id);
+        await singleMark(items?.id);
       } catch (err: any) {
         router.push({
           pathname: "/Toaster",
@@ -105,7 +104,7 @@ const Notification = () => {
       }
     };
 
-    if (item?.read_at === null) {
+    if (items?.read_at === null) {
       handleMark();
     }
     if (item?.data?.type === "new_order") {
@@ -364,18 +363,19 @@ const Notification = () => {
             )
           }
           refreshing={isFetchMore}
-          // onRefresh={() => setPage(1)}
           refreshControl={
             <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
           }
-          renderItem={({ item }) => (
-            <ProviderNotificationCard
-              item={item}
-              onPress={() => handleNotification(item)}
-              onDelete={() => handleDelete(item?.id)}
-              deleteLoading={isDeleteSingleNotificationDeleteLoading}
-            />
-          )}
+          renderItem={({ item }) => {
+            return (
+              <ProviderNotificationCard
+                item={item}
+                onPress={() => handleNotification(item)}
+                onDelete={() => handleDelete(item?.id)}
+                deleteLoading={isDeleteSingleNotificationDeleteLoading}
+              />
+            );
+          }}
         />
       )}
     </View>

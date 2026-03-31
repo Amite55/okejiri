@@ -463,14 +463,13 @@ const Order_Details_Profile = () => {
               >
                 Assign Provider
               </Text>
-
               <View
                 style={tw`flex-row justify-between w-full bg-white rounded-lg py-2 px-2`}
               >
-                <View style={tw`flex-row gap-2 items-center `}>
+                <View style={tw`flex-1 flex-row gap-2 items-center `}>
                   <View style={tw``}>
                     <Image
-                      style={tw`w-24 h-24 rounded-lg `}
+                      style={tw`w-20 h-20 rounded-lg `}
                       source={{
                         uri:
                           order?.provider?.avatar ||
@@ -478,8 +477,8 @@ const Order_Details_Profile = () => {
                       }}
                     />
                   </View>
-                  <View>
-                    <Text style={tw`font-DegularDisplayDemoMedium text-xl`}>
+                  <View style={tw``}>
+                    <Text style={tw`  font-DegularDisplayDemoMedium text-xl`}>
                       {order?.provider?.name}
                     </Text>
                     <View style={tw`flex-row gap-2 items-center`}>

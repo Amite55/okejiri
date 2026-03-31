@@ -39,8 +39,6 @@ export default function AcceptedModal({
         style={[tw`flex-1 bg-black/50 justify-center items-center`]}
       >
         <Animated.View
-          // entering={FadeIn.duration(300)}
-          // exiting={FadeOut.duration(300)}
           onStartShouldSetResponder={() => true}
           style={tw`w-[90%] bg-white rounded-3xl items-center py-8 gap-3`}
         >

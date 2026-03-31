@@ -7,37 +7,31 @@ import {
 } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 import {
   useAddNewServicesMutation,
   useGetServicesQuery,
 } from "../redux/apiSlices/companyProvider/account/services/servicesSlice";
+import PrimaryButton from "./PrimaryButton";
 
 export default function AddServicesModal({
   ref,
   exsiting_service = [],
   onSuccess,
 }: any) {
-  // const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoint = useMemo(() => ["50%", "80%"], []);
+  const snapPoint = useMemo(() => ["50%", "100%"], []);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
 
-  const {
-    data: servicesData,
-    isLoading: isLoadingServices,
-    isError: isErrorServices,
-  } = useGetServicesQuery({});
-  const [
-    addNewService,
-    { isLoading: isAddNewService, isError: isErrorAddNewService },
-  ] = useAddNewServicesMutation();
+  const { data: servicesData, isLoading: isLoadingServices } =
+    useGetServicesQuery({});
+  const [addNewService] = useAddNewServicesMutation();
   const [screenLoading, setScreenLoading] = useState<boolean>(false);
   // checkbox with icon.
   const services = servicesData?.data?.services || [];
   const serviceToAdd = services.filter(
-    (s: any) => !exsiting_service.some((es: any) => es.service.id === s.id)
+    (s: any) => !exsiting_service.some((es: any) => es.service.id === s.id),
   );
 
   const closeSheet = useCallback(() => {
@@ -46,7 +40,7 @@ export default function AddServicesModal({
 
   const toggleService = (id: number) => {
     setSelectedServices((prev) =>
-      prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id],
     );
   };
 
@@ -65,13 +59,9 @@ export default function AddServicesModal({
     try {
       await Promise.all(
         selectedServices.map((serviceId) =>
-          addNewService({ service_id: serviceId }).unwrap()
-        )
+          addNewService({ service_id: serviceId }).unwrap(),
+        ),
       );
-
-      // selectedServices.map(serviceId =>
-      //        console.log("========= selected service id ======= ", serviceId)
-      //  )
 
       setSelectedServices([]);
       setScreenLoading(false);
@@ -114,11 +104,8 @@ export default function AddServicesModal({
             pressBehavior="close"
           />
         )}
-        // handleHeight={0}
         handleIndicatorStyle={{ display: "none" }}
         handleStyle={{ display: "none" }}
-        // handleStyle={{height: 0}}
-        // ind
       >
         {/* Header */}
         <View
@@ -135,16 +122,24 @@ export default function AddServicesModal({
             <Text style={tw`text-white text-xl font-bold`}>✕</Text>
           </TouchableOpacity>
         </View>
-        <BottomSheetScrollView contentContainerStyle={tw` bg-base_color p-4 `}>
-          {isLoadingServices ? (
+        <BottomSheetScrollView
+          contentContainerStyle={tw`flex-1 bg-base_color p-4 `}
+        >
+          {serviceToAdd.length === 0 ? (
+            <View style={tw`flex-1 justify-center items-center`}>
+              <Text style={tw`text-slate-400 text-lg font-PoppinsRegular`}>
+                No more services to add
+              </Text>
+            </View>
+          ) : isLoadingServices ? (
             <Text>Loading...</Text>
           ) : (
             serviceToAdd.map((item: any) => (
               <TouchableOpacity
                 activeOpacity={0.7}
-                key={item.id}
+                key={item?.id}
                 style={tw`flex-row items-center py-2 gap-3`}
-                onPress={() => toggleService(item.id)}
+                onPress={() => toggleService(item?.id)}
               >
                 {selectedServices.includes(item.id) ? (
                   <SvgXml xml={IconCheckBoxChecked} width={20} height={20} />
@@ -152,21 +147,17 @@ export default function AddServicesModal({
                   <SvgXml xml={IconCheckBoxUnChecked} width={20} height={20} />
                 )}
                 <Text style={tw`text-black text-lg font-PoppinsRegular`}>
-                  {item.name}
+                  {item?.name}
                 </Text>
               </TouchableOpacity>
             ))
           )}
-
-          <TouchableOpacity
+          <PrimaryButton
+            titleProps="Add"
             onPress={handleSubmit}
-            style={tw`mt-4 bg-primary py-3 rounded-full items-center  w-full `}
-          >
-            <View style={tw`flex-row gap-2`}>
-              {screenLoading && <ActivityIndicator size={"large"} />}
-              <Text style={tw`text-white text-lg font-bold`}>Add</Text>
-            </View>
-          </TouchableOpacity>
+            contentStyle={tw`h-10 mt-4`}
+            loading={screenLoading}
+          />
         </BottomSheetScrollView>
       </BottomSheetModal>
     </BottomSheetModalProvider>

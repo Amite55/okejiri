@@ -32,9 +32,7 @@ export default function OrderCancel() {
           <Text style={tw`font-DegularDisplayDemoMedium text-xl`}>
             Booking cancelled from admin
           </Text>
-          <Text
-            style={tw`font-DegularDisplayDemoRegular text-lg text-[#4D4D4D]`}
-          >
+          <Text style={tw`font-PoppinsRegular text-sm text-[#4D4D4D]`}>
             You will get your refund within 24 hours
           </Text>
         </View>
@@ -42,8 +40,8 @@ export default function OrderCancel() {
       <View style={tw`px-4`}>
         <Text style={tw`font-DegularDisplayDemoMedium text-xl`}>Reason</Text>
         <View style={tw`py-6`}>
-          <Text style={tw`font-DegularDisplayDemoRegular text-xl`}>
-            {reason}
+          <Text style={tw`font-DegularDisplayDemoRegular text-base`}>
+            {reason ? reason : "No reason provided by admin"}
           </Text>
         </View>
       </View>

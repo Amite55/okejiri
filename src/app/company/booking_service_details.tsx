@@ -117,12 +117,10 @@ const Booking_Service_Details = () => {
     }
     try {
       const formData = new FormData();
-      // ✅ Append normal fields first
       formData.append("booking_id", OrderDetailsData?.data?.id);
       formData.append("provider_id", OrderDetailsData?.data?.provider?.id);
       formData.append("report_reason", selectedReport);
       formData.append("report_details", reportDetails);
-      // ✅ Append multiple images properly
       images.forEach((uri, index) => {
         formData.append("attachments[]", {
           uri,
@@ -130,7 +128,6 @@ const Booking_Service_Details = () => {
           type: "image/jpeg",
         });
       });
-      // ✅ Send request via RTK Query mutation ===============
       const response = await reportProvider(formData).unwrap();
       if (response) {
         router.push({
@@ -144,7 +141,7 @@ const Booking_Service_Details = () => {
         params: { res: response?.message || "Report sent successfully!" },
       });
     } catch (error) {
-      console.log(error, "❌ report not sent to provider");
+      console.log(error, " report not sent to provider");
       router.push({
         pathname: `/Toaster`,
         params: { res: error?.message || "Failed to send report" },
@@ -213,7 +210,7 @@ const Booking_Service_Details = () => {
           params: { res: response?.message || response },
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "Delete Add to cart Warring !");
       router.push({
         pathname: `/Toaster`,
@@ -224,7 +221,6 @@ const Booking_Service_Details = () => {
     }
   };
 
-  // {==================== image pickers with expo image picker  ====================}
   const pickImages = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -315,7 +311,7 @@ const Booking_Service_Details = () => {
   return (
     <KeyboardAvoidingView
       style={tw`flex-1`}
-      behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS/Android different behavior
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
       <GestureHandlerRootView style={tw`flex-1`}>
@@ -452,7 +448,7 @@ const Booking_Service_Details = () => {
                 )}
                 {/* {==================== booking item ================ }*/}
                 <View>
-                  {OrderDetailsData?.data?.booking_items?.map((item) => {
+                  {OrderDetailsData?.data?.booking_items?.map((item: any) => {
                     const pkg = item.package;
                     return (
                       <Pressable
@@ -491,7 +487,6 @@ const Booking_Service_Details = () => {
                           >
                             <Text style={tw`text-redWhite`}>See details</Text>
                           </TouchableOpacity>
-
                           {OrderDetailsData?.data?.status === "Completed" &&
                             (loadingState === pkg?.id ? (
                               <ActivityIndicator
@@ -525,7 +520,6 @@ const Booking_Service_Details = () => {
                 </View>
 
                 {/* ============== this message will show when user is new order ans pending order and service provider hasn’t responded yet */}
-
                 {(OrderDetailsData?.data?.status === "New" ||
                   OrderDetailsData?.data?.status === "Pending") && (
                   <Text
@@ -534,7 +528,6 @@ const Booking_Service_Details = () => {
                     Service provider hasn’t responded yet. Please wait.
                   </Text>
                 )}
-
                 {/* ----------------- if this user is new order and when user need to cancel to after 20 minutes ---------------- */}
                 {OrderDetailsData?.data?.status === "New" &&
                 timeDifferenceMs >= thirtyMinutesInMs ? (

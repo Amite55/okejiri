@@ -147,7 +147,7 @@ const My_Service = () => {
       <TouchableOpacity
         onPress={() =>
           router.push(
-            "/service_provider/individual/my_services/delivery_extension"
+            "/service_provider/individual/my_services/delivery_extension",
           )
         }
         style={tw`flex-row justify-between items-center px-3 my-3`}
@@ -232,7 +232,7 @@ const My_Service = () => {
                 <TouchableOpacity
                   onPress={() =>
                     router.push(
-                      "/service_provider/individual/my_services/add_package"
+                      "/service_provider/individual/my_services/add_package",
                     )
                   }
                   style={tw`flex-row justify-center items-center gap-2 w-40 h-12 bg-primary rounded-full`}

@@ -168,6 +168,10 @@ export const bookingsSlice = api.injectEndpoints({
     }),
     addDispute: builder.mutation({
       query: (formData) => {
+        console.log(
+          formData,
+          "form data in dispute process --------------------->",
+        );
         return {
           url: `/add-dispute`,
           method: "POST",

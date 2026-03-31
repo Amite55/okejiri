@@ -27,19 +27,12 @@ interface DropdownItem {
   label: string;
   value: string;
 }
-
 const dropdownData: DropdownItem[] = [
   { label: "Provider harassed me", value: "1" },
   { label: "Service was poorly done", value: "2" },
   { label: "My property was stolen", value: "3" },
   { label: "Others", value: "4" },
 ];
-
-interface ImageAsset {
-  uri: string;
-  filename?: string;
-  type?: string;
-}
 
 const Dispute_Process: React.FC = () => {
   const [value, setValue] = useState<string | null>(null);
@@ -48,7 +41,6 @@ const Dispute_Process: React.FC = () => {
   const [images, setImages] = useState<any>(null);
   const [explanation, setExplanation] = useState<string>("");
   const { id } = useLocalSearchParams<{ id: string }>();
-  // console.log(id, "dispute screen order id --------------------->");
 
   //    ============== api end point -------------------------
   const [addDispute, { isLoading, isError, error }] = useAddDisputeMutation();
@@ -80,14 +72,11 @@ const Dispute_Process: React.FC = () => {
       });
       return;
     }
-
-    // console.log(images)
     try {
       let formData = new FormData();
       formData.append("booking_id", id);
       formData.append("reason", reason);
       formData.append("details", explanation);
-      // ✅ Append multiple images properly
       images.forEach((image: any, index: any) => {
         formData.append(`attachments[${index}]`, {
           uri: image?.uri,
@@ -95,13 +84,7 @@ const Dispute_Process: React.FC = () => {
           type: image?.mimeType,
         } as any);
       });
-
-      formData.forEach((item) => {
-        console.log(item);
-      });
-
       const response = await addDispute(formData).unwrap();
-      console.log(" ============== reponse ========== ", response);
       if (response) {
         router.push({
           pathname: "/Toaster",
@@ -123,7 +106,7 @@ const Dispute_Process: React.FC = () => {
   return (
     <KeyboardAvoidingView
       style={tw`flex-1 bg-base_color`}
-      behavior={Platform.OS === "ios" ? "padding" : "position"} // iOS/Android different behavior
+      behavior={Platform.OS === "ios" ? "padding" : "position"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : -120}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -131,7 +114,7 @@ const Dispute_Process: React.FC = () => {
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           style={tw`px-5 bg-base_color`}
-          contentContainerStyle={tw`pb-1 justify-between flex-grow  bg-base_color`}
+          contentContainerStyle={tw`  pb-1 justify-between flex-grow  bg-base_color`}
         >
           <View>
             <BackTitleButton
@@ -237,9 +220,10 @@ const Dispute_Process: React.FC = () => {
 
           {/* ------------- submit buttons -------------------- */}
           <PrimaryButton
+            loading={isLoading}
             onPress={() => submitDispute()}
-            titleProps={isLoading ? "Submitting..." : "Submit with Image"}
-            contentStyle={tw`mt-10`}
+            titleProps="Submit with Images"
+            contentStyle={tw`h-12 mt-10`}
           />
         </ScrollView>
       </TouchableWithoutFeedback>

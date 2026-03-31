@@ -152,8 +152,8 @@ const Account = () => {
             }`,
           ]}
         >
-          <Text style={tw`font-DegularDisplayDemoMedium text-base text-white`}>
-            {userProfileInfo?.data?.kyc_status}
+          <Text style={tw`font-medium text-base text-white`}>
+            {userProfileInfo?.data?.kyc_status || ""}
           </Text>
         </TouchableOpacity>
       </View>

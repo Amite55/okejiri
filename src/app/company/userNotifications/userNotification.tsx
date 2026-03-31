@@ -136,17 +136,16 @@ const Notification = () => {
     const type = item?.data?.data?.type;
     // ---------------- Modal Types ---------------- //
     if (type === "delivery_request_sent") {
-      setSelectedOrderId(item?.data?.order_id);
+      setSelectedOrderId(item?.data?.data?.order_id);
       deliveryModalRef.current?.present();
       return;
     }
     if (type === "extend_delivery_time") {
-      setRequestDeliveryExtId(item?.data?.request_id);
+      setRequestDeliveryExtId(item?.data?.data?.request_id);
       requestDeliveryTimeExtModalRef?.current?.present();
       return;
     } else if (type === "complete_kyc") {
       if (
-        // userProfileInfo?.data?.kyc_status === "In Review" ||
         userProfileInfo?.data?.kyc_status === "Unverified" ||
         userProfileInfo?.data?.kyc_status === "Rejected"
       ) {
@@ -308,17 +307,18 @@ const Notification = () => {
               </View>
             ) : null
           }
-          renderItem={({ item }) => (
-            <ProviderNotificationCard
-              item={item}
-              onPress={() => handleNotificationPress(item)}
-              onDelete={() => handleDelete(item?.id)}
-              deleteLoading={isDeleteSingleNotificationDeleteLoading}
-            />
-          )}
+          renderItem={({ item }) => {
+            return (
+              <ProviderNotificationCard
+                item={item}
+                onPress={() => handleNotificationPress(item)}
+                onDelete={() => handleDelete(item?.id)}
+                deleteLoading={isDeleteSingleNotificationDeleteLoading}
+              />
+            );
+          }}
         />
       )}
-
       {/* ------------------- Delivery Request Modal ------------------ */}
       <RequestForDeliveryModal
         ref={deliveryModalRef}
@@ -331,14 +331,12 @@ const Notification = () => {
           }, 500);
         }}
       />
-
       {/* ------------------- Feedback Modal ------------------ */}
       <FeedbackModel
         ref={feedbackModalRef}
         id={selectedOrderId}
         onClose={() => feedbackModalRef?.current?.dismiss()}
       />
-
       {/* ------------------- Request Extension Modal ------------------ */}
       <RequestDeliveryTimeExtModal
         ref={requestDeliveryTimeExtModalRef}
@@ -349,7 +347,6 @@ const Notification = () => {
           setTimeout(() => setAcceptedModalShow(true), 500);
         }}
       />
-
       {/* ------------------- Extension Accepted Modal ------------------ */}
       <AcceptedModal
         visible={acceptedModalShow}

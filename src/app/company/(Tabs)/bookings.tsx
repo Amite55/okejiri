@@ -44,8 +44,7 @@ const Bookings = () => {
           router.push("/company/userNotifications/userNotification")
         }
       />
-
-      <Text style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}>
+      <Text style={tw`font-DegularDisplayDemoMedium text-center text-2xl my-4`}>
         My Bookings
       </Text>
       <View style={tw`gap-3`}>
@@ -57,7 +56,7 @@ const Bookings = () => {
             No Bookings
           </Text>
         ) : (
-          getMyBookingsData?.data?.data?.map((item, index) => {
+          getMyBookingsData?.data?.data?.map((item: any) => {
             return (
               <BookingCard
                 key={item?.id}

@@ -17,7 +17,7 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { FieldArray, Formik } from "formik";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Keyboard,
@@ -45,11 +45,10 @@ type PackageFormValues = {
 };
 const Add_Package = () => {
   const { id } = useLocalSearchParams();
-
-  const [modalType, setModalType] = useState<"fixed" | "custom" | null>(null);
   const fixedModalRef = useRef<BottomSheetModal>(null);
   const customModalRef = useRef<BottomSheetModal>(null);
   const [delivery_time, setDelivery_time] = useState<string>("");
+
   // ========================== api ========================= //
   const [myServicePackage, { isLoading: isLoadingMyServicePackage }] =
     useMyServicePackageMutation();
@@ -67,18 +66,10 @@ const Add_Package = () => {
     });
     if (!result.canceled) {
       const picked = result.assets[0];
-
-      // Extract file extension from URI
       const uriParts = picked.uri.split(".");
       const fileExt = uriParts[uriParts.length - 1]; // e.g., "jpeg", "png"
-
-      // Set name dynamically: user + timestamp + extension
       const fileName = `my_service_package_${Date.now()}.${fileExt}`;
-
-      // Set MIME type dynamically
       const fileType = `image/${fileExt === "jpg" ? "jpeg" : fileExt}`;
-
-      // Set Formik field
       setFieldValue("image", {
         uri: picked.uri,
         name: fileName,
@@ -94,7 +85,6 @@ const Add_Package = () => {
   const [show, setShow] = useState(false);
   const [currentTimeIndex, setCurrentTimeIndex] = useState<number>(0);
   const [editingField, setEditingField] = useState<"from" | "to">("from");
-  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
 
   const showMode = (currentMode: any) => {
     setShow(true);
@@ -108,22 +98,17 @@ const Add_Package = () => {
     let hours = date.getHours(); // 0-23
     const minutes = date.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";
-
     hours = hours % 12;
     hours = hours === 0 ? 12 : hours; // convert 0 => 12
-
     const hoursStr = hours.toString().padStart(2, "0"); // leading zero
     const minutesStr = minutes.toString().padStart(2, "0");
-
     return `${hoursStr}:${minutesStr} ${ampm}`;
   };
   function convertTo24Hour(time12h: string) {
     const [time, modifier] = time12h.split(" ");
     let [hours, minutes] = time.split(":").map(Number);
-
     if (modifier === "PM" && hours !== 12) hours += 12;
     if (modifier === "AM" && hours === 12) hours = 0;
-
     return `${hours.toString().padStart(2, "0")}:${minutes
       .toString()
       .padStart(2, "0")}:00`;
@@ -135,29 +120,14 @@ const Add_Package = () => {
   };
 
   const openFixedModal = () => {
-    setModalType("fixed");
     fixedModalRef.current?.present();
   };
 
   const closeAllModal = () => {
-    setModalType(null);
     fixedModalRef.current?.dismiss();
     customModalRef.current?.dismiss();
   };
 
-  // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
-  useEffect(() => {
-    const show = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true)
-    );
-    const hide = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false)
-    );
-    return () => {
-      show.remove();
-      hide.remove();
-    };
-  }, []);
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: "#FFF4ED" }}
@@ -177,7 +147,6 @@ const Add_Package = () => {
             onPress={() => router.back()}
             titleTextStyle={tw`text-xl`}
           />
-
           {/* ------------------ Image upload ------------------ */}
           <Formik<PackageFormValues>
             initialValues={{
@@ -185,7 +154,7 @@ const Add_Package = () => {
               title: "",
               price: "",
               service_details: [],
-              temp_service_input: "", // input for service
+              temp_service_input: "",
               available_time_from: [],
               available_time_to: [],
               delivery_time: "",
@@ -212,16 +181,14 @@ const Add_Package = () => {
                 (from, index) => ({
                   from: from?.trim() || "",
                   to: values.available_time_to[index]?.trim() || "",
-                })
+                }),
               );
 
               const validTime = pairedTimes.filter((x) => x.from && x.to);
-
-              // Check that each "from" is before its corresponding "to"
               const invalidTimeIndex = validTime.findIndex(
                 (x) =>
                   new Date(`1970-01-01T${x.from}`) >=
-                  new Date(`1970-01-01T${x.to}`)
+                  new Date(`1970-01-01T${x.to}`),
               );
 
               if (validTime.length === 0) {
@@ -245,13 +212,10 @@ const Add_Package = () => {
                 });
                 return;
               }
-
               const final_available_time_from = validTime.map((x) => x.from);
               const final_available_time_to = validTime.map((x) => x.to);
-
               try {
                 const formData = new FormData();
-
                 formData.append("service_id", String(id));
                 formData.append("title", values.title);
                 formData.append("image", {
@@ -261,31 +225,24 @@ const Add_Package = () => {
                 } as any);
                 formData.append("price", values.price);
                 formData.append("delivery_time", delivery_time);
-
                 values.service_details.forEach((item, index) => {
                   formData.append(`service_details[${index}]`, item);
                 });
-
                 const normalizeTime = (time: string) =>
                   time.replace(/\u202F/g, " ");
-
                 final_available_time_from.forEach((from, index) => {
                   formData.append(
                     `available_time_from[${index}]`,
-                    normalizeTime(from)
+                    normalizeTime(from),
                   );
                 });
-
                 final_available_time_to.forEach((to, index) => {
                   formData.append(
                     `available_time_to[${index}]`,
-                    normalizeTime(to)
+                    normalizeTime(to),
                   );
                 });
-
-                // console.log(" =============== form data ================", JSON.stringify(formData, null, 2));
                 const response = await myServicePackage(formData).unwrap();
-
                 if (response) {
                   router.push({
                     pathname: "/Toaster",
@@ -296,7 +253,6 @@ const Add_Package = () => {
                   setTimeout(() => {
                     router.back();
                   }, 500);
-                  // ()=> resetForm();
                 }
                 setTimeout(() => {
                   router.back();
@@ -310,7 +266,6 @@ const Add_Package = () => {
                 });
                 console.log("My service package adding failed", err);
               }
-              console.log("Pressed ");
             }}
           >
             {({
@@ -343,7 +298,7 @@ const Add_Package = () => {
                     <Text
                       style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}
                     >
-                      {errors.image}
+                      {errors.image as any}
                     </Text>
                   ) : (
                     <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
@@ -367,8 +322,6 @@ const Add_Package = () => {
                   )}
                 </Pressable>
 
-                {/*  ---------- message explanation --------------- */}
-
                 <View style={tw`py-2 `}>
                   <Text
                     style={tw`font-DegularDisplayDemoMedium text-xl text-black py-2 px-2`}
@@ -382,8 +335,6 @@ const Add_Package = () => {
                     value={values.title}
                     onChangeText={handleChange("title")}
                     placeholderTextColor={"#535353"}
-                    // value={}
-                    // textAlignVertical="top"
                   />
                 </View>
 
@@ -423,7 +374,6 @@ const Add_Package = () => {
                                 const serviceInput = (
                                   values.temp_service_input ?? ""
                                 ).toString();
-                                // console.log(" ========== service input ============ ", JSON.stringify(serviceInput, null, 2))
                                 if (!serviceInput.trim()) {
                                   router.push({
                                     pathname: "/Toaster",
@@ -441,7 +391,6 @@ const Add_Package = () => {
                               <SvgXml xml={IconPlusYellow} />
                             </TouchableOpacity>
                           </View>
-                          {/* vaildation error */}
                           {errors.service_details &&
                             touched.service_details && (
                               <Text
@@ -543,7 +492,7 @@ const Add_Package = () => {
                         <TouchableOpacity
                           style={tw`w-11 h-11 rounded-full border border-gray-300 justify-center items-center`}
                           onPress={() => {
-                            arrayHelper.push(""); // new
+                            arrayHelper.push("");
                             setFieldValue("available_time_to", [
                               ...values.available_time_to,
                               "",
@@ -582,7 +531,6 @@ const Add_Package = () => {
                                 <SvgXml xml={IconEditPenBlack} width={15} />
                               </View>
                             </TouchableOpacity>
-
                             <TouchableOpacity
                               onPress={() => {
                                 setCurrentTimeIndex(index);
@@ -614,7 +562,7 @@ const Add_Package = () => {
                               <SvgXml xml={IconDeleteRed} />
                             </TouchableOpacity>
                           </View>
-                        )
+                        ),
                       )}
                       {/* show time picker */}
                       {show && (
@@ -627,48 +575,37 @@ const Add_Package = () => {
                             const currentDate = selectedDate || date;
                             setShow(false);
                             setDate(currentDate);
-
                             const formated = formatedDate(currentDate);
-
                             const updatedFrom = [...values.available_time_from];
                             const updatedTo = [...values.available_time_to];
-
                             if (editingField === "from") {
                               updatedFrom[currentTimeIndex] = formated;
-
                               const toTime = updatedTo[currentTimeIndex];
-
-                              // --- PREVENT ONLY WHEN BOTH HAVE VALUES ---
                               if (toTime) {
                                 const convertTo = convertTo24Hour(toTime);
                                 const convertFormated =
                                   convertTo24Hour(formated);
                                 if (isTimeGreater(convertTo, convertFormated)) {
-                                  // valid
                                   setFieldValue(
                                     "available_time_from",
-                                    updatedFrom
+                                    updatedFrom,
                                   );
                                 } else {
-                                  // prevent
                                   router.push({
                                     pathname: "/Toaster",
                                     params: {
                                       res: "From time must be earlier than To time",
                                     },
                                   });
-
                                   return;
                                 }
                               } else {
-                                // to blank → allow
                                 setFieldValue(
                                   "available_time_from",
-                                  updatedFrom
+                                  updatedFrom,
                                 );
                               }
                             }
-
                             if (editingField === "to") {
                               updatedTo[currentTimeIndex] = formated;
                               const fromTime = updatedFrom[currentTimeIndex];

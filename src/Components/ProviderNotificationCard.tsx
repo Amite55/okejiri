@@ -6,18 +6,18 @@ import {
   IconExtension,
   IconNewDisputeNotification,
   IconNewOrderNotification,
+  IconNotification,
   IconOrderRejectedNotification,
   IconPayoutRequestNotification,
   IconProfileBadge,
   IconRequestForDelivery,
   IconWaringNotification,
 } from "@/assets/icons";
-import { ImgLogo } from "@/assets/images/image";
-import { Image } from "expo-image";
 import React from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import { SvgXml } from "react-native-svg";
+import { helpers } from "../lib/helpers";
 import tw from "../lib/tailwind";
 
 const iconMap = {
@@ -96,8 +96,10 @@ const ProviderNotificationCard = ({
   onDelete,
   deleteLoading,
 }: Props) => {
-  const Icon = iconMap[item?.data?.type];
-  const textColor = textColorMap[item?.data?.type] || "#000000";
+  type NotificationType = keyof typeof iconMap;
+  const type = item?.data?.data?.type as NotificationType;
+  const Icon = iconMap[type];
+  const textColor = textColorMap[type] || "#000000";
 
   return (
     <Swipeable
@@ -108,39 +110,31 @@ const ProviderNotificationCard = ({
         onPress={onPress}
         activeOpacity={0.8}
         style={[
-          tw`flex-row  items-center justify-between rounded-2xl py-6  px-2 relative shadow-md`,
+          tw`flex-row  items-center justify-between rounded-2xl py-3  px-2 relative shadow`,
           item?.read_at ? tw`bg-white` : tw`bg-gray-200`,
         ]}
       >
-        <View style={tw`flex-row items-center gap-4 flex-1`}>
+        <View style={tw`flex-row items-center gap-3 flex-1`}>
           {/* ----------------------- notification icon ------------------------------ */}
-          {Icon ? (
-            <View
-              style={tw`w-14 h-14 rounded-full border-2  border-white shadow-sm shadow-slate-900 bg-base_color justify-center items-center`}
-            >
-              <SvgXml xml={Icon} />
-            </View>
-          ) : (
-            <Image
-              style={tw`w-14 h-14 rounded-full border border-white`}
-              source={ImgLogo}
-              contentFit="cover"
-            />
-          )}
+          <View
+            style={tw`w-14 h-14 rounded-full border  border-white   bg-base_color justify-center items-center`}
+          >
+            <SvgXml xml={Icon ? Icon : IconNotification} />
+          </View>
 
           <View style={tw`flex-1`}>
             <Text
               numberOfLines={2}
               ellipsizeMode="clip"
               style={[
-                tw`flex-1 font-DegularDisplayDemoMedium  text-xl mb-1`,
+                tw`flex-1 font-DegularDisplayDemoMedium  text-xl`,
                 { color: textColor },
               ]}
             >
               {item?.data?.title}
             </Text>
             {item?.data?.provider?.name ? (
-              <View style={tw`flex-row items-center gap-2`}>
+              <View style={tw`flex-row items-center gap-1`}>
                 <Text
                   style={tw`font-DegularDisplayDemoSemibold text-base text-black`}
                 >
@@ -158,6 +152,9 @@ const ProviderNotificationCard = ({
                 Tap to see details
               </Text>
             )}
+            <Text style={tw`text-xs text-gray-500`}>
+              {helpers.formatDateTime(item?.created_at)}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>

@@ -20,22 +20,15 @@ export default function RequestDeliveryTimeExtModal({
   onClose,
   onAccepted,
 }: any) {
-  // const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoint = useMemo(() => ["57%", "80%"], []);
-  // console.log(" ====================   id ================ ", id)
-  // ========================= API ======================== //
-
   const {
     data: requestDeliveryTimeExt,
     isLoading: isLoadingRequestDeliveryTimeExt,
   } = useDeliveryTimeExtensionDetailsQuery(id);
-
   const [fetchAcceptTimeExt, { isLoading: isLoadingAcceptTimeExt }] =
     useAcceptDeliveryTimeExtensionMutation();
-
   const [fetchDeclineTimeExt, { isLoading: isLoadingDeclineTimeExt }] =
     useDeclineDeliveryTimeExtensionMutation();
-
   const timeExt = requestDeliveryTimeExt?.data;
   return (
     <BottomSheetModalProvider>
@@ -57,19 +50,15 @@ export default function RequestDeliveryTimeExtModal({
         <View
           style={tw`flex-row items-center justify-between bg-primary px-4 py-1 rounded-t-xl`}
         >
-          {/* Left back button */}
-
           {/* Centered title */}
           <Text style={tw`text-white text-lg font-bold flex-1 text-center`}>
             Request for delivery time extension
           </Text>
-
           {/* Right close button */}
           <TouchableOpacity onPress={onClose} style={tw`p-2`}>
             <Text style={tw`text-white text-xl font-bold`}>✕</Text>
           </TouchableOpacity>
         </View>
-
         <BottomSheetScrollView
           contentContainerStyle={tw`flex-1 bg-base_color  `}
         >
@@ -96,10 +85,11 @@ export default function RequestDeliveryTimeExtModal({
                   </Text>
                 </View>
               </View>
-
               {timeExt?.status === "Pending" && (
                 <View style={tw`flex-row gap-2`}>
                   <TouchableOpacity
+                    disabled={isLoadingDeclineTimeExt}
+                    activeOpacity={0.7}
                     onPress={async () => {
                       try {
                         const response = await fetchDeclineTimeExt(id).unwrap();
@@ -127,22 +117,23 @@ export default function RequestDeliveryTimeExtModal({
                         });
                       }
                     }}
-                    style={tw`px-4 py-6 w-[48%]`}
+                    style={tw`px-4 py-2 justify-center items-center w-[48%] bg-redDeep rounded-full `}
                   >
-                    <View
-                      style={tw`bg-redDeep py-4 rounded-full flex-row justify-center items-center`}
-                    >
-                      {isLoadingDeclineTimeExt && (
+                    <View style={tw``}>
+                      {isLoadingDeclineTimeExt ? (
                         <ActivityIndicator size={"small"} color={"#fff"} />
+                      ) : (
+                        <Text
+                          style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}
+                        >
+                          Decline
+                        </Text>
                       )}
-                      <Text
-                        style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}
-                      >
-                        {isLoadingDeclineTimeExt ? "Declining..." : "Decline"}
-                      </Text>
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity
+                    disabled={isLoadingAcceptTimeExt}
+                    activeOpacity={0.7}
                     onPress={async () => {
                       try {
                         const response = await fetchAcceptTimeExt(id).unwrap();
@@ -170,20 +161,17 @@ export default function RequestDeliveryTimeExtModal({
                         });
                       }
                     }}
-                    style={tw`px-4 py-6 w-[48%]`}
+                    style={tw`px-4 py-2 justify-center items-center w-[48%] bg-[#319F43]  rounded-full`}
                   >
-                    <View
-                      style={tw`bg-[#319F43] py-4 rounded-full flex-row gap-3 items-center justify-center`}
-                    >
-                      {isLoadingAcceptTimeExt && (
-                        <ActivityIndicator size={"small"} color={"#fff"} />
-                      )}
+                    {isLoadingAcceptTimeExt ? (
+                      <ActivityIndicator size={"small"} color={"#fff"} />
+                    ) : (
                       <Text
                         style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}
                       >
-                        {isLoadingAcceptTimeExt ? "Accepting.." : "Accept"}
+                        Accept
                       </Text>
-                    </View>
+                    )}
                   </TouchableOpacity>
                 </View>
               )}
