@@ -12,7 +12,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 import { useOrderDetailsQuery } from "../redux/apiSlices/companyProvider/orderSlices";
@@ -25,7 +25,7 @@ export default function FeedbackModel({ ref, id, onClose, onSubmit }: any) {
 
   // // ========================= API ======================== //
   const { data: orderDetailsData } = useOrderDetailsQuery(id);
-  const [fetchRatting] = useRatingMutation();
+  const [fetchRatting, { isLoading }] = useRatingMutation();
 
   const orders = orderDetailsData?.data;
   const booking_id = orders?.booking_items?.[0].booking_id;
@@ -191,11 +191,15 @@ export default function FeedbackModel({ ref, id, onClose, onSubmit }: any) {
                 onPress={handleSubmit}
                 style={tw`bg-primary py-2 rounded-full`}
               >
-                <Text
-                  style={tw`text-center text-white font-DegularDisplayDemoMedium text-xl`}
-                >
-                  Done
-                </Text>
+                {isLoading ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text
+                    style={tw`text-center text-white font-DegularDisplayDemoMedium text-xl`}
+                  >
+                    Done
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>

@@ -168,17 +168,11 @@ export const bookingsSlice = api.injectEndpoints({
     }),
     addDispute: builder.mutation({
       query: (formData) => {
-        console.log(
-          formData,
-          "form data in dispute process --------------------->",
-        );
+        console.log(formData, "form data in dispute api slice");
         return {
           url: `/add-dispute`,
           method: "POST",
           body: formData,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
         };
       },
       invalidatesTags: [
@@ -192,7 +186,6 @@ export const bookingsSlice = api.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: true,
 });
 
 export const {

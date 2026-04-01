@@ -66,8 +66,7 @@ const Notification = () => {
     refetchOnMountOrArgChange: true,
   });
   const [singleMark] = useSingleMarkMutation();
-  const { data: userProfileInfo, isLoading: isProfileLoading } =
-    useProfileQuery({});
+  const { data: userProfileInfo } = useProfileQuery({});
   const [deleteAllNotification, { isLoading: isAllNotificationLoading }] =
     useDeleteAllNotificationsMutation();
   const [
@@ -134,6 +133,7 @@ const Notification = () => {
       } catch {}
     }
     const type = item?.data?.data?.type;
+    console.log(type, "type for notifications-============>");
     // ---------------- Modal Types ---------------- //
     if (type === "delivery_request_sent") {
       setSelectedOrderId(item?.data?.data?.order_id);
@@ -173,7 +173,7 @@ const Notification = () => {
         router.push({
           pathname: "/company/serviceBookings/order_approved",
           params: {
-            id: item.data.order_id,
+            id: item?.data?.data?.order_id,
           },
         });
         break;
@@ -203,7 +203,7 @@ const Notification = () => {
       case "new_dispute":
         router.push({
           pathname: "/service_provider/individual/disputes/dispute_review",
-          params: { id: item?.data?.dispute_id },
+          params: { id: item?.data?.data?.dispute_id },
         });
         break;
       case "report":

@@ -40,7 +40,7 @@ const Message = () => {
 
   // ------------------ api end point ---------------------
   const { data: ProfilerData, isLoading: isProfilerLoading } = useProfileQuery(
-    {}
+    {},
   );
   const [getMessages, messageResults] = useLazyGetMessagesQuery();
   const [sendMessage] = useSendMessageMutation();
@@ -106,10 +106,10 @@ const Message = () => {
   // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
   React.useLayoutEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true)
+      setKeyboardVisible(true),
     );
     const hide = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false)
+      setKeyboardVisible(false),
     );
     return () => {
       show.remove();

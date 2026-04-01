@@ -206,7 +206,7 @@ const Provider_Profile = () => {
                       ? getProviderProfileDataDetails?.data?.address.length > 45
                         ? getProviderProfileDataDetails?.data?.address.slice(
                             0,
-                            45
+                            45,
                           ) + "..."
                         : getProviderProfileDataDetails?.data?.address
                       : "N/A"}
@@ -242,7 +242,7 @@ const Provider_Profile = () => {
                             </Text>
                           </View>
                         );
-                      }
+                      },
                     )
                   ) : (
                     <Text
@@ -286,7 +286,7 @@ const Provider_Profile = () => {
                         onPress={() =>
                           router.push({
                             pathname: "/company/serviceDetails",
-                            params: { service_id: item?.id },
+                            params: { id: item?.id },
                           })
                         }
                       />
@@ -302,7 +302,6 @@ const Provider_Profile = () => {
               </View>
 
               {/* ============================== review profile j================================= */}
-
               <Text
                 style={tw`font-DegularDisplayDemoMedium text-2xl text-black px-5 mt-6`}
               >
@@ -465,7 +464,7 @@ const Provider_Profile = () => {
                                 `border w-5 h-5  justify-center items-center rounded-full`,
                                 selectedIndex === index
                                   ? `bg-primary border-white`
-                                  : `bg-transparent`
+                                  : `bg-transparent`,
                               )}
                             ></TouchableOpacity>
                             <Text

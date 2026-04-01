@@ -86,7 +86,7 @@ const My_Booking = () => {
   const params = useLocalSearchParams();
   console.log(
     params.status,
-    "this is search params ----------------------> my booking screen "
+    "this is search params ----------------------> my booking screen ",
   );
   const [ReportModalVisible, setReportModalVisible] = useState<boolean>(false);
   const [cancelModalVisible, setCancelModalVisible] = useState<boolean>(false);
@@ -417,7 +417,7 @@ const My_Booking = () => {
                           `border w-5 h-5  justify-center items-center rounded-full`,
                           selectedIndex === index
                             ? `bg-primary border-white`
-                            : `bg-transparent`
+                            : `bg-transparent`,
                         )}
                       ></TouchableOpacity>
                       <Text
@@ -534,7 +534,6 @@ const My_Booking = () => {
               </View>
 
               {/*  --------- button ---------- */}
-
               <View
                 style={tw` px-5 flex-1 flex-row justify-between items-center gap-4`}
               >

@@ -15,7 +15,7 @@ const BookingsHistory = () => {
   const [hasMorePages, setHasMorePages] = useState<boolean>(true);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const [fetchBookingHistoryQuery, { isLoading, isFetching, error }] =
+  const [fetchBookingHistoryQuery, { isLoading, isFetching }] =
     useLazyBookingHistoryQuery();
 
   // --- Fetch Data Function ---
@@ -46,7 +46,7 @@ const BookingsHistory = () => {
         if (isRefresh) return newBookings;
         const existingIds = new Set(prev.map((booking) => booking.id));
         const uniqueBookings = newBookings.filter(
-          (booking: any) => !existingIds.has(booking.id)
+          (booking: any) => !existingIds.has(booking.id),
         );
         return [...prev, ...uniqueBookings];
       });
@@ -64,7 +64,7 @@ const BookingsHistory = () => {
         Alert.alert(
           "Server Error",
           "There is a temporary issue with the server. Please try again later.",
-          [{ text: "OK" }]
+          [{ text: "OK" }],
         );
       }
     } finally {
@@ -143,12 +143,20 @@ const BookingsHistory = () => {
   // Show skeleton during initial load
   if (isLoading && bookings.length === 0 && !apiError) {
     return (
-      <View style={tw`flex-1 bg-base_color`}>
+      <View style={tw`flex-1 px-5 bg-base_color`}>
         <BackTitleButton
           pageName={"Bookings history"}
           onPress={() => router.back()}
           titleTextStyle={tw`text-xl`}
         />
+
+        <View>
+          <ActivityIndicator
+            size="large"
+            color={tw.color("primary")}
+            style={tw`mt-10`}
+          />
+        </View>
       </View>
     );
   }

@@ -49,14 +49,12 @@ const ServiceDetails = () => {
   // ================== api end point ==================
   const { data: packageDetails, isLoading: packageDetailingLoading } =
     usePackageDetailsQuery(id);
-  const [cartResponse, { isLoading: isCartLoading }] =
-    useStoreDeleteCartItemMutation();
-  const [deleteCartResponse, { isLoading: deleteCartLoading }] =
-    useDeleteCartItemMutation();
+  const [cartResponse] = useStoreDeleteCartItemMutation();
+  const [deleteCartResponse] = useDeleteCartItemMutation();
   const { data: getAddToCartItem, isLoading: getAddToCartLoading } =
     useGetCartItemQuery({});
   const { data: getFavorites, isLoading: isGetFavoritesLoading } =
-    useGetFavoritesQuery();
+    useGetFavoritesQuery({});
   const [deleteFavorite, { isLoading: isDeleteFavoriteLoading }] =
     useDeleteFavoriteMutation();
   const [addFavorite, { isLoading: isAddFavoriteLoading }] =
@@ -65,7 +63,7 @@ const ServiceDetails = () => {
   // ================== check favorite ==================
   const checkFavorite = getFavorites?.data?.data.some(
     (favorite: { package_id: number }) =>
-      favorite.package_id === Number(packageDetails?.data?.package_details?.id)
+      favorite.package_id === Number(packageDetails?.data?.package_details?.id),
   );
   // ================= handle favorite ==================
   const handleFavorite = async (packageId: number) => {
@@ -95,7 +93,7 @@ const ServiceDetails = () => {
   // -------------- sum price of add to cart ------------
   const cartReducePrice = getAddToCartItem?.data.reduce(
     (total: number, item: any) => total + Number(item?.package?.price || 0),
-    0
+    0,
   );
   // --------------------------- add to cart function delete and add this same function use for add to cart   ----------------
   const handleDeleteStoreCartItem = async (packageId: number) => {
@@ -106,14 +104,14 @@ const ServiceDetails = () => {
         if (
           addToCartState?.some(
             (cartItem: { package_id: number }) =>
-              cartItem?.package_id == packageId
+              cartItem?.package_id == packageId,
           )
         ) {
           setAddToCartState(
             addToCartState.filter(
               (cartItem: { package_id: number }) =>
-                cartItem?.package_id !== packageId
-            )
+                cartItem?.package_id !== packageId,
+            ),
           );
         } else {
           setAddToCartState([...addToCartState, { package_id: packageId }]);
@@ -234,7 +232,7 @@ const ServiceDetails = () => {
 
         {/* --------------------- services details part ---------------- */}
         <Text
-          style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-4`}
+          style={tw`font-DegularDisplayDemoSemibold text-center text-2xl my-4`}
         >
           Services details
         </Text>
@@ -257,7 +255,7 @@ const ServiceDetails = () => {
                       </Text>
                     </View>
                   );
-                }
+                },
               )
             : null}
         </View>
@@ -279,7 +277,7 @@ const ServiceDetails = () => {
               activeOpacity={0.8}
               onPress={async () => {
                 await handleDeleteStoreCartItem(
-                  packageDetails?.data?.package_details?.id
+                  packageDetails?.data?.package_details?.id,
                 );
               }}
               style={tw`justify-center items-center w-14 h-14 rounded-full bg-redDeep`}
@@ -289,7 +287,7 @@ const ServiceDetails = () => {
                   addToCartState?.some(
                     (cartItem: { package_id: number }) =>
                       cartItem?.package_id ===
-                      packageDetails?.data?.package_details?.id
+                      packageDetails?.data?.package_details?.id,
                   )
                     ? IconTick
                     : IconPlus
@@ -300,10 +298,13 @@ const ServiceDetails = () => {
         </View>
         {/* ---------------- distance part ---------------- */}
         <View
-          style={tw`border border-gray-400 rounded-full flex-row justify-center h-12 items-center gap-3 my-6`}
+          style={tw`border flex-1 px-2 border-gray-400 rounded-full flex-row justify-center h-12 items-center gap-3 my-6`}
         >
           <SvgXml xml={IconLocation} />
-          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
+          <Text
+            numberOfLines={1}
+            style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+          >
             {packageDetails?.data?.distance}
           </Text>
         </View>
@@ -373,7 +374,7 @@ const ServiceDetails = () => {
         <FlatList
           data={packageDetails?.data?.reviews}
           renderItem={(item) => <ReviewerCard item={item} />}
-          keyExtractor={(item, index) => item?.id.toString()}
+          keyExtractor={(item) => item?.id.toString()}
           contentContainerStyle={tw`py-2 px-2 gap-3 `}
           horizontal={true}
           showsVerticalScrollIndicator={false}
@@ -460,7 +461,7 @@ const ServiceDetails = () => {
                             xml={
                               addToCartState?.some(
                                 (cartItem: { package_id: number }) =>
-                                  cartItem?.package_id === item?.id
+                                  cartItem?.package_id === item?.id,
                               )
                                 ? IconTick
                                 : IconPlus
@@ -471,7 +472,7 @@ const ServiceDetails = () => {
                     </View>
                   </Pressable>
                 );
-              }
+              },
             )
           )}
         </View>
@@ -506,7 +507,7 @@ const ServiceDetails = () => {
                     }
                   />
                 );
-              }
+              },
             )
           )}
         </View>
