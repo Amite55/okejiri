@@ -184,12 +184,13 @@ const My_Service = () => {
         columnWrapperStyle={tw`justify-between`}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
-        contentContainerStyle={tw`px-5 pb-10`}
+        contentContainerStyle={tw`px-5 pb-10 `}
+        style={tw``}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => (
           <View>
             <BackTitleButton
-              pageName="My services "
+              pageName="My services"
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
             />

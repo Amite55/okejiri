@@ -1,5 +1,11 @@
 import React from "react";
-import { Modal, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Modal,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
@@ -12,6 +18,7 @@ interface IModalProps {
   setModalVisible: (visible: boolean) => void;
   buttonTitle?: string;
   children?: React.ReactNode;
+  isLoadingDelete?: boolean;
 }
 
 const DeleteModal = ({
@@ -21,6 +28,7 @@ const DeleteModal = ({
   modalVisible,
   setModalVisible,
   subTitle,
+  isLoadingDelete,
 }: IModalProps) => {
   return (
     <Modal
@@ -53,25 +61,32 @@ const DeleteModal = ({
 
           <View style={tw`flex-row  justify-between items-center gap-3`}>
             <TouchableOpacity
+              activeOpacity={0.6}
               onPress={() => setModalVisible(!modalVisible)}
-              style={tw`flex-1 rounded-full bg-black`}
+              style={tw`flex-1 rounded-full bg-black h-10 justify-center items-center`}
             >
               <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-center p-3 text-white`}
+                style={tw`font-DegularDisplayDemoMedium text-xl text-center text-white`}
               >
                 Cancel
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
+              disabled={isLoadingDelete}
+              activeOpacity={0.6}
               onPress={onPress}
-              style={tw`flex-1 rounded-full bg-redDeep`}
+              style={tw`flex-1 rounded-full bg-redDeep h-10 justify-center items-center`}
             >
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-center p-3 text-white`}
-              >
-                Yes
-              </Text>
+              {isLoadingDelete ? (
+                <ActivityIndicator color={"#fff"} />
+              ) : (
+                <Text
+                  style={tw`font-DegularDisplayDemoMedium text-xl text-center text-white`}
+                >
+                  Yes
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>

@@ -20,7 +20,13 @@ export const companyEmployeesSlice = api.injectEndpoints({
         method: "POST",
         body: requestBody,
       }),
-      invalidatesTags: ["settings"],
+      invalidatesTags: [
+        "settings",
+        "addServicePackageDetail",
+        "booking",
+        "order_approve",
+        "services",
+      ],
     }),
     editEmployee: builder.mutation({
       query: ({ id, formData }) => ({

@@ -133,7 +133,6 @@ const Notification = () => {
       } catch {}
     }
     const type = item?.data?.data?.type;
-    console.log(type, "type for notifications-============>");
     // ---------------- Modal Types ---------------- //
     if (type === "delivery_request_sent") {
       setSelectedOrderId(item?.data?.data?.order_id);

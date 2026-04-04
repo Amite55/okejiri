@@ -5,7 +5,7 @@ import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import {
-  useDisputeDeleteMutation,
+  useDisputeDeleteONEMutation,
   useDisputeDetailsQuery,
 } from "@/src/redux/apiSlices/userProvider/account/myDisputesSlices";
 import { router, useLocalSearchParams } from "expo-router";
@@ -15,9 +15,14 @@ import { SvgXml } from "react-native-svg";
 
 const Disputes_Status = () => {
   const { id } = useLocalSearchParams();
-  const { data: DisputeDetails, isLoading } = useDisputeDetailsQuery(id);
-  const [disputeDelete] = useDisputeDeleteMutation();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  // ================ API call for dispute details and delete dispute ================
+  const { data: DisputeDetails, isLoading } = useDisputeDetailsQuery(id);
+  const [disputeDelete, { isLoading: isLoadingDelete }] =
+    useDisputeDeleteONEMutation();
+
+  // loading state for dispute details
   if (isLoading) {
     return (
       <View style={tw`flex-1 justify-center items-center bg-white`}>
@@ -28,11 +33,16 @@ const Disputes_Status = () => {
       </View>
     );
   }
+  // handel delete dispute =-=-=-=-=-=-=-=-=-=-=-=-
   const handelDeleted = async () => {
-    const res = await disputeDelete(id).unwrap();
-    if (res) {
-      setModalVisible(false);
-      router.back();
+    try {
+      const res = await disputeDelete(Number(id)).unwrap();
+      if (res) {
+        setModalVisible(false);
+        router.back();
+      }
+    } catch (error: any) {
+      console.log(error, "Your dispute not deleted!");
     }
   };
 
@@ -41,21 +51,21 @@ const Disputes_Status = () => {
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       style={tw`flex-1 px-5 bg-base_color`}
-      contentContainerStyle={tw`pb-6 justify-between flex-1 flex-grow`}
+      contentContainerStyle={tw`pb-1 justify-between flex-1 flex-grow`}
     >
       <View>
         <BackTitleButton
-          pageName={"Dispute status"}
+          pageName={"Dispute status fjfj"}
           onPress={() => router.back()}
           titleTextStyle={tw`text-xl`}
         />
 
         <View style={tw`justify-center items-center`}>
           <View
-            style={tw`flex-row justify-center items-center h-14 w-36 gap-2 rounded-full bg-violet`}
+            style={tw`flex-row justify-center items-center h-8 w-32 gap-2 rounded-full bg-violet`}
           >
             <View style={tw`w-2 h-2 rounded-full bg-white`} />
-            <Text style={tw`font-DegularDisplayDemoMedium text-xl text-white`}>
+            <Text style={tw`font-DegularDisplayDemoMedium text-lg text-white`}>
               {DisputeDetails?.data?.status}
             </Text>
           </View>
@@ -65,7 +75,7 @@ const Disputes_Status = () => {
           <Text
             style={tw`font-DegularDisplayDemoMedium text-2xl text-redWhite mb-2`}
           >
-            {DisputeDetails?.data.raised_by_role}
+            {DisputeDetails?.data?.raised_by_role}
           </Text>
           <View style={tw`flex-row items-center gap-1 mb-5`}>
             <Image style={tw`w-12 h-12 rounded-full `} source={ImgProfileImg} />
@@ -103,13 +113,15 @@ const Disputes_Status = () => {
         onPress={() => setModalVisible(true)}
         titleProps="Delete dispute"
         IconProps={IconDeleteWhite}
-        contentStyle={tw`mt-4 bg-redDeep`}
+        contentStyle={tw`mt-4 bg-redDeep h-12`}
       />
+      {/* ============== delete modal ============= */}
       <DeleteModal
+        isLoadingDelete={isLoadingDelete}
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
         deleteIcon={IconDelete}
-        buttonTitle="Yes, Log out"
+        buttonTitle="Yes, delete"
         modalTitle="Are you sure you want to delete this dispute?"
         onPress={() => {
           handelDeleted();

@@ -88,13 +88,18 @@ const Dispute_Appeal = () => {
         },
       );
       const data = await response.json();
-      console.log(data, "this is response success");
+      console.log(data, "response from dispute appeal api------->");
       if (data?.status === "success") {
         router.push({
           pathname: "/Toaster",
           params: { res: data?.message || "Report sent successfully!" },
         });
         setTimeout(() => router.back(), 3000);
+      } else {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: data?.message || "Dispute appeal processing failed" },
+        });
       }
     } catch (err: any) {
       console.log("error from dispute appeal--------->", err);

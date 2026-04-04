@@ -1,11 +1,9 @@
 import {
-  IconBackLeftArrow,
   IconChatsYellow,
   IconCopy,
   IconCross,
   IconCrossSolidRed,
   IconDisputes,
-  IconFileUpload,
   IconOrderCancelModalIcon,
   IconPhoneGray,
   IconPlus,
@@ -30,7 +28,6 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetScrollView,
-  BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
@@ -49,6 +46,7 @@ import {
   View,
 } from "react-native";
 
+import { ReportBottomSheet } from "@/src/Components/ReportBottomSheet";
 import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
 import {
   useDeleteCartItemMutation,
@@ -67,24 +65,25 @@ const Booking_Service_Details = () => {
   const [reportDetails, setReportDetails] = useState<string>("");
   const [addToCartState, setAddToCartState] = useState<any>([]);
   const [loadingState, setLoadingState] = useState<number | null>(null);
-  const [images, setImages] = useState<string | null>(null);
+  const [images, setImages] = useState<string[] | null>(null);
   const [refreshing, setRefreshing] = React.useState(false);
   const { id } = useLocalSearchParams();
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const reportSheetRef = useRef<BottomSheetModal>(null);
   const deliveryModalRef = useRef<BottomSheetModal>(null);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
+    reportSheetRef.current?.present();
   }, []);
 
   const handleCloseModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.dismiss();
+    reportSheetRef.current?.dismiss();
   }, []);
   const handleOnDismiss = useCallback(() => {
     setReportDetails("");
     setSelectedReport("");
     setReportReason(false);
+    setImages(null);
   }, []);
 
   // ---------------- api end point ----------------
@@ -100,6 +99,7 @@ const Booking_Service_Details = () => {
   const [deleteCartResponse] = useDeleteCartItemMutation();
   const { data: getAddToCartItem } = useGetCartItemQuery({});
   const [cartResponse] = useStoreDeleteCartItemMutation();
+
   // [================= handel report =================]
   const handleReport = async () => {
     if (!images?.length || !reportDetails) {
@@ -124,16 +124,13 @@ const Booking_Service_Details = () => {
       });
       const response = await reportProvider(formData).unwrap();
       if (response) {
+        handleOnDismiss();
         router.push({
           pathname: `/Toaster`,
           params: { res: response?.message || "Report sent successfully!" },
         });
       }
       handleCloseModalPress();
-      router.push({
-        pathname: `/Toaster`,
-        params: { res: response?.message || "Report sent successfully!" },
-      });
     } catch (error: any) {
       console.log(error, " report not sent to provider");
       router.push({
@@ -155,7 +152,7 @@ const Booking_Service_Details = () => {
         });
         setTimeout(() => {
           router.back();
-        }, 1000);
+        }, 1500);
       }
     } catch (error) {
       console.log(error, "this ___________________");
@@ -214,7 +211,7 @@ const Booking_Service_Details = () => {
       setLoadingState(null);
     }
   };
-
+  // ====================== picked report image from gallery =======================
   const pickImages = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -717,172 +714,22 @@ const Booking_Service_Details = () => {
               </View>
             )}
           </View>
-          {/* =================== see Report details modal ===================== */}
-          <BottomSheetModal
-            ref={bottomSheetModalRef}
-            onDismiss={handleOnDismiss}
-            snapPoints={["70%", "100%"]}
-            enableDynamicSizing={false}
-            index={0}
-            containerStyle={tw`bg-gray-500 bg-opacity-20`}
-            backdropComponent={(props) => (
-              <BottomSheetBackdrop
-                {...props}
-                appearsOnIndex={0}
-                disappearsOnIndex={-1}
-                pressBehavior="close"
-              />
-            )}
-          >
-            {/* header */}
-            <View
-              style={[
-                tw`flex-row justify-center items-center h-14 bg-primary px-4`,
-                { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
-              ]}
-            >
-              <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
-              >
-                Report
-              </Text>
-            </View>
-
-            {/* scrollable content */}
-            <BottomSheetScrollView
-              contentContainerStyle={tw`px-6 pt-4 pb-6`}
-              keyboardShouldPersistTaps="handled"
-            >
-              {reportReason ? (
-                // ============ step 2 — details ============
-                <View style={tw`gap-4`}>
-                  <TouchableOpacity
-                    onPress={() => setReportReason(false)}
-                    style={tw`w-10 h-10 border justify-center items-center rounded-full`}
-                  >
-                    <SvgXml xml={IconBackLeftArrow} />
-                  </TouchableOpacity>
-
-                  <BottomSheetTextInput
-                    style={[
-                      tw`text-black`,
-                      {
-                        borderWidth: 1,
-                        borderColor: "gray",
-                        paddingVertical: 18,
-                        paddingHorizontal: 20,
-                        minHeight: 200,
-                        borderRadius: 30,
-                      },
-                    ]}
-                    multiline
-                    numberOfLines={4}
-                    placeholder="Describe your issue..."
-                    onChangeText={(text) => setReportDetails(text)}
-                    textAlignVertical="top"
-                  />
-
-                  <Text
-                    style={tw`font-DegularDisplayDemoRegular text-xl text-regularText text-right`}
-                  >
-                    1/1000
-                  </Text>
-
-                  {/* file upload */}
-                  <TouchableOpacity
-                    activeOpacity={0.6}
-                    onPress={() => pickImages()}
-                    style={tw`h-12 rounded-xl border border-gray-300 flex-row justify-center items-center gap-3`}
-                  >
-                    <SvgXml xml={IconFileUpload} />
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                    >
-                      {images
-                        ? `${images.length} files selected`
-                        : "Upload files"}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                // ============ step 1 — select reason ============
-                <View style={tw`gap-3`}>
-                  {ReportData.map((item) => (
-                    <Pressable
-                      key={item.id}
-                      onPress={() => setSelectedReport(item.reportName)}
-                      style={tw`flex-row gap-3 items-center`}
-                    >
-                      <View
-                        style={tw.style(
-                          `border w-5 h-5 justify-center items-center rounded-full`,
-                          selectedReport === item.reportName
-                            ? `bg-primary border-primary`
-                            : `bg-transparent border-gray-400`,
-                        )}
-                      >
-                        {selectedReport === item.reportName && (
-                          <View style={tw`w-2 h-2 rounded-full bg-white`} />
-                        )}
-                      </View>
-                      <Text
-                        style={tw`font-DegularDisplayDemoRegular text-base text-black flex-1`}
-                      >
-                        {item.reportName}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              )}
-            </BottomSheetScrollView>
-
-            {/* fixed bottom action buttons */}
-            <View
-              style={tw`flex-row justify-end items-center gap-6 px-6 py-4 border-t border-gray-100`}
-            >
-              <TouchableOpacity onPress={() => handleCloseModalPress()}>
-                <Text
-                  style={tw`font-DegularDisplayDemoRegular text-2xl text-black p-2`}
-                >
-                  Cancel
-                </Text>
-              </TouchableOpacity>
-
-              {reportReason ? (
-                // step 2 — Report button
-                isReportLoading ? (
-                  <ActivityIndicator size="small" color="blue" />
-                ) : (
-                  <TouchableOpacity
-                    style={tw`p-2`}
-                    onPress={() => handleReport()}
-                  >
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-primary text-2xl`}
-                    >
-                      Report
-                    </Text>
-                  </TouchableOpacity>
-                )
-              ) : (
-                // step 1 — Next button
-                <TouchableOpacity
-                  style={tw`p-2`}
-                  disabled={!selectedReport}
-                  onPress={() => setReportReason(true)}
-                >
-                  <Text
-                    style={tw.style(
-                      `font-DegularDisplayDemoMedium text-2xl`,
-                      selectedReport ? `text-primary` : `text-regularText`,
-                    )}
-                  >
-                    Next
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </BottomSheetModal>
+          {/* =================== Report details modal ===================== */}
+          <ReportBottomSheet
+            handleReportPress={handleReport}
+            images={images}
+            onClose={handleCloseModalPress}
+            pickImages={pickImages}
+            ref={reportSheetRef as React.RefObject<BottomSheetModal>}
+            reportData={ReportData}
+            isLoading={isReportLoading}
+            reportDetails={reportDetails}
+            setReportDetails={setReportDetails}
+            selectedReport={selectedReport}
+            setSelectedReport={setSelectedReport}
+            reportReason={reportReason}
+            setReportReason={setReportReason}
+          />
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </KeyboardAvoidingView>

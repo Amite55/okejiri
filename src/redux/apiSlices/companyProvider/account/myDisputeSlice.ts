@@ -3,25 +3,25 @@ import { api } from "@/src/redux/base/baseApi";
 export const companyMyDisputeSlice = api.injectEndpoints({
   endpoints: (builder) => ({
     myDispute: builder.query({
-      query: (per_page = 10) => ({
-        url: `/my-dispute?per_page=${per_page}`,
+      query: ({ per_page, page }) => ({
+        url: `/my-dispute?per_page=${per_page}&page=${page}`,
         method: "GET",
       }),
-      providesTags: ["settings"],
+      providesTags: ["settings", "addPortfolio", "add_dispute", "dispute"],
     }),
     disputeDetails: builder.query({
       query: (id) => ({
         url: `/dispute-details/${id}`,
         method: "GET",
       }),
-      providesTags: ["settings"],
+      providesTags: ["settings", "add_dispute", "dispute"],
     }),
     disputeDelete: builder.mutation({
       query: (id) => ({
         url: `/dispute-details/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["settings"],
+      invalidatesTags: ["settings", "add_dispute", "dispute"],
     }),
     addDisputeAppeal: builder.mutation({
       query: (requestBody) => ({
@@ -33,13 +33,14 @@ export const companyMyDisputeSlice = api.injectEndpoints({
           // "Accept": "application/json",
         },
       }),
-      invalidatesTags: ["settings"],
+      invalidatesTags: ["settings", "add_dispute", "dispute"],
     }),
   }),
   overrideExisting: true,
 });
 export const {
   useMyDisputeQuery,
+  useLazyMyDisputeQuery,
   useDisputeDetailsQuery,
   useDisputeDeleteMutation,
   useAddDisputeAppealMutation,

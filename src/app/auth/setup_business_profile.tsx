@@ -10,7 +10,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -315,19 +314,13 @@ const Setup_Business_Profile = () => {
                   </Text>
                 )}
               </View>
-              {isLoadingPersonalization ? (
-                <ActivityIndicator
-                  size="small"
-                  color={tw.color("primary")}
-                  style={tw`mt-2`}
-                />
-              ) : (
-                <PrimaryButton
-                  onPress={() => handleSubmit()}
-                  contentStyle={tw`h-12 `}
-                  titleProps="Submit"
-                />
-              )}
+
+              <PrimaryButton
+                onPress={() => handleSubmit()}
+                contentStyle={tw`h-12 `}
+                titleProps="Submit"
+                loading={isLoadingPersonalization}
+              />
             </ScrollView>
           )}
         </Formik>

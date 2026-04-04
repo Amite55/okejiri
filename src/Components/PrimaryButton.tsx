@@ -11,6 +11,7 @@ interface IPrimaryButtonProps {
   onPress?: () => void;
   IconFastProps?: any;
   loading?: boolean;
+  activityColor?: string;
 }
 
 const PrimaryButton = ({
@@ -21,6 +22,7 @@ const PrimaryButton = ({
   onPress,
   IconFastProps,
   loading = false,
+  activityColor = "#fff",
 }: IPrimaryButtonProps) => {
   return (
     <TouchableOpacity
@@ -34,7 +36,7 @@ const PrimaryButton = ({
     >
       {!loading && IconFastProps && <SvgXml xml={IconFastProps || null} />}
       {loading ? (
-        <ActivityIndicator size={"small"} color="#fff" />
+        <ActivityIndicator size={"small"} color={activityColor || "#fff"} />
       ) : (
         <Text
           style={[

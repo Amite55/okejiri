@@ -62,10 +62,10 @@ const Disputes_Status = () => {
       {/* STATUS */}
       <View style={tw`justify-center items-center`}>
         <View
-          style={tw`flex-row justify-center items-center h-14 w-36 gap-2 rounded-full bg-violet`}
+          style={tw`flex-row justify-center items-center h-8 w-32 gap-2 rounded-full bg-violet`}
         >
           <View style={tw`w-2 h-2 rounded-full bg-white`} />
-          <Text style={tw`font-DegularDisplayDemoMedium text-xl text-white`}>
+          <Text style={tw`font-DegularDisplayDemoMedium text-lg text-white`}>
             {dispute?.status || "Pending"}
           </Text>
         </View>

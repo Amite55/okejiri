@@ -36,13 +36,15 @@ import { SvgXml } from "react-native-svg";
 
 const Profile = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [roleSwitchModalVisible, setRoleSwitchModalVisible] =
+    useState<boolean>(false);
   const [refreshing, setRefreshing] = useState(false);
   const { notification, deviceDetails, expoPushToken, error } =
     useNotification();
 
   // ============================ api end point ==============================
-  const [logout] = useLogoutMutation({});
-  const { data: userProfileInfo, isFetching, refetch } = useProfileQuery({});
+  const [logout, { isLoading }] = useLogoutMutation({});
+  const { data: userProfileInfo, refetch } = useProfileQuery({});
   const [switchRole, { isLoading: roleSwitchLoading }] =
     useRoleSwitchMutation();
 
@@ -74,32 +76,31 @@ const Profile = () => {
   const handleRoleSwitch = async () => {
     try {
       const res = await switchRole({}).unwrap();
-      const user = res?.user || res?.data?.user;
+      // console.log(res, "hare is response------------------> from user ");
+      const user = res?.data?.user;
+      const token = res?.data?.access_token;
       if (res) {
-        await AsyncStorage.setItem("token", res?.data?.access_token);
+        await AsyncStorage.setItem("token", token);
         await AsyncStorage.setItem("roll", user?.role);
         await AsyncStorage.setItem(
           "providerTypes",
           user?.provider_type || "Individual",
         );
-
         if (user?.is_personalization_complete === false) {
-          router.dismiss();
           router.replace("/auth/contact");
         } else if (user?.role === "PROVIDER") {
           if (user?.has_service === false) {
-            router.dismiss();
             router.replace({
               pathname: "/auth/provide_service",
               params: { from: "role_switch" },
             });
           }
         } else {
-          router.dismiss();
           router.replace("/service_provider/individual/(Tabs)/home");
         }
       }
     } catch (error: any) {
+      setRoleSwitchModalVisible(false);
       console.log(error, "role not switched role to Individual Provider");
       router.push({
         pathname: `/Toaster`,
@@ -224,7 +225,7 @@ const Profile = () => {
       <View style={tw`gap-3 mb-6`}>
         <SettingsCard
           title="  Switch to service provider"
-          onPress={() => handleRoleSwitch()}
+          onPress={() => setRoleSwitchModalVisible(true)}
           fastIcon={IconSwitch}
         />
         <SettingsCard
@@ -273,7 +274,6 @@ const Profile = () => {
       />
 
       {/* ------------------- logout modal ------------------ */}
-
       <LogoutModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
@@ -284,6 +284,22 @@ const Profile = () => {
         onPress={() => {
           handleLogoutUser();
         }}
+        loading={isLoading}
+        disabled={isLoading}
+      />
+
+      {/* ============= ROLE SWITCH MODAL ================ */}
+      <LogoutModal
+        modalVisible={roleSwitchModalVisible}
+        setModalVisible={setRoleSwitchModalVisible}
+        // logoutIcon={IconTol}
+        buttonTitle="Yes, Switch"
+        modalTitle="Are you sure you want to switch roles to service provider?"
+        onPress={() => {
+          handleRoleSwitch();
+        }}
+        loading={roleSwitchLoading}
+        disabled={roleSwitchLoading}
       />
     </ScrollView>
   );

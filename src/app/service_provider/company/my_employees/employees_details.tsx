@@ -58,7 +58,7 @@ const Employees_Details = () => {
           <View
             style={tw`px-4 py-5 bg-white rounded-2xl justify-center items-center gap-1`}
           >
-            <View style={tw`flex-row gap-3 items-center`}>
+            <View style={tw`flex-row gap-2 items-center`}>
               <SvgXml xml={IconPhoneGray} />
               <Text
                 style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
@@ -67,10 +67,10 @@ const Employees_Details = () => {
               </Text>
             </View>
 
-            <View style={tw`flex-row gap-3 items-center`}>
+            <View style={tw`flex-row gap-2 items-center`}>
               <SvgXml xml={IconLocationGray} />
               <Text
-                style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+                style={tw`font-DegularDisplayDemoRegular text-lg text-black`}
               >
                 {employee?.location}
               </Text>

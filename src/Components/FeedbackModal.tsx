@@ -59,6 +59,8 @@ export default function FeedbackModel({ ref, id, onClose, onSubmit }: any) {
     try {
       const response = await fetchRatting(requestBody).unwrap();
       if (response) {
+        setReviewText("");
+        setRating(0);
         router.push({
           pathname: "/Toaster",
           params: {
@@ -69,7 +71,6 @@ export default function FeedbackModel({ ref, id, onClose, onSubmit }: any) {
       }
     } catch (err) {
       console.log(" ==== submit ratting error === ", err);
-
       router.push({
         pathname: "/Toaster",
         params: {

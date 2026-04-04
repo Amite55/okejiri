@@ -40,7 +40,7 @@ const Account = () => {
     useNotification();
 
   // ============================ api end point ==============================
-  const [logout] = useLogoutMutation({});
+  const [logout, { isLoading }] = useLogoutMutation({});
 
   const {
     data: userProfileInfo,
@@ -274,6 +274,8 @@ const Account = () => {
         onPress={() => {
           handleLogoutUser();
         }}
+        loading={isLoading}
+        disabled={isLoading}
       />
     </ScrollView>
   );

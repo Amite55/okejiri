@@ -239,7 +239,7 @@ const My_Service_Package = () => {
 
   // ======================== MAIN RETURN ==========================
   return (
-    <View style={{ flex: 1 }}>
+    <View style={tw`flex-1 bg-base_color`}>
       <FlatList
         data={services}
         keyExtractor={(item) => item.id.toString()}
@@ -249,7 +249,7 @@ const My_Service_Package = () => {
         }
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
-        contentContainerStyle={tw`px-5 pb-10 bg-base_color`}
+        contentContainerStyle={tw`px-5 pb-10 `}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => (
           <View>
