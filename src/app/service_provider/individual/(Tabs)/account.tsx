@@ -10,7 +10,6 @@ import {
   IconRightCornerArrow,
   IconSettings,
   IconShare,
-  IconSwitch,
 } from "@/assets/icons";
 import { useNotification } from "@/context/NotificationContext";
 import LogoutModal from "@/src/Components/LogoutModal";
@@ -205,11 +204,11 @@ const Account = () => {
       {/* ------------ settings menu ---------------- */}
 
       <View style={tw`gap-3 mb-6`}>
-        <SettingsCard
+        {/* <SettingsCard
           title=" Switch to User"
           onPress={() => setRoleSwitchModalVisible(true)}
           fastIcon={IconSwitch}
-        />
+        /> */}
         <SettingsCard
           title=" My services"
           onPress={() =>

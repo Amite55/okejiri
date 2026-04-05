@@ -9,7 +9,6 @@ import {
   IconRightCornerArrow,
   IconSettings,
   IconShare,
-  IconSwitch,
 } from "@/assets/icons";
 import { useNotification } from "@/context/NotificationContext";
 import LogoutModal from "@/src/Components/LogoutModal";
@@ -223,11 +222,11 @@ const Profile = () => {
       </TouchableOpacity>
 
       <View style={tw`gap-3 mb-6`}>
-        <SettingsCard
+        {/* <SettingsCard
           title="  Switch to service provider"
           onPress={() => setRoleSwitchModalVisible(true)}
           fastIcon={IconSwitch}
-        />
+        /> */}
         <SettingsCard
           title=" Bookings history"
           onPress={() => router.push("/company/bookingsHistory")}

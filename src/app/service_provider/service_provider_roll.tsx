@@ -25,17 +25,18 @@ const ServiceProviderRoll = () => {
 
       <View>
         <Text
-          style={tw`font-PoppinsRegular text-black text-lg text-center mb-4 px-1`}
+          style={tw`font-PoppinsRegular text-black text-lg text-center mb-2 px-1`}
         >
           What type of service provider you are ?
         </Text>
         <Text
-          style={tw`font-PoppinsRegular text-black text-lg text-center px-1`}
+          style={tw`font-PoppinsRegular text-gray-600 text-base text-center px-1`}
         >
           Choose a type of provider that suits best with you.
         </Text>
 
         <TouchableOpacity
+          activeOpacity={0.6}
           // onPress={() => router.push("/auth/login")}
           onPress={() => {
             AsyncStorage.setItem("providerTypes", "Individual");
@@ -57,12 +58,13 @@ const ServiceProviderRoll = () => {
         </TouchableOpacity>
         {/* ------------------------------ service provider with company  ---------------------------- */}
         <TouchableOpacity
+          activeOpacity={0.6}
           // onPress={() => router.push("/auth/login")}
           onPress={() => {
             AsyncStorage.setItem("providerTypes", "Company");
             router.push("/auth/login");
           }}
-          style={tw`bg-white w-full rounded-3xl p-2 flex-row justify-between items-center mt-3`}
+          style={tw`bg-white w-full rounded-3xl p-2 flex-row justify-between items-center my-3 `}
         >
           <View style={tw`flex-row items-center gap-5`}>
             <View

@@ -17,7 +17,7 @@ const Chose_roll = () => {
     <ScrollView
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
-      style={tw`flex-1 px-5 bg-base_color`}
+      style={tw`flex-1 px-5 bg-base_color pb-2`}
     >
       <View style={tw`flex-1 justify-center items-center mt-4`}>
         <Image style={tw`w-44 h-12`} source={ImgLogo} contentFit="contain" />
@@ -28,12 +28,12 @@ const Chose_roll = () => {
         />
         <View style={tw`flex-1 justify-center items-center gap-3 my-3`}>
           <Text
-            style={tw`flex-1 font-PoppinsMedium text-3xl text-black text-center`}
+            style={tw`flex-1 font-PoppinsMedium text-2xl text-black text-center`}
           >
             Choose your role
           </Text>
           <Text
-            style={tw` flex-1 font-PoppinsRegular text-lg text-black text-center`}
+            style={tw` flex-1 font-PoppinsRegular text-base text-gray-700 text-center`}
           >
             Book trusted services as a User, or list and manage your offerings
             as a Service Provider on Okejiri.
@@ -41,6 +41,7 @@ const Chose_roll = () => {
         </View>
 
         <TouchableOpacity
+          activeOpacity={0.6}
           onPress={() => {
             AsyncStorage.setItem("roll", "USER");
             AsyncStorage.removeItem("providerTypes");
@@ -62,6 +63,7 @@ const Chose_roll = () => {
         </TouchableOpacity>
         {/* ------------------------------ service provider ---------------------------- */}
         <TouchableOpacity
+          activeOpacity={0.6}
           onPress={() => {
             AsyncStorage.setItem("roll", "PROVIDER");
             router.push("/service_provider/service_provider_roll");
