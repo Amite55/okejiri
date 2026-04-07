@@ -1,7 +1,5 @@
 import {
-  IconBackLeftArrow,
   IconEmailGray,
-  IconFileUpload,
   IconLocationGray,
   IconPhoneGray,
   IconProfileBadge,
@@ -11,34 +9,24 @@ import { ImgCleaning } from "@/assets/images/image";
 import ReviewerCard from "@/src/Components/ReviewerCard";
 import ServiceCard from "@/src/Components/ServiceCard";
 import ProviderProfileSkeleton from "@/src/Components/skeletons/ProviderProfileSkeleton";
-import ReportData from "@/src/json/ReportData.json";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
+import { useClickProviderMutation } from "@/src/redux/apiSlices/userProvider/account/clickProviderORRatingSlices";
 import {
   useGetProviderReviewsQuery,
   useGetProviderServicesQuery,
   useProviderProfileQuery,
 } from "@/src/redux/apiSlices/userProvider/servicesSlices";
-import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetScrollView,
-  TouchableWithoutFeedback,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import {
   FlatList,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -46,34 +34,11 @@ import { SvgXml } from "react-native-svg";
 
 const Provider_Profile = () => {
   const { provider_id } = useLocalSearchParams();
-  const [reportReason, setReportReason] = useState<boolean>(false);
-  const [selectedIndex, setSelectedIndex] = useState(null);
-  const [selectedReport, setSelectedReport] = useState<string>("");
-  const [reportDetails, setReportDetails] = useState<string>("");
-
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-
-  const handleCloseModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.dismiss();
-  }, []);
-  const handleOnDismiss = useCallback(() => {
-    // modal close হলে সব state reset হবে
-    setReportDetails("");
-    setSelectedIndex(null);
-    setSelectedReport("");
-    setReportReason(false);
-  }, []);
 
   // ============================== api end point ============================1
   const {
     data: getProviderProfileDataDetails,
     isLoading: isProviderProfileDataLoading,
-    refetch: refetchProviderProfileData,
   } = useProviderProfileQuery(provider_id);
   const {
     data: getProvidedServicesData,
@@ -83,6 +48,25 @@ const Provider_Profile = () => {
     data: getProvidedReviewsData,
     isLoading: isProvidedReviewsDataLoading,
   } = useGetProviderReviewsQuery(getProviderProfileDataDetails?.data?.id);
+  const [clickProfile] = useClickProviderMutation();
+
+  console.log(
+    getProviderProfileDataDetails?.data?.is_boosted,
+    "provider profile data==================>",
+  );
+  // ==========  call when provider profile is boost ===================
+  useEffect(() => {
+    if (!getProviderProfileDataDetails?.data?.is_boosted) return;
+    const isBoostHandler = async () => {
+      try {
+        await clickProfile(provider_id).unwrap();
+      } catch (error: any) {
+        console.log(error, "you api called but some error !");
+      }
+    };
+
+    isBoostHandler();
+  }, [getProviderProfileDataDetails?.data?.is_boosted, provider_id]);
 
   if (
     isProviderProfileDataLoading ||
@@ -91,25 +75,6 @@ const Provider_Profile = () => {
   ) {
     return <ProviderProfileSkeleton />;
   }
-
-  const handleReport = () => {
-    try {
-      const reportData = {
-        booking_id: 1212,
-        provider_id: 1212,
-        report_reason: selectedReport,
-        report_details: reportDetails,
-        attachments: [],
-      };
-      console.log(reportData, "report data to be sent");
-    } catch (error) {
-      console.log(error, "report not send this provider?");
-      router.push({
-        pathname: `/Toaster`,
-        params: { res: error?.message || error },
-      });
-    }
-  };
 
   return (
     <KeyboardAvoidingView
@@ -127,7 +92,7 @@ const Provider_Profile = () => {
               contentContainerStyle={tw`pb-6  bg-base_color`}
             >
               <BackTitleButton
-                pageName={"Provider profile"}
+                pageName={"Provider profile kj"}
                 onPress={() => router.back()}
                 titleTextStyle={tw`text-xl`}
                 contentStyle={tw`px-4`}
@@ -173,8 +138,6 @@ const Provider_Profile = () => {
                   </View>
                 </View>
               </View>
-
-              {/* ----------------------------- report and message =---------------------- */}
 
               {/*  ---------- provider details info  ----------------- */}
               <View
@@ -317,202 +280,7 @@ const Provider_Profile = () => {
                 showsHorizontalScrollIndicator={false}
               />
             </ScrollView>
-
-            {/* =================== see Report details modal ===================== */}
           </View>
-
-          <BottomSheetModal
-            ref={bottomSheetModalRef}
-            onDismiss={handleOnDismiss}
-            snapPoints={["70%"]}
-            enableDynamicSizing={false}
-            index={0}
-            containerStyle={tw`bg-gray-500 bg-opacity-20`}
-            backdropComponent={(props) => (
-              <BottomSheetBackdrop
-                {...props}
-                appearsOnIndex={0}
-                disappearsOnIndex={-1}
-                pressBehavior="close"
-              />
-            )}
-          >
-            <TouchableWithoutFeedback
-              onPress={Keyboard.dismiss}
-              accessible={false}
-            >
-              <BottomSheetScrollView>
-                <View
-                  style={[
-                    tw`flex-1 flex-row justify-center items-center h-14  bg-primary px-4`,
-                    { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
-                  ]}
-                >
-                  <Text
-                    style={tw`font-DegularDisplayDemoMedium text-xl text-white`}
-                  >
-                    Service details
-                  </Text>
-                </View>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  {reportReason ? (
-                    <View style={tw`px-6 mt-4 `}>
-                      {/*  issue details ----------------- */}
-                      <View style={tw``}>
-                        {/* -------- back button -------- */}
-                        <TouchableOpacity
-                          onPress={() => setReportReason(false)}
-                          style={tw`w-10 h-10 mb-4 border justify-center items-center rounded-full`}
-                        >
-                          <SvgXml xml={IconBackLeftArrow} />
-                        </TouchableOpacity>
-                        <TextInput
-                          style={[
-                            tw`text-black`,
-                            {
-                              borderWidth: 1,
-                              borderColor: "gray",
-                              paddingVertical: 18,
-                              paddingHorizontal: 20,
-
-                              minHeight: 200,
-                              maxHeight: 400,
-                              borderRadius: 30,
-                            },
-                          ]}
-                          multiline={true}
-                          numberOfLines={4}
-                          placeholder="Describe your issue..."
-                          onChangeText={(newText) => setReportDetails(newText)}
-                          // value={}
-                          textAlignVertical="top"
-                        />
-
-                        <View
-                          style={tw`flex-row justify-end items-center py-1`}
-                        >
-                          <Text
-                            style={tw`font-DegularDisplayDemoRegular text-xl text-regularText`}
-                          >
-                            1/1000
-                          </Text>
-                        </View>
-
-                        {/*  ------------ file uplod ----------------- */}
-                        <View
-                          style={tw`h-12 rounded-xl border justify-center items-center border-gray-300`}
-                        >
-                          <TouchableOpacity
-                            style={tw`flex-row items-center justify-center gap-3`}
-                          >
-                            <SvgXml xml={IconFileUpload} />
-                            <Text
-                              style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
-                            >
-                              Upload files
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-
-                        {/*  ----------- next button -------------- */}
-
-                        <View
-                          style={tw`flex-row justify-end items-center gap-6 mt-6`}
-                        >
-                          <TouchableOpacity
-                            onPress={() => handleCloseModalPress()}
-                          >
-                            <Text
-                              style={tw`font-DegularDisplayDemoRegular text-2xl text-black p-2`}
-                            >
-                              Cancel
-                            </Text>
-                          </TouchableOpacity>
-
-                          <TouchableOpacity
-                            style={tw`p-2`}
-                            onPress={() => handleReport()}
-                          >
-                            <Text
-                              style={tw`font-DegularDisplayDemoMedium text-primary text-2xl `}
-                            >
-                              Report
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    </View>
-                  ) : (
-                    // --------------------------------  selected reason text-----------------
-                    <View style={tw`flex-1 px-6`}>
-                      <View style={tw` gap-3 mt-6`}>
-                        {ReportData.map((item, index) => (
-                          <Pressable
-                            onPress={() => {
-                              setSelectedIndex(index);
-                              setSelectedReport(item.reportName);
-                            }}
-                            key={item.id}
-                            style={tw`flex-row gap-3 items-center rounded-none`}
-                          >
-                            <TouchableOpacity
-                              onPress={() => {
-                                setSelectedIndex(index);
-                                setSelectedReport(item.reportName);
-                              }}
-                              style={tw.style(
-                                `border w-5 h-5  justify-center items-center rounded-full`,
-                                selectedIndex === index
-                                  ? `bg-primary border-white`
-                                  : `bg-transparent`,
-                              )}
-                            ></TouchableOpacity>
-                            <Text
-                              style={tw`font-DegularDisplayDemoRegular text-base text-black`}
-                            >
-                              {item.reportName}
-                            </Text>
-                          </Pressable>
-                        ))}
-                      </View>
-
-                      {/*  ----------- next button -------------- */}
-                      <View style={tw`flex-row justify-end items-center gap-6`}>
-                        <TouchableOpacity
-                          onPress={() => handleCloseModalPress()}
-                        >
-                          <Text
-                            style={tw`font-DegularDisplayDemoRegular text-2xl text-black p-2`}
-                          >
-                            Cancel
-                          </Text>
-                        </TouchableOpacity>
-
-                        {selectedIndex ? (
-                          <TouchableOpacity
-                            style={tw`p-2`}
-                            onPress={() => setReportReason(true)}
-                          >
-                            <Text
-                              style={tw`font-DegularDisplayDemoMedium text-primary text-2xl `}
-                            >
-                              Next
-                            </Text>
-                          </TouchableOpacity>
-                        ) : (
-                          <Text
-                            style={tw`font-DegularDisplayDemoMedium text-regularText text-2xl p-2`}
-                          >
-                            Next
-                          </Text>
-                        )}
-                      </View>
-                    </View>
-                  )}
-                </ScrollView>
-              </BottomSheetScrollView>
-            </TouchableWithoutFeedback>
-          </BottomSheetModal>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </KeyboardAvoidingView>

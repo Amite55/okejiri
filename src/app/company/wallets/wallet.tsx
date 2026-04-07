@@ -20,6 +20,7 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetScrollView,
+  BottomSheetTextInput,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import * as Clipboard from "expo-clipboard";
@@ -30,7 +31,6 @@ import {
   FlatList,
   RefreshControl,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -144,32 +144,35 @@ const Wallet_Index = () => {
   };
 
   // ------------------ Render Each Transaction ------------------
-  const renderTransaction = ({ item }: any) => (
-    <View style={tw`flex-row items-center justify-between`}>
-      <View style={tw`flex-row items-center gap-4`}>
-        <SvgXml xml={IconRightArrowCornerPrimaryColor} />
-        <View>
-          <Text style={tw`font-DegularDisplayDemoMedium text-xl text-black`}>
-            {item.service_title || "Service title"}
-          </Text>
-          <View style={tw`flex-row gap-2 items-center`}>
+  const renderTransaction = ({ item }: any) => {
+    return (
+      <View style={tw`flex-1 flex-row items-center justify-between gap-2`}>
+        <View style={tw`flex-1 flex-row items-center gap-4`}>
+          <SvgXml xml={IconRightArrowCornerPrimaryColor} />
+
+          <View style={tw`flex-1 flex-row gap-2 items-center`}>
             <Text
-              style={tw`font-DegularDisplayDemoSemibold text-xl text-black`}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={tw`flex-shrink font-DegularDisplayDemoMedium text-lg text-gray-600 `}
             >
-              {item.receiver?.name || "Unknown"}
+              {item?.receiver?.name || "Unknown"}
             </Text>
-            {item.receiver?.kyc_status === "Verified" && (
+            {item?.receiver?.kyc_status === "Verified" && (
               <SvgXml xml={IconProfileBadge} />
             )}
           </View>
         </View>
-      </View>
 
-      <Text style={tw`font-DegularDisplayDemoMedium text-primary text-2xl`}>
-        ₦{item.amount || "0.00"}
-      </Text>
-    </View>
-  );
+        <Text
+          numberOfLines={1}
+          style={tw`font-DegularDisplayDemoMedium text-primary text-xl`}
+        >
+          ₦{item?.amount || "0.00"}
+        </Text>
+      </View>
+    );
+  };
 
   // ------------------ FlatList Header ------------------
   const ListHeader = () => (
@@ -290,7 +293,7 @@ const Wallet_Index = () => {
         }
         data={listData}
         renderItem={renderTransaction}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item?.id.toString()}
         onEndReachedThreshold={0.3}
         onEndReached={() => {
           if (!isLoading && hasMore) {
@@ -309,7 +312,7 @@ const Wallet_Index = () => {
           ) : null
         }
         ListHeaderComponent={<ListHeader />}
-        contentContainerStyle={tw`bg-base_color pb-10 px-5 gap-4`}
+        contentContainerStyle={tw`bg-base_color pb-10 px-5 gap-5`}
         showsVerticalScrollIndicator={false}
         style={tw`flex-1 bg-base_color`}
       />
@@ -321,10 +324,7 @@ const Wallet_Index = () => {
             setBalance(null);
           }}
           ref={bottomSheetModalRef}
-          snapPoints={["98%"]}
-          enableContentPanningGesture={false}
-          keyboardBehavior="interactive"
-          keyboardBlurBehavior="restore"
+          snapPoints={["50%"]}
           containerStyle={tw`bg-gray-500 bg-opacity-20`}
           backdropComponent={(props) => (
             <BottomSheetBackdrop
@@ -374,7 +374,7 @@ const Wallet_Index = () => {
                   <View
                     style={tw`h-12 px-4 rounded-full border border-gray-300 flex-row justify-between items-center`}
                   >
-                    <TextInput
+                    <BottomSheetTextInput
                       keyboardType="number-pad"
                       style={tw`flex-1 text-black text-lg font-DegularDisplayDemoMedium`}
                       placeholder="0.00"
