@@ -140,7 +140,7 @@ const Make_Payment = () => {
 <body>
   <script>
     FlutterwaveCheckout({
-      public_key: "FLWPUBK_TEST-8ae5ae7873e218ce9a69eadc088ca540-X",
+      public_key: "FLWPUBK-219d595b9c9c08ca315cdabe937019f4-X",
       tx_ref: "TX_${Date.now()}",
       amount: ${bookingPrice},
       currency: "NGN",

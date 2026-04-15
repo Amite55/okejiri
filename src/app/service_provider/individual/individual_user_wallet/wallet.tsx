@@ -47,7 +47,6 @@ const Wallet_Index = () => {
   const {
     data: transactionsData,
     isLoading: transactionsLoading,
-    error: transactionsError,
     refetch: refetchTransactions,
   } = useRecent_transactionsQuery(1); // Start with page 1
 

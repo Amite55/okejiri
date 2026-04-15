@@ -74,8 +74,7 @@ const Wallet_Index = () => {
   // === Load data ===//
   useEffect(() => {
     if (recentTransactions?.data?.data) {
-      const newItems = recentTransactions.data.data;
-
+      const newItems = recentTransactions?.data?.data;
       if (newItems.length > 0) {
         setListData((prev) => [...prev, ...newItems]);
       } else {

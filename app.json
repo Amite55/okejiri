@@ -7,7 +7,6 @@
     "icon": "./assets/images/splashSquire.png",
     "scheme": "okejirimobileapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "extra": {
       "router": {},
       "eas": {
