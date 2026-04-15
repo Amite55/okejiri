@@ -132,7 +132,7 @@ const Chats = () => {
             />
 
             <Text
-              style={tw`font-DegularDisplayDemoMedium text-center text-3xl my-2`}
+              style={tw`font-DegularDisplayDemoMedium text-center text-xl my-2`}
             >
               Chats
             </Text>

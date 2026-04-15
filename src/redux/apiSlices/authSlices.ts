@@ -108,11 +108,24 @@ const authSlices = api.injectEndpoints({
         invalidatesTags: ["profile"],
       }),
       logout: builder.mutation({
-        query: () => ({
-          url: "/logout",
-          method: "POST",
-        }),
-        invalidatesTags: ["profile"],
+        query: (data) => {
+          return {
+            url: "/logout",
+            method: "POST",
+            body: data,
+          };
+        },
+        invalidatesTags: [
+          "profile",
+          "login",
+          "register",
+          "logout",
+          "request_delivery",
+          "user",
+          "notifications",
+          "message",
+          "settings",
+        ],
       }),
       updateLatLong: builder.mutation({
         query: (credentials) => ({

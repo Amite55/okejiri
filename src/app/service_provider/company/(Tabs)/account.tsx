@@ -12,6 +12,7 @@ import {
   IconShare,
   IconSmallMultiple,
 } from "@/assets/icons";
+import { useNotification } from "@/context/NotificationContext";
 import LogoutModal from "@/src/Components/LogoutModal";
 import SettingsCard from "@/src/Components/SettingsCard";
 import tw from "@/src/lib/tailwind";
@@ -35,9 +36,11 @@ import { SvgXml } from "react-native-svg";
 const Account = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState(false);
+  const { notification, deviceDetails, expoPushToken, error } =
+    useNotification();
 
   // ============================ api end point ==============================
-  const [logout] = useLogoutMutation({});
+  const [logout, { isLoading }] = useLogoutMutation({});
 
   const {
     data: userProfileInfo,
@@ -56,7 +59,7 @@ const Account = () => {
     const token = await AsyncStorage.getItem("token");
     try {
       setModalVisible(false);
-      await logout(token).unwrap();
+      await logout({ device_id: deviceDetails?.device_id, token }).unwrap();
       await AsyncStorage.removeItem("roll");
       await AsyncStorage.removeItem("providerTypes");
       await AsyncStorage.removeItem("token");
@@ -271,6 +274,8 @@ const Account = () => {
         onPress={() => {
           handleLogoutUser();
         }}
+        loading={isLoading}
+        disabled={isLoading}
       />
     </ScrollView>
   );

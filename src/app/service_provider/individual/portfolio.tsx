@@ -47,8 +47,10 @@ const Portfolio = () => {
 
   const [fetchPortfolios, { isLoading, isFetching }] =
     useLazyGetPortfoliosQuery();
-  const [deletePortfolios] = useDeletePortfoliosMutation();
-  const [updatePortfolio] = useUpdatePortfolioMutation();
+  const [deletePortfolios, { isLoading: isDeleting }] =
+    useDeletePortfoliosMutation();
+  const [updatePortfolio, { isLoading: isUpdating }] =
+    useUpdatePortfolioMutation();
   const [addPortfolio] = useAddPortfolioMutation();
 
   // === Load data from API with pagination ===
@@ -196,7 +198,6 @@ const Portfolio = () => {
 
       try {
         const res = await addPortfolio(form).unwrap();
-
         if (res?.status === "success") {
           router.push({
             pathname: "/Toaster",
@@ -239,7 +240,7 @@ const Portfolio = () => {
   }
 
   return (
-    <View style={tw`flex-1 bg-base_color px-3 pb-2`}>
+    <View style={tw`flex-1 bg-base_color px-3 pb-8`}>
       <FlatList
         data={portfolios}
         keyExtractor={(item) =>
@@ -258,7 +259,7 @@ const Portfolio = () => {
         numColumns={2}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={tw`gap-3 pb-4`}
-        style={tw`pt-2`}
+        style={tw``}
         columnWrapperStyle={tw`justify-between`}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.1}
@@ -314,9 +315,10 @@ const Portfolio = () => {
       {!isFirstLoading && !refreshing && portfolios.length > 0 && (
         <View style={tw`absolute bottom-0 left-0 right-0 px-3`}>
           <PrimaryButton
-            titleProps="Add More"
+            titleProps="Add More "
             IconProps={IconPlus}
             onPress={pickImageAddMore}
+            contentStyle={tw`w-full h-12 mb-1`}
           />
         </View>
       )}
@@ -332,7 +334,7 @@ const Portfolio = () => {
           style={tw`flex-1 bg-black bg-opacity-50 justify-center items-center`}
         >
           <View
-            style={tw`w-7/8 bg-white p-5 rounded-2xl items-center shadow-lg`}
+            style={tw`w-7/8 bg-white p-4 rounded-2xl items-center shadow-lg`}
           >
             <View style={tw`w-full flex-row justify-between items-center`}>
               <Text style={tw`text-2xl font-bold mt-3`}>Select one</Text>
@@ -344,21 +346,25 @@ const Portfolio = () => {
               </Pressable>
             </View>
 
-            <View style={tw`w-full m-4`}>
-              <TouchableOpacity
-                style={tw`flex-row justify-center items-center border border-[#0063E580] w-full p-3 rounded-lg gap-2 mb-3`}
+            <View style={tw`w-full m-4 gap-3`}>
+              <PrimaryButton
+                loading={isUpdating}
+                titleProps="Swap image"
+                textStyle={tw`text-black`}
+                contentStyle={tw`bg-transparent rounded-lg h-12 border border-[#0063E580]`}
                 onPress={pickImage}
-              >
-                <SvgXml xml={IconSwapGreen} />
-                <Text style={tw`text-base`}>Swap image</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={tw`flex-row justify-center items-center border border-[#C47575] w-full p-3 rounded-lg gap-2`}
+                IconFastProps={IconSwapGreen}
+                activityColor="#000"
+              />
+              <PrimaryButton
+                loading={isDeleting}
+                titleProps="Delete image"
+                textStyle={tw`text-black`}
+                contentStyle={tw`bg-transparent border rounded-lg h-12 border-[#C47575]`}
                 onPress={handleDelete}
-              >
-                <SvgXml xml={IconDeleteRed} />
-                <Text style={tw`text-base`}>Delete image</Text>
-              </TouchableOpacity>
+                IconFastProps={IconDeleteRed}
+                activityColor="#000"
+              />
             </View>
           </View>
         </View>

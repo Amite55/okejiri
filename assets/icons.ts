@@ -504,7 +504,13 @@ export const IconSettingWhite = `<svg width="40" height="41" viewBox="0 0 40 41"
 
 `;
 
-export const IconDate = `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const IconNotification = `<svg width="22" height="25" viewBox="0 0 22 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.4473 19.2692V20.1154C14.4473 21.013 14.0836 21.8739 13.4363 22.5087C12.789 23.1434 11.9111 23.5 10.9956 23.5C10.0802 23.5 9.20228 23.1434 8.55498 22.5087C7.90767 21.8739 7.54402 21.013 7.54402 20.1154V19.2692M20.2546 17.5468C18.8696 15.8846 17.8919 15.0385 17.8919 10.456C17.8919 6.25962 15.7066 4.76457 13.9079 4.03846C13.669 3.94221 13.4441 3.72115 13.3713 3.48053C13.0558 2.4276 12.1713 1.5 10.9956 1.5C9.81993 1.5 8.93492 2.42813 8.62265 3.48159C8.54984 3.72486 8.32495 3.94221 8.08603 4.03846C6.28526 4.76563 4.10211 6.25538 4.10211 10.456C4.09941 15.0385 3.12163 15.8846 1.73667 17.5468C1.16284 18.2353 1.66548 19.2692 2.66915 19.2692H19.3275C20.3258 19.2692 20.8252 18.2322 20.2546 17.5468Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+`;
+
+export const IconDate = `<svg width="20" height="20" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M0 7.816C0 5.83073 -6.27417e-08 4.83915 0.616842 4.22231C1.23368 3.60547 2.22526 3.60547 4.21053 3.60547H16.8421C18.8274 3.60547 19.8189 3.60547 20.4358 4.22231C21.0526 4.83915 21.0526 5.83073 21.0526 7.816C21.0526 8.31178 21.0526 8.56021 20.8989 8.71494C20.7442 8.86863 20.4947 8.86863 20 8.86863H1.05263C0.556842 8.86863 0.308421 8.86863 0.153684 8.71494C-9.41126e-08 8.56021 0 8.31073 0 7.816ZM0 17.2897C0 19.2749 -6.27417e-08 20.2665 0.616842 20.8834C1.23368 21.5002 2.22526 21.5002 4.21053 21.5002H16.8421C18.8274 21.5002 19.8189 21.5002 20.4358 20.8834C21.0526 20.2665 21.0526 19.2749 21.0526 17.2897V12.0265C21.0526 11.5307 21.0526 11.2823 20.8989 11.1276C20.7442 10.9739 20.4947 10.9739 20 10.9739H1.05263C0.556842 10.9739 0.308421 10.9739 0.153684 11.1276C-9.41126e-08 11.2823 0 11.5318 0 12.0265V17.2897Z" fill="#535353"/>
 <path d="M5.2627 1.5V4.65789M15.789 1.5V4.65789" stroke="#535353" stroke-width="2" stroke-linecap="round"/>
 </svg>
@@ -877,7 +883,7 @@ export const IconPayoutRequestNotification = `<svg width="74" height="74" viewBo
 </svg>
 `;
 
-export const IconOrderRejectedNotification = `<svg width="74" height="74" viewBox="0 0 74 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const IconOrderRejectedNotification = `<svg width="60" height="60" viewBox="0 0 74 74" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_875_16384)">
 <rect x="4" width="66" height="66" rx="33" fill="#FFEBE5" shape-rendering="crispEdges"/>
 <rect x="6" y="2" width="62" height="62" rx="31" stroke="white" stroke-width="4" shape-rendering="crispEdges"/>

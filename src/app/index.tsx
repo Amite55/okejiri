@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Font from "expo-font";
 import { router, SplashScreen } from "expo-router";
 import React, { useEffect } from "react";
-import { ActivityIndicator, Image, SafeAreaView, View } from "react-native";
+import { ActivityIndicator, Image, View } from "react-native";
 import { useProfileQuery } from "../redux/apiSlices/authSlices";
 
 export default function Index() {
@@ -62,6 +62,14 @@ export default function Index() {
         const kyc = userProfileInfo?.data?.kyc_status;
         const type = userProfileInfo?.data?.provider_type;
 
+        // const lastNotification =
+        //   await Notifications.getLastNotificationResponseAsync();
+        // if (lastNotification) {
+        //   // =-=========== if have a notification then don't call index -------------
+        //   await SplashScreen.hideAsync();
+        //   return;
+        // }
+
         if (!role) {
           router.replace("/chose_roll");
           return;
@@ -100,6 +108,7 @@ export default function Index() {
           }
         }
       } catch (e: any) {
+        console.log(e, "Index not render in fast screen ????????????");
       } finally {
         await SplashScreen.hideAsync();
       }
@@ -109,17 +118,15 @@ export default function Index() {
   }, [isLoading]);
 
   return (
-    <SafeAreaView style={tw`flex-1 bg-white`}>
-      <View style={tw`flex-1 bg-base_color`}>
-        <View style={tw`flex-1 justify-center items-center gap-4`}>
-          <Image
-            style={tw`w-52 h-20`}
-            resizeMode="contain"
-            source={require("@/assets/images/splashScreen.png")}
-          />
-          <ActivityIndicator size={"large"} color={tw.color("yellow-500")} />
-        </View>
+    <View style={tw`flex-1 bg-base_color`}>
+      <View style={tw`flex-1 justify-center items-center gap-4`}>
+        <Image
+          style={tw`w-52 h-20`}
+          resizeMode="contain"
+          source={require("@/assets/images/splashScreen.png")}
+        />
+        <ActivityIndicator size={"large"} color={tw.color("yellow-500")} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

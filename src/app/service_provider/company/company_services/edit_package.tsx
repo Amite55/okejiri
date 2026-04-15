@@ -8,6 +8,7 @@ import {
 } from "@/assets/icons";
 import CustomTimeModal from "@/src/Components/CustomTimeModal";
 import DeliveryTimeModal from "@/src/Components/DeliveryTimeModal";
+import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import {
@@ -16,7 +17,6 @@ import {
   useDeleteServicePackageDetailItemMutation,
   useEditMyServicePackageMutation,
   useMyServicePackageDetailsQuery,
-  useMyServicePackageMutation,
   useUpdateServiceAvailableTimeMutation,
 } from "@/src/redux/apiSlices/companyProvider/account/services/packages/packageSlice";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -26,7 +26,6 @@ import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { FieldArray, Formik } from "formik";
 import React, { useEffect, useRef, useState } from "react";
-// import { format } from "date-fns";
 import {
   ActivityIndicator,
   Keyboard,
@@ -34,7 +33,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -43,13 +41,6 @@ import {
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 
-// ------------------ static dropdown value -----------------
-const dropdownData = [
-  { label: "1 hours", value: "1" },
-  { label: "2 hours", value: "2" },
-  { label: "3 hours", value: "3" },
-  { label: "6 hours", value: "4" },
-];
 type PackageFormValues = {
   image: any;
   title: string;
@@ -64,107 +55,28 @@ type PackageFormValues = {
 };
 const Edit_Package = () => {
   const { id } = useLocalSearchParams();
-  console.log("============== package id ================ ", id);
-  const [value, setValue] = useState(null);
-  const [isFocus, setIsFocus] = useState(false);
-  const [modalType, setModalType] = useState<"fixed" | "custom" | null>(null);
-  // const [serviceDetails, setServiceDetails] = useState<string[]>([]);
   const fixedModalRef = useRef<BottomSheetModal>(null);
   const customModalRef = useRef<BottomSheetModal>(null);
   const [delivery_time, setDelivery_time] = useState<string>("");
 
   // ========================== api ========================= //
-  const [
-    myServicePackage,
-    {
-      isError: isErrorMyServicePackage,
-      isLoading: isLoadingMyServicePackage,
-      error: errorMyServicePackage,
-    },
-  ] = useMyServicePackageMutation();
-
-  const {
-    data: myServiceDetailsData,
-    isLoading: isLoadingMyServiceDetails,
-    isError: isErrorMyServiceDetails,
-  } = useMyServicePackageDetailsQuery(id);
-  // const serviceDetails = myServiceDetailsData
+  const { data: myServiceDetailsData, isLoading: isLoadingMyServiceDetails } =
+    useMyServicePackageDetailsQuery(id);
   const servicePackages = myServiceDetailsData?.data;
 
-  const [
-    addServicePackageItem,
-    {
-      data: addServicePackageItemData,
-      isLoading: isLoadingAddServicePackageItem,
-      isError: isErrorAddServicePackageItem,
-    },
-  ] = useAddServicePackageDetailItemMutation();
+  const [addServicePackageItem] = useAddServicePackageDetailItemMutation();
 
-  const [
-    deleteServicePackage,
-    {
-      isLoading: isLoadingDeleteServicePackage,
-      isError: isErrorDeleteServicePackage,
-    },
-  ] = useDeleteServicePackageDetailItemMutation();
+  const [deleteServicePackage] = useDeleteServicePackageDetailItemMutation();
 
-  const [
-    addAvailableTime,
-    { isLoading: isLoadingAddAvailableTime, isError: isErrorAddAvailableTime },
-  ] = useAddServiceAvailableTimeMutation();
+  const [addAvailableTime] = useAddServiceAvailableTimeMutation();
 
-  const [
-    updateAvailableTime,
-    {
-      isLoading: isLoadingUpdateAvailableTime,
-      error: errorUpdateAvailableTime,
-      isError: isErrorUpdtedAvailableTime,
-    },
-  ] = useUpdateServiceAvailableTimeMutation();
+  const [updateAvailableTime, { error: errorUpdateAvailableTime }] =
+    useUpdateServiceAvailableTimeMutation();
 
-  const [
-    editPackage,
-    {
-      isLoading: isLoadingEditPackage,
-      isError: isErrorEditPackage,
-      error: errorEditPackage,
-    },
-  ] = useEditMyServicePackageMutation();
+  const [editPackage, { isLoading: isLoadingEditPackage }] =
+    useEditMyServicePackageMutation();
   // =============================== API end ============================ //
 
-  // ===================== validation ==========================
-  const validation = (values: any) => {
-    const errors: any = {};
-
-    if (!values.image) errors.image = "Service package image is required";
-    if (!values.title) errors.title = "Title is required";
-    else if (values.title < 3)
-      errors.title = "Title must be at least 3 letters";
-
-    if (!values.price) {
-      errors.price = "Service package price is required";
-    } else if (values.price === 0) {
-      errors.price = "Service package price must be greater then 0";
-    }
-
-    if (!values.service_details) {
-      errors.service_details = "Service package service details is required";
-    }
-
-    if (!values.available_time_from) {
-      errors.available_time_from = "Available time from is required";
-    }
-    if (!values.available_time_to) {
-      errors.available_time_to = "Available time to is required";
-    }
-    if (!values.delivery_time) {
-      errors.delivery_time = "Delivery time is required";
-    }
-
-    return errors;
-  };
-
-  // =========================== Image picker ============================ //
   // ---------------------- IMAGE PICKER -------------------------
   const pickImage = async (setFieldValue: any, setFieldTouched: any) => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -173,52 +85,28 @@ const Edit_Package = () => {
       alert("Permission needed to access gallery");
       return;
     }
-
     const result: any = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       quality: 0.7,
     });
 
     if (!result.canceled) {
-      const picked = result.assets[0];
-
-      // Extract file extension from URI
-      const uriParts = picked.uri.split(".");
-      const fileExt = uriParts[uriParts.length - 1]; // e.g., "jpeg", "png"
-
-      // Set name dynamically: user + timestamp + extension
-      const fileName = `my_service_package_${Date.now()}.${fileExt}`;
-
-      // Set MIME type dynamically
-      const fileType = `image/${fileExt === "jpg" ? "jpeg" : fileExt}`;
-
-      // Set Formik field
+      // Set Formik fiel
       setFieldValue("image", result.assets[0]);
       setFieldTouched("image", true);
     }
   };
 
   //    ---------------- date picker -----------
-
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
   const [currentTimeIndex, setCurrentTimeIndex] = useState<number>(0);
   const [editingField, setEditingField] = useState<"from" | "to">("from");
 
-  const onChange = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate;
-    setShow(false);
-    setDate(currentDate);
-  };
-
   const showMode = (currentMode: any) => {
     setShow(true);
     setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode("date");
   };
 
   const showTimepicker = () => {
@@ -228,31 +116,19 @@ const Edit_Package = () => {
     let hours = date.getHours(); // 0-23
     const minutes = date.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";
-
     hours = hours % 12;
     hours = hours === 0 ? 12 : hours; // convert 0 => 12
-
     const hoursStr = hours.toString().padStart(2, "0"); // leading zero
     const minutesStr = minutes.toString().padStart(2, "0");
-
     return `${hoursStr}:${minutesStr} ${ampm}`;
   };
 
   const openFixedModal = () => {
-    setModalType("fixed");
     fixedModalRef.current?.present();
-  };
-  const openCustomModal = () => {
-    setModalType("custom");
-    customModalRef.current?.present();
   };
 
   const closeAllModal = () => {
-    setModalType(null);
     fixedModalRef.current?.dismiss();
-    customModalRef.current?.dismiss();
-  };
-  const closeCustomModal = () => {
     customModalRef.current?.dismiss();
   };
 
@@ -273,18 +149,8 @@ const Edit_Package = () => {
       setDelivery_time(servicePackages.delivery_time);
     }
   }, [servicePackages]);
-  // console.log(" =================== my service package =================== ", JSON.stringify(servicePackages, null, 2))
-  // ============================= console.log =======================================
-  // if (isLoadingMyServiceDetails) {
-  //   return (
-  //     <View style={tw`flex-1 justify-center items-center`}>
-  //       <ActivityIndicator size="large" color="#FF6600" />
-  //     </View>
-  //   );
-  // }
 
   return (
-    // <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <KeyboardAvoidingView
       style={tw`flex-1 bg-base_color`}
       behavior={Platform.OS === "ios" ? "padding" : "position"} // iOS/Android different behavior
@@ -295,12 +161,11 @@ const Edit_Package = () => {
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           style={tw`flex-grow px-5`}
-          contentContainerStyle={tw`pb-6 gap-6`}
+          contentContainerStyle={tw`pb-1 gap-6`}
           keyboardShouldPersistTaps="handled"
-          // enableOnAndroid={true}
         >
           <BackTitleButton
-            pageName={"Edit package"}
+            pageName={" Edit Package"}
             onPress={() => router.back()}
             titleTextStyle={tw`text-xl`}
           />
@@ -322,20 +187,19 @@ const Edit_Package = () => {
               price: servicePackages?.price ?? "",
               service_details:
                 servicePackages?.package_detail_items?.map(
-                  (x: any) => x.item
+                  (x: any) => x.item,
                 ) ?? [],
               service_details_ids:
                 servicePackages?.package_detail_items?.map((x: any) => x.id) ??
                 [],
-
-              temp_service_input: "", // input for service
+              temp_service_input: "",
               available_time_from:
                 servicePackages?.available_time?.map(
-                  (x: any) => x.available_time_from
+                  (x: any) => x.available_time_from,
                 ) ?? [],
               available_time_to:
                 servicePackages?.available_time?.map(
-                  (x: any) => x.available_time_to
+                  (x: any) => x.available_time_to,
                 ) ?? [],
               available_time_ids:
                 servicePackages?.available_time?.map((x: any) => x.id) ?? [],
@@ -344,16 +208,8 @@ const Edit_Package = () => {
             onSubmit={async (values) => {
               try {
                 const formData = new FormData();
-
                 formData.append("service_id", String(id));
                 formData.append("title", values.title);
-                // TODO:
-                console.log(
-                  " ======== values image ========== ",
-                  values.image,
-                  " ==== ",
-                  values.image
-                );
                 if (!values.image.uri.startsWith("http")) {
                   formData.append("image", {
                     uri: (values.image as any).uri,
@@ -361,16 +217,9 @@ const Edit_Package = () => {
                     type: (values.image as any).mimeType,
                   } as any);
                 }
-
                 formData.append("price", values.price);
                 formData.append("delivery_time", delivery_time);
-
                 formData.append("_method", "PUT");
-
-                console.log(
-                  " =============== form data ================",
-                  JSON.stringify(formData, null, 2)
-                );
                 const response = await editPackage({
                   id: id,
                   requestBody: formData,
@@ -380,19 +229,12 @@ const Edit_Package = () => {
                   router.push({
                     pathname: "/Toaster",
                     params: {
-                      res: "My service package edited!",
+                      res: "My service package edited successfully!",
                     },
                   });
-                  // ()=> resetForm();
-                  setTimeout(() => {
-                    router.back();
-                  }, 500);
                 }
               } catch (err) {
-                console.log(
-                  "My service package adding failed",
-                  JSON.stringify(err)
-                );
+                console.log(err);
                 router.push({
                   pathname: "/Toaster",
                   params: {
@@ -400,7 +242,6 @@ const Edit_Package = () => {
                   },
                 });
               }
-              console.log("Pressed ");
             }}
           >
             {({
@@ -411,12 +252,7 @@ const Edit_Package = () => {
               setFieldValue,
               values,
               handleSubmit,
-              resetForm,
             }) => {
-              // console.log("=========== values =========", values)
-              // if (values.delivery_time) {
-              //   setDelivery_time(values.delivery_time)
-              // }
               return (
                 <View>
                   <Pressable
@@ -439,7 +275,7 @@ const Edit_Package = () => {
                       <Text
                         style={tw`text-redDeep  font-DegularDisplayDemoRegular text-lg`}
                       >
-                        {errors.image}
+                        {errors.image as any}
                       </Text>
                     ) : (
                       <Text style={tw`font-DegularDisplayDemoRegular text-lg `}>
@@ -449,8 +285,9 @@ const Edit_Package = () => {
                     )}
 
                     <TouchableOpacity
+                      activeOpacity={0.7}
                       onPress={() => pickImage(setFieldValue, setFieldTouched)}
-                      style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
+                      style={tw`bg-primary rounded-full w-48 h-10 justify-center items-center`}
                     >
                       <Text
                         style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
@@ -584,7 +421,7 @@ const Edit_Package = () => {
                                       if (deletedId) {
                                         const response =
                                           await deleteServicePackage(
-                                            deletedId
+                                            deletedId,
                                           ).unwrap();
 
                                         if (response) {
@@ -794,7 +631,7 @@ const Edit_Package = () => {
                               <SvgXml xml={IconDeleteRed} />
                             </TouchableOpacity> */}
                             </View>
-                          )
+                          ),
                         )}
                         {/* show time picker */}
                         {show && (
@@ -824,7 +661,7 @@ const Edit_Package = () => {
                                 values.available_time_ids[currentTimeIndex];
                               console.log(
                                 " ============ time id ============== ",
-                                timeId
+                                timeId,
                               );
 
                               if (timeId) {
@@ -858,10 +695,10 @@ const Edit_Package = () => {
 
                                 // Convert times to comparable Date objects
                                 const fromDate = new Date(
-                                  `1970-01-01T${convertTo24Hour(newFrom)}`
+                                  `1970-01-01T${convertTo24Hour(newFrom)}`,
                                 );
                                 const toDate = new Date(
-                                  `1970-01-01T${convertTo24Hour(newTo)}`
+                                  `1970-01-01T${convertTo24Hour(newTo)}`,
                                 );
 
                                 // Check if "to" is after "from"
@@ -916,7 +753,7 @@ const Edit_Package = () => {
                                     "error ============ ",
                                     err,
                                     " == api error == ",
-                                    errorUpdateAvailableTime
+                                    errorUpdateAvailableTime,
                                   );
                                 }
                               }
@@ -928,39 +765,19 @@ const Edit_Package = () => {
                   />
 
                   {/* ----------------------- submit password -------------- */}
-                  <TouchableOpacity
-                    onPress={handleSubmit}
-                    style={tw`px-2 py-4`}
-                  >
-                    <View
-                      style={tw`flex-row bg-primary py-4 rounded-full justify-center gap-2 items-center`}
-                    >
-                      {isLoadingEditPackage && (
-                        <ActivityIndicator size={"small"} color={"#fff"} />
-                      )}
-                      <Text
-                        style={tw`text-white font-DegularDisplayDemoMedium text-lg`}
-                      >
-                        Add
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                  {/* <PrimaryButton
-                  onPress={handleSubmit}
-                  // onPress={() =>
-                  //   router.push("/service_provider/individual/my_services/my_service")
-                  // }
-                  titleProps="Add"
-                  // IconProps={IconRightArrow}
-                  contentStyle={tw`mt-4`}
-                /> */}
-                  {/* <View style={tw`absolute`}> */}
+                  <PrimaryButton
+                    titleProps="Add"
+                    onPress={() => handleSubmit()}
+                    contentStyle={tw`mt-4 h-12`}
+                    loading={isLoadingEditPackage}
+                  />
                 </View>
               );
             }}
           </Formik>
         </ScrollView>
       </TouchableWithoutFeedback>
+
       <DeliveryTimeModal
         ref={fixedModalRef}
         onClose={closeAllModal}
@@ -974,8 +791,6 @@ const Edit_Package = () => {
           }
         }}
       />
-      {/* </View> */}
-
       <CustomTimeModal
         ref={customModalRef}
         onBack={() => {
@@ -992,37 +807,7 @@ const Edit_Package = () => {
         }}
       />
     </KeyboardAvoidingView>
-    // </TouchableWithoutFeedback >
   );
 };
 
 export default Edit_Package;
-
-const styles = StyleSheet.create({
-  dropdown: {
-    height: 50,
-    borderColor: "gray",
-    borderWidth: 0.5,
-    borderRadius: 100,
-    paddingHorizontal: 24,
-  },
-  icon: {
-    marginRight: 5,
-  },
-
-  placeholderStyle: {
-    fontSize: 18,
-  },
-  selectedTextStyle: {
-    fontSize: 18,
-  },
-  textArea: {
-    borderWidth: 1,
-    borderColor: "gray",
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    minHeight: 100,
-    maxHeight: 150,
-    borderRadius: 20,
-  },
-});

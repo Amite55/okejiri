@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
@@ -11,6 +11,7 @@ interface IPrimaryButtonProps {
   onPress?: () => void;
   IconFastProps?: any;
   loading?: boolean;
+  activityColor?: string;
 }
 
 const PrimaryButton = ({
@@ -21,6 +22,7 @@ const PrimaryButton = ({
   onPress,
   IconFastProps,
   loading = false,
+  activityColor = "#fff",
 }: IPrimaryButtonProps) => {
   return (
     <TouchableOpacity
@@ -32,15 +34,19 @@ const PrimaryButton = ({
         contentStyle,
       ]}
     >
-      {IconFastProps && <SvgXml xml={IconFastProps || null} />}
-      <Text
-        style={[
-          tw`font-DegularDisplayDemoMedium text-xl text-white text-center`,
-          textStyle,
-        ]}
-      >
-        {titleProps}
-      </Text>
+      {!loading && IconFastProps && <SvgXml xml={IconFastProps || null} />}
+      {loading ? (
+        <ActivityIndicator size={"small"} color={activityColor || "#fff"} />
+      ) : (
+        <Text
+          style={[
+            tw`font-DegularDisplayDemoMedium text-xl text-white text-center`,
+            textStyle,
+          ]}
+        >
+          {titleProps}
+        </Text>
+      )}
       <SvgXml xml={IconProps || null} />
     </TouchableOpacity>
   );

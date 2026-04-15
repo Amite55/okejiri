@@ -47,22 +47,14 @@ const KYC_Confirmation = () => {
       if (response) {
         router.push("/KYC_auth/success_screen");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "this server error-------->");
       router.push({
         pathname: `/Toaster`,
-        params: { res: error?.message || error },
+        params: { res: error?.message || error || error?.data },
       });
     }
   };
-
-  console.log(
-    fastPhotoUriPerse,
-    "\n",
-    secondPhotoUriPerse,
-    "\n",
-    selfiePhotoUriPerse
-  );
 
   return (
     <ScrollView
@@ -70,7 +62,7 @@ const KYC_Confirmation = () => {
       showsVerticalScrollIndicator={false}
       keyboardDismissMode="interactive"
       style={tw`flex-1 bg-base_color px-5 `}
-      contentContainerStyle={tw`pb-4 justify-between flex-grow`}
+      contentContainerStyle={tw`justify-between flex-grow`}
     >
       <View>
         <BackTitleButton
@@ -118,6 +110,7 @@ const KYC_Confirmation = () => {
           titleProps={isLoading ? "Loading..." : "Submit"}
           IconProps={IconRightArrow}
           contentStyle={tw`mt-4`}
+          loading={isLoading}
         />
       </View>
     </ScrollView>

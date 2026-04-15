@@ -1,4 +1,7 @@
 import ProviderNotificationCard from "@/src/Components/ProviderNotificationCard";
+import { useDynamicBack } from "@/src/hooks/useDynamicBack";
+import { useProviderType } from "@/src/hooks/useProviderType";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
@@ -9,10 +12,11 @@ import {
   useSingleMarkMutation,
 } from "@/src/redux/apiSlices/notificationsSlices";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   Text,
   TouchableOpacity,
   View,
@@ -22,15 +26,25 @@ const Notification = () => {
   const [page, setPage] = useState(1);
   const [notifications, setNotification] = useState<any[]>([]);
   const [isFetchMore, setIsFetchMore] = useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  // ============== hooks ==================
+  const roll = useRoll() || "";
+  const providerType = useProviderType();
+
+  // =========== call dynamic touting hooks ------------
+  const handleBack = useDynamicBack(roll, providerType);
 
   // ------------------------------- API ------------------------------- //
-  const { data: notificationData, isLoading: isLoadingNotification } =
-    useGetNotificationsQuery(page, {
-      refetchOnMountOrArgChange: true,
-    });
+  const {
+    data: notificationData,
+    isLoading: isLoadingNotification,
+    refetch,
+  } = useGetNotificationsQuery(page, {
+    refetchOnMountOrArgChange: true,
+  });
   const [singleMark] = useSingleMarkMutation();
-  const { data: userProfileInfo, isLoading: isProfileLoading } =
-    useProfileQuery({});
+  const { data: userProfileInfo } = useProfileQuery({});
   useProfileQuery({});
   const [deleteAllNotification, { isLoading: isAllNotificationLoading }] =
     useDeleteAllNotificationsMutation();
@@ -77,10 +91,11 @@ const Notification = () => {
   };
 
   // -------------------------------- handler -------------------------- /
-  const handleNotification = (item: any) => {
+  const handleNotification = (items: any) => {
+    const item = items?.data;
     const handleMark = async () => {
       try {
-        await singleMark(item?.id);
+        await singleMark(items?.id);
       } catch (err: any) {
         router.push({
           pathname: "/Toaster",
@@ -89,7 +104,7 @@ const Notification = () => {
       }
     };
 
-    if (item?.read_at === null) {
+    if (items?.read_at === null) {
       handleMark();
     }
     if (item?.data?.type === "new_order") {
@@ -256,11 +271,25 @@ const Notification = () => {
     }
   };
 
+  // ============= onreFresing ===================
+  const onRefresh = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      await refetch();
+    } catch (error) {
+      console.error("Refresh failed:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
+
   return (
-    <View style={tw`flex-1  bg-base_color px-5 `}>
+    <View style={tw`flex-1  bg-base_color px-4 `}>
       <BackTitleButton
         pageName={"Notifications"}
-        onPress={() => router.back()}
+        onPress={() => {
+          handleBack();
+        }}
         titleTextStyle={tw`text-xl`}
       />
       {notifications?.length > 0 && (
@@ -334,15 +363,19 @@ const Notification = () => {
             )
           }
           refreshing={isFetchMore}
-          onRefresh={() => setPage(1)}
-          renderItem={({ item }) => (
-            <ProviderNotificationCard
-              item={item}
-              onPress={() => handleNotification(item)}
-              onDelete={() => handleDelete(item?.id)}
-              deleteLoading={isDeleteSingleNotificationDeleteLoading}
-            />
-          )}
+          refreshControl={
+            <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+          }
+          renderItem={({ item }) => {
+            return (
+              <ProviderNotificationCard
+                item={item}
+                onPress={() => handleNotification(item)}
+                onDelete={() => handleDelete(item?.id)}
+                deleteLoading={isDeleteSingleNotificationDeleteLoading}
+              />
+            );
+          }}
         />
       )}
     </View>

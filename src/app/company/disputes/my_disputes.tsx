@@ -4,12 +4,12 @@ import {
   IconRightArrowCornerGray,
   IconUnderReview,
 } from "@/assets/icons";
-import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
+import NotificationSkeletonCustom from "@/src/Components/skeletons/NotificationSkeleton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useMyDisputeQuery } from "@/src/redux/apiSlices/companyProvider/account/myDisputeSlice";
+import { useLazyMyDisputeQuery } from "@/src/redux/apiSlices/companyProvider/account/myDisputeSlice";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -22,20 +22,57 @@ import { SvgXml } from "react-native-svg";
 
 const My_Disputes = () => {
   const [page, setPage] = useState<number>(1);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [disputesData, setDisputesData] = useState<any[]>([]);
+  const [hasMorePages, setHasMorePages] = useState<boolean>(true);
 
-  const {
-    data: disputes,
-    isLoading,
-    isFetching,
-    refetch,
-  } = useMyDisputeQuery({});
+  const [getMyDispute, { isLoading: isDisputeLoading }] =
+    useLazyMyDisputeQuery();
 
+  const fetchDisputes = useCallback(
+    async (pageNum = 1, isRefresh = false) => {
+      try {
+        if ((isDisputeLoading || isLoadingMore) && !isRefresh) return;
+        if (!isRefresh) setIsLoadingMore(true);
+        const res = await getMyDispute({
+          page: pageNum,
+          per_page: 10,
+        }).unwrap();
+        const responseData = res || {};
+        const newDisputes = responseData?.data || [];
+        setDisputesData((prev) => {
+          if (isRefresh) return newDisputes;
+          const existingIds = new Set(prev.map((dispute: any) => dispute.id));
+          const uniqueDisputes = newDisputes.filter(
+            (dispute: any) => !existingIds.has(dispute.id),
+          );
+          return [...prev, ...uniqueDisputes];
+        });
+        const current = responseData.current_page || pageNum;
+        const last = responseData.last_page || 1;
+        setHasMorePages(current < last);
+        setPage(current + 1);
+      } catch (err) {
+        console.log(err, "not get disputes==================");
+      } finally {
+        setRefreshing(false);
+        setIsLoadingMore(false);
+      }
+    },
+    [getMyDispute],
+  );
+
+  // --- Initial Fetch ---
+  useEffect(() => {
+    fetchDisputes(1, true);
+  }, [getMyDispute]);
+
+  // ----------- render item for disputes ------------- //
   const DisputesRenderData = ({ item }: { item: any }) => {
     let statusIcon;
-
     if (item?.status === "Pending") {
       statusIcon = IconPending;
     } else if (item?.status === "Under review") {
@@ -43,9 +80,9 @@ const My_Disputes = () => {
     } else if (item?.status === "Resolved") {
       statusIcon = IconResolved;
     }
-
     return (
       <TouchableOpacity
+        activeOpacity={0.6}
         onPress={() =>
           router.push({
             pathname: "/company/disputes/disputes_status",
@@ -71,19 +108,38 @@ const My_Disputes = () => {
     );
   };
 
+  // ----------- handle load more ------------- //
+  const handleLoadMore = () => {
+    if (!isLoadingMore && hasMorePages) {
+      setHasMorePages(true);
+      fetchDisputes(page);
+    }
+  };
+
+  // ============ onRefresh =============== //
+  const refetch = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      fetchDisputes(1, true);
+    } catch (error) {
+      console.log(error, "your failed------->");
+    } finally {
+      setRefreshing(false);
+    }
+  }, [fetchDisputes]);
   // ================= loading skeleton ================== //
-  if (isLoading || isFetching) {
-    return <NotificationSkeleton />;
+  if (isDisputeLoading) {
+    return <NotificationSkeletonCustom />;
   }
 
   return (
     <FlatList
-      data={disputes?.data}
+      data={disputesData}
       renderItem={DisputesRenderData}
       keyExtractor={(item, index) => `dispute-${item?.id || index}`}
       ListHeaderComponent={() => (
         <BackTitleButton
-          pageName={"My disputes"}
+          pageName={"My disputes "}
           onPress={() => router.back()}
           titleTextStyle={tw`text-xl`}
         />
@@ -91,6 +147,8 @@ const My_Disputes = () => {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={refetch} />
       }
+      onEndReached={handleLoadMore}
+      onEndReachedThreshold={0.5}
       showsVerticalScrollIndicator={false}
       style={tw`flex-1 bg-base_color`}
       contentContainerStyle={tw`bg-base_color px-5 gap-3 `}
@@ -101,13 +159,13 @@ const My_Disputes = () => {
               <ActivityIndicator size="small" color="#0000ff" />
               <Text style={tw`mt-2 text-gray-500`}>Loading more...</Text>
             </>
-          ) : !hasMore && disputes.length > 0 ? (
+          ) : !hasMore && disputesData.length > 0 ? (
             <Text style={tw`text-gray-500`}>No more disputes to load</Text>
           ) : null}
         </View>
       }
       ListEmptyComponent={
-        !isLoading ? (
+        !isDisputeLoading ? (
           <View style={tw`py-4 flex justify-center items-center`}>
             <Text style={tw`text-gray-500`}>No disputes found</Text>
           </View>

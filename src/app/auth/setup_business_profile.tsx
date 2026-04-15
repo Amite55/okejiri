@@ -1,19 +1,15 @@
+import { useNotification } from "@/context/NotificationContext";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import ProviderProfileSkeleton from "@/src/Components/skeletons/ProviderProfileSkeleton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import {
-  useEditProfilePictureMutation,
-  useProfileQuery,
-} from "@/src/redux/apiSlices/authSlices";
+import { useUpdateFCMTokenMutation } from "@/src/redux/apiSlices/authSlices";
 import { useGetServicesQuery } from "@/src/redux/apiSlices/companyProvider/account/services/servicesSlice";
 import { useCompletePersonalizationMutation } from "@/src/redux/apiSlices/personalizationSlice";
-import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -27,6 +23,12 @@ import { MultiSelect } from "react-native-element-dropdown";
 import { TextInput } from "react-native-gesture-handler";
 
 const Setup_Business_Profile = () => {
+  const {
+    notification,
+    deviceDetails,
+    expoPushToken,
+    error: notificationError,
+  } = useNotification();
   const { jsonContactInfo } = useLocalSearchParams();
   const contactInfo = JSON.parse(jsonContactInfo as any);
   const [value, setValue] = useState([]);
@@ -34,61 +36,13 @@ const Setup_Business_Profile = () => {
   const [error, setError] = useState("");
   const stgValue = value.map(String);
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
-  const [imageAsset, setImageAsset] =
-    React.useState<ImagePicker.ImagePickerAsset | null>(null);
 
   // ************************** api end point **************************
   const [information, { isLoading: isLoadingPersonalization }] =
     useCompletePersonalizationMutation({});
   const { data: getServiceData, isLoading: isLoadingServices } =
     useGetServicesQuery({});
-  const [editProfilePicture, { isLoading: isLoadingProfileImage }] =
-    useEditProfilePictureMutation();
-  const { data: userProfileInfo, isLoading: isprofileLoading } =
-    useProfileQuery({});
-
-  // -------------------- image picker ---------------------
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled && result.assets.length > 0) {
-      const selectedImage = result.assets[0];
-      setImageAsset(selectedImage);
-      const form = new FormData();
-      const filename =
-        selectedImage.fileName ??
-        selectedImage.uri.split("/").pop() ??
-        `photo_${Date.now()}.jpg`;
-      const extMatch = /\.(\w+)$/.exec(filename);
-      const mime = extMatch ? `image/${extMatch[1]}` : "image/jpeg";
-      form.append("photo", {
-        uri: selectedImage.uri,
-        name: filename,
-        type: mime,
-      } as any);
-
-      try {
-        const response = await editProfilePicture(form).unwrap();
-        if (response.status === "success") {
-          router.push({
-            pathname: "/Toaster",
-            params: { res: response?.message },
-          });
-        }
-      } catch (err: any) {
-        router.push({
-          pathname: "/Toaster",
-          params: { res: err?.message || "Something went wrong" || err },
-        });
-      }
-    } else {
-      console.log("❌ Image selection cancelled");
-    }
-  };
+  const [updateFCMToken] = useUpdateFCMTokenMutation();
 
   const handleScreenValue = async (formData: any) => {
     try {
@@ -103,6 +57,12 @@ const Setup_Business_Profile = () => {
           service_id: stgValue,
         };
         const res = await information(payload).unwrap();
+        // ------------- fcm token update ---------------------
+        const fcmResponse = await updateFCMToken(deviceDetails).unwrap();
+        console.log(
+          fcmResponse,
+          "this is fcm token response from login screen ---------->",
+        );
         if (res?.status === "success") {
           router.replace("/service_provider/company/(Tabs)/home");
           if (res?.data?.kyc_status === "Unverified") {
@@ -112,7 +72,7 @@ const Setup_Business_Profile = () => {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "not registered user");
       router.push({
         pathname: `/Toaster`,
@@ -126,10 +86,10 @@ const Setup_Business_Profile = () => {
   // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
   useEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true)
+      setKeyboardVisible(true),
     );
     const hide = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false)
+      setKeyboardVisible(false),
     );
     return () => {
       show.remove();
@@ -137,7 +97,7 @@ const Setup_Business_Profile = () => {
     };
   }, []);
   const validate = (values: any) => {
-    const errors = {};
+    const errors = {} as any;
     if (!values.business_name) {
       errors.business_name = "Required";
     } else if (values.business_name.length < 3) {
@@ -354,19 +314,13 @@ const Setup_Business_Profile = () => {
                   </Text>
                 )}
               </View>
-              {isLoadingPersonalization ? (
-                <ActivityIndicator
-                  size="small"
-                  color={tw.color("primary")}
-                  style={tw`mt-2`}
-                />
-              ) : (
-                <PrimaryButton
-                  onPress={() => handleSubmit()}
-                  contentStyle={tw`h-12 `}
-                  titleProps="Submit"
-                />
-              )}
+
+              <PrimaryButton
+                onPress={() => handleSubmit()}
+                contentStyle={tw`h-12 `}
+                titleProps="Submit"
+                loading={isLoadingPersonalization}
+              />
             </ScrollView>
           )}
         </Formik>

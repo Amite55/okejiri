@@ -101,8 +101,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
           router.back();
         }, 1000);
       }
-    } catch (error: unknown) {
-      // You can add error handling UI here
+    } catch (error: any) {
       console.log(error, "not update your profile------------->");
       router.push({
         pathname: "/Toaster",
@@ -153,7 +152,7 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
         });
       }
     } else {
-      console.log("❌ Image selection cancelled");
+      console.log(" Image selection cancelled");
     }
   };
 
@@ -162,10 +161,10 @@ const Edit_Profile: React.FC<EditProfileProps> = () => {
   // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
   useEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true)
+      setKeyboardVisible(true),
     );
     const hide = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false)
+      setKeyboardVisible(false),
     );
     return () => {
       show.remove();

@@ -5,11 +5,15 @@ import {
   IconLocation,
   IconMailYellow,
   IconPhoneYellow,
-  IconStar,
   IconWhiteDot,
 } from "@/assets/icons";
 import AcceptedModal from "@/src/Components/AcceptedModal";
+import AssignedEmployee from "@/src/Components/AssignedEmployee";
+import PrimaryButton from "@/src/Components/PrimaryButton";
 import UserReviewCard from "@/src/Components/UserReviewCard";
+import { useDynamicBack } from "@/src/hooks/useDynamicBack";
+import { useProviderType } from "@/src/hooks/useProviderType";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
@@ -27,7 +31,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
-  Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -39,6 +43,12 @@ const Order_Details_Profile = () => {
   // screen state
   const [approvedModalShown, setApprovedModalShown] = useState(false);
   const { id } = useLocalSearchParams();
+  // ============== hooks ==================
+  const roll = useRoll() || "";
+  const providerType = useProviderType();
+
+  // =========== call dynamic touting hooks ------------
+  const handleBack = useDynamicBack(roll, providerType);
 
   const handleAssignPress = () => {
     setApprovedModalShown(false);
@@ -63,15 +73,11 @@ const Order_Details_Profile = () => {
     orderApprove,
     { isLoading: isLoadingOrderApprove, error: errorOrderApproved },
   ] = useOrderApproveMutation();
-  const [
-    requestForDelivery,
-    { isLoading: isLoadingRequestForDelivery, error: errorRequestForDelivery },
-  ] = useRequestForDeliveryMutation();
+  const [requestForDelivery, { error: errorRequestForDelivery }] =
+    useRequestForDeliveryMutation();
   const [orderRejected, { isLoading: isLoadingOrderRejected }] =
     useOrderRejectMutation();
-  const { data: profileData, isLoading: isProfileLoading } = useProfileQuery(
-    {}
-  );
+  const { data: profileData } = useProfileQuery({});
 
   // api function
   const formatDate = (dateStr: string) => {
@@ -139,7 +145,7 @@ const Order_Details_Profile = () => {
         "Extension order error  ",
         err,
         " error ",
-        errorRequestForDelivery
+        errorRequestForDelivery,
       );
       setTimeout(() => {
         router.back();
@@ -166,6 +172,20 @@ const Order_Details_Profile = () => {
     }
   };
 
+  // ==================   refresh control state =========================
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await fetchOrderItem(id).unwrap();
+    } catch (error: any) {
+      console.log(error, "refresh error");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -173,11 +193,16 @@ const Order_Details_Profile = () => {
       keyboardDismissMode="interactive"
       style={tw`flex-1 bg-base_color px-5 `}
       contentContainerStyle={tw`pb-6`}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       {/* btn header */}
       <BackTitleButton
-        pageName="Order Details"
-        onPress={() => router.back()}
+        pageName="Order Details "
+        onPress={() => {
+          handleBack();
+        }}
         titleTextStyle={tw`text-xl`}
       />
       {isLoadingFetchOrder && isFetchingFetchOrder && (
@@ -193,10 +218,10 @@ const Order_Details_Profile = () => {
                 order?.status === "New"
                   ? "bg-primary"
                   : order?.status === "Pending"
-                  ? "bg-violet"
-                  : order?.status === "Cancelled"
-                  ? "bg-[#FF3A00]"
-                  : "bg-success600"
+                    ? "bg-violet"
+                    : order?.status === "Cancelled"
+                      ? "bg-[#FF3A00]"
+                      : "bg-success600"
               }`}
             >
               <SvgXml xml={IconWhiteDot} />
@@ -229,8 +254,8 @@ const Order_Details_Profile = () => {
                 order.user?.kyc_status === "In Review"
                   ? "bg-secondary"
                   : order?.status === "Verified"
-                  ? "bg-violet"
-                  : "bg-blueMagenta"
+                    ? "bg-violet"
+                    : "bg-blueMagenta"
               }`}
             >
               <Text style={tw`font-PoppinsRegular text-sm text-white`}>
@@ -363,24 +388,24 @@ const Order_Details_Profile = () => {
           <View style={tw` `}>
             {order.booking_items?.map((bookingItem: any) => {
               const packageItems =
-                bookingItem.package?.package_detail_items || [];
+                bookingItem?.package?.package_detail_items || [];
               return (
                 <View
-                  key={bookingItem.id}
+                  key={bookingItem?.id}
                   style={tw`bg-white rounded-2xl p-4 mb-4 gap-4`}
                 >
                   <Text style={tw`font-bold text-lg mb-2`}>
-                    {bookingItem.package?.title || "Service title goes here."}
+                    {bookingItem?.package?.title || "Service title goes here."}
                   </Text>
 
                   {/* Map package_detail_items */}
                   <View style={tw`ml-2 gap-2`}>
                     {packageItems.map((item: any) => (
                       <Text
-                        key={item.id}
+                        key={item?.id}
                         style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
                       >
-                        • {item.item}
+                        • {item?.item}
                       </Text>
                     ))}
                   </View>
@@ -397,7 +422,7 @@ const Order_Details_Profile = () => {
                     <Text
                       style={tw`text-white font-DegularDisplayDemoMedium text-xl`}
                     >
-                      ₦ {bookingItem.package?.price || "0.00"}
+                      ₦ {bookingItem?.package?.price || "0.00"}
                     </Text>
                   </View>
                 </View>
@@ -424,7 +449,6 @@ const Order_Details_Profile = () => {
                   </Text>
                 )}
               </TouchableOpacity>
-
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => handleOrderApprove(order?.id)}
@@ -443,80 +467,47 @@ const Order_Details_Profile = () => {
               </TouchableOpacity>
             </View>
           )}
-
-          {/* active when Pending order type */}
-          {order.status === "Pending" && (
+          {/* [ ================================ active when Pending order type ==============================] */}
+          {order?.status === "Pending" && (
             <View style={tw`gap-4`}>
               <Text
-                style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
+                style={tw`font-PoppinsMedium text-base flex-row text-black`}
               >
                 Assign Provider
               </Text>
 
-              <View
-                style={tw`flex-row justify-between w-full bg-white rounded-lg py-2 px-2`}
-              >
-                <View style={tw`flex-row gap-2 items-center `}>
-                  <View style={tw``}>
-                    <Image
-                      style={tw`w-24 h-24 rounded-lg `}
-                      source={{
-                        uri:
-                          order?.provider?.avatar ||
-                          order?.provider?.company?.company_logo,
-                      }}
-                    />
-                  </View>
-                  <View>
-                    <Text style={tw`font-DegularDisplayDemoMedium text-xl`}>
-                      {order?.provider?.name}
-                    </Text>
-                    <View style={tw`flex-row gap-2 items-center`}>
-                      <Text
-                        style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
-                      >
-                        {order?.provider?.ratings_avg_rating}
-                      </Text>
-                      <SvgXml xml={IconStar} />
-                    </View>
-                  </View>
-                </View>
-              </View>
-
+              {isLoadingFetchOrder ? (
+                <ActivityIndicator size="large" color={PrimaryColor} />
+              ) : (
+                <AssignedEmployee
+                  image={order?.assign_employee?.employee?.image}
+                  name={order?.assign_employee?.employee?.name}
+                  phone={order?.assign_employee?.employee?.phone}
+                  location={order?.assign_employee?.employee?.location}
+                />
+              )}
+              {/* buttons */}
               <View style={tw`gap-2`}>
-                <Pressable
-                  style={tw`h-12 flex-row justify-center items-center border border-black/20 rounded-full`}
+                <PrimaryButton
                   onPress={() =>
                     router.push({
                       pathname:
                         "/service_provider/individual/my_services/delivery_extension",
                       params: {
-                        id: order.id,
+                        id: order?.id,
                       },
                     })
                   }
-                >
-                  <Text
-                    style={tw`text-center font-DegularDisplayDemoMedium text-xl text-black`}
-                  >
-                    Extend delivery time
-                  </Text>
-                </Pressable>
-                <Pressable
+                  titleProps="Extend delivery time"
+                  textStyle={tw`text-black`}
+                  contentStyle={tw`h-12 bg-transparent border border-black/20 rounded-full`}
+                />
+                <PrimaryButton
                   onPress={() => handleRequestForDelivery(order?.id)}
-                  style={tw`h-12 flex-row justify-center items-center  bg-primary rounded-full`}
-                >
-                  {isLoadingRequestForDelivery ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                  ) : (
-                    <Text
-                      style={tw`text-center font-DegularDisplayDemoMedium text-xl text-white`}
-                    >
-                      Request for delivery
-                    </Text>
-                  )}
-                </Pressable>
-                <Pressable
+                  titleProps="Request for delivery"
+                  contentStyle={tw`h-12`}
+                />
+                <PrimaryButton
                   onPress={() =>
                     router.push({
                       pathname: "/company/dispute_process",
@@ -525,22 +516,15 @@ const Order_Details_Profile = () => {
                       },
                     })
                   }
-                  style={tw`py-4 `}
-                >
-                  <View style={tw`flex-row justify-center gap-2`}>
-                    <SvgXml xml={IconDisputes} />
-                    <Text
-                      style={tw`text-center font-DegularDisplayDemoMedium text-xl text-black`}
-                    >
-                      Request for dispute
-                    </Text>
-                  </View>
-                </Pressable>
+                  titleProps=" Request for dispute"
+                  textStyle={tw`text-black`}
+                  contentStyle={tw`h-12 bg-transparent`}
+                  IconFastProps={IconDisputes}
+                />
               </View>
             </View>
           )}
-
-          {/* active when Completed order type */}
+          {/* [=====================  active when Completed order type =====================] */}
           {order.status === "Completed" && (
             <View>
               <View style={tw`gap-4 py-2`}>
@@ -549,36 +533,12 @@ const Order_Details_Profile = () => {
                 >
                   Assign Provider
                 </Text>
-
-                <View
-                  style={tw`flex-row justify-between w-full bg-white rounded-lg py-2 px-2`}
-                >
-                  <View style={tw`flex-row gap-2 items-center `}>
-                    <View style={tw``}>
-                      <Image
-                        style={tw`w-24 h-24 rounded-lg `}
-                        source={{
-                          uri:
-                            order?.provider?.avatar ||
-                            order?.provider?.company?.company_logo,
-                        }}
-                      />
-                    </View>
-                    <View>
-                      <Text style={tw`font-DegularDisplayDemoMedium text-xl`}>
-                        {order?.provider?.name}
-                      </Text>
-                      <View style={tw`flex-row gap-2 items-center`}>
-                        <Text
-                          style={tw`text-primary font-DegularDisplayDemoMedium text-xl`}
-                        >
-                          {order?.provider?.ratings_avg_rating}
-                        </Text>
-                        <SvgXml xml={IconStar} />
-                      </View>
-                    </View>
-                  </View>
-                </View>
+                <AssignedEmployee
+                  image={order?.assign_employee?.employee?.image}
+                  name={order?.assign_employee?.employee?.name}
+                  phone={order?.assign_employee?.employee?.phone}
+                  location={order?.assign_employee?.employee?.location}
+                />
               </View>
 
               <View style={tw`gap-4`}>
@@ -587,10 +547,10 @@ const Order_Details_Profile = () => {
                 >
                   User Review
                 </Text>
-                {order?.review && order.review.length > 0 ? (
+                {order?.review && order?.review.length > 0 ? (
                   <FlatList
-                    data={order.review}
-                    keyExtractor={(item) => item.id.toString()}
+                    data={order?.review}
+                    keyExtractor={(item) => item?.id.toString()}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={tw`gap-2 `}

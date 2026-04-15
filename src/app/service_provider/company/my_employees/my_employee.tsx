@@ -98,12 +98,12 @@ const My_Employee = () => {
         }
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
-        contentContainerStyle={tw`px-5 pb-10 gap-2 rounded-lg`}
+        contentContainerStyle={tw`px-4 pb-10 gap-2 rounded-lg`}
         showsHorizontalScrollIndicator={false}
         ListHeaderComponent={() => (
           <View>
             <BackTitleButton
-              pageName="My employees"
+              pageName="My Employees"
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
             />
@@ -114,10 +114,10 @@ const My_Employee = () => {
               </Text>
 
               <TouchableOpacity
-                style={tw`bg-primary px-6 py-2 flex-row gap-2 rounded-xl items-center`}
+                style={tw`bg-primary px-4 py-1 flex-row gap-2 rounded-xl items-center`}
                 onPress={() =>
                   router.push(
-                    "/service_provider/company/my_employees/add_new_employee"
+                    "/service_provider/company/my_employees/add_new_employee",
                   )
                 }
               >
@@ -133,78 +133,74 @@ const My_Employee = () => {
         )}
         renderItem={({ item, index }) => {
           return (
-            <View>
-              <Pressable
-                onPress={() =>
-                  router.push({
-                    pathname:
-                      "/service_provider/company/my_employees/employees_details",
-                    params: {
-                      id: item?.id,
-                    },
-                  })
-                }
-                key={`${item?.id}_${index}`}
-                style={tw` bg-white flex-row justify-between items-center gap-4 py-2 px-3 rounded-lg`}
-              >
-                <View style={tw`flex-row gap-2 items-center`}>
-                  <Image
-                    style={tw`w-24 h-24 rounded-xl`}
-                    source={item?.image}
-                    contentFit="cover"
-                  />
-                  <View>
-                    <Text
-                      style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
-                    >
-                      {item.name}
-                    </Text>
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-lg text-regularText`}
-                    >
-                      {item?.completed_booking_count}{" "}
-                      {item?.completed_booking_count > 1
-                        ? "services"
-                        : "service"}{" "}
-                      completed
-                    </Text>
-                  </View>
-                </View>
-                <View>
-                  <TouchableOpacity
-                    onPress={async () => {
-                      try {
-                        const response = await deleteEmployee(
-                          Number(item?.id)
-                        ).unwrap();
-                        if (response) {
-                          router.push({
-                            pathname: "/Toaster",
-                            params: {
-                              res: "Removed Employee successful!",
-                            },
-                          });
-                        }
-                      } catch (err: any) {
-                        console.log("Employee deleted error ", err),
-                          router.push({
-                            pathname: "/Toaster",
-                            params: {
-                              res:
-                                err?.message ||
-                                err ||
-                                "Removed Employee failed!",
-                            },
-                          });
-                      }
-                    }}
-                    style={tw` w-11 h-11 rounded-2xl bg-gray-200 justify-center items-center z-10`}
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname:
+                    "/service_provider/company/my_employees/employees_details",
+                  params: {
+                    id: item?.id,
+                  },
+                })
+              }
+              key={`${item?.id}_${index}`}
+              style={tw` flex-1 bg-white flex-row justify-between items-center gap-4 py-2 px-3 rounded-lg`}
+            >
+              <View style={tw`flex-1 flex-row gap-2 items-center`}>
+                <Image
+                  style={tw`w-20 h-20 rounded-xl`}
+                  source={item?.image}
+                  contentFit="cover"
+                />
+                <View style={tw`flex-shrink`}>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={tw`font-DegularDisplayDemoMedium text-base text-black`}
                   >
-                    <SvgXml xml={IconDeleteRed} />
-                  </TouchableOpacity>
+                    {item.name}
+                  </Text>
+                  <Text
+                    style={tw`font-DegularDisplayDemoRegular text-sm text-regularText`}
+                  >
+                    {item?.completed_booking_count}{" "}
+                    {item?.completed_booking_count > 1 ? "services" : "service"}{" "}
+                    completed
+                  </Text>
                 </View>
-              </Pressable>
-            </View>
+              </View>
+              <View>
+                <TouchableOpacity
+                  onPress={async () => {
+                    try {
+                      const response = await deleteEmployee(
+                        Number(item?.id),
+                      ).unwrap();
+                      if (response) {
+                        router.push({
+                          pathname: "/Toaster",
+                          params: {
+                            res: "Removed Employee successful!",
+                          },
+                        });
+                      }
+                    } catch (err: any) {
+                      (console.log("Employee deleted error ", err),
+                        router.push({
+                          pathname: "/Toaster",
+                          params: {
+                            res:
+                              err?.message || err || "Removed Employee failed!",
+                          },
+                        }));
+                    }
+                  }}
+                  style={tw` w-11 h-11 rounded-2xl bg-gray-200 justify-center items-center z-10`}
+                >
+                  <SvgXml xml={IconDeleteRed} />
+                </TouchableOpacity>
+              </View>
+            </Pressable>
           );
         }}
         // footer item and empty item.

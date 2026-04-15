@@ -10,8 +10,8 @@ import {
   IconRightCornerArrow,
   IconSettings,
   IconShare,
-  IconSwitch,
 } from "@/assets/icons";
+import { useNotification } from "@/context/NotificationContext";
 import LogoutModal from "@/src/Components/LogoutModal";
 import SettingsCard from "@/src/Components/SettingsCard";
 import tw from "@/src/lib/tailwind";
@@ -35,10 +35,14 @@ import { SvgXml } from "react-native-svg";
 
 const Account = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [roleSwitchModalVisible, setRoleSwitchModalVisible] =
+    useState<boolean>(false);
   const [refreshing, setRefreshing] = useState(false);
+  const { notification, deviceDetails, expoPushToken, error } =
+    useNotification();
 
   // ============================ api end point ==============================//
-  const [logout] = useLogoutMutation({});
+  const [logout, { isLoading }] = useLogoutMutation({});
   const { data: userProfileInfo, refetch } = useProfileQuery({});
   const [switchRole, { isLoading: roleSwitchLoading }] =
     useRoleSwitchMutation();
@@ -47,7 +51,10 @@ const Account = () => {
     const token = await AsyncStorage.getItem("token");
     try {
       setModalVisible(false);
-      await logout(token).unwrap();
+      await logout({
+        device_id: deviceDetails?.device_id,
+        token,
+      }).unwrap();
       await AsyncStorage.removeItem("roll");
       await AsyncStorage.removeItem("providerTypes");
       await AsyncStorage.removeItem("token");
@@ -65,17 +72,21 @@ const Account = () => {
   const handleRoleSwitch = async () => {
     try {
       const res = await switchRole({}).unwrap();
-      if (res) {
-        await AsyncStorage.setItem("token", res?.data?.access_token);
-        await AsyncStorage.setItem("roll", res?.data?.user?.role);
+      // console.log(res, "response --------------> from provider role --->");
+      const user = res?.data?.user;
+      const token = res?.data?.access_token;
+      if (res?.data?.access_token) {
+        await AsyncStorage.setItem("token", token);
+        await AsyncStorage.setItem("roll", user?.role);
         await AsyncStorage.removeItem("providerTypes");
-        if (res?.data?.user?.is_personalization_complete === false) {
+        if (user?.is_personalization_complete === false) {
           router.replace("/auth/contact");
         } else {
           router.replace("/company/(Tabs)");
         }
       }
     } catch (error: any) {
+      setRoleSwitchModalVisible(false);
       console.log(error, "role not switched role to user ");
       router.push({
         pathname: `/Toaster`,
@@ -144,8 +155,8 @@ const Account = () => {
             }`,
           ]}
         >
-          <Text style={tw`font-DegularDisplayDemoMedium text-base text-white`}>
-            {userProfileInfo?.data?.kyc_status}
+          <Text style={tw`font-medium text-base text-white`}>
+            {userProfileInfo?.data?.kyc_status || ""}
           </Text>
         </TouchableOpacity>
       </View>
@@ -193,11 +204,11 @@ const Account = () => {
       {/* ------------ settings menu ---------------- */}
 
       <View style={tw`gap-3 mb-6`}>
-        <SettingsCard
+        {/* <SettingsCard
           title=" Switch to User"
-          onPress={() => handleRoleSwitch()}
+          onPress={() => setRoleSwitchModalVisible(true)}
           fastIcon={IconSwitch}
-        />
+        /> */}
         <SettingsCard
           title=" My services"
           onPress={() =>
@@ -260,7 +271,7 @@ const Account = () => {
         textStyle={tw`text-primary`}
         contentStyle={tw`mb-4`}
       />
-
+      {/* ================= Logout Modal ================ */}
       <LogoutModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
@@ -271,6 +282,21 @@ const Account = () => {
         onPress={() => {
           handleLogoutUser();
         }}
+        loading={isLoading}
+        disabled={isLoading}
+      />
+
+      <LogoutModal
+        modalVisible={roleSwitchModalVisible}
+        setModalVisible={setRoleSwitchModalVisible}
+        // logoutIcon={IconTol}
+        buttonTitle="Yes, Switch"
+        modalTitle="Are you sure you want to switch roles to user?"
+        onPress={() => {
+          handleRoleSwitch();
+        }}
+        loading={roleSwitchLoading}
+        disabled={roleSwitchLoading}
       />
     </ScrollView>
   );

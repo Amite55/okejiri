@@ -90,6 +90,7 @@ const LoginIndex = () => {
         } else {
           await AsyncStorage.removeItem("loginInfo");
         }
+
         // dynamic route change ========================
         if (res?.data?.user?.is_personalization_complete === false) {
           await AsyncStorage.setItem("token", res?.data?.access_token);
@@ -97,6 +98,8 @@ const LoginIndex = () => {
         } else {
           if (res?.data?.user?.role === "USER") {
             await AsyncStorage.setItem("token", res?.data?.access_token);
+            // =============== fcm token update ================
+            await updateFCMToken(deviceDetails).unwrap();
             router.replace("/company/(Tabs)");
             if (userProfileInfo?.data?.kyc_status === "Unverified") {
               setTimeout(() => {
@@ -107,7 +110,6 @@ const LoginIndex = () => {
         }
       } else if (roll === "PROVIDER") {
         const res = await credentials(payload).unwrap();
-
         // ------------- login info save async storage -------------
         if (isChecked) {
           await AsyncStorage.setItem(
@@ -127,6 +129,9 @@ const LoginIndex = () => {
           if (providerTypes === "Individual") {
             if (res?.data?.user?.provider_type === providerTypes) {
               await AsyncStorage.setItem("token", res?.data?.access_token);
+              // =============== fcm token update ================
+              await updateFCMToken(deviceDetails).unwrap();
+
               router.replace("/service_provider/individual/(Tabs)/home");
               if (userProfileInfo?.data?.kyc_status === "Unverified") {
                 setTimeout(() => {
@@ -137,6 +142,8 @@ const LoginIndex = () => {
           } else if (providerTypes === "Company") {
             if (res?.data?.user?.provider_type === providerTypes) {
               await AsyncStorage.setItem("token", res?.data?.access_token);
+              // =============== fcm token update ================
+              await updateFCMToken(deviceDetails).unwrap();
               router.replace("/service_provider/company/home");
               if (userProfileInfo?.data?.kyc_status === "Unverified") {
                 setTimeout(() => {
@@ -163,12 +170,6 @@ const LoginIndex = () => {
           });
         }, 1000);
       }
-    } finally {
-      const fcmResponse = await updateFCMToken(deviceDetails).unwrap();
-      console.log(
-        fcmResponse,
-        "this is fcm token response from login screen ---------->",
-      );
     }
   };
 

@@ -43,7 +43,7 @@ const ServiceBooking = () => {
 
   // ================= check discount amount ================
   const decimalDiscountCost = Math.round(
-    Number(getProviderProfile?.data?.discount)
+    Number(getProviderProfile?.data?.discount),
   );
   const discountAmount = (Number(cost) * Number(decimalDiscountCost)) / 100;
 
@@ -97,7 +97,7 @@ const ServiceBooking = () => {
             activeOpacity={0.8}
             onPress={() => setIsBookingSchedule("Instant booking")}
             style={[
-              tw`border  rounded-2xl h-12 flex-1 justify-center items-center font-DegularDisplayDemoRegular text-xl ${
+              tw`border  rounded-2xl h-12 flex-1 justify-center items-center font-DegularDisplayDemoRegular ${
                 isBookingSchedule === "Instant booking"
                   ? `bg-primary border-0`
                   : `border-white200 `
@@ -105,8 +105,9 @@ const ServiceBooking = () => {
             ]}
           >
             <Text
+              numberOfLines={1}
               style={[
-                tw`font-DegularDisplayDemoRegular text-xl ${
+                tw`font-DegularDisplayDemoRegular text-base ${
                   isBookingSchedule === "Instant booking"
                     ? `text-white`
                     : `text-black`
@@ -121,7 +122,7 @@ const ServiceBooking = () => {
             activeOpacity={0.8}
             onPress={() => setIsBookingSchedule("Schedule booking")}
             style={[
-              tw`border  rounded-2xl h-12 flex-1 justify-center items-center font-DegularDisplayDemoRegular text-xl ${
+              tw`border rounded-2xl h-12 flex-1 justify-center items-center font-DegularDisplayDemoRegular  ${
                 isBookingSchedule === "Schedule booking"
                   ? `bg-primary  border-0`
                   : `border-white200 `
@@ -129,8 +130,9 @@ const ServiceBooking = () => {
             ]}
           >
             <Text
+              numberOfLines={1}
               style={[
-                tw`font-DegularDisplayDemoRegular text-xl ${
+                tw`font-DegularDisplayDemoRegular text-base ${
                   isBookingSchedule === "Schedule booking"
                     ? `text-white`
                     : `text-black`
@@ -174,7 +176,7 @@ const ServiceBooking = () => {
           >
             <Text
               style={[
-                tw`font-DegularDisplayDemoRegular text-xl ${
+                tw`font-DegularDisplayDemoRegular text-base ${
                   isGroup === "Single" ? `text-white` : `text-black`
                 }`,
               ]}
@@ -196,7 +198,7 @@ const ServiceBooking = () => {
           >
             <Text
               style={[
-                tw`font-DegularDisplayDemoRegular text-xl ${
+                tw`font-DegularDisplayDemoRegular text-base ${
                   isGroup === "Group" ? `text-white` : `text-black`
                 }`,
               ]}
@@ -235,7 +237,7 @@ const ServiceBooking = () => {
                 activeOpacity={0.6}
                 onPress={() => {
                   setNumberOfPeople((prev) =>
-                    prev > 2 ? Number(prev) - 1 : prev
+                    prev > 2 ? Number(prev) - 1 : prev,
                   );
                 }}
                 style={tw`w-16 h-16 rounded-full justify-center items-center bg-white`}
@@ -320,7 +322,7 @@ const ServiceBooking = () => {
                       setSelectedTime(
                         item?.available_time_from +
                           " - " +
-                          item?.available_time_to
+                          item?.available_time_to,
                       );
                     }}
                     key={item?.id}

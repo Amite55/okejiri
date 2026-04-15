@@ -63,7 +63,7 @@ export async function registerForPushNotificationsAsync() {
       console.log(pushTokenString, "push token string");
       // return pushTokenString;
       return {
-        fcm_token: pureToken,
+        fcm_token: pushTokenString,
         device_id: Device.osBuildId || "unknown_id",
         device_type: Device?.osName || "Unknown OS",
         device_name: Device.deviceName || "Unknown Device",

@@ -26,25 +26,16 @@ const dropdownData = [
 
 const Delivery_Extension = () => {
   const { id } = useLocalSearchParams();
-  // console.log("Delivery extension === order id ", id);
-
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [reason, setReason] = useState("");
 
-  // api
-  const [
-    deliveryExtension,
-    {
-      data: deliveryExtensionData,
-      isLoading: isLoadingDeliveryExtension,
-      isError: isErrorDeliveryExtension,
-      error: errorDeliveryExtension,
-    },
-  ] = useRequestExtendDeliveryTimeMutation();
+  // api end point====================
+  const [deliveryExtension, { isLoading: isLoadingDeliveryExtension }] =
+    useRequestExtendDeliveryTimeMutation();
 
+  // ========== handle request for delivery extension ================
   const handleRequest = async () => {
-    // console.log("press================")
     if (value && reason.trim().length > 3) {
       try {
         const requestBody = {
@@ -52,11 +43,7 @@ const Delivery_Extension = () => {
           reason,
           booking_id: Number(id),
         };
-        // console.log("=========== requestbody ======= ", requestBody);
         const response = await deliveryExtension(requestBody).unwrap();
-        // console.log("========== Response ======== ", response);
-
-        // if (response.status === "success") {
         router.push({
           pathname: "/Toaster",
           params: {
@@ -66,28 +53,18 @@ const Delivery_Extension = () => {
         setTimeout(() => {
           router.back();
         }, 2000);
-        // }
       } catch (err) {
+        console.log(err, "Your request not send !");
         router.push({
           pathname: "/Toaster",
           params: { res: "Delivery extension request send failed" },
         });
-        console.log(
-          "Extension order error  ",
-          err,
-          " error ",
-          errorDeliveryExtension
-        );
-        setTimeout(() => {
-          router.back();
-        }, 2000);
       }
     } else {
       router.push({
         pathname: "/Toaster",
         params: { res: "Fillup all fields" },
       });
-      // console.log("Extension order  ", err, " error ", errorDeliveryExtension)
       setTimeout(() => {
         router.back();
       }, 2000);
@@ -101,7 +78,7 @@ const Delivery_Extension = () => {
         style={tw`flex-1`}
       >
         <View
-          style={tw`flex-1 flex-grow justify-between pb-5 bg-base_color px-5`}
+          style={tw`flex-1 flex-grow justify-between pb-1 bg-base_color px-5`}
         >
           <View>
             <BackTitleButton
@@ -156,11 +133,10 @@ const Delivery_Extension = () => {
 
           {/* ----------------------- submit password -------------- */}
           <PrimaryButton
-            // onPress={() => handleSubmit()}
             onPress={handleRequest}
             titleProps="Send request"
-            // IconProps={IconRightArrow}
-            contentStyle={tw`mt-4`}
+            loading={isLoadingDeliveryExtension}
+            contentStyle={tw`mt-4 h-12`}
           />
         </View>
       </KeyboardAvoidingView>

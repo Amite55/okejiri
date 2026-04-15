@@ -7,7 +7,14 @@ export const flutterWaveSlice = api.injectEndpoints({
         url: `/flutterwave/get-banks`,
         method: "GET",
       }),
-      providesTags: ["payment"],
+      providesTags: [
+        "payment",
+        "profile",
+        "boost",
+        "provider",
+        "balance",
+        "transfer_balance",
+      ],
     }),
     createSubAccount: builder.mutation({
       query: (subAccountInfo) => {
@@ -17,7 +24,7 @@ export const flutterWaveSlice = api.injectEndpoints({
           body: subAccountInfo,
         };
       },
-      invalidatesTags: ["payment"],
+      invalidatesTags: ["payment", "profile", "boost", "provider"],
     }),
     verifyPayment: builder.mutation({
       query: (info) => ({
@@ -25,7 +32,7 @@ export const flutterWaveSlice = api.injectEndpoints({
         method: "POST",
         body: info,
       }),
-      invalidatesTags: ["payment"],
+      invalidatesTags: ["payment", "profile", "boost", "provider"],
     }),
   }),
 });

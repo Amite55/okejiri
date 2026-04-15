@@ -3,7 +3,6 @@ import { ImgLoadingSuccess } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
-import { useAddDisputeAppealMutation } from "@/src/redux/apiSlices/companyProvider/account/myDisputeSlice";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -17,23 +16,21 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 
 const Dispute_Appeal = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [images, setImages] = useState<any>(null);
   const [explanation, setExplanation] = useState<string>("");
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams();
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
-
-  // =========== API ==================== //
-  const [addAppealDispute, { isLoading }] = useAddDisputeAppealMutation();
+  const [isLoading, setIsLoading] = useState(false);
 
   //  ===================== Image picker ================= //
   const pickImages = async () => {
@@ -49,64 +46,79 @@ const Dispute_Appeal = () => {
       quality: 1,
     });
     if (!result.canceled) {
-      setImages(result.assets.map((item) => item.uri));
+      setImages(result.assets);
     }
   };
 
   const submitDispute = async () => {
-    // ------------ check all field required  --------------
-
-    if (!id || !explanation || !images) {
+    if (!id || !explanation || !images || images.length === 0) {
       router.push({
         pathname: "/Toaster",
         params: { res: "Please fill all the fields" },
       });
       return;
     }
-
     try {
-      let formData = new FormData();
-      formData.append("dispute_id", id);
-
+      setIsLoading(true);
+      const token = await AsyncStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("dispute_id", String(id));
       formData.append("details", explanation);
-      // ✅ Append multiple images properly
-      images.forEach((uri: any, index: any) => {
-        formData.append("attachments[]", {
+      images.forEach((asset: any, index: number) => {
+        const uri = asset.uri;
+        const extension = uri?.split(".").pop()?.toLowerCase() || "jpg";
+        const mimeType =
+          asset.mimeType || (extension === "png" ? "image/png" : "image/jpeg");
+
+        formData.append(`attachments[${index}]`, {
           uri,
-          name: `attachment_${index}.jpg`,
-          type: "image/jpeg",
-        });
+          name: asset.fileName || `image_${index}.${extension}`,
+          type: mimeType,
+        } as any);
       });
-      const response = await addAppealDispute(formData).unwrap();
-      if (response) {
-        setModalVisible(true);
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BASE_API_URL}/add-dispute-appeal`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        },
+      );
+      const data = await response.json();
+      console.log(data, "response from dispute appeal api------->");
+      if (data?.status === "success") {
+        router.push({
+          pathname: "/Toaster",
+          params: { res: data?.message || "Report sent successfully!" },
+        });
+        setTimeout(() => router.back(), 3000);
       } else {
         router.push({
           pathname: "/Toaster",
-          params: {
-            res: "An appeal has already been submitted for this disputed",
-          },
+          params: { res: data?.message || "Dispute appeal processing failed" },
         });
-        setTimeout(() => {
-          router.back();
-        }, 1500);
       }
     } catch (err: any) {
-      console.error("Full error object: ----------------------->", err);
+      console.log("error from dispute appeal--------->", err);
       router.push({
         pathname: "/Toaster",
-        params: { res: err.message || "Failed to submit" },
+        params: { res: "Dispute appeal processing failed" },
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
   useEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true)
+      setKeyboardVisible(true),
     );
     const hide = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false)
+      setKeyboardVisible(false),
     );
     return () => {
       show.remove();
@@ -117,7 +129,7 @@ const Dispute_Appeal = () => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS/Android alada behavior
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -127,7 +139,7 @@ const Dispute_Appeal = () => {
           style={tw`flex-1 px-5 bg-base_color`}
           contentContainerStyle={[
             tw` justify-between flex-grow `,
-            isKeyboardVisible ? tw`pb-10` : tw`pb-0`,
+            isKeyboardVisible ? tw`pb-10` : tw`pb-1`,
           ]}
         >
           <View>
@@ -151,7 +163,6 @@ const Dispute_Appeal = () => {
                   numberOfLines={4}
                   placeholder="Type here"
                   onChangeText={setExplanation}
-                  // value={}
                   textAlignVertical="top"
                 />
               </View>
@@ -172,20 +183,16 @@ const Dispute_Appeal = () => {
                   Upload images or videos
                 </Text>
                 {!images || images.length === 0 ? (
-                  <TouchableOpacity
-                    style={tw`bg-primary rounded-full w-48 h-12 justify-center items-center`}
+                  <PrimaryButton
                     onPress={pickImages}
-                  >
-                    <Text
-                      style={tw`font-DegularDisplayDemoRegular text-xl text-white`}
-                    >
-                      Browse
-                    </Text>
-                  </TouchableOpacity>
+                    titleProps={"Select files"}
+                    contentStyle={tw`h-10 mt-3`}
+                    textStyle={tw`text-white font-DegularDisplayDemoMedium text-lg `}
+                  />
                 ) : (
                   <View style={tw`w-full mt-3`}>
                     <Text
-                      style={tw`font-DegularDisplayDemoRegular text-sm text-green-600 mt-2 py-2`}
+                      style={tw`font-DegularDisplayDemoRegular text-center text-base text-green-600 mt-2 py-2`}
                     >
                       {images.length}{" "}
                       {images.length === 1 ? "file selected" : "files selected"}
@@ -216,9 +223,9 @@ const Dispute_Appeal = () => {
           {/*  ------------- next button -------------------- */}
           <PrimaryButton
             onPress={() => submitDispute()}
-            titleProps={isLoading ? "Submitting..." : "Submit with Image"}
-            // IconProps={""}
-            contentStyle={tw`mt-4`}
+            loading={isLoading}
+            titleProps={"Submit with Image"}
+            contentStyle={tw`mt-4 h-12`}
           />
 
           {/*  ========================== successful modal ======================= */}

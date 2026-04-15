@@ -1,5 +1,9 @@
 import { IconCrossWhite, IconProfileBadge } from "@/assets/icons";
 import PrimaryButton from "@/src/Components/PrimaryButton";
+import DisputeReviewSkeleton from "@/src/Components/skeletons/DisputeReviewSkeleton";
+import { useDynamicBack } from "@/src/hooks/useDynamicBack";
+import { useProviderType } from "@/src/hooks/useProviderType";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useDisputeDetailsQuery } from "@/src/redux/apiSlices/companyProvider/account/myDisputeSlice";
@@ -19,20 +23,27 @@ import {
 import { SvgXml } from "react-native-svg";
 
 const Dispute_Review = () => {
-  // =========================================== API ======================================== //
-  // disput
   const { id } = useLocalSearchParams();
+  // ============== hooks ==================
+  const roll = useRoll() || "";
+  const providerType = useProviderType();
 
-  const {
-    data: disputeReviewData,
-    isLoading: isLoadingDisputeReview,
-    isError: isErrorDisputeReview,
-  } = useDisputeDetailsQuery(id);
+  // =========== call dynamic touting hooks ------------
+  const handleBack = useDynamicBack(roll, providerType);
+
+  // =========================================== API ======================================== //
+  const { data: disputeReviewData, isLoading: isLoadingDisputeReview } =
+    useDisputeDetailsQuery(id);
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const disputeGallary = disputeReviewData?.data?.attachments || [];
   const visibleImages = disputeGallary.slice(0, 3);
   const item = disputeReviewData?.data;
+
+  // =============== loading state ================== //
+  if (isLoadingDisputeReview) {
+    return <DisputeReviewSkeleton />;
+  }
 
   return (
     <ScrollView
@@ -43,7 +54,9 @@ const Dispute_Review = () => {
     >
       <BackTitleButton
         pageName={"Dispute review"}
-        onPress={() => router.back()}
+        onPress={() => {
+          handleBack();
+        }}
         titleTextStyle={tw`text-xl`}
       />
 
@@ -113,7 +126,6 @@ const Dispute_Review = () => {
           })}
 
         {/* ------------ when image length up to three --------------------- */}
-
         {disputeGallary?.length > 3 && (
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
@@ -136,17 +148,16 @@ const Dispute_Review = () => {
             },
           })
         }
-        contentStyle={tw`bg-primary `}
-        textStyle={tw`text-white font-DegularDisplayDemoMedium text-xl`}
+        contentStyle={tw`h-12 `}
+        textStyle={tw`text-white font-DegularDisplayDemoMedium text-lg `}
         titleProps="Submit your appeal"
       />
 
-      {/* ============= Photo gallary ====================== */}
+      {/* ============= when image length up to three open the image  ====================== */}
       <Modal
         animationType="slide"
         transparent
         onRequestClose={() => {
-          // Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}
         visible={modalVisible}
@@ -186,7 +197,7 @@ const Dispute_Review = () => {
               <Text
                 style={tw`font-DegularDisplayDemoMedium  text-xl text-white`}
               >
-                All files alkjhflaksjdh
+                All files
               </Text>
               <Pressable onPress={() => setModalVisible(false)}>
                 <SvgXml style={tw`p-3`} xml={IconCrossWhite} />

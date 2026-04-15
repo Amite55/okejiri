@@ -4,58 +4,20 @@ import {
   IconUser,
 } from "@/assets/icons";
 import { ImgChoseRoll, ImgLogo } from "@/assets/images/image";
-import { useNotification } from "@/context/NotificationContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import React from "react";
-import { Button, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
 const Chose_roll = () => {
-  const { notification, deviceDetails, expoPushToken, error } =
-    useNotification();
-
-  // if (deviceDetails) {
-  //   console.log(deviceDetails, "device details from role screen");
-  // }
-  if (notification) {
-    console.log("Notification:________ role screen", notification);
-  }
-
-  async function handleSendPushNotification(expoPushToken: string) {
-    // console.log(expoPushToken, "this is expo push token jj------------>");
-    const message = {
-      to: expoPushToken,
-      sound: "default",
-      title: "Original Title",
-      body: "And here is the body!",
-      data: { someData: "goes here" },
-    };
-
-    // ================= there is push notification sdk key ================= //
-
-    const response = await fetch("https://exp.host/--/api/v2/push/send", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Accept-encoding": "gzip, deflate",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(message),
-    });
-
-    // Check the response status
-    const data = await response.json();
-    console.log("🔔 Expo Server Response Data:", JSON.stringify(data, null, 2));
-  }
-
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
-      style={tw`flex-1 px-5 bg-base_color`}
+      style={tw`flex-1 px-5 bg-base_color pb-2`}
     >
       <View style={tw`flex-1 justify-center items-center mt-4`}>
         <Image style={tw`w-44 h-12`} source={ImgLogo} contentFit="contain" />
@@ -66,25 +28,20 @@ const Chose_roll = () => {
         />
         <View style={tw`flex-1 justify-center items-center gap-3 my-3`}>
           <Text
-            style={tw`flex-1 font-PoppinsMedium text-3xl text-black text-center`}
+            style={tw`flex-1 font-PoppinsMedium text-2xl text-black text-center`}
           >
             Choose your role
           </Text>
           <Text
-            style={tw` flex-1 font-PoppinsRegular text-lg text-black text-center`}
+            style={tw` flex-1 font-PoppinsRegular text-base text-gray-700 text-center`}
           >
             Book trusted services as a User, or list and manage your offerings
             as a Service Provider on Okejiri.
           </Text>
         </View>
-        <Button
-          title="Press to Send Notification"
-          onPress={async () => {
-            await handleSendPushNotification(expoPushToken);
-          }}
-        />
 
         <TouchableOpacity
+          activeOpacity={0.6}
           onPress={() => {
             AsyncStorage.setItem("roll", "USER");
             AsyncStorage.removeItem("providerTypes");
@@ -106,6 +63,7 @@ const Chose_roll = () => {
         </TouchableOpacity>
         {/* ------------------------------ service provider ---------------------------- */}
         <TouchableOpacity
+          activeOpacity={0.6}
           onPress={() => {
             AsyncStorage.setItem("roll", "PROVIDER");
             router.push("/service_provider/service_provider_roll");

@@ -45,7 +45,7 @@ const RegisterOTP = () => {
           params: { res: "OTP resent again" },
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("Error resending OTP:", error);
       router.push({
         pathname: "/Toaster",
@@ -100,11 +100,11 @@ const RegisterOTP = () => {
                     if (res.status) {
                       await AsyncStorage.setItem(
                         "token",
-                        res?.data?.access_token
+                        res?.data?.access_token,
                       );
                       router.replace("/auth/contact");
                     }
-                  } catch (error) {
+                  } catch (error: any) {
                     console.log(error, "OTP not verified ");
                     router.push({
                       pathname: `/Toaster`,

@@ -6,6 +6,7 @@ import {
   IconTransfer,
   IconWithdraw,
 } from "@/assets/icons";
+import PrimaryButton from "@/src/Components/PrimaryButton";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
@@ -13,16 +14,18 @@ import {
   useRecent_transactionsQuery,
   useWithdrawMutation,
 } from "@/src/redux/apiSlices/IndividualProvider/account/availableBalanceSlice";
+import BottomSheet, {
+  BottomSheetTextInput,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Modal,
   RefreshControl,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -34,7 +37,7 @@ const Wallet_Index = () => {
   const {
     data: userProfileInfo,
     isLoading,
-    isFetching: isFetchingProfile,
+    refetch: refetchProfile,
   } = useProfileQuery({});
   const totalBalance =
     Number(userProfileInfo?.data?.wallet_balance) +
@@ -44,8 +47,7 @@ const Wallet_Index = () => {
   const {
     data: transactionsData,
     isLoading: transactionsLoading,
-    error: transactionsError,
-    isFetching: isFetchingTransactions,
+    refetch: refetchTransactions,
   } = useRecent_transactionsQuery(1); // Start with page 1
 
   const [isWithdrawModalVisible, setWithdrawModalVisible] = useState(false);
@@ -59,13 +61,24 @@ const Wallet_Index = () => {
   const onRefresh = React.useCallback(async () => {
     try {
       setRefreshing(true);
-      await Promise.all([isFetchingProfile, isFetchingTransactions]);
+      await Promise.all([refetchProfile(), refetchTransactions()]);
     } catch (error: any) {
       console.log(error, "Profile Refresh not success!");
     } finally {
       setRefreshing(false);
     }
   }, [userProfileInfo, transactionsData]);
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = ["45%"];
+
+  const openSheet = useCallback(() => {
+    bottomSheetRef.current?.expand();
+  }, []);
+
+  const closeSheet = useCallback(() => {
+    bottomSheetRef.current?.close();
+  }, []);
 
   // ================ loading state =================
   if (isLoading) {
@@ -87,7 +100,6 @@ const Wallet_Index = () => {
 
   const handleWithdraw = async () => {
     const amountToWithdraw = Number(withdrawAmount);
-
     if (isNaN(amountToWithdraw) || amountToWithdraw <= 0) {
       router.push({
         pathname: "/Toaster",
@@ -108,13 +120,12 @@ const Wallet_Index = () => {
       });
       return;
     }
-
     try {
       const response = await withdraw({
         amount: amountToWithdraw,
         currency: "NGN",
       }).unwrap();
-
+      closeSheet();
       router.push({
         pathname: "/Toaster",
         params: {
@@ -186,7 +197,7 @@ const Wallet_Index = () => {
       }
     >
       <BackTitleButton
-        pageName={"Your wallet --"}
+        pageName={"Your wallet"}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
@@ -275,7 +286,7 @@ const Wallet_Index = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => setWithdrawModalVisible(true)}
+          onPress={openSheet}
           style={tw`flex-row justify-center items-center gap-3 w-[47%] h-12 border border-gray-300 rounded-2xl`}
         >
           <SvgXml xml={IconWithdraw} />
@@ -296,12 +307,8 @@ const Wallet_Index = () => {
             <ActivityIndicator size="small" color="#0000ff" />
             <Text style={tw`mt-2`}>Loading transactions...</Text>
           </View>
-        ) : transactionsError ? (
-          <View style={tw`py-4 items-center`}>
-            <Text style={tw`text-red-500`}>Error loading transactions</Text>
-          </View>
         ) : transactions.length === 0 ? (
-          <View style={tw`py-4 items-center`}>
+          <View style={tw`py-4  items-center`}>
             <Text style={tw`text-regularText`}>No transactions found</Text>
           </View>
         ) : (
@@ -359,73 +366,60 @@ const Wallet_Index = () => {
       </View>
 
       {/* Withdraw Modal */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={isWithdrawModalVisible}
-        onRequestClose={() => setWithdrawModalVisible(false)}
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        onClose={closeSheet}
+        backgroundStyle={tw`bg-white rounded-t-2xl`}
+        handleIndicatorStyle={tw`bg-gray-300`}
       >
-        <View style={tw`flex-1 justify-end bg-black bg-opacity-50`}>
-          <View style={tw`bg-white rounded-t-2xl p-6`}>
+        <BottomSheetView style={tw`px-6 pb-6`}>
+          <Text
+            style={tw`font-DegularDisplayDemoSemibold text-2xl text-black mb-6 text-center`}
+          >
+            Withdraw Funds
+          </Text>
+
+          <View style={tw`mb-6`}>
             <Text
-              style={tw`font-DegularDisplayDemoSemibold text-2xl text-black mb-6 text-center`}
+              style={tw`font-DegularDisplayDemoRegular text-lg text-black mb-2`}
             >
-              Withdraw Funds
+              Amount
             </Text>
-
-            <View style={tw`mb-6`}>
+            <View
+              style={tw`flex-row items-center border border-gray-300 rounded-full px-4 py-1`}
+            >
+              <BottomSheetTextInput
+                style={tw`flex-1 font-DegularDisplayDemoRegular text-xl text-black`}
+                keyboardType="numeric"
+                placeholder="0.00"
+                value={withdrawAmount}
+                onChangeText={(text) => setWithdrawAmount(text)}
+              />
               <Text
-                style={tw`font-DegularDisplayDemoRegular text-lg text-black mb-2`}
+                style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
               >
-                Amount
+                ₦
               </Text>
-              <View
-                style={tw`flex-row  items-center border border-gray-300 rounded-full px-4 py-1`}
-              >
-                <TextInput
-                  style={tw`flex-1 font-DegularDisplayDemoRegular text-xl text-black`}
-                  keyboardType="numeric"
-                  placeholder="0.00"
-                  value={withdrawAmount}
-                  onChangeText={(text) => setWithdrawAmount(text)}
-                />
-                <Text
-                  style={tw`font-DegularDisplayDemoMedium text-xl text-black`}
-                >
-                  ₦
-                </Text>
-              </View>
             </View>
-
-            <TouchableOpacity
-              onPress={handleWithdraw}
-              disabled={isWithdrawing}
-              style={tw`bg-primary rounded-full py-4 items-center`}
-            >
-              {isWithdrawing ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text
-                  style={tw`font-DegularDisplayDemoSemibold text-white text-xl`}
-                >
-                  Confirm Withdrawal
-                </Text>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setWithdrawModalVisible(false)}
-              style={tw`mt-4 py-3 items-center`}
-            >
-              <Text
-                style={tw`font-DegularDisplayDemoRegular text-regularText text-lg`}
-              >
-                Cancel
-              </Text>
-            </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
+
+          <PrimaryButton
+            titleProps="Confirm Withdrawal"
+            onPress={handleWithdraw}
+            loading={isWithdrawing}
+            contentStyle={tw`h-12`}
+          />
+          <PrimaryButton
+            titleProps="Cancel"
+            onPress={closeSheet}
+            textStyle={tw`text-gray-600`}
+            contentStyle={tw`h-12 bg-transparent`}
+          />
+        </BottomSheetView>
+      </BottomSheet>
     </ScrollView>
   );
 };

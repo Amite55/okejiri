@@ -64,10 +64,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
-        console.log(
-          "🔔 Notification Received: ",
-          notification?.request?.content?.data,
-        );
+        console.log("🔔 Notification Received: ", notification?.request);
         setNotification(notification);
       });
 
@@ -76,15 +73,9 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
         console.log("🔔 Notification Response Received");
       });
 
-    return async () => {
-      if (notificationListener.current)
-        await Notifications.removeNotificationSubscription(
-          notificationListener.current,
-        );
-      if (responseListener.current)
-        await Notifications.removeNotificationSubscription(
-          responseListener.current,
-        );
+    return () => {
+      if (notificationListener.current) notificationListener.current.remove();
+      if (responseListener.current) responseListener.current.remove();
     };
   }, []);
 

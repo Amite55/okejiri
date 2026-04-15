@@ -187,7 +187,7 @@ const Boost_Profile_Plan = () => {
         >
           <View>
             <BackTitleButton
-              pageName={"Boost your profile individual"}
+              pageName={"Boost your profile"}
               onPress={() => router.back()}
               titleTextStyle={tw`text-xl`}
             />

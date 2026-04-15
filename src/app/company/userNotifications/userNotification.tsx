@@ -24,6 +24,9 @@ import {
 } from "react-native";
 
 import NotificationSkeleton from "@/src/Components/skeletons/NotificationSkeleton";
+import { useDynamicBack } from "@/src/hooks/useDynamicBack";
+import { useProviderType } from "@/src/hooks/useProviderType";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
@@ -33,6 +36,12 @@ const Notification = () => {
   const [notifications, setNotification] = useState<any[]>([]);
   const [isFetchMore, setIsFetchMore] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
+  // ============== hooks ==================
+  const roll = useRoll() || "";
+  const providerType = useProviderType();
+
+  // =========== call dynamic touting hooks ------------
+  const handleBack = useDynamicBack(roll, providerType);
 
   // Modal Refs
   const deliveryModalRef = useRef<BottomSheetModal>(null);
@@ -57,8 +66,7 @@ const Notification = () => {
     refetchOnMountOrArgChange: true,
   });
   const [singleMark] = useSingleMarkMutation();
-  const { data: userProfileInfo, isLoading: isProfileLoading } =
-    useProfileQuery({});
+  const { data: userProfileInfo } = useProfileQuery({});
   const [deleteAllNotification, { isLoading: isAllNotificationLoading }] =
     useDeleteAllNotificationsMutation();
   const [
@@ -124,21 +132,19 @@ const Notification = () => {
         await singleMark(item?.id);
       } catch {}
     }
-    const type = item?.data?.type;
-
+    const type = item?.data?.data?.type;
     // ---------------- Modal Types ---------------- //
     if (type === "delivery_request_sent") {
-      setSelectedOrderId(item?.data?.order_id);
+      setSelectedOrderId(item?.data?.data?.order_id);
       deliveryModalRef.current?.present();
       return;
     }
     if (type === "extend_delivery_time") {
-      setRequestDeliveryExtId(item?.data?.request_id);
+      setRequestDeliveryExtId(item?.data?.data?.request_id);
       requestDeliveryTimeExtModalRef?.current?.present();
       return;
     } else if (type === "complete_kyc") {
       if (
-        // userProfileInfo?.data?.kyc_status === "In Review" ||
         userProfileInfo?.data?.kyc_status === "Unverified" ||
         userProfileInfo?.data?.kyc_status === "Rejected"
       ) {
@@ -166,7 +172,7 @@ const Notification = () => {
         router.push({
           pathname: "/company/serviceBookings/order_approved",
           params: {
-            id: item.data.order_id,
+            id: item?.data?.data?.order_id,
           },
         });
         break;
@@ -196,7 +202,7 @@ const Notification = () => {
       case "new_dispute":
         router.push({
           pathname: "/service_provider/individual/disputes/dispute_review",
-          params: { id: item?.data?.dispute_id },
+          params: { id: item?.data?.data?.dispute_id },
         });
         break;
       case "report":
@@ -223,7 +229,9 @@ const Notification = () => {
     <View style={tw`flex-1 bg-base_color px-5`}>
       <BackTitleButton
         pageName={"Notifications"}
-        onPress={() => router.back()}
+        onPress={() => {
+          handleBack();
+        }}
         titleTextStyle={tw`text-xl`}
       />
 
@@ -298,17 +306,18 @@ const Notification = () => {
               </View>
             ) : null
           }
-          renderItem={({ item }) => (
-            <ProviderNotificationCard
-              item={item}
-              onPress={() => handleNotificationPress(item)}
-              onDelete={() => handleDelete(item?.id)}
-              deleteLoading={isDeleteSingleNotificationDeleteLoading}
-            />
-          )}
+          renderItem={({ item }) => {
+            return (
+              <ProviderNotificationCard
+                item={item}
+                onPress={() => handleNotificationPress(item)}
+                onDelete={() => handleDelete(item?.id)}
+                deleteLoading={isDeleteSingleNotificationDeleteLoading}
+              />
+            );
+          }}
         />
       )}
-
       {/* ------------------- Delivery Request Modal ------------------ */}
       <RequestForDeliveryModal
         ref={deliveryModalRef}
@@ -321,14 +330,12 @@ const Notification = () => {
           }, 500);
         }}
       />
-
       {/* ------------------- Feedback Modal ------------------ */}
       <FeedbackModel
         ref={feedbackModalRef}
         id={selectedOrderId}
         onClose={() => feedbackModalRef?.current?.dismiss()}
       />
-
       {/* ------------------- Request Extension Modal ------------------ */}
       <RequestDeliveryTimeExtModal
         ref={requestDeliveryTimeExtModalRef}
@@ -339,7 +346,6 @@ const Notification = () => {
           setTimeout(() => setAcceptedModalShow(true), 500);
         }}
       />
-
       {/* ------------------- Extension Accepted Modal ------------------ */}
       <AcceptedModal
         visible={acceptedModalShow}

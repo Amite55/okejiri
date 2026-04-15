@@ -9,7 +9,6 @@ import AuthComponents from "@/src/Components/AuthComponents";
 import PrimaryButton from "@/src/Components/PrimaryButton";
 import { useProviderTypes } from "@/src/hooks/useProviderTypes";
 import { useRoll } from "@/src/hooks/useRollHooks";
-import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { useProfileQuery } from "@/src/redux/apiSlices/authSlices";
 import {
@@ -51,14 +50,18 @@ const Provide_Service = () => {
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
 
   // -------------------- api end point ---------------------
+  const { data: getServiceData, isLoading: isLoadingServices } =
+    useServicesQuery({
+      refetchOnMountOrArgChange: true,
+    });
+  const { data: getProfileData } = useProfileQuery({
+    refetchOnMountOrArgChange: true,
+  });
   const [information, { isLoading: isLoadingPersonalization }] =
-    useCompletePersonalizationMutation({});
-  const { data: getServiceData } = useServicesQuery({});
-  const { data: getProfileData, isLoading: isLoadingProfile } = useProfileQuery(
-    {}
-  );
+    useCompletePersonalizationMutation();
   const [sendRequestService, { isLoading: isLoadingSendRequest }] =
-    useRequestAddServiceMutation({});
+    useRequestAddServiceMutation();
+
   const handleScreenInfo = async () => {
     try {
       if (value.length === 0) {
@@ -90,7 +93,7 @@ const Provide_Service = () => {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error, "form indivitual -------------s>");
       router.push({
         pathname: `/Toaster`,
@@ -114,7 +117,7 @@ const Provide_Service = () => {
           router.push({
             pathname: `/Toaster`,
             params: {
-              res: "Service added successfully",
+              res: "Your request has been sent successfully",
             },
           });
         }
@@ -124,11 +127,11 @@ const Provide_Service = () => {
         router.push({
           pathname: `/Toaster`,
           params: {
-            res: "Please add your new service!",
+            res: "Failed to add service",
           },
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       router.push({
         pathname: `/Toaster`,
         params: {
@@ -141,16 +144,24 @@ const Provide_Service = () => {
   // [--------------------- dynamic keyboard avoiding view useEffect -------------------]
   useEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true)
+      setKeyboardVisible(true),
     );
     const hide = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false)
+      setKeyboardVisible(false),
     );
     return () => {
       show.remove();
       hide.remove();
     };
   }, []);
+
+  if (isLoadingServices) {
+    return (
+      <View className="flex-1 bg-base_color  justify-center items-center">
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -170,12 +181,7 @@ const Provide_Service = () => {
             ]}
           >
             <View>
-              <BackTitleButton
-                onPress={() => router.back()}
-                pageName={"Sign up as a service provider"}
-                titleTextStyle={tw`text-lg`}
-              />
-              <View style={tw`justify-center items-center mb-12`}>
+              <View style={tw`justify-center items-center mb-12 mt-12`}>
                 <Image style={tw`w-44 h-12 mt-12 mb-12`} source={ImgLogo} />
                 <AuthComponents
                   title="What kind of service you provide ?"
@@ -206,6 +212,11 @@ const Provide_Service = () => {
                   style={tw`text-red-500 ml-3 mt-[-12px] mb-4 text-sm pt-4`}
                 >
                   {error}
+                </Text>
+              )}
+              {getServiceData?.data?.services?.length === 0 && (
+                <Text style={tw`text-center font-PoppinsMedium text-red-400`}>
+                  No service available. Please request to add your service.
                 </Text>
               )}
 
@@ -244,30 +255,25 @@ const Provide_Service = () => {
             </View>
 
             <TouchableOpacity
-              style={tw`bg-primary rounded-full my-4`}
+              style={tw`bg-primary rounded-full mt-4`}
               activeOpacity={0.8}
               onPress={handleScreenInfo}
               disabled={isLoadingPersonalization}
             >
-              {isLoadingPersonalization ? (
-                <View style={tw`flex-row justify-center items-center gap-3`}>
-                  <ActivityIndicator size={"small"} color={tw.color("white")} />
-                  <Text
-                    style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
-                  >
-                    {from === "role_switch" ? "Updating" : "Sign up"}
-                  </Text>
-                </View>
-              ) : (
-                <View style={tw`flex-row justify-center items-center gap-4`}>
-                  <Text
-                    style={tw` text-center text-white text-base py-4  font-PoppinsBold`}
-                  >
-                    {from === "role_switch" ? "Update" : "Sign up"}
-                  </Text>
+              <View style={tw`flex-row justify-center items-center gap-3 py-3`}>
+                {isLoadingPersonalization ? (
+                  <ActivityIndicator size="small" color={tw.color("white")} />
+                ) : (
                   <SvgXml xml={IconRightArrow} />
-                </View>
-              )}
+                )}
+                <Text style={tw`text-white text-base font-PoppinsBold`}>
+                  {from === "role_switch"
+                    ? isLoadingPersonalization
+                      ? "Updating"
+                      : "Update"
+                    : "Sign up"}
+                </Text>
+              </View>
             </TouchableOpacity>
           </ScrollView>
           {/* ------------------------------- cancel modal ---------------------------------- */}
@@ -335,10 +341,11 @@ const Provide_Service = () => {
 
                   <View style={tw`px-4 pb-6`}>
                     <PrimaryButton
+                      loading={isLoadingSendRequest}
                       onPress={() => {
                         handleRequestService();
                       }}
-                      titleProps={isLoadingSendRequest ? "Sending" : "Send"}
+                      titleProps={isLoadingSendRequest ? "Sending..." : "Send"}
                     />
                   </View>
                 </View>

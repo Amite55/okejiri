@@ -63,7 +63,7 @@ const ServiceCard = ({ item, onPress }: any) => {
       {/* Service Name Tag */}
       <View
         style={[
-          tw`absolute bottom-4 right-1 bg-primary -mr-1 -mb-4 w-24 h-9 justify-center items-center`,
+          tw`absolute bottom-4 right-1 bg-primary -mr-1 -mb-4 w-24 h-7 justify-center items-center`,
           { borderTopLeftRadius: 10, borderBottomRightRadius: 10 },
         ]}
       >

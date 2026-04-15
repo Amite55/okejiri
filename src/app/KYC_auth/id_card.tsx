@@ -1,6 +1,9 @@
 import { IconRightArrow, IconUploadImage } from "@/assets/icons";
 import { ImgCard, ImgLogo } from "@/assets/images/image";
 import PrimaryButton from "@/src/Components/PrimaryButton";
+import { useDynamicBack } from "@/src/hooks/useDynamicBack";
+import { useProviderType } from "@/src/hooks/useProviderType";
+import { useRoll } from "@/src/hooks/useRollHooks";
 import BackTitleButton from "@/src/lib/HeaderButtons/BackTitleButton";
 import tw from "@/src/lib/tailwind";
 import { Image } from "expo-image";
@@ -13,6 +16,12 @@ const Id_Card = () => {
   const { fastPhotoUri, secondPhotoUri } = useLocalSearchParams();
   const fastPhotoURIPerse = fastPhotoUri && JSON.parse(fastPhotoUri);
   const secondPhotoURIPerse = secondPhotoUri && JSON.parse(secondPhotoUri);
+  // ============== hooks ==================
+  const roll = useRoll() || "";
+  const providerType = useProviderType();
+
+  // =========== call dynamic touting hooks ------------
+  const handleBack = useDynamicBack(roll, providerType);
 
   return (
     <ScrollView
@@ -25,7 +34,9 @@ const Id_Card = () => {
       <View>
         <BackTitleButton
           pageName={"KYC process"}
-          onPress={() => router.back()}
+          onPress={() => {
+            handleBack();
+          }}
           titleTextStyle={tw`text-xl`}
         />
         <View style={tw`justify-center items-center mt-14`}>

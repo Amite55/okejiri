@@ -3,9 +3,10 @@ import {
   IconProfileBadge,
   IconRightArrowCornerPrimaryColor,
 } from "@/assets/icons";
-import { ImgProfileImg as ImgProfileImgDefault } from "@/assets/images/image";
+import { ImgportfolioFive } from "@/assets/images/image";
+import { Image } from "expo-image";
 import React from "react";
-import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "../lib/tailwind";
 
@@ -27,44 +28,50 @@ const UserCard = ({
   ImgProfileImg,
 }: IProps) => {
   return (
-    <Pressable
-      style={tw`h-32 px-5 rounded-2xl bg-white flex-row justify-between items-center`}
+    <View
+      style={tw`min-h-28 px-3 py-3 rounded-2xl bg-white flex-row items-center gap-3`}
     >
-      <View style={tw`flex-row items-center gap-3`}>
-        {ImgProfileImg ? (
-          <Image
-            style={tw`w-16 h-16 rounded-full `}
-            source={{ uri: ImgProfileImg }}
-          />
-        ) : (
-          <Image
-            style={tw`h-16 w-16 rounded-full`}
-            source={ImgProfileImgDefault}
-          />
-        )}
-        <View style={tw`gap-1.5`}>
-          <View style={tw`flex-row items-center gap-2`}>
-            <Text style={tw`font-DegularDisplayDemoMedium text-2xl text-black`}>
-              {ProfileName}
-            </Text>
-            {isProfileBadge ? <SvgXml xml={IconProfileBadge} /> : null}
-          </View>
-          <Text style={tw`font-DegularDisplayDemoRegular text-xl text-black`}>
-            {Description}
+      {/* fixed size image */}
+      <Image
+        style={tw`w-16 h-16 rounded-full shrink-0`}
+        source={ImgProfileImg}
+        contentFit="cover"
+        placeholder={ImgportfolioFive}
+      />
+
+      {/* text block — flex-1 so it takes remaining space */}
+      <View style={tw`flex-1 gap-1.5`}>
+        <View style={tw`flex-row items-center gap-2`}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={tw`flex-1 font-DegularDisplayDemoMedium text-xl text-black`}
+          >
+            {ProfileName}
           </Text>
-          <View style={tw`flex-row items-center gap-2`}>
-            <SvgXml xml={IconDate} />
-            <Text>{Date}</Text>
-          </View>
+          {isProfileBadge ? <SvgXml xml={IconProfileBadge} /> : null}
+        </View>
+        <Text
+          numberOfLines={2}
+          ellipsizeMode="tail"
+          style={tw`font-DegularDisplayDemoRegular text-xl text-black`}
+        >
+          {Description}
+        </Text>
+        <View style={tw`flex-row items-center gap-2`}>
+          <SvgXml xml={IconDate} />
+          <Text style={tw`text-sm`}>{Date}</Text>
         </View>
       </View>
+
+      {/* fixed size button */}
       <TouchableOpacity
         onPress={onPress}
-        style={tw`w-12 h-12 rounded-2xl border border-primary justify-center items-center `}
+        style={tw`w-12 h-12 shrink-0 rounded-2xl border border-primary justify-center items-center`}
       >
         <SvgXml xml={IconRightArrowCornerPrimaryColor} />
       </TouchableOpacity>
-    </Pressable>
+    </View>
   );
 };
 

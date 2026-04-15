@@ -263,7 +263,7 @@ const Order = () => {
               fetchOrderItemsData?.data?.data.map((item: any, index: any) => (
                 <UserCard
                   key={index}
-                  ProfileName={item?.user?.name}
+                  ProfileName={item?.user?.name + "al;flasfj"}
                   isProfileBadge={
                     item?.user?.kyc_status === "Verified" ? true : false
                   }
