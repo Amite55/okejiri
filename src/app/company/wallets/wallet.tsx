@@ -177,7 +177,7 @@ const Wallet_Index = () => {
   const ListHeader = () => (
     <View style={tw``}>
       <BackTitleButton
-        pageName={"Your Wallet"}
+        pageName={"Your Wallet "}
         onPress={() => router.back()}
         titleTextStyle={tw`text-xl`}
       />
@@ -258,7 +258,7 @@ const Wallet_Index = () => {
 <body>
   <script>
     FlutterwaveCheckout({
-      public_key: "FLWPUBK_TEST-8ae5ae7873e218ce9a69eadc088ca540-X",
+      public_key: "${process.env.EXPO_PUBLIC_FLUTTERWAVE_PUBLIC_KEY}",
       tx_ref: "TX_${Date.now()}",
       amount: ${balance},
       currency: "NGN",
@@ -323,7 +323,7 @@ const Wallet_Index = () => {
             setBalance(null);
           }}
           ref={bottomSheetModalRef}
-          snapPoints={["50%"]}
+          snapPoints={["50%", "80%"]}
           containerStyle={tw`bg-gray-500 bg-opacity-20`}
           backdropComponent={(props) => (
             <BottomSheetBackdrop
