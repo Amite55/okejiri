@@ -148,10 +148,17 @@ export default function RequestForDeliveryModal({
                       });
                       onClose();
                     }
-                  } catch {
+                  } catch (error: any) {
+                    console.log(
+                      error,
+                      "Your delivery request not success------>",
+                    );
                     router.push({
                       pathname: "/Toaster",
-                      params: { res: "Delivery Request Decline failed!" },
+                      params: {
+                        res:
+                          error?.message || "Delivery Request Decline failed!",
+                      },
                     });
                   }
                 }}
@@ -176,10 +183,17 @@ export default function RequestForDeliveryModal({
                   try {
                     const response = await acceptDeliveryRequest(id).unwrap();
                     if (response) onAccepted();
-                  } catch {
+                  } catch (error: any) {
+                    console.log(
+                      error,
+                      "Your delivery request not success------>",
+                    );
                     router.push({
                       pathname: "/Toaster",
-                      params: { res: "Request Delivery accepted Failed!" },
+                      params: {
+                        res:
+                          error?.message || "Request Delivery accepted Failed!",
+                      },
                     });
                   }
                 }}

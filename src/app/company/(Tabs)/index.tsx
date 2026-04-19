@@ -48,7 +48,7 @@ const Company_Home_Index = () => {
     data: getMyServiceBookingsData,
     isLoading: isMyServiceBookingsLoading,
     isFetching: isMyServiceBookingsFetching,
-  } = useBookingsHistoryQuery({ page: 1, per_page: 10 });
+  } = useBookingsHistoryQuery({ page: 1, per_page: 3 });
   const [updateLatLong, { isLoading: isUpdateLatLongLoading }] =
     useUpdateLatLongMutation();
 

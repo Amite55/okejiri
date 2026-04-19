@@ -510,6 +510,55 @@ const Booking_Service_Details = () => {
                     );
                   })}
                 </View>
+                {/* ============= when there is assigned employee =============== */}
+                {OrderDetailsData?.data?.assign_employee ? (
+                  <View>
+                    <Text style={tw`text-black font-PoppinsMedium `}>
+                      Assigned Employee
+                    </Text>
+                    <View
+                      style={tw`flex-row bg-white rounded-2xl shadow-sm gap-3 p-2 mt-2 items-center`}
+                    >
+                      {/* Image */}
+                      <Image
+                        source={
+                          OrderDetailsData?.data?.assign_employee?.employee
+                            ?.image
+                        }
+                        style={tw`w-16 h-16 rounded-full`}
+                        contentFit="cover"
+                      />
+
+                      {/* Info Section */}
+                      <View style={tw`flex-1 `}>
+                        <Text
+                          style={tw`text-base font-bold ml-1 text-gray-800`}
+                        >
+                          {
+                            OrderDetailsData?.data?.assign_employee?.employee
+                              ?.name
+                          }
+                        </Text>
+
+                        <Text style={tw`text-sm text-gray-500 mt-1`}>
+                          📍
+                          {
+                            OrderDetailsData?.data?.assign_employee?.employee
+                              ?.location
+                          }
+                        </Text>
+
+                        <Text style={tw`text-sm text-gray-500 mt-1`}>
+                          📞{" "}
+                          {
+                            OrderDetailsData?.data?.assign_employee?.employee
+                              ?.phone
+                          }
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                ) : null}
 
                 {/* ============== this message will show when user is new order ans pending order and service provider hasn’t responded yet */}
                 {(OrderDetailsData?.data?.status === "New" ||
