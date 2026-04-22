@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.okejiri.app'
+    namespace 'com.okejiri.sm.solutions.app'
     defaultConfig {
-        applicationId 'com.okejiri.app'
+        applicationId 'com.okejiri.sm.solutions.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
