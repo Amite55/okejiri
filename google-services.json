@@ -48,6 +48,50 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:13412975616:android:d17a07261599903a5704e5",
+        "android_client_info": {
+          "package_name": "com.okejiri.sm.solutions.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "13412975616-e9jd9jobpq7jt42ufccm6540kahokjp2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.okejiri.sm.solutions.app",
+            "certificate_hash": "c4a8d1515eb8a8f466338c946bc687e0f61de57a"
+          }
+        },
+        {
+          "client_id": "13412975616-45aa04gjh52t9derok36rcqsntabs119.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpRjuq19mzwlM4tg45lP2sbBgOurIKjME"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "13412975616-45aa04gjh52t9derok36rcqsntabs119.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "13412975616-umdu7bsje7bdv64f7p255pt5kqojvj4k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.okejiri.app"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

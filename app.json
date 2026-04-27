@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "okejiriMobileApp",
+    "name": "Okejiri",
     "slug": "okejiriMobileApp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,11 +15,9 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yxltechnology.between",
+      "bundleIdentifier": "com.okejiri.sm.solutions.app",
+      "buildNumber": "1",
       "infoPlist": {
-        "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true
-        },
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -29,11 +27,11 @@
         "foregroundImage": "./assets/images/appAndroidIcon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.okejiri.app",
+      "package": "com.okejiri.sm.solutions.app",
       "googleServicesFile": "./google-services.json",
       "permissions": [
-        "android.permission.RECORD_AUDIO",
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -54,23 +52,13 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "This app requires access to your photos so you can upload a profile picture and share images for your products or services."
         }
       ],
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-          "recordAudioAndroid": true
-        }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "usesCleartextTraffic": true
-          }
+          "cameraPermission": "Allow Okejiri to access your camera to capture identity documents for KYC verification."
         }
       ],
       "expo-web-browser",

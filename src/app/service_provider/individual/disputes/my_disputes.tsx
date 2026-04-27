@@ -185,7 +185,7 @@ const My_Disputes = () => {
                 No disputes found
               </Text>
               <Text style={tw`text-gray-400 text-center`}>
-                You don't have any disputes at the moment.
+                You {"don't"} have any disputes at the moment.
               </Text>
             </View>
           ) : null

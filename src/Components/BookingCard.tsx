@@ -29,8 +29,8 @@ const BookingCard = ({ item, onPress }: any) => {
             ellipsizeMode="tail"
             style={tw`flex-1 font-DegularDisplayDemoRegular text-lg text-black pr-2`}
           >
-            {item?.booking_items_count == 1 ? "package" : "packages"}
-            {item?.booking_items_count}
+            {item?.booking_items_count}{" "}
+            {item?.booking_items_count == 1 ? "Package" : "Packages"}
           </Text>
           <Text
             style={tw`text-black1000 font-DegularDisplayDemoMedium text-lg flex-none`}
@@ -65,8 +65,8 @@ const BookingCard = ({ item, onPress }: any) => {
                 item?.status === "Completed"
                   ? tw`bg-success600`
                   : item?.status === "New"
-                  ? tw`bg-primary`
-                  : tw`bg-blue-700`,
+                    ? tw`bg-primary`
+                    : tw`bg-blue-700`,
               ]}
             >
               <Text

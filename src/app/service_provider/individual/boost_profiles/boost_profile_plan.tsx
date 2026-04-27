@@ -146,7 +146,7 @@ const Boost_Profile_Plan = () => {
 <body>
   <script>
     FlutterwaveCheckout({
-      public_key: "FLWPUBK_TEST-8ae5ae7873e218ce9a69eadc088ca540-X",
+      public_key: "${process.env.EXPO_PUBLIC_FLUTTERWAVE_PUBLIC_KEY}",
       tx_ref: "TX_${Date.now()}",
       amount: ${selectedPrice},
       currency: "NGN",
