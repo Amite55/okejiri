@@ -17,6 +17,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.okejiri.sm.solutions.app",
       "buildNumber": "1",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
