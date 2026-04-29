@@ -51,6 +51,15 @@
         }
       ],
       [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          },
+          "ios": {}
+        }
+      ],
+      [
         "expo-image-picker",
         {
           "photosPermission": "This app requires access to your photos so you can upload a profile picture and share images for your products or services."
