@@ -1,14 +1,15 @@
+import { ImgSplashSquire } from "@/assets/images/image";
 import ServiceProfileHeaderInfo from "@/src/Components/ServiceProfileHeaderInfo";
 import ServicePageSkeleton from "@/src/Components/skeletons/ServicePageSkeleton ";
 import tw from "@/src/lib/tailwind";
 import { useServicesQuery } from "@/src/redux/apiSlices/userProvider/homeSlices";
 
 import { BlurView } from "@react-native-community/blur";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import React from "react";
 import {
   FlatList,
-  Image,
   Platform,
   RefreshControl,
   Text,
@@ -57,9 +58,11 @@ const Services = () => {
         key={item?.id}
       >
         <Image
-          resizeMode="cover"
+          contentFit="cover"
           style={tw`w-44 h-48 rounded-lg `}
-          source={{ uri: item?.image }}
+          // source={{ uri: item?.image?.replace('http://', 'https://') }}
+          source={item?.image}
+          placeholder={ImgSplashSquire}
         />
 
         <View

@@ -51,6 +51,19 @@
         }
       ],
       [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          },
+          "ios": {
+            "appleConfig": {
+              "allowsArbitraryLoads": true
+            }
+          }
+        }
+      ],
+      [
         "expo-image-picker",
         {
           "photosPermission": "This app requires access to your photos so you can upload a profile picture and share images for your products or services."
@@ -62,12 +75,18 @@
           "cameraPermission": "Allow Okejiri to access your camera to capture identity documents for KYC verification."
         }
       ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
       "expo-web-browser",
       "@react-native-community/datetimepicker",
       "expo-font",
-      "@react-native-firebase/app",
-      "@react-native-google-signin/google-signin",
-      "@react-native-firebase/auth"
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true

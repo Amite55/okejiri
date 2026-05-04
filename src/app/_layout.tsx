@@ -61,6 +61,18 @@ function RootLayoutNav() {
           presentation: "transparentModal",
         }}
       />
+      {/* <Stack.Screen
+        name="Toaster"
+        options={{
+          presentation: 'transparentModal',
+          headerShown: false,
+          animation: 'fade',
+          gestureEnabled: true,
+          contentStyle: {
+            backgroundColor: 'transparent',
+          },
+        }}
+      /> */}
       <Stack.Screen
         name="Toaster"
         options={{
@@ -68,7 +80,7 @@ function RootLayoutNav() {
           presentation: "formSheet",
           contentStyle: {
             backgroundColor: "transparent",
-            paddingBottom: 8,
+            // paddingBottom: 8,
           },
         }}
       />
